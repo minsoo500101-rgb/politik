@@ -139,7 +139,43 @@
   [data-theme="dark"] .d-avatar { border-color: var(--bg-card); }
   [data-theme="dark"] .org-icon, [data-theme="dark"] .group-header .icon {
     color: #e6edf3;
+    background: linear-gradient(135deg, #475569 0%, #334155 100%) !important;
   }
+  /* 다크 모드 — 그라데이션 텍스트는 단색으로 (가독성) */
+  [data-theme="dark"] .org-hero h1 {
+    background: none;
+    -webkit-background-clip: initial; background-clip: initial;
+    -webkit-text-fill-color: var(--text);
+    color: var(--text);
+  }
+  [data-theme="dark"] .brand-logo {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  }
+  /* 통계·도넛 — 카드 배경 더 명확하게 */
+  [data-theme="dark"] .stat-card { background: rgba(255,255,255,0.04); }
+  [data-theme="dark"] .bar-wrap { background: rgba(0,0,0,0.4); }
+  [data-theme="dark"] .donut path[fill="var(--bg-card)"] { stroke: var(--bg-card); }
+  /* SVG 텍스트 — currentColor 의존 제거, 다크에서 흰색 명시 */
+  [data-theme="dark"] .donut text { fill: var(--text) !important; }
+  [data-theme="dark"] .donut-sub { color: var(--text-2); }
+  [data-theme="dark"] .stats-sub { color: var(--text-2); }
+  /* 메인 페이지 hero 배경 그라데이션 — 다크에서 부드럽게 */
+  [data-theme="dark"] .org-hero::before {
+    background:
+      radial-gradient(ellipse at 30% 0%, rgba(124,180,255,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 0%, rgba(248,113,113,0.06) 0%, transparent 50%);
+  }
+  /* 카드 hover 그림자 다크에서 강하게 */
+  [data-theme="dark"] .card:hover { box-shadow: 0 14px 32px rgba(0,0,0,0.5); }
+  [data-theme="dark"] .org-box:hover { box-shadow: 0 20px 48px rgba(0,0,0,0.6); }
+  /* 입력창 다크 가독성 */
+  [data-theme="dark"] .search { background: var(--bg-elev); color: var(--text); }
+  [data-theme="dark"] .search:focus { box-shadow: 0 0 0 3px rgba(124,180,255,0.15); }
+  /* 정당 색 칩 텍스트 가독 */
+  [data-theme="dark"] .chip { background: var(--bg-elev); }
+  [data-theme="dark"] .chip.active { background: var(--text); color: var(--bg-card); border-color: var(--text); }
+  /* 지도 페이지 — 시도 라벨 다크에서 또렷하게 */
+  [data-theme="dark"] .kr-map-svg text { text-shadow: 0 0 4px rgba(0,0,0,0.9); }
 
   /* ============ Filters ============ */
   .filter-bar {
