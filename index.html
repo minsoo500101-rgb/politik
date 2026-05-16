@@ -98,8 +98,44 @@
   }
   .nav-stats {
     display: flex; gap: 16px; font-size: 11px; color: var(--dim);
+    align-items: center;
   }
   .nav-stats b { color: var(--text); font-weight: 600; font-size: 13px; }
+  .theme-toggle {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    font-size: 14px;
+    display: grid; place-items: center;
+    transition: all 0.2s;
+  }
+  .theme-toggle:hover { transform: rotate(20deg); background: var(--bg-card); }
+
+  [data-theme="dark"] {
+    --bg: #0a0e14;
+    --bg-card: #11161e;
+    --bg-elev: #161b24;
+    --border: #21272f;
+    --border-strong: #30373f;
+    --text: #e6edf3;
+    --text-2: #b8c1cc;
+    --dim: #7d858f;
+    --link: #6cb8ff;
+    --ok: #3fb950;
+    --warn: #d29922;
+  }
+  [data-theme="dark"] header {
+    background: rgba(17,22,30,0.92);
+  }
+  [data-theme="dark"] .d-hero-overlay {
+    background: linear-gradient(180deg, rgba(17,22,30,0) 0%, rgba(17,22,30,0.92) 100%);
+  }
+  [data-theme="dark"] .d-avatar { border-color: var(--bg-card); }
+  [data-theme="dark"] .org-icon, [data-theme="dark"] .group-header .icon {
+    color: #e6edf3;
+  }
 
   /* ============ Filters ============ */
   .filter-bar {
@@ -608,6 +644,7 @@
     <div class="nav-stats">
       <div><b id="stat-total">—</b> 등록</div>
       <div><b id="stat-shown">—</b> 표시</div>
+      <button class="theme-toggle" id="theme-toggle" title="다크 모드 전환">🌙</button>
     </div>
   </div>
 </header>
@@ -1317,7 +1354,8 @@ function renderGrid() {
       (m.HG_NM || '').toLowerCase().includes(q) ||
       (m.ORIG_NM || '').toLowerCase().includes(q) ||
       (m.POLY_NM || '').toLowerCase().includes(q) ||
-      (m.CMIT_NM || '').toLowerCase().includes(q)
+      (m.CMIT_NM || '').toLowerCase().includes(q) ||
+      (m._type_label || '').toLowerCase().includes(q)
     );
   });
 
@@ -1325,6 +1363,31 @@ function renderGrid() {
 
   if (filtered.length === 0) {
     return '<div class="empty">검색 결과가 없습니다.</div>';
+  }
+
+  // 검색 모드에선 그룹별로 묶기
+  if (q) {
+    const byGroup = new Map();
+    for (const m of filtered) {
+      const g = m._group || 'legislative';
+      if (!byGroup.has(g)) byGroup.set(g, []);
+      byGroup.get(g).push(m);
+    }
+    const sections = GROUP_ORDER.filter(g => byGroup.has(g)).map(g => {
+      const arr = byGroup.get(g);
+      const gInfo = GROUPS[g];
+      return `
+        <div class="sub-section">
+          <h2><span style="opacity:0.5">${gInfo.icon}</span> ${escapeHtml(gInfo.name)} <span class="cnt">${arr.length}명</span></h2>
+          <div class="grid">${arr.slice(0, 30).map(memberCardHTML).join('')}</div>
+          ${arr.length > 30 ? `<div style="text-align:center;color:var(--dim);padding:10px;font-size:11px">…외 ${arr.length - 30}명</div>` : ''}
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="result-meta">"<b>${escapeHtml(state.search)}</b>" 검색 — ${filtered.length}건</div>
+      ${sections}
+    `;
   }
 
   const cards = filtered.map(m => {
@@ -1660,6 +1723,23 @@ document.getElementById('brand').addEventListener('click', () => { location.hash
 document.getElementById('search').addEventListener('input', e => {
   state.search = e.target.value;
   if (!location.hash) route();
+});
+
+// 다크 모드 토글
+const THEME_KEY = 'politik:theme';
+function applyTheme(name) {
+  document.documentElement.setAttribute('data-theme', name);
+  document.getElementById('theme-toggle').textContent = name === 'dark' ? '☀' : '🌙';
+  localStorage.setItem(THEME_KEY, name);
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else applyTheme(matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+})();
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
 });
 
 // ============================================================
