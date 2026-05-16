@@ -821,16 +821,18 @@ function regionShort(orig) {
 // Org chart (home) + Group pages
 // ============================================================
 const GROUPS = {
-  legislative: { name:'입법부', icon:'🏛', desc:'대한민국 국회 22대 (2024.5~)', color:'#1f2937' },
-  executive:   { name:'행정부', icon:'🏢', desc:'대통령·국무총리·내각·대통령실',   color:'#0f172a' },
-  judicial:    { name:'사법부', icon:'⚖',  desc:'대법원·헌법재판소',                color:'#475569' },
-  local:       { name:'지방정부', icon:'🏘', desc:'17개 광역단체장',                color:'#334155' },
+  legislative: { name:'입법부',   icon:'🏛', desc:'대한민국 국회 22대 (2024.5~)',   color:'#1f2937' },
+  executive:   { name:'행정부',   icon:'🏢', desc:'대통령·국무총리·내각·대통령실',  color:'#0f172a' },
+  judicial:    { name:'사법부',   icon:'⚖',  desc:'대법원·헌법재판소',              color:'#475569' },
+  local:       { name:'지방정부', icon:'🏘', desc:'광역단체장 · 교육감',            color:'#334155' },
+  historical:  { name:'역사',     icon:'📜', desc:'역대 대통령 (1948~)',           color:'#78350f' },
 };
-const GROUP_ORDER = ['legislative', 'executive', 'judicial', 'local'];
+const GROUP_ORDER = ['legislative', 'executive', 'judicial', 'local', 'historical'];
 const TYPE_ORDER = {
   executive: ['president', 'prime_minister', 'minister', 'chief_of_staff'],
   judicial:  ['judge'],
-  local:     ['local_gov_head'],
+  local:     ['local_gov_head', 'edu_superintendent'],
+  historical:['former_president'],
 };
 const TYPE_GROUP_LABEL = {
   president: '대통령',
@@ -839,6 +841,8 @@ const TYPE_GROUP_LABEL = {
   chief_of_staff: '대통령실',
   judge: '사법부',
   local_gov_head: '광역단체장',
+  edu_superintendent: '교육감',
+  former_president: '역대 대통령',
 };
 
 function groupMembers() {
