@@ -683,17 +683,14 @@ async function loadHistoricalAssembly(age) {
 
 let _historicalLoaded = new Set();
 async function ensureHistoricalAssemblies(ages = []) {
-  let changed = false;
-  for (const age of ages) {
-    if (_historicalLoaded.has(age)) continue;
-    const arr = await loadHistoricalAssembly(age);
-    if (arr.length) {
-      state.members = state.members.concat(arr);
-      _historicalLoaded.add(age);
-      changed = true;
-    }
+  const todo = ages.filter(a => !_historicalLoaded.has(a));
+  if (!todo.length) return false;
+  const results = await Promise.all(todo.map(age => loadHistoricalAssembly(age).then(arr => ({ age, arr }))));
+  for (const { age, arr } of results) {
+    if (arr.length) state.members = state.members.concat(arr);
+    _historicalLoaded.add(age);
   }
-  return changed;
+  return results.some(r => r.arr.length > 0);
 }
 
 // politicians.json — 국회 외 인물 + 정당 지도부 metadata
@@ -1003,19 +1000,39 @@ function renderGroupPage(gid) {
       </div>
     `).join('');
   } else {
-    // type별 sub-section
+    // type별 sub-section (역대 의원은 age별로 더 세분화)
     const byType = new Map();
     for (const m of members) {
-      const t = m._type || 'misc';
+      let t = m._type || 'misc';
+      if (m._type === 'former_member' && m._age) t = `former_member_${m._age}`;
       if (!byType.has(t)) byType.set(t, []);
       byType.get(t).push(m);
     }
-    const order = TYPE_ORDER[gid] || [...byType.keys()];
+    // 정렬: TYPE_ORDER 기반 + 역대 의원은 대수 큰 순 (최근부터)
+    const baseOrder = TYPE_ORDER[gid] || [];
+    let order = [];
+    for (const t of baseOrder) {
+      if (t === 'former_member') {
+        // age별 키들을 큰 순으로
+        const ages = [...byType.keys()].filter(k => k.startsWith('former_member_'))
+          .map(k => parseInt(k.split('_')[2], 10))
+          .sort((a, b) => b - a);
+        for (const a of ages) order.push(`former_member_${a}`);
+      } else if (byType.has(t)) {
+        order.push(t);
+      }
+    }
+    // 누락된 type 추가
+    for (const t of byType.keys()) {
+      if (!order.includes(t)) order.push(t);
+    }
     body = order.filter(t => byType.has(t)).map(t => {
       const arr = byType.get(t);
+      let label = TYPE_GROUP_LABEL[t] || t;
+      if (t.startsWith('former_member_')) label = `제${t.split('_')[2]}대 국회의원`;
       return `
         <div class="sub-section">
-          <h2>${escapeHtml(TYPE_GROUP_LABEL[t] || t)} <span class="cnt">${arr.length}명</span></h2>
+          <h2>${escapeHtml(label)} <span class="cnt">${arr.length}명</span></h2>
           <div class="grid">${arr.map(memberCardHTML).join('')}</div>
         </div>
       `;
@@ -1395,9 +1412,9 @@ function route() {
     window.scrollTo(0, 0);
     const visible = state.members.filter(m => (m._group || 'legislative') === gid && !state.photos.has(m.MONA_CD)).slice(0, 30);
     prefetchPhotos(visible, 3);
-    // historical 그룹: 위키에서 역대 의원 lazy load
+    // historical 그룹: 위키에서 13~21대 역대 의원 lazy load (병렬)
     if (gid === 'historical') {
-      ensureHistoricalAssemblies([21, 20]).then(changed => {
+      ensureHistoricalAssemblies([21, 20, 19, 18, 17, 16, 15, 14, 13]).then(changed => {
         if (changed && location.hash === `#/group/historical`) route();
       });
     }
