@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Politik · 한눈국회</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E🏛%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #fafafa;
+    --bg-card: #ffffff;
+    --bg-elev: #f4f5f7;
+    --border: #e5e7eb;
+    --border-strong: #d1d5db;
+    --text: #111827;
+    --text-2: #4b5563;
+    --dim: #9ca3af;
+    --accent: #111827;
+    --link: #1e40af;
+    --ok: #059669;
+    --warn: #d97706;
+
+    /* 정당 색 */
+    --party-민주: #004EA2;
+    --party-국힘: #E61E2B;
+    --party-조국: #082B5C;
+    --party-개혁: #FF7920;
+    --party-진보: #D6001C;
+    --party-미래: #00B5E2;
+    --party-기사자: #FED73B;
+    --party-사회민주: #43A5DC;
+    --party-기타: #6b7280;
+    --party-무소속: #6b7280;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ============ Header ============ */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+  }
+  .h-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px; align-items: center;
+  }
+  .brand {
+    font-size: 18px; font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+  }
+  .brand-logo {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #111827, #4b5563);
+    border-radius: 6px;
+    color: #fff; display: grid; place-items: center;
+    font-size: 14px; font-weight: 900;
+  }
+  .brand-sub {
+    font-size: 11px; color: var(--dim);
+    font-weight: 500; letter-spacing: 0.5px;
+  }
+  .search-wrap {
+    position: relative; max-width: 480px;
+    width: 100%;
+  }
+  .search {
+    width: 100%; padding: 9px 14px 9px 36px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    font: inherit; font-size: 13px;
+    background: var(--bg-card);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(17,24,39,0.08); }
+  .search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--dim); pointer-events: none;
+  }
+  .nav-stats {
+    display: flex; gap: 16px; font-size: 11px; color: var(--dim);
+  }
+  .nav-stats b { color: var(--text); font-weight: 600; font-size: 13px; }
+
+  /* ============ Filters ============ */
+  .filter-bar {
+    max-width: 1280px; margin: 0 auto;
+    padding: 14px 24px 0;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label {
+    font-size: 11px; color: var(--dim);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-right: 4px;
+  }
+  .chip {
+    padding: 5px 11px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-card);
+    border-radius: 20px;
+    font: inherit; font-size: 12px;
+    color: var(--text-2);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .chip .cnt { color: var(--dim); font-size: 10px; }
+  .chip.active .cnt { color: rgba(255,255,255,0.6); }
+
+  /* ============ Main ============ */
+  main { max-width: 1280px; margin: 0 auto; padding: 20px 24px 80px; }
+  .result-meta {
+    color: var(--dim); font-size: 12px;
+    margin: 6px 0 18px; letter-spacing: 0.3px;
+  }
+  .result-meta b { color: var(--text); font-weight: 600; }
+
+  /* ============ Grid ============ */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border-color: var(--border-strong);
+  }
+  .card-bar {
+    height: 4px; width: 100%;
+    background: var(--party-기타);
+  }
+  .card-body { padding: 14px 14px 12px; flex: 1; display: flex; gap: 12px; }
+  .avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--bg-elev);
+    display: grid; place-items: center;
+    font-size: 18px; font-weight: 600;
+    color: var(--text-2);
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .card-meta { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 3px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .card-sub {
+    font-size: 11px; color: var(--text-2);
+    line-height: 1.4;
+  }
+  .card-party {
+    font-weight: 600; font-size: 11px;
+    margin-bottom: 2px;
+  }
+  .card-foot {
+    padding: 8px 14px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--dim);
+    letter-spacing: 0.3px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1px 6px;
+    background: var(--bg-elev);
+    border-radius: 3px;
+    font-size: 9px;
+    color: var(--text-2);
+    font-weight: 600;
+  }
+
+  /* ============ Detail ============ */
+  .detail {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .d-hero {
+    padding: 32px 32px 28px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px; align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .d-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: var(--party-기타);
+  }
+  .d-avatar {
+    width: 110px; height: 110px; border-radius: 50%;
+    background: var(--bg-elev);
+    display: grid; place-items: center;
+    font-size: 44px; font-weight: 600;
+    color: var(--text-2);
+    border: 2px solid var(--border);
+  }
+  .d-info h1 {
+    font-size: 30px; font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 4px;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .d-info h1 .hj {
+    font-size: 16px; color: var(--dim); font-weight: 400;
+  }
+  .d-info .d-party {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+  }
+  .d-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .d-stat {
+    background: var(--bg-elev);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .d-stat-label {
+    font-size: 10px; color: var(--dim);
+    letter-spacing: 0.5px; text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .d-stat-value {
+    font-size: 15px; font-weight: 600; color: var(--text);
+  }
+  .d-body { padding: 28px 32px; }
+  .d-section { margin-bottom: 32px; }
+  .d-section h2 {
+    font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--dim); font-weight: 600;
+    padding-bottom: 8px; margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .d-list { display: grid; gap: 8px; font-size: 13px; }
+  .d-row { display: grid; grid-template-columns: 100px 1fr; gap: 16px; }
+  .d-row .k { color: var(--dim); font-size: 12px; }
+  .d-row .v { color: var(--text); }
+  .d-career {
+    font-size: 13px; line-height: 1.7;
+    color: var(--text-2);
+    white-space: pre-wrap;
+  }
+  .d-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text-2); font-size: 13px;
+    margin-bottom: 18px;
+    cursor: pointer;
+  }
+  .d-back:hover { color: var(--text); }
+  .colleagues {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+  }
+  .col-card {
+    padding: 10px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    display: flex; gap: 10px; align-items: center;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .col-card:hover { background: var(--border); }
+  .col-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--bg-card);
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 600;
+  }
+  .col-info { min-width: 0; flex: 1; }
+  .col-name { font-size: 12px; font-weight: 600; }
+  .col-party { font-size: 10px; color: var(--dim); }
+
+  /* ============ Loading / Empty ============ */
+  .loading, .empty {
+    padding: 80px 20px; text-align: center;
+    color: var(--dim); font-size: 13px;
+  }
+  .loading-spinner {
+    display: inline-block; width: 20px; height: 20px;
+    border: 2px solid var(--border); border-top-color: var(--text);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin-right: 10px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    text-align: center; font-size: 11px;
+    color: var(--dim);
+    margin-top: 60px;
+  }
+  footer a { color: var(--text-2); }
+
+  @media (max-width: 600px) {
+    .h-inner { grid-template-columns: 1fr; gap: 10px; }
+    .nav-stats { justify-content: flex-end; }
+    .d-hero { grid-template-columns: 1fr; padding: 24px 20px; }
+    .d-avatar { width: 80px; height: 80px; font-size: 32px; }
+    .d-info h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="h-inner">
+    <div class="brand" id="brand">
+      <span class="brand-logo">P</span>
+      <div>
+        Politik
+        <div class="brand-sub">한눈국회 · v0.1</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search" id="search" placeholder="이름·지역구·정당으로 검색...">
+    </div>
+    <div class="nav-stats">
+      <div><b id="stat-total">—</b> 의원</div>
+      <div><b id="stat-shown">—</b> 표시</div>
+    </div>
+  </div>
+</header>
+<div class="filter-bar" id="filter-bar"></div>
+
+<main id="view">
+  <div class="loading"><span class="loading-spinner"></span>국회 데이터 불러오는 중…</div>
+</main>
+
+<footer>
+  데이터: <a href="https://open.assembly.go.kr" target="_blank">국회 OPEN API</a> · 위키미디어 ·
+  마지막 동기화 <span id="last-sync">—</span> ·
+  본 사이트는 객관 수치만 표시하며 평가/의견을 포함하지 않습니다.
+</footer>
+
+<script>
+'use strict';
+
+// ============================================================
+// Data sources
+// 키 없이 API 호출 시 pSize 최대 5 → 페이지네이션
+// ============================================================
+const API_BASE = 'https://open.assembly.go.kr/portal/openapi/nwvrqwxyaytdsfvhu';
+const PSIZE = 5;
+const CACHE_KEY = 'politik:members:v1';
+const CACHE_TTL = 24 * 3600 * 1000; // 24h
+
+// 정당명 → 색 변수 매핑
+const PARTY_COLOR = {
+  '더불어민주당': 'var(--party-민주)',
+  '국민의힘':      'var(--party-국힘)',
+  '조국혁신당':    'var(--party-조국)',
+  '개혁신당':      'var(--party-개혁)',
+  '진보당':        'var(--party-진보)',
+  '새로운미래':    'var(--party-미래)',
+  '기본소득당':    'var(--party-기사자)',
+  '사회민주당':    'var(--party-사회민주)',
+  '무소속':        'var(--party-무소속)',
+};
+const partyColor = name => PARTY_COLOR[name] || 'var(--party-기타)';
+
+// ============================================================
+// Load + cache
+// ============================================================
+async function fetchPage(pIndex) {
+  const r = await fetch(`${API_BASE}?Type=json&pIndex=${pIndex}&pSize=${PSIZE}`);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  return {
+    rows: j?.nwvrqwxyaytdsfvhu?.[1]?.row || [],
+    total: j?.nwvrqwxyaytdsfvhu?.[0]?.head?.[0]?.list_total_count || 0,
+  };
+}
+
+async function loadMembers() {
+  // try cache
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (raw) {
+      const c = JSON.parse(raw);
+      if (Date.now() - c.t < CACHE_TTL) {
+        return { data: c.data, fromCache: true, syncedAt: c.t };
+      }
+    }
+  } catch {}
+  // First page to learn total count
+  const first = await fetchPage(1);
+  const totalCount = first.total || first.rows.length;
+  const pages = Math.ceil(totalCount / PSIZE);
+  // Fetch remaining pages in parallel
+  const rest = pages > 1
+    ? await Promise.all(Array.from({ length: pages - 1 }, (_, i) => fetchPage(i + 2).then(p => p.rows).catch(() => [])))
+    : [];
+  const all = [first.rows, ...rest].flat();
+  // Dedupe by MONA_CD
+  const seen = new Set();
+  const data = all.filter(m => {
+    if (!m.MONA_CD || seen.has(m.MONA_CD)) return false;
+    seen.add(m.MONA_CD); return true;
+  });
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch {}
+  return { data, fromCache: false, syncedAt: Date.now() };
+}
+
+// ============================================================
+// State
+// ============================================================
+const state = {
+  members: [],
+  partyCounts: new Map(),
+  filterParty: null,
+  search: '',
+};
+
+// ============================================================
+// Render: Grid
+// ============================================================
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+}
+function termAbbr(reele) {
+  if (!reele) return '';
+  return reele.replace(/^([가-힣])선$/, '$1선');
+}
+function regionShort(orig) {
+  if (!orig) return '';
+  if (orig === '비례대표') return '비례';
+  return orig.replace(/[광역시도시군구]/g, '').slice(0, 10) || orig;
+}
+
+function renderGrid() {
+  const q = state.search.trim().toLowerCase();
+  const filtered = state.members.filter(m => {
+    if (state.filterParty && m.POLY_NM !== state.filterParty) return false;
+    if (!q) return true;
+    return (
+      (m.HG_NM || '').toLowerCase().includes(q) ||
+      (m.ORIG_NM || '').toLowerCase().includes(q) ||
+      (m.POLY_NM || '').toLowerCase().includes(q) ||
+      (m.CMIT_NM || '').toLowerCase().includes(q)
+    );
+  });
+
+  document.getElementById('stat-shown').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    return '<div class="empty">검색 결과가 없습니다.</div>';
+  }
+
+  const cards = filtered.map(m => {
+    const color = partyColor(m.POLY_NM);
+    const initial = (m.HG_NM || '?').charAt(0);
+    return `
+      <div class="card" data-id="${escapeHtml(m.MONA_CD)}">
+        <div class="card-bar" style="background:${color}"></div>
+        <div class="card-body">
+          <div class="avatar">${escapeHtml(initial)}</div>
+          <div class="card-meta">
+            <div class="card-name">${escapeHtml(m.HG_NM)}</div>
+            <div class="card-party" style="color:${color}">${escapeHtml(m.POLY_NM || '—')}</div>
+            <div class="card-sub">${escapeHtml(m.ORIG_NM || '—')}</div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span>${escapeHtml(m.REELE_GBN_NM || '')}</span>
+          <span class="badge">${escapeHtml(m.CMIT_NM || '비위원')}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="result-meta"><b>${filtered.length}</b>명 표시 (전체 <b>${state.members.length}</b>명)</div>
+    <div class="grid">${cards}</div>
+  `;
+}
+
+// ============================================================
+// Render: Detail
+// ============================================================
+function renderDetail(id) {
+  const m = state.members.find(x => x.MONA_CD === id);
+  if (!m) return '<div class="empty">해당 의원을 찾을 수 없습니다.</div>';
+
+  const color = partyColor(m.POLY_NM);
+  const initial = (m.HG_NM || '?').charAt(0);
+  const bornYear = (m.BTH_DATE || '').slice(0, 4);
+  const age = bornYear ? new Date().getFullYear() - parseInt(bornYear, 10) : '—';
+
+  // 동료 (같은 상임위)
+  const colleagues = state.members.filter(x =>
+    x.MONA_CD !== m.MONA_CD &&
+    x.CMIT_NM === m.CMIT_NM &&
+    m.CMIT_NM
+  ).slice(0, 12);
+
+  const colleaguesHtml = colleagues.length ? `
+    <div class="d-section">
+      <h2>같은 상임위 (${escapeHtml(m.CMIT_NM)}) · ${colleagues.length}명</h2>
+      <div class="colleagues">
+        ${colleagues.map(c => `
+          <div class="col-card" data-id="${escapeHtml(c.MONA_CD)}">
+            <div class="col-avatar" style="color:${partyColor(c.POLY_NM)}">${escapeHtml((c.HG_NM||'?').charAt(0))}</div>
+            <div class="col-info">
+              <div class="col-name">${escapeHtml(c.HG_NM)}</div>
+              <div class="col-party">${escapeHtml(c.POLY_NM || '—')}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  return `
+    <div class="d-back" id="back-btn">← 의원 목록</div>
+    <div class="detail">
+      <div class="d-hero">
+        <div class="d-bar" style="background:${color}"></div>
+        <div class="d-avatar">${escapeHtml(initial)}</div>
+        <div class="d-info">
+          <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span></h1>
+          <div class="d-party" style="color:${color}">${escapeHtml(m.POLY_NM || '—')}</div>
+          <div class="d-grid">
+            <div class="d-stat"><div class="d-stat-label">지역구</div><div class="d-stat-value">${escapeHtml(m.ORIG_NM || '—')}</div></div>
+            <div class="d-stat"><div class="d-stat-label">선거구분</div><div class="d-stat-value">${escapeHtml(m.ELECT_GBN_NM || '—')}</div></div>
+            <div class="d-stat"><div class="d-stat-label">선수</div><div class="d-stat-value">${escapeHtml(m.REELE_GBN_NM || '—')}</div></div>
+            <div class="d-stat"><div class="d-stat-label">생년 (만)</div><div class="d-stat-value">${bornYear || '—'} (${age})</div></div>
+            <div class="d-stat"><div class="d-stat-label">성별</div><div class="d-stat-value">${escapeHtml(m.SEX_GBN_NM || '—')}</div></div>
+            <div class="d-stat"><div class="d-stat-label">상임위</div><div class="d-stat-value">${escapeHtml(m.CMIT_NM || '—')}</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="d-body">
+        <div class="d-section">
+          <h2>연락처 · 사무실</h2>
+          <div class="d-list">
+            <div class="d-row"><span class="k">의원회관</span><span class="v">${escapeHtml(m.ASSEM_ADDR || '—')}</span></div>
+            <div class="d-row"><span class="k">전화</span><span class="v">${escapeHtml(m.TEL_NO || '—')}</span></div>
+            <div class="d-row"><span class="k">이메일</span><span class="v">${m.E_MAIL ? `<a href="mailto:${escapeHtml(m.E_MAIL)}">${escapeHtml(m.E_MAIL)}</a>` : '—'}</span></div>
+            <div class="d-row"><span class="k">홈페이지</span><span class="v">${m.HOMEPAGE ? `<a href="${escapeHtml(m.HOMEPAGE)}" target="_blank" rel="noopener">${escapeHtml(m.HOMEPAGE)}</a>` : '—'}</span></div>
+          </div>
+        </div>
+        ${m.STAFF || m.SECRETARY || m.SECRETARY2 ? `
+        <div class="d-section">
+          <h2>보좌진</h2>
+          <div class="d-list">
+            ${m.STAFF      ? `<div class="d-row"><span class="k">보좌관</span><span class="v">${escapeHtml(m.STAFF)}</span></div>` : ''}
+            ${m.SECRETARY  ? `<div class="d-row"><span class="k">선임비서관</span><span class="v">${escapeHtml(m.SECRETARY)}</span></div>` : ''}
+            ${m.SECRETARY2 ? `<div class="d-row"><span class="k">비서</span><span class="v">${escapeHtml(m.SECRETARY2)}</span></div>` : ''}
+          </div>
+        </div>` : ''}
+        ${m.MEM_TITLE ? `
+        <div class="d-section">
+          <h2>약력</h2>
+          <div class="d-career">${escapeHtml(m.MEM_TITLE)}</div>
+        </div>` : ''}
+        ${colleaguesHtml}
+        <div class="d-section">
+          <h2>출처</h2>
+          <div class="d-list">
+            <div class="d-row"><span class="k">기본 정보</span><span class="v"><a href="https://open.assembly.go.kr" target="_blank">국회 OPEN API · 국회의원 인적사항</a></span></div>
+            <div class="d-row"><span class="k">위키</span><span class="v"><a href="https://ko.wikipedia.org/wiki/${encodeURIComponent(m.HG_NM)}" target="_blank">한국어 위키 검색 →</a></span></div>
+            <div class="d-row"><span class="k">의원 코드</span><span class="v" style="font-family:monospace;font-size:11px;color:var(--dim)">${escapeHtml(m.MONA_CD)}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// Filter bar (party chips)
+// ============================================================
+function renderFilters() {
+  state.partyCounts.clear();
+  for (const m of state.members) {
+    const p = m.POLY_NM || '무소속';
+    state.partyCounts.set(p, (state.partyCounts.get(p) || 0) + 1);
+  }
+  // sort by count desc
+  const parties = [...state.partyCounts.entries()].sort((a,b) => b[1] - a[1]);
+  const total = state.members.length;
+  const html = [
+    `<span class="filter-label">정당</span>`,
+    `<span class="chip ${state.filterParty === null ? 'active' : ''}" data-party="">전체 <span class="cnt">${total}</span></span>`,
+    ...parties.map(([p, n]) => `
+      <span class="chip ${state.filterParty === p ? 'active' : ''}" data-party="${escapeHtml(p)}">
+        <span class="dot" style="background:${partyColor(p)}"></span>
+        ${escapeHtml(p)} <span class="cnt">${n}</span>
+      </span>
+    `),
+  ].join('');
+  document.getElementById('filter-bar').innerHTML = html;
+  document.querySelectorAll('.chip').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = el.dataset.party;
+      state.filterParty = p || null;
+      renderFilters();
+      route();
+    });
+  });
+}
+
+// ============================================================
+// Routing
+// ============================================================
+function route() {
+  const view = document.getElementById('view');
+  const hash = location.hash || '';
+  const m = hash.match(/^#\/m\/(.+)$/);
+  if (m) {
+    view.innerHTML = renderDetail(decodeURIComponent(m[1]));
+    document.getElementById('back-btn')?.addEventListener('click', () => { location.hash = ''; });
+    document.querySelectorAll('.col-card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+    });
+    window.scrollTo(0, 0);
+  } else {
+    view.innerHTML = renderGrid();
+    document.querySelectorAll('.card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+    });
+  }
+}
+
+window.addEventListener('hashchange', route);
+document.getElementById('brand').addEventListener('click', () => { location.hash = ''; });
+document.getElementById('search').addEventListener('input', e => {
+  state.search = e.target.value;
+  if (!location.hash) route();
+});
+
+// ============================================================
+// Boot
+// ============================================================
+(async () => {
+  try {
+    const { data, syncedAt } = await loadMembers();
+    state.members = data;
+    document.getElementById('stat-total').textContent = data.length;
+    document.getElementById('last-sync').textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
+    renderFilters();
+    route();
+  } catch (e) {
+    document.getElementById('view').innerHTML = `<div class="empty">데이터 로드 실패: ${escapeHtml(e.message)}<br><br>국회 OPEN API가 일시적으로 응답하지 않거나, 브라우저 네트워크 문제일 수 있습니다.</div>`;
+  }
+})();
+</script>
+</body>
+</html>
