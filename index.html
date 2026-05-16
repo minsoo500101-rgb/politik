@@ -378,6 +378,16 @@
   }
   .d-info .d-party {
     font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  }
+  .role-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid currentColor;
+    border-radius: 11px;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.3px;
+    background: rgba(0,0,0,0.02);
   }
   .d-grid {
     display: grid;
@@ -633,12 +643,14 @@ async function loadMembers() {
   return { data, fromCache: false, syncedAt: Date.now() };
 }
 
-// politicians.json — 국회 외 인물 (대통령·시도지사·사법부 등)
+// politicians.json — 국회 외 인물 + 정당 지도부 metadata
+let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 async function loadExtraPoliticians() {
   try {
     const r = await fetch('data/politicians.json?v=' + Date.now());
     if (!r.ok) return [];
     const j = await r.json();
+    PARTY_ROLES = j.party_roles || {};
     return (j.people || []).map(p => ({
       MONA_CD: p.id,
       HG_NM: p.name_ko,
@@ -1059,6 +1071,14 @@ function renderDetail(id) {
     ? `<img src="${escapeHtml(photo.thumb)}" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">`
     : escapeHtml(initial);
 
+  // 정당 직책 확인 (mp_name 일치)
+  const partyRolesForThis = [];
+  if (m.POLY_NM && PARTY_ROLES[m.POLY_NM]) {
+    for (const r of PARTY_ROLES[m.POLY_NM]) {
+      if (r.mp_name === m.HG_NM) partyRolesForThis.push(r);
+    }
+  }
+
   // 동료 (같은 상임위)
   const colleagues = state.members.filter(x =>
     x.MONA_CD !== m.MONA_CD &&
@@ -1116,7 +1136,10 @@ function renderDetail(id) {
         <div class="d-avatar">${dAvatarInner}</div>
         <div class="d-info">
           <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span></h1>
-          <div class="d-party" style="color:${color}">${escapeHtml(m.POLY_NM || '—')}</div>
+          <div class="d-party" style="color:${color}">
+            ${escapeHtml(m.POLY_NM || '—')}
+            ${partyRolesForThis.map(r => `<span class="role-badge" style="border-color:${color};color:${color}">${escapeHtml(r.role)}</span>`).join('')}
+          </div>
           <div class="d-grid">
             <div class="d-stat"><div class="d-stat-label">지역구</div><div class="d-stat-value">${escapeHtml(m.ORIG_NM || '—')}</div></div>
             <div class="d-stat"><div class="d-stat-label">선거구분</div><div class="d-stat-value">${escapeHtml(m.ELECT_GBN_NM || '—')}</div></div>
