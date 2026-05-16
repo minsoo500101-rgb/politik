@@ -305,6 +305,16 @@
   .col-info { min-width: 0; flex: 1; }
   .col-name { font-size: 12px; font-weight: 600; }
   .col-party { font-size: 10px; color: var(--dim); }
+  .bill-row {
+    display: grid; grid-template-columns: 90px 1fr 90px; gap: 12px;
+    align-items: baseline; padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .bill-row:last-child { border-bottom: 0; }
+  .bill-date { color: var(--dim); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .bill-name { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bill-result { font-size: 11px; font-weight: 600; text-align: right; }
 
   /* ============ Loading / Empty ============ */
   .loading, .empty {
@@ -374,13 +384,38 @@
 'use strict';
 
 // ============================================================
-// Data sources
-// 키 없이 API 호출 시 pSize 최대 5 → 페이지네이션
+// 국회 OPEN API — Service IDs (모두 KEY 필요)
 // ============================================================
-const API_BASE = 'https://open.assembly.go.kr/portal/openapi/nwvrqwxyaytdsfvhu';
-const PSIZE = 5;
-const CACHE_KEY = 'politik:members:v1';
+const API_KEY = '3aac055cce1641f2b5f1b9b359ec5957';
+const API_HOST = 'https://open.assembly.go.kr/portal/openapi';
+const SVC = {
+  members:        'nwvrqwxyaytdsfvhu', // 국회의원 인적사항 (현직)
+  committees:     'nktulghcadyhmiqxi', // 위원회 명단
+  bills:          'nzmimeepazxkubdpn', // 의안 정보 (AGE 필수)
+  bills_processed:'ncocpgfiaoituanbr', // 본회의 처리 의안 (AGE 필수)
+};
+const ASSEMBLY_AGE = 22;
+const CACHE_KEY_MEMBERS = 'politik:members:v2';
+const CACHE_KEY_BILLS   = 'politik:bills:v2';
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
+
+function apiUrl(serviceId, params = {}) {
+  const qs = new URLSearchParams({ KEY: API_KEY, Type: 'json', pIndex: '1', pSize: '1000', ...params });
+  return `${API_HOST}/${serviceId}?${qs}`;
+}
+async function fetchService(serviceId, params = {}) {
+  const r = await fetch(apiUrl(serviceId, params));
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  const root = j[serviceId];
+  if (!root) throw new Error('unexpected shape');
+  const result = root[0]?.head?.[0]?.RESULT;
+  if (result && result.CODE !== 'INFO-000') throw new Error(result.MESSAGE);
+  return {
+    rows: root[1]?.row || [],
+    total: root[0]?.head?.[0]?.list_total_count || 0,
+  };
+}
 
 // 정당명 → 색 변수 매핑
 const PARTY_COLOR = {
@@ -399,44 +434,48 @@ const partyColor = name => PARTY_COLOR[name] || 'var(--party-기타)';
 // ============================================================
 // Load + cache
 // ============================================================
-async function fetchPage(pIndex) {
-  const r = await fetch(`${API_BASE}?Type=json&pIndex=${pIndex}&pSize=${PSIZE}`);
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const j = await r.json();
-  return {
-    rows: j?.nwvrqwxyaytdsfvhu?.[1]?.row || [],
-    total: j?.nwvrqwxyaytdsfvhu?.[0]?.head?.[0]?.list_total_count || 0,
-  };
-}
-
 async function loadMembers() {
-  // try cache
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
+    const raw = localStorage.getItem(CACHE_KEY_MEMBERS);
     if (raw) {
       const c = JSON.parse(raw);
-      if (Date.now() - c.t < CACHE_TTL) {
-        return { data: c.data, fromCache: true, syncedAt: c.t };
-      }
+      if (Date.now() - c.t < CACHE_TTL) return { data: c.data, fromCache: true, syncedAt: c.t };
     }
   } catch {}
-  // First page to learn total count
-  const first = await fetchPage(1);
-  const totalCount = first.total || first.rows.length;
-  const pages = Math.ceil(totalCount / PSIZE);
-  // Fetch remaining pages in parallel
-  const rest = pages > 1
-    ? await Promise.all(Array.from({ length: pages - 1 }, (_, i) => fetchPage(i + 2).then(p => p.rows).catch(() => [])))
-    : [];
-  const all = [first.rows, ...rest].flat();
-  // Dedupe by MONA_CD
+  // 키 있으면 1회 호출로 전체
+  const { rows } = await fetchService(SVC.members);
   const seen = new Set();
-  const data = all.filter(m => {
+  const data = rows.filter(m => {
     if (!m.MONA_CD || seen.has(m.MONA_CD)) return false;
     seen.add(m.MONA_CD); return true;
   });
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch {}
+  try { localStorage.setItem(CACHE_KEY_MEMBERS, JSON.stringify({ t: Date.now(), data })); } catch {}
   return { data, fromCache: false, syncedAt: Date.now() };
+}
+
+// 본회의 처리 의안 (22대) — 의원/위원회 페이지에서 사용
+async function loadProcessedBills() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_BILLS);
+    if (raw) {
+      const c = JSON.parse(raw);
+      if (Date.now() - c.t < CACHE_TTL) return c.data;
+    }
+  } catch {}
+  // 데이터가 ~1.6K 건 → pSize 1000으로 2 페이지면 충분
+  const p1 = await fetchService(SVC.bills_processed, { AGE: ASSEMBLY_AGE, pIndex: 1, pSize: 1000 });
+  let all = p1.rows.slice();
+  if (p1.total > 1000) {
+    const pages = Math.ceil(p1.total / 1000);
+    const more = await Promise.all(
+      Array.from({length: pages - 1}, (_, i) =>
+        fetchService(SVC.bills_processed, { AGE: ASSEMBLY_AGE, pIndex: i + 2, pSize: 1000 }).then(r => r.rows).catch(() => [])
+      )
+    );
+    all = all.concat(more.flat());
+  }
+  try { localStorage.setItem(CACHE_KEY_BILLS, JSON.stringify({ t: Date.now(), data: all })); } catch {}
+  return all;
 }
 
 // ============================================================
@@ -444,9 +483,20 @@ async function loadMembers() {
 // ============================================================
 const state = {
   members: [],
+  bills: [],
+  billsByCommittee: new Map(), // 위원회명 -> 처리 법안 배열
   partyCounts: new Map(),
   filterParty: null,
   search: '',
+};
+
+const PROC_RESULT_COLOR = {
+  '원안가결': 'var(--ok)',
+  '수정가결': 'var(--ok)',
+  '대안반영폐기': 'var(--dim)',
+  '부결':     '#c0392b',
+  '폐기':     '#c0392b',
+  '철회':     'var(--dim)',
 };
 
 // ============================================================
@@ -548,6 +598,31 @@ function renderDetail(id) {
     </div>
   ` : '';
 
+  // 위원회별 본회의 처리 법안
+  const cmtBills = m.CMIT_NM ? (state.billsByCommittee.get(m.CMIT_NM) || []) : [];
+  const passed = cmtBills.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length;
+  const rejected = cmtBills.filter(b => /부결|폐기/.test(b.PROC_RESULT_CD || '')).length;
+  const billsHtml = cmtBills.length ? `
+    <div class="d-section">
+      <h2>${escapeHtml(m.CMIT_NM)}가 22대에 본회의 처리 — ${cmtBills.length}건</h2>
+      <div class="d-grid" style="margin-bottom:14px;">
+        <div class="d-stat"><div class="d-stat-label">가결</div><div class="d-stat-value" style="color:var(--ok)">${passed}</div></div>
+        <div class="d-stat"><div class="d-stat-label">부결·폐기</div><div class="d-stat-value" style="color:#c0392b">${rejected}</div></div>
+        <div class="d-stat"><div class="d-stat-label">기타</div><div class="d-stat-value">${cmtBills.length - passed - rejected}</div></div>
+      </div>
+      <div class="d-list">
+        ${cmtBills.slice(0, 10).map(b => `
+          <div class="bill-row">
+            <div class="bill-date">${escapeHtml((b.PROC_DT || '').slice(0,10))}</div>
+            <div class="bill-name">${escapeHtml(b.BILL_NAME || b.BILL_NM || '')}</div>
+            <div class="bill-result" style="color:${PROC_RESULT_COLOR[b.PROC_RESULT_CD] || 'var(--text-2)'}">${escapeHtml(b.PROC_RESULT_CD || '—')}</div>
+          </div>
+        `).join('')}
+      </div>
+      ${cmtBills.length > 10 ? `<div style="font-size:11px;color:var(--dim);margin-top:8px;text-align:right">…외 ${cmtBills.length - 10}건</div>` : ''}
+    </div>
+  ` : '';
+
   return `
     <div class="d-back" id="back-btn">← 의원 목록</div>
     <div class="detail">
@@ -591,6 +666,7 @@ function renderDetail(id) {
           <h2>약력</h2>
           <div class="d-career">${escapeHtml(m.MEM_TITLE)}</div>
         </div>` : ''}
+        ${billsHtml}
         ${colleaguesHtml}
         <div class="d-section">
           <h2>출처</h2>
@@ -678,6 +754,22 @@ document.getElementById('search').addEventListener('input', e => {
     document.getElementById('last-sync').textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
     renderFilters();
     route();
+    // 의안은 백그라운드 로드 (홈 표시 후)
+    loadProcessedBills().then(bills => {
+      state.bills = bills;
+      state.billsByCommittee = new Map();
+      for (const b of bills) {
+        const c = b.CURR_COMMITTEE || '미상';
+        if (!state.billsByCommittee.has(c)) state.billsByCommittee.set(c, []);
+        state.billsByCommittee.get(c).push(b);
+      }
+      // 정렬 (최신순)
+      for (const arr of state.billsByCommittee.values()) {
+        arr.sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+      }
+      // 상세 페이지 중이면 재렌더
+      if (location.hash.startsWith('#/m/')) route();
+    }).catch(e => console.warn('bills load failed:', e.message));
   } catch (e) {
     document.getElementById('view').innerHTML = `<div class="empty">데이터 로드 실패: ${escapeHtml(e.message)}<br><br>국회 OPEN API가 일시적으로 응답하지 않거나, 브라우저 네트워크 문제일 수 있습니다.</div>`;
   }
