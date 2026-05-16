@@ -461,6 +461,86 @@
     .donut-wrap { grid-template-columns: 1fr; justify-items: center; }
   }
 
+  /* Stats section */
+  .stats-section {
+    margin-top: 24px;
+    padding: 28px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .stats-head h2 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .stats-sub { font-size: 12px; color: var(--dim); margin-bottom: 18px; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    background: var(--bg-elev);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .stat-card-wide { grid-column: 1 / -1; }
+  .stat-card-label {
+    font-size: 11px; color: var(--dim);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .stat-card-value {
+    font-size: 38px; font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1; margin-bottom: 6px;
+    color: var(--text);
+  }
+  .stat-card-value .unit {
+    font-size: 16px; font-weight: 500; color: var(--text-2);
+    margin-left: 4px;
+  }
+  .stat-card-detail {
+    font-size: 11px; color: var(--text-2);
+  }
+  .stat-card-detail b { font-weight: 700; color: var(--text); }
+  .stat-card-rows { display: grid; gap: 10px; margin-top: 4px; }
+  .stat-row-item {
+    display: grid; grid-template-columns: 14px 30px 1fr auto;
+    align-items: center; gap: 10px;
+    font-size: 14px;
+  }
+  .stat-row-item b { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
+  .stat-row-item .sx-lbl { color: var(--text-2); }
+  .stat-row-item .pct {
+    color: var(--dim); font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    min-width: 50px; text-align: right;
+  }
+  .sex-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .bar-chart { display: grid; gap: 6px; }
+  .bar-row {
+    display: grid; grid-template-columns: 80px 1fr 50px;
+    align-items: center; gap: 12px;
+    font-size: 12px;
+  }
+  .bar-label { color: var(--text-2); font-weight: 600; }
+  .bar-wrap {
+    height: 14px; background: var(--bg-card);
+    border-radius: 4px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .bar {
+    height: 100%; background: var(--text);
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  }
+  .bar-count {
+    color: var(--text); font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  @media (max-width: 720px) {
+    .stats-grid { grid-template-columns: 1fr; }
+  }
+
   /* Group page header */
   .group-header {
     padding: 8px 0 18px;
@@ -746,6 +826,7 @@ const ASSEMBLY_AGE = 22;
 const CACHE_KEY_MEMBERS = 'politik:members:v2';
 const CACHE_KEY_BILLS   = 'politik:bills:v2';
 const CACHE_KEY_PHOTOS  = 'politik:photos:v3';
+const CACHE_KEY_WIKIMAP = 'politik:wikimap:v1';
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
 
 // 통합 schema 변환
@@ -889,6 +970,38 @@ async function ensureHistoricalAssemblies(ages = []) {
     _historicalLoaded.add(age);
   }
   return results.some(r => r.arr.length > 0);
+}
+
+// 위키 슬러그 자동 매핑: 22대·21대 카테고리 → "이름 → 정확한 위키 슬러그"
+// 동명이인 disambiguation (예: "김상훈" → "김상훈_(1963년)") 자동 처리.
+let WIKI_OVERRIDES = {}; // HG_NM → wiki slug
+async function loadWikiOverrides() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_WIKIMAP);
+    if (raw) {
+      const c = JSON.parse(raw);
+      if (Date.now() - c.t < 7*24*3600*1000) { WIKI_OVERRIDES = c.data; return; }
+    }
+  } catch {}
+  const cats = [
+    'Category:대한민국의_제22대_국회의원',
+    'Category:대한민국의_제21대_국회의원',
+  ];
+  const map = {};
+  await Promise.all(cats.map(async cat => {
+    try {
+      const url = `https://ko.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=${encodeURIComponent(cat)}&cmlimit=500&format=json&origin=*`;
+      const j = await (await fetch(url)).json();
+      for (const m of j.query?.categorymembers || []) {
+        if (m.ns !== 0 || m.title.endsWith('목록') || m.title.endsWith('선거')) continue;
+        const base = m.title.replace(/_?\s?\(.+\)$/, '').trim();
+        const slug = m.title.replace(/\s/g, '_');
+        if (!map[base]) map[base] = slug;
+      }
+    } catch {}
+  }));
+  WIKI_OVERRIDES = map;
+  try { localStorage.setItem(CACHE_KEY_WIKIMAP, JSON.stringify({ t: Date.now(), data: map })); } catch {}
 }
 
 // politicians.json — 국회 외 인물 + 정당 지도부 metadata
@@ -1057,7 +1170,7 @@ async function ensurePhoto(member) {
   if (!member?.MONA_CD || !member?.HG_NM) return null;
   const existing = state.photos.get(member.MONA_CD);
   if (existing && (existing.extract != null || existing.miss)) return existing;
-  const wikiQuery = member._wiki || member.HG_NM;
+  const wikiQuery = member._wiki || WIKI_OVERRIDES[member.HG_NM] || member.HG_NM;
   const r = await findBio(wikiQuery);
   const entry = r ? { ...r, t: Date.now() } : { miss: true, t: Date.now() };
   state.photos.set(member.MONA_CD, entry);
@@ -1148,6 +1261,90 @@ function groupMembers() {
     groups[g].push(m);
   }
   return groups;
+}
+
+function renderStats() {
+  const mps = state.members.filter(m => m._group === 'legislative' || (!m._group && m.UNITS));
+  if (mps.length < 100) return '';
+
+  const now = new Date().getFullYear();
+  const ages = mps.map(m => {
+    const y = parseInt((m.BTH_DATE || '').slice(0,4), 10);
+    return y ? now - y : null;
+  }).filter(a => a != null);
+  const avgAge = ages.reduce((s,a) => s+a, 0) / ages.length;
+  const minAge = Math.min(...ages), maxAge = Math.max(...ages);
+
+  const sex = { 남: 0, 여: 0 };
+  for (const m of mps) {
+    if (m.SEX_GBN_NM === '남') sex.남++;
+    else if (m.SEX_GBN_NM === '여') sex.여++;
+  }
+  const totalSex = sex.남 + sex.여;
+
+  const terms = new Map();
+  for (const m of mps) terms.set(m.REELE_GBN_NM || '초선', (terms.get(m.REELE_GBN_NM || '초선') || 0) + 1);
+  const TERM_ORDER = ['초선','재선','3선','4선','5선','6선','7선','8선'];
+  const termArr = TERM_ORDER.filter(t => terms.has(t)).map(t => ({ t, c: terms.get(t) }));
+  const maxTerm = Math.max(...termArr.map(t => t.c));
+
+  const partyAge = new Map();
+  for (const m of mps) {
+    const y = parseInt((m.BTH_DATE || '').slice(0,4), 10);
+    if (!y) continue;
+    if (!partyAge.has(m.POLY_NM)) partyAge.set(m.POLY_NM, []);
+    partyAge.get(m.POLY_NM).push(now - y);
+  }
+  const partyAvg = [...partyAge.entries()]
+    .filter(([,arr]) => arr.length >= 3)
+    .map(([p, arr]) => ({ p, avg: arr.reduce((s,a) => s+a, 0) / arr.length, count: arr.length }))
+    .sort((a,b) => b.count - a.count);
+  const maxAvgAge = Math.max(...partyAvg.map(p => p.avg));
+
+  return `
+    <div class="stats-section">
+      <div class="stats-head">
+        <h2>22대 국회 통계</h2>
+        <div class="stats-sub">${mps.length}명 의원의 데이터 요약</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-label">평균 나이 (만)</div>
+          <div class="stat-card-value">${avgAge.toFixed(1)}<span class="unit">세</span></div>
+          <div class="stat-card-detail">최연소 <b>${minAge}</b> · 최고령 <b>${maxAge}</b></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">성별 분포</div>
+          <div class="stat-card-rows">
+            <div class="stat-row-item"><span class="sex-dot" style="background:#1e40af"></span><span class="sx-lbl">남</span><b>${sex.남}</b><span class="pct">${(sex.남/totalSex*100).toFixed(1)}%</span></div>
+            <div class="stat-row-item"><span class="sex-dot" style="background:#db2777"></span><span class="sx-lbl">여</span><b>${sex.여}</b><span class="pct">${(sex.여/totalSex*100).toFixed(1)}%</span></div>
+          </div>
+        </div>
+        <div class="stat-card stat-card-wide">
+          <div class="stat-card-label">선수 분포</div>
+          <div class="bar-chart">
+            ${termArr.map(t => `
+              <div class="bar-row">
+                <div class="bar-label">${escapeHtml(t.t)}</div>
+                <div class="bar-wrap"><div class="bar" style="width:${(t.c/maxTerm*100).toFixed(1)}%"></div></div>
+                <div class="bar-count">${t.c}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="stat-card stat-card-wide">
+          <div class="stat-card-label">정당별 평균 나이</div>
+          <div class="bar-chart">
+            ${partyAvg.slice(0, 6).map(p => `
+              <div class="bar-row">
+                <div class="bar-label" style="color:${partyColor(p.p)}">${escapeHtml(p.p)}</div>
+                <div class="bar-wrap"><div class="bar" style="width:${(p.avg/maxAvgAge*100).toFixed(1)}%; background:${partyColor(p.p)}"></div></div>
+                <div class="bar-count">${p.avg.toFixed(1)}세</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderPartyDonut() {
@@ -1282,6 +1479,7 @@ function renderHome() {
       </div>
       <div class="org-grid">${boxes}</div>
       ${renderPartyDonut()}
+      ${renderStats()}
     </div>
   `;
 }
@@ -1875,6 +2073,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
 // ============================================================
 (async () => {
   loadPhotoCache();
+  loadWikiOverrides(); // 백그라운드 — 첫 진입 시 위키 카테고리 fetch
   try {
     const { data, syncedAt } = await loadMembers();
     // 국회 외 인물 합치기 (대통령·시도지사·사법부 등)
