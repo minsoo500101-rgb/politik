@@ -1030,10 +1030,14 @@ function renderGroupPage(gid) {
       const arr = byType.get(t);
       let label = TYPE_GROUP_LABEL[t] || t;
       if (t.startsWith('former_member_')) label = `제${t.split('_')[2]}대 국회의원`;
+      // 역대 의원은 처음 50명만 표시 (성능)
+      const shown = t.startsWith('former_member_') ? arr.slice(0, 50) : arr;
+      const remainder = arr.length - shown.length;
       return `
         <div class="sub-section">
           <h2>${escapeHtml(label)} <span class="cnt">${arr.length}명</span></h2>
-          <div class="grid">${arr.map(memberCardHTML).join('')}</div>
+          <div class="grid">${shown.map(memberCardHTML).join('')}</div>
+          ${remainder > 0 ? `<div style="text-align:center;color:var(--dim);padding:12px;font-size:11px">…외 ${remainder}명 (이름순 첫 50명만 표시)</div>` : ''}
         </div>
       `;
     }).join('');
@@ -1412,10 +1416,13 @@ function route() {
     window.scrollTo(0, 0);
     const visible = state.members.filter(m => (m._group || 'legislative') === gid && !state.photos.has(m.MONA_CD)).slice(0, 30);
     prefetchPhotos(visible, 3);
-    // historical 그룹: 위키에서 13~21대 역대 의원 lazy load (병렬)
+    // historical 그룹: 2~21대 역대 의원 전부 lazy load (단계별 — 5천명 이상)
     if (gid === 'historical') {
       ensureHistoricalAssemblies([21, 20, 19, 18, 17, 16, 15, 14, 13]).then(changed => {
         if (changed && location.hash === `#/group/historical`) route();
+        ensureHistoricalAssemblies([12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]).then(c2 => {
+          if (c2 && location.hash === `#/group/historical`) route();
+        });
       });
     }
     return;
