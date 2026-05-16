@@ -168,7 +168,11 @@
     color: var(--text-2);
     flex-shrink: 0;
     border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
   }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .d-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
   .card-meta { flex: 1; min-width: 0; }
   .card-name {
     font-size: 15px; font-weight: 700;
@@ -226,6 +230,7 @@
     font-size: 44px; font-weight: 600;
     color: var(--text-2);
     border: 2px solid var(--border);
+    overflow: hidden;
   }
   .d-info h1 {
     font-size: 30px; font-weight: 800;
@@ -397,6 +402,7 @@ const SVC = {
 const ASSEMBLY_AGE = 22;
 const CACHE_KEY_MEMBERS = 'politik:members:v2';
 const CACHE_KEY_BILLS   = 'politik:bills:v2';
+const CACHE_KEY_PHOTOS  = 'politik:photos:v1';
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
 
 function apiUrl(serviceId, params = {}) {
@@ -484,11 +490,88 @@ async function loadProcessedBills() {
 const state = {
   members: [],
   bills: [],
-  billsByCommittee: new Map(), // 위원회명 -> 처리 법안 배열
+  billsByCommittee: new Map(),
   partyCounts: new Map(),
   filterParty: null,
   search: '',
+  photos: new Map(), // MONA_CD -> { thumb, title } or { miss:true }
 };
+
+// 영구 사진 캐시 (1주, 누적)
+function loadPhotoCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_PHOTOS);
+    if (!raw) return;
+    const c = JSON.parse(raw);
+    for (const [k, v] of Object.entries(c.data || {})) state.photos.set(k, v);
+  } catch {}
+}
+function savePhotoCache() {
+  try {
+    const obj = {};
+    for (const [k, v] of state.photos) obj[k] = v;
+    localStorage.setItem(CACHE_KEY_PHOTOS, JSON.stringify({ t: Date.now(), data: obj }));
+  } catch {}
+}
+
+// 위키미디어에서 인물 사진 찾기 (제목 일치 검증으로 노이즈 거름)
+async function findPortrait(hgnm) {
+  function titleMatches(pageTitle) {
+    if (!pageTitle) return false;
+    const t = pageTitle.trim();
+    return t === hgnm || t.startsWith(hgnm + ' (') || t.startsWith(hgnm + '_(');
+  }
+  // 1) 직접 페이지
+  try {
+    const url = `https://ko.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=thumbnail&pithumbsize=240&titles=${encodeURIComponent(hgnm)}&format=json&origin=*&redirects=1`;
+    const j = await (await fetch(url)).json();
+    for (const k of Object.keys(j.query?.pages || {})) {
+      const p = j.query.pages[k];
+      if (p.thumbnail?.source && titleMatches(p.title)) return { thumb: p.thumbnail.source, title: p.title };
+    }
+  } catch {}
+  // 2) 검색에서 제목 정확 일치한 페이지
+  try {
+    const url = `https://ko.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(hgnm + ' 정치인')}&gsrlimit=8&prop=pageimages&piprop=thumbnail&pithumbsize=240&format=json&origin=*`;
+    const j = await (await fetch(url)).json();
+    for (const k of Object.keys(j.query?.pages || {})) {
+      const p = j.query.pages[k];
+      if (p.thumbnail?.source && titleMatches(p.title)) return { thumb: p.thumbnail.source, title: p.title };
+    }
+  } catch {}
+  return null;
+}
+
+async function ensurePhoto(member) {
+  if (!member?.MONA_CD || !member?.HG_NM) return null;
+  if (state.photos.has(member.MONA_CD)) return state.photos.get(member.MONA_CD);
+  const r = await findPortrait(member.HG_NM);
+  const entry = r || { miss: true, t: Date.now() };
+  state.photos.set(member.MONA_CD, entry);
+  // throttled save
+  clearTimeout(savePhotoCache._t);
+  savePhotoCache._t = setTimeout(savePhotoCache, 1500);
+  return entry;
+}
+
+// 화면에 보이는 카드들의 사진 백그라운드 프리페치 (3 concurrent)
+async function prefetchPhotos(members, concurrency = 3) {
+  let i = 0;
+  async function worker() {
+    while (i < members.length) {
+      const idx = i++;
+      const m = members[idx];
+      if (!m || state.photos.has(m.MONA_CD)) continue;
+      try {
+        await ensurePhoto(m);
+        const cardImg = document.querySelector(`.card[data-id="${m.MONA_CD}"] .avatar img`);
+        const entry = state.photos.get(m.MONA_CD);
+        if (cardImg && entry?.thumb) cardImg.src = entry.thumb;
+      } catch {}
+    }
+  }
+  await Promise.all(Array.from({length: concurrency}, worker));
+}
 
 const PROC_RESULT_COLOR = {
   '원안가결': 'var(--ok)',
@@ -537,11 +620,15 @@ function renderGrid() {
   const cards = filtered.map(m => {
     const color = partyColor(m.POLY_NM);
     const initial = (m.HG_NM || '?').charAt(0);
+    const photo = state.photos.get(m.MONA_CD);
+    const avatar = (photo && photo.thumb)
+      ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">`
+      : escapeHtml(initial);
     return `
       <div class="card" data-id="${escapeHtml(m.MONA_CD)}">
         <div class="card-bar" style="background:${color}"></div>
         <div class="card-body">
-          <div class="avatar">${escapeHtml(initial)}</div>
+          <div class="avatar">${avatar}</div>
           <div class="card-meta">
             <div class="card-name">${escapeHtml(m.HG_NM)}</div>
             <div class="card-party" style="color:${color}">${escapeHtml(m.POLY_NM || '—')}</div>
@@ -573,6 +660,10 @@ function renderDetail(id) {
   const initial = (m.HG_NM || '?').charAt(0);
   const bornYear = (m.BTH_DATE || '').slice(0, 4);
   const age = bornYear ? new Date().getFullYear() - parseInt(bornYear, 10) : '—';
+  const photo = state.photos.get(m.MONA_CD);
+  const dAvatarInner = (photo && photo.thumb)
+    ? `<img src="${escapeHtml(photo.thumb)}" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">`
+    : escapeHtml(initial);
 
   // 동료 (같은 상임위)
   const colleagues = state.members.filter(x =>
@@ -628,7 +719,7 @@ function renderDetail(id) {
     <div class="detail">
       <div class="d-hero">
         <div class="d-bar" style="background:${color}"></div>
-        <div class="d-avatar">${escapeHtml(initial)}</div>
+        <div class="d-avatar">${dAvatarInner}</div>
         <div class="d-info">
           <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span></h1>
           <div class="d-party" style="color:${color}">${escapeHtml(m.POLY_NM || '—')}</div>
@@ -722,17 +813,36 @@ function route() {
   const hash = location.hash || '';
   const m = hash.match(/^#\/m\/(.+)$/);
   if (m) {
-    view.innerHTML = renderDetail(decodeURIComponent(m[1]));
+    const memberId = decodeURIComponent(m[1]);
+    view.innerHTML = renderDetail(memberId);
     document.getElementById('back-btn')?.addEventListener('click', () => { location.hash = ''; });
     document.querySelectorAll('.col-card').forEach(el => {
       el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
     });
     window.scrollTo(0, 0);
+    // 사진 없으면 비동기로 가져오고 재렌더
+    const member = state.members.find(x => x.MONA_CD === memberId);
+    if (member && !state.photos.has(member.MONA_CD)) {
+      ensurePhoto(member).then(() => {
+        if (location.hash.endsWith(memberId)) route();
+      });
+    }
+    // 같은 위원회 동료들의 사진도 백그라운드 프리페치
+    if (member?.CMIT_NM) {
+      const cols = state.members.filter(x => x.CMIT_NM === member.CMIT_NM && !state.photos.has(x.MONA_CD)).slice(0, 12);
+      prefetchPhotos(cols, 3);
+    }
   } else {
     view.innerHTML = renderGrid();
     document.querySelectorAll('.card').forEach(el => {
       el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
     });
+    // 처음 보이는 30명 사진 프리페치
+    const visible = state.members
+      .filter(m => !state.filterParty || m.POLY_NM === state.filterParty)
+      .filter(m => !state.photos.has(m.MONA_CD))
+      .slice(0, 30);
+    prefetchPhotos(visible, 3);
   }
 }
 
@@ -747,6 +857,7 @@ document.getElementById('search').addEventListener('input', e => {
 // Boot
 // ============================================================
 (async () => {
+  loadPhotoCache();
   try {
     const { data, syncedAt } = await loadMembers();
     state.members = data;
