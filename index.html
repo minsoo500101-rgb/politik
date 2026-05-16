@@ -495,20 +495,22 @@
     margin-bottom: 14px;
     line-height: 1.5;
   }
-  .d-wiki-extract {
-    font-size: 13px; color: var(--text); line-height: 1.75;
+  .d-bio-intro {
+    font-size: 13.5px; color: var(--text); line-height: 1.75;
     padding: 16px 18px;
     background: var(--bg-elev);
     border-left: 3px solid var(--accent);
     border-radius: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
+    letter-spacing: -0.1px;
   }
   .d-wiki-link {
     display: inline-block;
     font-size: 11px; color: var(--link);
-    margin-top: 4px;
+    margin-top: 8px;
     letter-spacing: 0.3px;
   }
+  .d-wiki-link:hover { text-decoration: underline; }
   .role-badge {
     display: inline-block;
     padding: 2px 8px;
@@ -677,7 +679,7 @@ const SVC = {
 const ASSEMBLY_AGE = 22;
 const CACHE_KEY_MEMBERS = 'politik:members:v2';
 const CACHE_KEY_BILLS   = 'politik:bills:v2';
-const CACHE_KEY_PHOTOS  = 'politik:photos:v2';
+const CACHE_KEY_PHOTOS  = 'politik:photos:v3';
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
 
 // 통합 schema 변환
@@ -843,7 +845,7 @@ async function loadExtraPoliticians() {
       ELECT_GBN_NM: p.type_label || '',
       BTH_DATE: '',
       SEX_GBN_NM: '',
-      MEM_TITLE: (p.role || '') + (p.term_start ? `\n임기: ${p.term_start} ~ ${p.term_end || '재임 중'}` : ''),
+      MEM_TITLE: (p.career || '') + (p.career ? '\n\n' : '') + (p.role || '') + (p.term_start ? `\n임기: ${p.term_start} ~ ${p.term_end || '재임 중'}` : ''),
       TEL_NO: '', E_MAIL: '', HOMEPAGE: '', ASSEM_ADDR: '',
       STAFF: '', SECRETARY: '', SECRETARY2: '',
       UNITS: '',
@@ -1527,12 +1529,6 @@ function renderDetail(id) {
         </div>
       </div>
       <div class="d-body">
-        ${wikiExtract ? `
-        <div class="d-section">
-          <h2>위키미디어 요약</h2>
-          <div class="d-wiki-extract">${escapeHtml(wikiExtract)}</div>
-          <a href="${escapeHtml(wikiUrl)}" target="_blank" rel="noopener" class="d-wiki-link">한국어 위키 전체 보기 →</a>
-        </div>` : ''}
         <div class="d-section">
           <h2>연락처 · 사무실</h2>
           <div class="d-list">
@@ -1551,11 +1547,17 @@ function renderDetail(id) {
             ${m.SECRETARY2 ? `<div class="d-row"><span class="k">비서</span><span class="v">${escapeHtml(m.SECRETARY2)}</span></div>` : ''}
           </div>
         </div>` : ''}
-        ${m.MEM_TITLE ? `
+        ${(wikiExtract || (m.MEM_TITLE && m.MEM_TITLE.length > 5)) ? `
+        <div class="d-section">
+          <h2>약력 · 소개</h2>
+          ${wikiExtract ? `<div class="d-bio-intro">${escapeHtml(wikiExtract)}</div>` : ''}
+          ${(m.MEM_TITLE && m.MEM_TITLE.length > 5) ? `<div class="d-career">${escapeHtml(m.MEM_TITLE)}</div>` : ''}
+          ${wikiExtract ? `<a href="${escapeHtml(wikiUrl)}" target="_blank" rel="noopener" class="d-wiki-link">한국어 위키에서 더 보기 →</a>` : ''}
+        </div>` : `
         <div class="d-section">
           <h2>약력</h2>
-          <div class="d-career">${escapeHtml(m.MEM_TITLE)}</div>
-        </div>` : ''}
+          <div style="color:var(--dim);font-size:12px">위키미디어에서 추가 정보를 불러오는 중… 잠시 후 다시 확인해주세요.</div>
+        </div>`}
         ${billsHtml}
         ${colleaguesHtml}
         <div class="d-section">
