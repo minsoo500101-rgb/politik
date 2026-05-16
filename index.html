@@ -643,6 +643,59 @@ async function loadMembers() {
   return { data, fromCache: false, syncedAt: Date.now() };
 }
 
+// 역대 국회의원 (위키 카테고리에서 lazy load)
+async function loadHistoricalAssembly(age) {
+  const cat = `Category:대한민국의_제${age}대_국회의원`;
+  const url = `https://ko.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=${encodeURIComponent(cat)}&cmlimit=500&format=json&origin=*`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return [];
+    const j = await r.json();
+    return (j.query?.categorymembers || [])
+      .filter(m => m.ns === 0 && !m.title.endsWith('목록') && !m.title.endsWith('선거'))
+      .map(m => {
+        const name = m.title.replace(/_?\(.+\)$/, '').trim();
+        return {
+          MONA_CD: `kr.assembly.${age}.${m.title.replace(/\s/g, '_')}`,
+          HG_NM: name,
+          HJ_NM: '',
+          ENG_NM: '',
+          POLY_NM: '—',
+          ORIG_NM: `제${age}대 국회의원`,
+          CMIT_NM: '',
+          REELE_GBN_NM: '역대',
+          ELECT_GBN_NM: '역대 의원',
+          BTH_DATE: '',
+          SEX_GBN_NM: '',
+          MEM_TITLE: `대한민국 제${age}대 국회의원 (위키미디어 분류 기반)`,
+          TEL_NO: '', E_MAIL: '', HOMEPAGE: '', ASSEM_ADDR: '',
+          STAFF: '', SECRETARY: '', SECRETARY2: '',
+          UNITS: '',
+          _type: 'former_member',
+          _type_label: `제${age}대 의원`,
+          _group: 'historical',
+          _wiki: m.title.replace(/\s/g, '_'),
+          _age: age,
+        };
+      });
+  } catch { return []; }
+}
+
+let _historicalLoaded = new Set();
+async function ensureHistoricalAssemblies(ages = []) {
+  let changed = false;
+  for (const age of ages) {
+    if (_historicalLoaded.has(age)) continue;
+    const arr = await loadHistoricalAssembly(age);
+    if (arr.length) {
+      state.members = state.members.concat(arr);
+      _historicalLoaded.add(age);
+      changed = true;
+    }
+  }
+  return changed;
+}
+
 // politicians.json — 국회 외 인물 + 정당 지도부 metadata
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 async function loadExtraPoliticians() {
@@ -832,7 +885,7 @@ const TYPE_ORDER = {
   executive: ['president', 'prime_minister', 'minister', 'chief_of_staff'],
   judicial:  ['judge'],
   local:     ['local_gov_head', 'edu_superintendent'],
-  historical:['former_president', 'former_pm'],
+  historical:['former_president', 'former_pm', 'former_member'],
 };
 const TYPE_GROUP_LABEL = {
   president: '대통령',
@@ -844,6 +897,7 @@ const TYPE_GROUP_LABEL = {
   edu_superintendent: '교육감',
   former_president: '역대 대통령',
   former_pm: '역대 국무총리',
+  former_member: '역대 국회의원',
 };
 
 function groupMembers() {
@@ -1331,16 +1385,22 @@ function route() {
   // 그룹 페이지
   const gMatch = hash.match(/^#\/group\/(\w+)$/);
   if (gMatch) {
-    view.innerHTML = renderGroupPage(gMatch[1]);
+    const gid = gMatch[1];
+    view.innerHTML = renderGroupPage(gid);
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     document.querySelectorAll('.card').forEach(el => {
       el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
     });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
-    // 화면 첫 30명 사진 프리페치
-    const visible = state.members.filter(m => (m._group || 'legislative') === gMatch[1] && !state.photos.has(m.MONA_CD)).slice(0, 30);
+    const visible = state.members.filter(m => (m._group || 'legislative') === gid && !state.photos.has(m.MONA_CD)).slice(0, 30);
     prefetchPhotos(visible, 3);
+    // historical 그룹: 위키에서 역대 의원 lazy load
+    if (gid === 'historical') {
+      ensureHistoricalAssemblies([21, 20]).then(changed => {
+        if (changed && location.hash === `#/group/historical`) route();
+      });
+    }
     return;
   }
   const m = hash.match(/^#\/m\/(.+)$/);
