@@ -402,8 +402,47 @@ const SVC = {
 const ASSEMBLY_AGE = 22;
 const CACHE_KEY_MEMBERS = 'politik:members:v2';
 const CACHE_KEY_BILLS   = 'politik:bills:v2';
-const CACHE_KEY_PHOTOS  = 'politik:photos:v1';
+const CACHE_KEY_PHOTOS  = 'politik:photos:v2';
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
+
+// 통합 schema 변환
+function normalizeAssemblyMember(m) {
+  return {
+    id: 'kr.assembly.22.' + m.MONA_CD,
+    type: 'assembly_member',
+    type_label: '국회의원',
+    name_ko: m.HG_NM,
+    name_hj: m.HJ_NM,
+    name_en: m.ENG_NM,
+    party: m.POLY_NM,
+    role: '제22대 국회의원',
+    region: m.ORIG_NM,
+    committee: m.CMIT_NM,
+    term_label: m.REELE_GBN_NM,
+    elect_kind: m.ELECT_GBN_NM,
+    bth_date: m.BTH_DATE,
+    sex: m.SEX_GBN_NM,
+    email: m.E_MAIL,
+    phone: m.TEL_NO,
+    homepage: m.HOMEPAGE,
+    addr: m.ASSEM_ADDR,
+    staff: m.STAFF,
+    secretary: m.SECRETARY,
+    secretary2: m.SECRETARY2,
+    career: m.MEM_TITLE,
+    mona_cd: m.MONA_CD,
+    wiki: m.HG_NM,
+    _raw: m,
+  };
+}
+function normalizeExtraPerson(p) {
+  return {
+    ...p,
+    name_ko: p.name_ko,
+    party: p.party || null,
+    wiki: p.wiki || p.name_ko,
+  };
+}
 
 function apiUrl(serviceId, params = {}) {
   const qs = new URLSearchParams({ KEY: API_KEY, Type: 'json', pIndex: '1', pSize: '1000', ...params });
@@ -457,6 +496,35 @@ async function loadMembers() {
   });
   try { localStorage.setItem(CACHE_KEY_MEMBERS, JSON.stringify({ t: Date.now(), data })); } catch {}
   return { data, fromCache: false, syncedAt: Date.now() };
+}
+
+// politicians.json — 국회 외 인물 (대통령·시도지사·사법부 등)
+async function loadExtraPoliticians() {
+  try {
+    const r = await fetch('data/politicians.json?v=' + Date.now());
+    if (!r.ok) return [];
+    const j = await r.json();
+    return (j.people || []).map(p => ({
+      MONA_CD: p.id,
+      HG_NM: p.name_ko,
+      HJ_NM: p.name_hj || '',
+      ENG_NM: '',
+      POLY_NM: p.party || '무소속',
+      ORIG_NM: p.region || '—',
+      CMIT_NM: p.role || '',
+      REELE_GBN_NM: p.type_label || '',
+      ELECT_GBN_NM: p.type_label || '',
+      BTH_DATE: '',
+      SEX_GBN_NM: '',
+      MEM_TITLE: (p.role || '') + (p.term_start ? `\n임기: ${p.term_start} ~ ${p.term_end || '재임 중'}` : ''),
+      TEL_NO: '', E_MAIL: '', HOMEPAGE: '', ASSEM_ADDR: '',
+      STAFF: '', SECRETARY: '', SECRETARY2: '',
+      UNITS: '',
+      _type: p.type,
+      _type_label: p.type_label,
+      _wiki: p.wiki,
+    }));
+  } catch { return []; }
 }
 
 // 본회의 처리 의안 (22대) — 의원/위원회 페이지에서 사용
@@ -516,12 +584,14 @@ function savePhotoCache() {
 
 // 위키미디어에서 인물 사진 찾기 (제목 일치 검증으로 노이즈 거름)
 async function findPortrait(hgnm) {
+  // hgnm은 이름 또는 위키 슬러그 ("이재명_(1964년)" 같이 disambiguation 포함 가능)
+  const baseName = hgnm.replace(/_?\(.+\)$/, '').trim();
   function titleMatches(pageTitle) {
     if (!pageTitle) return false;
     const t = pageTitle.trim();
-    return t === hgnm || t.startsWith(hgnm + ' (') || t.startsWith(hgnm + '_(');
+    return t === baseName || t === hgnm || t.startsWith(baseName + ' (') || t.startsWith(baseName + '_(');
   }
-  // 1) 직접 페이지
+  // 1) 직접 페이지 (full slug 시도)
   try {
     const url = `https://ko.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=thumbnail&pithumbsize=240&titles=${encodeURIComponent(hgnm)}&format=json&origin=*&redirects=1`;
     const j = await (await fetch(url)).json();
@@ -532,7 +602,7 @@ async function findPortrait(hgnm) {
   } catch {}
   // 2) 검색에서 제목 정확 일치한 페이지
   try {
-    const url = `https://ko.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(hgnm + ' 정치인')}&gsrlimit=8&prop=pageimages&piprop=thumbnail&pithumbsize=240&format=json&origin=*`;
+    const url = `https://ko.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(baseName + ' 정치인')}&gsrlimit=8&prop=pageimages&piprop=thumbnail&pithumbsize=240&format=json&origin=*`;
     const j = await (await fetch(url)).json();
     for (const k of Object.keys(j.query?.pages || {})) {
       const p = j.query.pages[k];
@@ -545,7 +615,8 @@ async function findPortrait(hgnm) {
 async function ensurePhoto(member) {
   if (!member?.MONA_CD || !member?.HG_NM) return null;
   if (state.photos.has(member.MONA_CD)) return state.photos.get(member.MONA_CD);
-  const r = await findPortrait(member.HG_NM);
+  const wikiQuery = member._wiki || member.HG_NM;
+  const r = await findPortrait(wikiQuery);
   const entry = r || { miss: true, t: Date.now() };
   state.photos.set(member.MONA_CD, entry);
   // throttled save
@@ -860,7 +931,9 @@ document.getElementById('search').addEventListener('input', e => {
   loadPhotoCache();
   try {
     const { data, syncedAt } = await loadMembers();
-    state.members = data;
+    // 국회 외 인물 합치기 (대통령·시도지사·사법부 등)
+    const extras = await loadExtraPoliticians();
+    state.members = [...extras, ...data]; // 대통령·시도지사를 그리드 앞쪽으로
     document.getElementById('stat-total').textContent = data.length;
     document.getElementById('last-sync').textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
     renderFilters();
