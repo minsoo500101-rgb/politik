@@ -143,18 +143,20 @@
   .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 14px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s, border-color 0.2s;
     display: flex; flex-direction: column;
     position: relative;
   }
   .card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.10);
     border-color: var(--border-strong);
   }
+  .card:hover .avatar img { transform: scale(1.08); }
+  .avatar img { transition: transform 0.3s cubic-bezier(.4,0,.2,1); }
   .card-bar {
     height: 4px; width: 100%;
     background: var(--party-기타);
@@ -339,46 +341,87 @@
   }
   .sub-section h2 .cnt { color: var(--text-2); font-size: 11px; font-weight: 500; letter-spacing: 0.5px; }
 
-  /* ============ Detail ============ */
+  /* ============ Detail (trendy hero) ============ */
   .detail {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 18px;
     overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
   }
   .d-hero {
-    padding: 32px 32px 28px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    isolation: isolate;
+  }
+  .d-hero-bg {
+    position: absolute; inset: -30px;
+    background-size: cover; background-position: center;
+    filter: blur(40px) saturate(1.4) brightness(0.55);
+    opacity: 0.55;
+    z-index: -1;
+    transform: scale(1.1);
+  }
+  .d-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.92) 100%);
+    z-index: -1;
+  }
+  .d-hero-content {
+    padding: 38px 32px 28px;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 28px; align-items: flex-start;
-    border-bottom: 1px solid var(--border);
     position: relative;
   }
   .d-bar {
     position: absolute; top: 0; left: 0; right: 0; height: 5px;
     background: var(--party-기타);
+    z-index: 1;
   }
   .d-avatar {
-    width: 110px; height: 110px; border-radius: 50%;
+    width: 140px; height: 140px; border-radius: 50%;
     background: var(--bg-elev);
     display: grid; place-items: center;
-    font-size: 44px; font-weight: 600;
+    font-size: 56px; font-weight: 700;
     color: var(--text-2);
-    border: 2px solid var(--border);
+    border: 4px solid #fff;
     overflow: hidden;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+    flex-shrink: 0;
   }
   .d-info h1 {
-    font-size: 30px; font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 4px;
+    font-size: 34px; font-weight: 800;
+    letter-spacing: -1.2px;
+    margin-bottom: 6px;
     display: flex; align-items: baseline; gap: 12px;
   }
   .d-info h1 .hj {
     font-size: 16px; color: var(--dim); font-weight: 400;
   }
   .d-info .d-party {
-    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    font-size: 15px; font-weight: 700; margin-bottom: 8px;
     display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  }
+  .d-wiki-desc {
+    font-size: 13px; color: var(--text-2);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .d-wiki-extract {
+    font-size: 13px; color: var(--text); line-height: 1.75;
+    padding: 16px 18px;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .d-wiki-link {
+    display: inline-block;
+    font-size: 11px; color: var(--link);
+    margin-top: 4px;
+    letter-spacing: 0.3px;
   }
   .role-badge {
     display: inline-block;
@@ -780,7 +823,51 @@ function savePhotoCache() {
   } catch {}
 }
 
-// 위키미디어에서 인물 사진 찾기 (제목 일치 검증으로 노이즈 거름)
+// 위키미디어에서 인물 요약 fetch (사진 + 본문 + 출처 URL)
+async function findBio(hgnm) {
+  const baseName = hgnm.replace(/_?\(.+\)$/, '').trim();
+  function titleMatches(pageTitle) {
+    if (!pageTitle) return false;
+    const t = pageTitle.trim();
+    return t === baseName || t === hgnm || t.startsWith(baseName + ' (') || t.startsWith(baseName + '_(');
+  }
+  // 1) 직접 page summary
+  try {
+    const r = await fetch(`https://ko.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(hgnm)}?redirect=true`);
+    if (r.ok) {
+      const j = await r.json();
+      if (j.type !== 'disambiguation' && (j.title === baseName || j.title === hgnm || j.titles?.canonical === hgnm.replace(/\s/g,'_'))) {
+        return {
+          thumb: j.thumbnail?.source || null,
+          title: j.title,
+          description: j.description || '',
+          extract: j.extract || '',
+          url: j.content_urls?.desktop?.page || `https://ko.wikipedia.org/wiki/${encodeURIComponent(hgnm)}`,
+        };
+      }
+    }
+  } catch {}
+  // 2) 검색 fallback (제목 일치)
+  try {
+    const url = `https://ko.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(baseName + ' 정치인')}&gsrlimit=8&prop=pageimages|description|extracts&piprop=thumbnail&pithumbsize=320&exintro=1&explaintext=1&exsentences=4&format=json&origin=*`;
+    const j = await (await fetch(url)).json();
+    for (const k of Object.keys(j.query?.pages || {})) {
+      const p = j.query.pages[k];
+      if (titleMatches(p.title)) {
+        return {
+          thumb: p.thumbnail?.source || null,
+          title: p.title,
+          description: p.description || '',
+          extract: (p.extract || '').slice(0, 600),
+          url: `https://ko.wikipedia.org/wiki/${encodeURIComponent(p.title.replace(/\s/g,'_'))}`,
+        };
+      }
+    }
+  } catch {}
+  return null;
+}
+
+// 위키미디어에서 인물 사진 찾기 (legacy — bio fetch가 사진 포함)
 async function findPortrait(hgnm) {
   // hgnm은 이름 또는 위키 슬러그 ("이재명_(1964년)" 같이 disambiguation 포함 가능)
   const baseName = hgnm.replace(/_?\(.+\)$/, '').trim();
@@ -811,13 +898,14 @@ async function findPortrait(hgnm) {
 }
 
 async function ensurePhoto(member) {
+  // 이제 사진뿐 아니라 위키 요약·본문도 같이 캐시 (`bio`로 통합)
   if (!member?.MONA_CD || !member?.HG_NM) return null;
-  if (state.photos.has(member.MONA_CD)) return state.photos.get(member.MONA_CD);
+  const existing = state.photos.get(member.MONA_CD);
+  if (existing && (existing.extract != null || existing.miss)) return existing;
   const wikiQuery = member._wiki || member.HG_NM;
-  const r = await findPortrait(wikiQuery);
-  const entry = r || { miss: true, t: Date.now() };
+  const r = await findBio(wikiQuery);
+  const entry = r ? { ...r, t: Date.now() } : { miss: true, t: Date.now() };
   state.photos.set(member.MONA_CD, entry);
-  // throttled save
   clearTimeout(savePhotoCache._t);
   savePhotoCache._t = setTimeout(savePhotoCache, 1500);
   return entry;
@@ -1281,29 +1369,44 @@ function renderDetail(id) {
     </div>
   ` : '';
 
+  const bg = (photo && photo.thumb) ? `<div class="d-hero-bg" style="background-image:url('${escapeHtml(photo.thumb)}')"></div><div class="d-hero-overlay"></div>` : '';
+  const wikiExtract = (photo && photo.extract) ? photo.extract : '';
+  const wikiDesc = (photo && photo.description) ? photo.description : '';
+  const wikiUrl = (photo && photo.url) ? photo.url : `https://ko.wikipedia.org/wiki/${encodeURIComponent(m._wiki || m.HG_NM)}`;
+
   return `
-    <div class="d-back" id="back-btn">← 의원 목록</div>
+    <div class="d-back" id="back-btn">← 돌아가기</div>
     <div class="detail">
       <div class="d-hero">
+        ${bg}
         <div class="d-bar" style="background:${color}"></div>
-        <div class="d-avatar">${dAvatarInner}</div>
-        <div class="d-info">
-          <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span></h1>
-          <div class="d-party" style="color:${color}">
-            ${escapeHtml(m.POLY_NM || '—')}
-            ${partyRolesForThis.map(r => `<span class="role-badge" style="border-color:${color};color:${color}">${escapeHtml(r.role)}</span>`).join('')}
-          </div>
-          <div class="d-grid">
-            <div class="d-stat"><div class="d-stat-label">지역구</div><div class="d-stat-value">${escapeHtml(m.ORIG_NM || '—')}</div></div>
-            <div class="d-stat"><div class="d-stat-label">선거구분</div><div class="d-stat-value">${escapeHtml(m.ELECT_GBN_NM || '—')}</div></div>
-            <div class="d-stat"><div class="d-stat-label">선수</div><div class="d-stat-value">${escapeHtml(m.REELE_GBN_NM || '—')}</div></div>
-            <div class="d-stat"><div class="d-stat-label">생년 (만)</div><div class="d-stat-value">${bornYear || '—'} (${age})</div></div>
-            <div class="d-stat"><div class="d-stat-label">성별</div><div class="d-stat-value">${escapeHtml(m.SEX_GBN_NM || '—')}</div></div>
-            <div class="d-stat"><div class="d-stat-label">상임위</div><div class="d-stat-value">${escapeHtml(m.CMIT_NM || '—')}</div></div>
+        <div class="d-hero-content">
+          <div class="d-avatar">${dAvatarInner}</div>
+          <div class="d-info">
+            <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span></h1>
+            <div class="d-party" style="color:${color}">
+              ${escapeHtml(m.POLY_NM || '—')}
+              ${partyRolesForThis.map(r => `<span class="role-badge" style="border-color:${color};color:${color}">${escapeHtml(r.role)}</span>`).join('')}
+            </div>
+            ${wikiDesc ? `<div class="d-wiki-desc">${escapeHtml(wikiDesc)}</div>` : ''}
+            <div class="d-grid">
+              <div class="d-stat"><div class="d-stat-label">${m._type === 'former_member' ? '대수' : '지역구'}</div><div class="d-stat-value">${escapeHtml(m.ORIG_NM || '—')}</div></div>
+              <div class="d-stat"><div class="d-stat-label">구분</div><div class="d-stat-value">${escapeHtml(m.ELECT_GBN_NM || m._type_label || '—')}</div></div>
+              <div class="d-stat"><div class="d-stat-label">선수</div><div class="d-stat-value">${escapeHtml(m.REELE_GBN_NM || '—')}</div></div>
+              ${bornYear ? `<div class="d-stat"><div class="d-stat-label">생년 (만)</div><div class="d-stat-value">${bornYear} (${age})</div></div>` : ''}
+              ${m.SEX_GBN_NM ? `<div class="d-stat"><div class="d-stat-label">성별</div><div class="d-stat-value">${escapeHtml(m.SEX_GBN_NM)}</div></div>` : ''}
+              ${m.CMIT_NM ? `<div class="d-stat"><div class="d-stat-label">상임위·역할</div><div class="d-stat-value">${escapeHtml(m.CMIT_NM)}</div></div>` : ''}
+            </div>
           </div>
         </div>
       </div>
       <div class="d-body">
+        ${wikiExtract ? `
+        <div class="d-section">
+          <h2>위키미디어 요약</h2>
+          <div class="d-wiki-extract">${escapeHtml(wikiExtract)}</div>
+          <a href="${escapeHtml(wikiUrl)}" target="_blank" rel="noopener" class="d-wiki-link">한국어 위키 전체 보기 →</a>
+        </div>` : ''}
         <div class="d-section">
           <h2>연락처 · 사무실</h2>
           <div class="d-list">
@@ -1436,12 +1539,16 @@ function route() {
       el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
     });
     window.scrollTo(0, 0);
-    // 사진 없으면 비동기로 가져오고 재렌더
+    // Bio 데이터 (사진 + 위키 요약) 없으면 비동기 fetch + 재렌더
     const member = state.members.find(x => x.MONA_CD === memberId);
-    if (member && !state.photos.has(member.MONA_CD)) {
-      ensurePhoto(member).then(() => {
-        if (location.hash.endsWith(memberId)) route();
-      });
+    if (member) {
+      const cached = state.photos.get(member.MONA_CD);
+      const needsFetch = !cached || (cached.extract == null && !cached.miss);
+      if (needsFetch) {
+        ensurePhoto(member).then(() => {
+          if (location.hash.endsWith(memberId)) route();
+        });
+      }
     }
     // 같은 위원회 동료들의 사진도 백그라운드 프리페치
     if (member?.CMIT_NM) {
