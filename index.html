@@ -458,10 +458,11 @@
     flex: 1;
   }
   .rel-link-btn {
-    font-size: 12px;
-    color: var(--accent);
-    padding: 6px 12px;
-    border: 1px solid currentColor;
+    font-size: 12px; font-weight: 600;
+    color: var(--text);
+    background: var(--bg-elev);
+    padding: 7px 14px;
+    border: 1px solid var(--border-strong);
     border-radius: 16px;
     text-decoration: none;
     transition: all 0.15s;
@@ -470,7 +471,18 @@
   .rel-link-btn:hover {
     background: var(--text);
     color: var(--bg-card);
+    border-color: var(--text);
     text-decoration: none;
+  }
+  [data-theme="dark"] .rel-link-btn {
+    background: rgba(255,255,255,0.06);
+    color: #e6edf3;
+    border-color: rgba(255,255,255,0.18);
+  }
+  [data-theme="dark"] .rel-link-btn:hover {
+    background: #e6edf3;
+    color: var(--bg);
+    border-color: #e6edf3;
   }
   .donut-wrap {
     display: grid;
@@ -1395,7 +1407,7 @@ const GROUP_ORDER = ['legislative', 'executive', 'judicial', 'local', 'historica
 const TYPE_ORDER = {
   executive: ['president', 'prime_minister', 'minister', 'chief_of_staff'],
   judicial:  ['judge'],
-  local:     ['local_gov_head', 'edu_superintendent'],
+  local:     ['local_gov_head', 'local_gov_muni', 'edu_superintendent'],
   historical:['former_president', 'former_pm', 'former_member'],
 };
 const TYPE_GROUP_LABEL = {
@@ -1405,6 +1417,7 @@ const TYPE_GROUP_LABEL = {
   chief_of_staff: '대통령실',
   judge: '사법부',
   local_gov_head: '광역단체장',
+  local_gov_muni: '기초단체장 (자치구·시·군)',
   edu_superintendent: '교육감',
   former_president: '역대 대통령',
   former_pm: '역대 국무총리',
@@ -1505,6 +1518,11 @@ function drawMap(geo, layer) {
   for (const m of state.members) {
     if (m._type === 'local_gov_head') lgByRegion.set(m.ORIG_NM, m);
   }
+  // 기초단체장 region → 단체장 매핑 (ORIG_NM은 자치구·시·군 이름)
+  const muniByName = new Map();
+  for (const m of state.members) {
+    if (m._type === 'local_gov_muni') muniByName.set(m.ORIG_NM, m);
+  }
 
   // 시도 -> 정당 매핑 (시군구 색칠용)
   // 시군구 코드 앞 2자리 = 시도 코드
@@ -1521,29 +1539,63 @@ function drawMap(geo, layer) {
   }
 
   const g = svg.append('g').attr('transform', 'translate(20, 20)');
+  // 시군구 레이어용 — 자치구·시·군 이름 정규화 (예: "서울특별시 종로구" → "종로구")
+  function muniShortName(fullName) {
+    if (!fullName) return null;
+    // "서울특별시 종로구" → "종로구"
+    const m = fullName.match(/^[가-힣]+(특별시|광역시|특별자치시|도|특별자치도)\s+(.+)$/);
+    return m ? m[2] : fullName;
+  }
+
   const paths = g.selectAll('path').data(geo.features).join('path')
     .attr('d', path)
     .attr('fill', d => {
+      if (layer === 'muni') {
+        const short = muniShortName(d.properties.name);
+        const muni = short ? muniByName.get(short) : null;
+        if (muni) return partyColor(muni.POLY_NM);
+        // 시군구장 데이터 없음 → 광역 색의 옅은 버전 (fallback)
+        const r = getRegionForFeature(d);
+        const lg = r ? lgByRegion.get(r) : null;
+        return lg ? partyColor(lg.POLY_NM) : 'var(--bg-elev)';
+      }
       const r = getRegionForFeature(d);
       const lg = r ? lgByRegion.get(r) : null;
       return lg ? partyColor(lg.POLY_NM) : 'var(--bg-elev)';
     })
-    .attr('fill-opacity', layer === 'province' ? 0.85 : 0.6)
+    .attr('fill-opacity', d => {
+      if (layer === 'muni') {
+        const short = muniShortName(d.properties.name);
+        return muniByName.has(short) ? 0.85 : 0.35; // 실제 데이터 있으면 진하게
+      }
+      return 0.85;
+    })
     .attr('stroke', 'var(--bg-card)')
     .attr('stroke-width', layer === 'province' ? 1.5 : 0.4)
     .style('cursor', 'pointer')
     .on('mouseenter', function(e, d) {
-      d3.select(this).attr('fill-opacity', 1).attr('stroke-width', 2);
+      d3.select(this).attr('stroke-width', layer === 'province' ? 2 : 1.4);
       const tip = document.getElementById('rel-tooltip');
-      if (tip) {
+      if (!tip) return;
+      if (layer === 'muni') {
+        const short = muniShortName(d.properties.name);
+        const muni = short ? muniByName.get(short) : null;
+        if (muni) {
+          tip.innerHTML = `<b>${escapeHtml(d.properties.name)}</b><br>${escapeHtml(muni.HG_NM)} (${escapeHtml(muni.POLY_NM)})<br><span style="color:var(--dim);font-size:10px">${escapeHtml(muni.CMIT_NM || muni.ELECT_GBN_NM || '')}</span>`;
+          tip.style.borderColor = partyColor(muni.POLY_NM);
+        } else {
+          tip.innerHTML = `<b>${escapeHtml(d.properties.name)}</b><br><span style="color:var(--dim)">기초단체장 데이터 준비 중</span>`;
+          tip.style.borderColor = 'var(--border-strong)';
+        }
+      } else {
         const r = getRegionForFeature(d);
         const lg = r ? lgByRegion.get(r) : null;
         tip.innerHTML = lg
-          ? `<b>${d.properties.name}</b><br>${escapeHtml(lg.HG_NM)} (${escapeHtml(lg.POLY_NM)})<br><span style="color:var(--dim);font-size:10px">${escapeHtml(lg.CMIT_NM || lg.ELECT_GBN_NM)}</span>`
-          : `<b>${d.properties.name}</b><br><span style="color:var(--dim)">데이터 없음</span>`;
-        tip.style.display = 'block';
+          ? `<b>${escapeHtml(d.properties.name)}</b><br>${escapeHtml(lg.HG_NM)} (${escapeHtml(lg.POLY_NM)})<br><span style="color:var(--dim);font-size:10px">${escapeHtml(lg.CMIT_NM || lg.ELECT_GBN_NM)}</span>`
+          : `<b>${escapeHtml(d.properties.name)}</b><br><span style="color:var(--dim)">데이터 없음</span>`;
         tip.style.borderColor = lg ? partyColor(lg.POLY_NM) : 'var(--border-strong)';
       }
+      tip.style.display = 'block';
     })
     .on('mousemove', function(e) {
       const tip = document.getElementById('rel-tooltip');
@@ -1552,12 +1604,19 @@ function drawMap(geo, layer) {
         tip.style.top  = (e.clientY + 14) + 'px';
       }
     })
-    .on('mouseleave', function(e, d) {
-      d3.select(this).attr('fill-opacity', layer === 'province' ? 0.85 : 0.6).attr('stroke-width', layer === 'province' ? 1.5 : 0.4);
+    .on('mouseleave', function() {
+      d3.select(this).attr('stroke-width', layer === 'province' ? 1.5 : 0.4);
       const tip = document.getElementById('rel-tooltip');
       if (tip) tip.style.display = 'none';
     })
     .on('click', (e, d) => {
+      if (layer === 'muni') {
+        const short = muniShortName(d.properties.name);
+        const muni = short ? muniByName.get(short) : null;
+        if (muni) location.hash = `#/m/${encodeURIComponent(muni.MONA_CD)}`;
+        // 시군구장 없으면 클릭 무효 (광역으로 fallback 안 함)
+        return;
+      }
       const r = getRegionForFeature(d);
       const lg = r ? lgByRegion.get(r) : null;
       if (lg) location.hash = `#/m/${encodeURIComponent(lg.MONA_CD)}`;
