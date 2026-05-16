@@ -204,6 +204,141 @@
     font-weight: 600;
   }
 
+  /* ============ Org chart (home) ============ */
+  .org {
+    padding: 8px 0 0;
+  }
+  .org-hero {
+    text-align: center;
+    padding: 28px 16px 32px;
+    margin-bottom: 8px;
+  }
+  .org-hero h1 {
+    font-size: 32px; font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .org-hero .sub {
+    font-size: 13px; color: var(--text-2);
+    letter-spacing: 0.3px;
+  }
+  .org-hero .meta {
+    margin-top: 14px; font-size: 11px; color: var(--dim);
+  }
+  .org-hero .meta b { color: var(--text); font-weight: 600; font-size: 13px; margin: 0 4px; }
+  .org-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .org-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+    display: flex; flex-direction: column;
+  }
+  .org-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    border-color: var(--border-strong);
+  }
+  .org-box-head {
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 14px; align-items: center;
+  }
+  .org-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-2) 100%);
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: 26px;
+  }
+  .org-name {
+    font-size: 18px; font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .org-desc {
+    font-size: 11px; color: var(--text-2);
+    margin-top: 2px;
+  }
+  .org-count {
+    font-size: 24px; font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .org-count-unit { font-size: 10px; color: var(--dim); display: block; text-align: right; }
+  .org-box-body { padding: 14px 16px 14px; flex: 1; }
+  .org-sub-list {
+    display: grid; gap: 6px;
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  .org-sub-list .sub-row {
+    display: flex; justify-content: space-between;
+    color: var(--text-2);
+  }
+  .org-sub-list .sub-row b { color: var(--text); font-weight: 600; }
+  .org-preview {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    padding-top: 8px; border-top: 1px solid var(--border);
+  }
+  .org-preview-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--bg-elev);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-2);
+  }
+  .org-preview-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .org-box-foot {
+    padding: 12px 18px;
+    background: var(--bg-elev);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--text-2);
+  }
+  .org-box-foot .arrow { color: var(--accent); font-weight: 600; }
+
+  /* Group page header */
+  .group-header {
+    padding: 8px 0 18px;
+    display: flex; gap: 16px; align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .group-header .icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--text); color: #fff;
+    display: grid; place-items: center; font-size: 26px;
+    flex-shrink: 0;
+  }
+  .group-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .group-header .sub { font-size: 12px; color: var(--dim); }
+  .group-header .counts { margin-top: 6px; font-size: 11px; color: var(--text-2); }
+  .group-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text-2); font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .group-back:hover { color: var(--text); }
+  .sub-section { margin-bottom: 36px; }
+  .sub-section h2 {
+    font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--dim); font-weight: 600;
+    padding-bottom: 8px; margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .sub-section h2 .cnt { color: var(--text-2); font-size: 11px; font-weight: 500; letter-spacing: 0.5px; }
+
   /* ============ Detail ============ */
   .detail {
     background: var(--bg-card);
@@ -368,7 +503,7 @@
       <input class="search" id="search" placeholder="이름·지역구·정당으로 검색...">
     </div>
     <div class="nav-stats">
-      <div><b id="stat-total">—</b> 의원</div>
+      <div><b id="stat-total">—</b> 등록</div>
       <div><b id="stat-shown">—</b> 표시</div>
     </div>
   </div>
@@ -522,6 +657,7 @@ async function loadExtraPoliticians() {
       UNITS: '',
       _type: p.type,
       _type_label: p.type_label,
+      _group: p.group || 'extra',
       _wiki: p.wiki,
     }));
   } catch { return []; }
@@ -667,6 +803,193 @@ function regionShort(orig) {
   if (!orig) return '';
   if (orig === '비례대표') return '비례';
   return orig.replace(/[광역시도시군구]/g, '').slice(0, 10) || orig;
+}
+
+// ============================================================
+// Org chart (home) + Group pages
+// ============================================================
+const GROUPS = {
+  legislative: { name:'입법부', icon:'🏛', desc:'대한민국 국회 22대 (2024.5~)', color:'#1f2937' },
+  executive:   { name:'행정부', icon:'🏢', desc:'대통령·국무총리·내각·대통령실',   color:'#0f172a' },
+  judicial:    { name:'사법부', icon:'⚖',  desc:'대법원·헌법재판소',                color:'#475569' },
+  local:       { name:'지방정부', icon:'🏘', desc:'17개 광역단체장',                color:'#334155' },
+};
+const GROUP_ORDER = ['legislative', 'executive', 'judicial', 'local'];
+const TYPE_ORDER = {
+  executive: ['president', 'prime_minister', 'minister', 'chief_of_staff'],
+  judicial:  ['judge'],
+  local:     ['local_gov_head'],
+};
+const TYPE_GROUP_LABEL = {
+  president: '대통령',
+  prime_minister: '국무총리·부총리',
+  minister: '17개 부처 장관',
+  chief_of_staff: '대통령실',
+  judge: '사법부',
+  local_gov_head: '광역단체장',
+};
+
+function groupMembers() {
+  const groups = {};
+  for (const m of state.members) {
+    const g = m._group || 'legislative';
+    if (!groups[g]) groups[g] = [];
+    groups[g].push(m);
+  }
+  return groups;
+}
+
+function renderHome() {
+  const groups = groupMembers();
+  const totalCount = state.members.length;
+  // 그룹별 미리보기 아바타 5명 추출 (사진 있는 우선)
+  function topPreview(arr, n = 6) {
+    const withPhoto = arr.filter(m => state.photos.get(m.MONA_CD)?.thumb);
+    const rest = arr.filter(m => !state.photos.get(m.MONA_CD)?.thumb);
+    return [...withPhoto, ...rest].slice(0, n);
+  }
+  const boxes = GROUP_ORDER.map(gid => {
+    const g = GROUPS[gid];
+    const members = groups[gid] || [];
+    const previews = topPreview(members);
+    let subList = '';
+    if (gid === 'legislative') {
+      // 정당 분포
+      const byParty = new Map();
+      for (const m of members) byParty.set(m.POLY_NM, (byParty.get(m.POLY_NM)||0)+1);
+      const top = [...byParty.entries()].sort((a,b) => b[1]-a[1]).slice(0, 4);
+      subList = top.map(([p, c]) => `<div class="sub-row"><span>${escapeHtml(p)}</span><b>${c}</b></div>`).join('');
+    } else {
+      // type별 분포
+      const byType = new Map();
+      for (const m of members) byType.set(m._type, (byType.get(m._type)||0)+1);
+      subList = (TYPE_ORDER[gid] || [...byType.keys()])
+        .filter(t => byType.has(t))
+        .map(t => `<div class="sub-row"><span>${escapeHtml(TYPE_GROUP_LABEL[t]||t)}</span><b>${byType.get(t)}명</b></div>`).join('');
+    }
+    return `
+      <div class="org-box" data-group="${gid}">
+        <div class="org-box-head">
+          <div class="org-icon" style="background:${g.color}">${g.icon}</div>
+          <div>
+            <div class="org-name">${g.name}</div>
+            <div class="org-desc">${g.desc}</div>
+          </div>
+          <div>
+            <div class="org-count">${members.length}</div>
+            <div class="org-count-unit">명</div>
+          </div>
+        </div>
+        <div class="org-box-body">
+          <div class="org-sub-list">${subList || '<div class="sub-row"><span>등록된 인물 없음</span><b>—</b></div>'}</div>
+          <div class="org-preview">
+            ${previews.map(m => {
+              const photo = state.photos.get(m.MONA_CD);
+              const initial = (m.HG_NM||'?').charAt(0);
+              return `<div class="org-preview-avatar" title="${escapeHtml(m.HG_NM)}">${photo?.thumb ? `<img src="${escapeHtml(photo.thumb)}" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">` : escapeHtml(initial)}</div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="org-box-foot">
+          <span>전체 보기</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="org">
+      <div class="org-hero">
+        <h1>대한민국 정치 조직도</h1>
+        <div class="sub">한 화면에서 보는 한국 정계 전체 — 4부와 그 안의 사람들</div>
+        <div class="meta">현재 등록 <b>${totalCount}</b>명 · 데이터 소스 <a href="https://open.assembly.go.kr" target="_blank">국회 OPEN API</a> · 위키미디어</div>
+      </div>
+      <div class="org-grid">${boxes}</div>
+    </div>
+  `;
+}
+
+function renderGroupPage(gid) {
+  const g = GROUPS[gid];
+  if (!g) return '<div class="empty">알 수 없는 그룹</div>';
+  const groups = groupMembers();
+  const members = groups[gid] || [];
+
+  let body = '';
+  if (gid === 'legislative') {
+    // 정당별 sub-section
+    const byParty = new Map();
+    for (const m of members) {
+      const p = m.POLY_NM || '무소속';
+      if (!byParty.has(p)) byParty.set(p, []);
+      byParty.get(p).push(m);
+    }
+    const sorted = [...byParty.entries()].sort((a,b) => b[1].length - a[1].length);
+    body = sorted.map(([party, arr]) => `
+      <div class="sub-section">
+        <h2><span style="color:${partyColor(party)}">●</span> ${escapeHtml(party)} <span class="cnt">${arr.length}명</span></h2>
+        <div class="grid">${arr.map(memberCardHTML).join('')}</div>
+      </div>
+    `).join('');
+  } else {
+    // type별 sub-section
+    const byType = new Map();
+    for (const m of members) {
+      const t = m._type || 'misc';
+      if (!byType.has(t)) byType.set(t, []);
+      byType.get(t).push(m);
+    }
+    const order = TYPE_ORDER[gid] || [...byType.keys()];
+    body = order.filter(t => byType.has(t)).map(t => {
+      const arr = byType.get(t);
+      return `
+        <div class="sub-section">
+          <h2>${escapeHtml(TYPE_GROUP_LABEL[t] || t)} <span class="cnt">${arr.length}명</span></h2>
+          <div class="grid">${arr.map(memberCardHTML).join('')}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="group-header">
+      <div class="icon" style="background:${g.color}">${g.icon}</div>
+      <div style="flex:1">
+        <h1>${g.name}</h1>
+        <div class="sub">${g.desc}</div>
+        <div class="counts"><b>${members.length}</b>명 등록</div>
+      </div>
+    </div>
+    ${body}
+  `;
+}
+
+function memberCardHTML(m) {
+  const color = partyColor(m.POLY_NM);
+  const initial = (m.HG_NM || '?').charAt(0);
+  const photo = state.photos.get(m.MONA_CD);
+  const avatar = (photo && photo.thumb)
+    ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">`
+    : escapeHtml(initial);
+  return `
+    <div class="card" data-id="${escapeHtml(m.MONA_CD)}">
+      <div class="card-bar" style="background:${color}"></div>
+      <div class="card-body">
+        <div class="avatar">${avatar}</div>
+        <div class="card-meta">
+          <div class="card-name">${escapeHtml(m.HG_NM)}</div>
+          <div class="card-party" style="color:${color}">${escapeHtml(m.POLY_NM || '—')}</div>
+          <div class="card-sub">${escapeHtml(m.ORIG_NM || '—')}</div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <span>${escapeHtml(m.REELE_GBN_NM || m._type_label || '')}</span>
+        <span class="badge">${escapeHtml(m.CMIT_NM || '—')}</span>
+      </div>
+    </div>
+  `;
 }
 
 function renderGrid() {
@@ -882,6 +1205,24 @@ function renderFilters() {
 function route() {
   const view = document.getElementById('view');
   const hash = location.hash || '';
+  const filterBar = document.getElementById('filter-bar');
+  const navStats = document.querySelector('.nav-stats');
+
+  // 그룹 페이지
+  const gMatch = hash.match(/^#\/group\/(\w+)$/);
+  if (gMatch) {
+    view.innerHTML = renderGroupPage(gMatch[1]);
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.querySelectorAll('.card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+    });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // 화면 첫 30명 사진 프리페치
+    const visible = state.members.filter(m => (m._group || 'legislative') === gMatch[1] && !state.photos.has(m.MONA_CD)).slice(0, 30);
+    prefetchPhotos(visible, 3);
+    return;
+  }
   const m = hash.match(/^#\/m\/(.+)$/);
   if (m) {
     const memberId = decodeURIComponent(m[1]);
@@ -904,16 +1245,33 @@ function route() {
       prefetchPhotos(cols, 3);
     }
   } else {
-    view.innerHTML = renderGrid();
-    document.querySelectorAll('.card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
-    });
-    // 처음 보이는 30명 사진 프리페치
-    const visible = state.members
-      .filter(m => !state.filterParty || m.POLY_NM === state.filterParty)
-      .filter(m => !state.photos.has(m.MONA_CD))
-      .slice(0, 30);
-    prefetchPhotos(visible, 3);
+    // 홈 = 조직도 또는 검색 시 그리드
+    if (state.search.trim() || state.filterParty) {
+      view.innerHTML = renderGrid();
+      document.querySelectorAll('.card').forEach(el => {
+        el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+      });
+      const visible = state.members
+        .filter(m => !state.filterParty || m.POLY_NM === state.filterParty)
+        .filter(m => !state.photos.has(m.MONA_CD))
+        .slice(0, 30);
+      prefetchPhotos(visible, 3);
+      if (filterBar) filterBar.style.display = '';
+    } else {
+      view.innerHTML = renderHome();
+      document.querySelectorAll('.org-box').forEach(el => {
+        el.addEventListener('click', () => { location.hash = `#/group/${el.dataset.group}`; });
+      });
+      // 각 그룹의 상위 6명 사진 프리페치
+      const byG = groupMembers();
+      const prefetch = [];
+      for (const gid of GROUP_ORDER) {
+        const arr = (byG[gid] || []).slice(0, 6);
+        for (const m of arr) if (!state.photos.has(m.MONA_CD)) prefetch.push(m);
+      }
+      prefetchPhotos(prefetch, 3);
+      if (filterBar) filterBar.style.display = 'none';
+    }
   }
 }
 
@@ -933,7 +1291,9 @@ document.getElementById('search').addEventListener('input', e => {
     const { data, syncedAt } = await loadMembers();
     // 국회 외 인물 합치기 (대통령·시도지사·사법부 등)
     const extras = await loadExtraPoliticians();
-    state.members = [...extras, ...data]; // 대통령·시도지사를 그리드 앞쪽으로
+    // 의원에도 _group 부여
+    const members = data.map(m => ({ ...m, _group: 'legislative', _type: 'assembly_member', _type_label: '국회의원' }));
+    state.members = [...extras, ...members];
     document.getElementById('stat-total').textContent = data.length;
     document.getElementById('last-sync').textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
     renderFilters();
