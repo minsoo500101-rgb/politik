@@ -563,6 +563,68 @@
     .stats-grid { grid-template-columns: 1fr; }
   }
 
+  /* Korea map page */
+  .map-head { padding: 8px 0 18px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+  .map-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 4px; }
+  .map-sub { font-size: 13px; color: var(--text-2); margin-bottom: 12px; }
+  .map-tabs { display: flex; gap: 6px; }
+  .map-tab {
+    background: transparent; color: var(--dim);
+    border: 1px solid var(--border-strong);
+    padding: 6px 14px; border-radius: 18px;
+    font: inherit; font-size: 12px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .map-tab:hover { color: var(--text); }
+  .map-tab.active { background: var(--text); color: var(--bg-card); border-color: var(--text); }
+  .map-wrap {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 18px;
+  }
+  .map-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    min-height: 720px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .kr-map-svg { display: block; max-width: 100%; cursor: grab; }
+  .map-legend {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px;
+    height: fit-content;
+  }
+  .map-legend h3 {
+    font-size: 11px; color: var(--dim);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .legend-row {
+    display: grid;
+    grid-template-columns: 12px 1fr auto;
+    gap: 10px; align-items: center;
+    padding: 7px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: background 0.12s;
+  }
+  .legend-row:hover { background: var(--bg-elev); }
+  .legend-row .leg-name { color: var(--text); }
+  .legend-row .leg-count { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .map-foot {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--dim);
+  }
+  .map-foot a { color: var(--link); }
+  @media (max-width: 760px) {
+    .map-wrap { grid-template-columns: 1fr; }
+  }
+
   /* Relations (관계도) page */
   .rel-head {
     padding: 8px 0 18px;
@@ -1320,6 +1382,190 @@ function groupMembers() {
   return groups;
 }
 
+// ============================================================
+// 정치 분포 지도 — 한국 시도별 정당 색
+// ============================================================
+const REGION_MAP = {
+  '서울특별시':'서울', '부산광역시':'부산', '대구광역시':'대구', '인천광역시':'인천',
+  '광주광역시':'광주', '대전광역시':'대전', '울산광역시':'울산', '세종특별자치시':'세종',
+  '경기도':'경기', '강원특별자치도':'강원', '강원도':'강원',
+  '충청북도':'충북', '충청남도':'충남',
+  '전북특별자치도':'전북', '전라북도':'전북', '전라남도':'전남',
+  '경상북도':'경북', '경상남도':'경남', '제주특별자치도':'제주',
+};
+
+function renderMapPage() {
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="map-head">
+      <h1>정치 분포 지도</h1>
+      <div class="map-sub">17개 광역단체장의 정당색으로 본 대한민국 (2022~2026 임기). 시도 클릭 → 광역단체장 상세</div>
+      <div class="map-tabs">
+        <button class="map-tab active" data-layer="province">시도 (17)</button>
+        <button class="map-tab" data-layer="muni">시군구 (250)</button>
+      </div>
+    </div>
+    <div class="map-wrap">
+      <div class="map-container" id="map-container">
+        <div class="rel-loading"><span class="loading-spinner"></span>지도 그리는 중…</div>
+      </div>
+      <div class="map-legend" id="map-legend"></div>
+    </div>
+  `;
+}
+
+let _mapData = { province: null, muni: null };
+let _mapCurrentLayer = 'province';
+
+async function loadMapData(layer) {
+  if (_mapData[layer]) return _mapData[layer];
+  const file = layer === 'province' ? 'skorea-provinces-2018-geo.json' : 'skorea-municipalities-2018-geo.json';
+  const r = await fetch(`https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/${file}`);
+  if (!r.ok) throw new Error('지도 데이터 fetch 실패');
+  _mapData[layer] = await r.json();
+  return _mapData[layer];
+}
+
+async function initMap() {
+  if (typeof d3 === 'undefined') { setTimeout(initMap, 200); return; }
+  const container = document.getElementById('map-container');
+  if (!container) return;
+  try {
+    const geo = await loadMapData(_mapCurrentLayer);
+    drawMap(geo, _mapCurrentLayer);
+    // 레이어 토글 핸들러
+    document.querySelectorAll('.map-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.map-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _mapCurrentLayer = btn.dataset.layer;
+        container.innerHTML = '<div class="rel-loading"><span class="loading-spinner"></span>지도 그리는 중…</div>';
+        loadMapData(_mapCurrentLayer).then(g => drawMap(g, _mapCurrentLayer));
+      });
+    });
+  } catch (e) {
+    container.innerHTML = `<div class="empty">지도 로드 실패: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function drawMap(geo, layer) {
+  const container = document.getElementById('map-container');
+  if (!container) return;
+  container.innerHTML = '';
+  const w = container.clientWidth || 800;
+  const h = 700;
+  const svg = d3.select(container).append('svg')
+    .attr('width', w).attr('height', h)
+    .attr('class', 'kr-map-svg');
+
+  const projection = d3.geoMercator().fitSize([w - 40, h - 40], geo);
+  const path = d3.geoPath(projection);
+
+  // 광역단체장 region → 정당색 매핑
+  const lgByRegion = new Map();
+  for (const m of state.members) {
+    if (m._type === 'local_gov_head') lgByRegion.set(m.ORIG_NM, m);
+  }
+
+  // 시도 -> 정당 매핑 (시군구 색칠용)
+  // 시군구 코드 앞 2자리 = 시도 코드
+  function getRegionForFeature(f) {
+    const name = f.properties.name;
+    if (REGION_MAP[name]) return REGION_MAP[name];
+    // 시군구의 경우: 한국 행정구역 코드 첫 2자리로 광역 추정
+    const code = f.properties.code || '';
+    const cMap = {
+      '11':'서울','21':'부산','22':'대구','23':'인천','24':'광주','25':'대전','26':'울산','29':'세종',
+      '31':'경기','32':'강원','33':'충북','34':'충남','35':'전북','36':'전남','37':'경북','38':'경남','39':'제주',
+    };
+    return cMap[code.slice(0,2)] || null;
+  }
+
+  const g = svg.append('g').attr('transform', 'translate(20, 20)');
+  const paths = g.selectAll('path').data(geo.features).join('path')
+    .attr('d', path)
+    .attr('fill', d => {
+      const r = getRegionForFeature(d);
+      const lg = r ? lgByRegion.get(r) : null;
+      return lg ? partyColor(lg.POLY_NM) : 'var(--bg-elev)';
+    })
+    .attr('fill-opacity', layer === 'province' ? 0.85 : 0.6)
+    .attr('stroke', 'var(--bg-card)')
+    .attr('stroke-width', layer === 'province' ? 1.5 : 0.4)
+    .style('cursor', 'pointer')
+    .on('mouseenter', function(e, d) {
+      d3.select(this).attr('fill-opacity', 1).attr('stroke-width', 2);
+      const tip = document.getElementById('rel-tooltip');
+      if (tip) {
+        const r = getRegionForFeature(d);
+        const lg = r ? lgByRegion.get(r) : null;
+        tip.innerHTML = lg
+          ? `<b>${d.properties.name}</b><br>${escapeHtml(lg.HG_NM)} (${escapeHtml(lg.POLY_NM)})<br><span style="color:var(--dim);font-size:10px">${escapeHtml(lg.CMIT_NM || lg.ELECT_GBN_NM)}</span>`
+          : `<b>${d.properties.name}</b><br><span style="color:var(--dim)">데이터 없음</span>`;
+        tip.style.display = 'block';
+        tip.style.borderColor = lg ? partyColor(lg.POLY_NM) : 'var(--border-strong)';
+      }
+    })
+    .on('mousemove', function(e) {
+      const tip = document.getElementById('rel-tooltip');
+      if (tip) {
+        tip.style.left = (e.clientX + 14) + 'px';
+        tip.style.top  = (e.clientY + 14) + 'px';
+      }
+    })
+    .on('mouseleave', function(e, d) {
+      d3.select(this).attr('fill-opacity', layer === 'province' ? 0.85 : 0.6).attr('stroke-width', layer === 'province' ? 1.5 : 0.4);
+      const tip = document.getElementById('rel-tooltip');
+      if (tip) tip.style.display = 'none';
+    })
+    .on('click', (e, d) => {
+      const r = getRegionForFeature(d);
+      const lg = r ? lgByRegion.get(r) : null;
+      if (lg) location.hash = `#/m/${encodeURIComponent(lg.MONA_CD)}`;
+    });
+
+  // 시도 라벨 (province 레이어만)
+  if (layer === 'province') {
+    g.selectAll('text').data(geo.features).join('text')
+      .attr('x', d => path.centroid(d)[0])
+      .attr('y', d => path.centroid(d)[1])
+      .attr('text-anchor', 'middle')
+      .attr('font-size', 10)
+      .attr('font-weight', 600)
+      .attr('fill', '#fff')
+      .style('text-shadow', '0 0 4px rgba(0,0,0,0.6)')
+      .style('pointer-events', 'none')
+      .text(d => REGION_MAP[d.properties.name] || '');
+  }
+
+  // 줌
+  svg.call(d3.zoom().scaleExtent([1, 6]).on('zoom', e => g.attr('transform', `translate(20, 20) ${e.transform.toString()}`)));
+
+  // 범례 갱신
+  renderMapLegend();
+}
+
+function renderMapLegend() {
+  const legend = document.getElementById('map-legend');
+  if (!legend) return;
+  const lgs = state.members.filter(m => m._type === 'local_gov_head');
+  const byParty = new Map();
+  for (const m of lgs) byParty.set(m.POLY_NM, (byParty.get(m.POLY_NM)||0)+1);
+  legend.innerHTML = `
+    <h3>범례 — 광역단체장 정당</h3>
+    ${[...byParty.entries()].sort((a,b) => b[1]-a[1]).map(([p, c]) => `
+      <div class="legend-row" data-party="${escapeHtml(p)}" style="cursor:pointer">
+        <span class="leg-dot" style="background:${partyColor(p)}"></span>
+        <span class="leg-name">${escapeHtml(p)}</span>
+        <span class="leg-count">${c}</span>
+      </div>`).join('')}
+    <div class="map-foot">데이터: <a href="https://github.com/southkorea/southkorea-maps" target="_blank">southkorea-maps</a> · 2018 기준</div>
+  `;
+  legend.querySelectorAll('.legend-row').forEach(el => {
+    el.addEventListener('click', () => location.hash = `#/party/${encodeURIComponent(el.dataset.party)}`);
+  });
+}
+
 function renderRelationsPage() {
   return `
     <div class="group-back" id="back-home">← 조직도</div>
@@ -1558,6 +1804,7 @@ function renderPartyDonut() {
       <div class="donut-head">
         <h2>22대 국회 정당별 의석</h2>
         <div class="donut-sub">현재 등록 ${total}명 · 클릭하면 정당 페이지</div>
+        <a class="rel-link-btn" href="#/map">정치 분포 지도 🗺</a>
         <a class="rel-link-btn" href="#/relations">관계도 보기 →</a>
       </div>
       <div class="donut-wrap">
@@ -2117,6 +2364,15 @@ function route() {
   const filterBar = document.getElementById('filter-bar');
   const navStats = document.querySelector('.nav-stats');
 
+  // 정치 분포 지도 페이지
+  if (hash === '#/map') {
+    view.innerHTML = renderMapPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    setTimeout(initMap, 100);
+    return;
+  }
   // 관계도 페이지
   if (hash === '#/relations') {
     view.innerHTML = renderRelationsPage();
