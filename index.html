@@ -871,11 +871,10 @@ function renderHome() {
     const previews = topPreview(members);
     let subList = '';
     if (gid === 'legislative') {
-      // 정당 분포
       const byParty = new Map();
       for (const m of members) byParty.set(m.POLY_NM, (byParty.get(m.POLY_NM)||0)+1);
       const top = [...byParty.entries()].sort((a,b) => b[1]-a[1]).slice(0, 4);
-      subList = top.map(([p, c]) => `<div class="sub-row"><span>${escapeHtml(p)}</span><b>${c}</b></div>`).join('');
+      subList = top.map(([p, c]) => `<div class="sub-row party-link" data-party="${escapeHtml(p)}" style="cursor:pointer"><span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${partyColor(p)};margin-right:6px;vertical-align:middle"></span>${escapeHtml(p)}</span><b>${c}</b></div>`).join('');
     } else {
       // type별 분포
       const byType = new Map();
@@ -980,6 +979,80 @@ function renderGroupPage(gid) {
       </div>
     </div>
     ${body}
+  `;
+}
+
+function renderPartyPage(partyName) {
+  const members = state.members.filter(m => m.POLY_NM === partyName);
+  if (members.length === 0) return `<div class="empty">${escapeHtml(partyName)} 인물 없음</div>`;
+  const color = partyColor(partyName);
+  // 의원·비의원 구분
+  const mps = members.filter(m => m._group === 'legislative' || !m._group);
+  const others = members.filter(m => !mps.includes(m));
+  // 정당 지도부 (party_roles에서)
+  const leaders = (PARTY_ROLES[partyName] || []).map(r => {
+    const matched = mps.find(m => m.HG_NM === r.mp_name) || others.find(m => m.HG_NM === r.mp_name);
+    return { ...r, member: matched };
+  }).filter(r => r.member);
+
+  const leadersHtml = leaders.length ? `
+    <div class="sub-section">
+      <h2>지도부 <span class="cnt">${leaders.length}명</span></h2>
+      <div class="grid">${leaders.map(r => {
+        const m = r.member;
+        const initial = (m.HG_NM || '?').charAt(0);
+        const photo = state.photos.get(m.MONA_CD);
+        const avatar = photo?.thumb
+          ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">`
+          : escapeHtml(initial);
+        return `
+          <div class="card" data-id="${escapeHtml(m.MONA_CD)}">
+            <div class="card-bar" style="background:${color}"></div>
+            <div class="card-body">
+              <div class="avatar">${avatar}</div>
+              <div class="card-meta">
+                <div class="card-name">${escapeHtml(m.HG_NM)}</div>
+                <div class="card-party" style="color:${color}; font-size: 11px;">${escapeHtml(r.role)}</div>
+                <div class="card-sub">${escapeHtml(m.ORIG_NM || '—')}</div>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span>${escapeHtml(r.since || '')}</span>
+              <span class="badge">당직</span>
+            </div>
+          </div>
+        `;
+      }).join('')}</div>
+    </div>` : '';
+
+  // 분류: 의원 vs 단체장/장관 등
+  const leaderIds = new Set(leaders.map(r => r.member.MONA_CD));
+  const restMps = mps.filter(m => !leaderIds.has(m.MONA_CD));
+  const restOthers = others.filter(m => !leaderIds.has(m.MONA_CD));
+
+  const mpsHtml = restMps.length ? `
+    <div class="sub-section">
+      <h2>22대 국회의원 <span class="cnt">${restMps.length}명</span></h2>
+      <div class="grid">${restMps.map(memberCardHTML).join('')}</div>
+    </div>` : '';
+  const othersHtml = restOthers.length ? `
+    <div class="sub-section">
+      <h2>기타 직책 <span class="cnt">${restOthers.length}명</span></h2>
+      <div class="grid">${restOthers.map(memberCardHTML).join('')}</div>
+    </div>` : '';
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="group-header">
+      <div class="icon" style="background:${color}">●</div>
+      <div style="flex:1">
+        <h1>${escapeHtml(partyName)}</h1>
+        <div class="sub">소속 ${members.length}명 · 지도부 ${leaders.length}명 · 22대 국회의원 ${mps.length}명</div>
+      </div>
+    </div>
+    ${leadersHtml}
+    ${mpsHtml}
+    ${othersHtml}
   `;
 }
 
@@ -1220,9 +1293,13 @@ function renderFilters() {
   document.querySelectorAll('.chip').forEach(el => {
     el.addEventListener('click', () => {
       const p = el.dataset.party;
-      state.filterParty = p || null;
-      renderFilters();
-      route();
+      if (!p) {
+        state.filterParty = null;
+        location.hash = '';
+        renderFilters(); route();
+      } else {
+        location.hash = `#/party/${encodeURIComponent(p)}`;
+      }
     });
   });
 }
@@ -1236,6 +1313,21 @@ function route() {
   const filterBar = document.getElementById('filter-bar');
   const navStats = document.querySelector('.nav-stats');
 
+  // 정당 페이지
+  const pMatch = hash.match(/^#\/party\/(.+)$/);
+  if (pMatch) {
+    const partyName = decodeURIComponent(pMatch[1]);
+    view.innerHTML = renderPartyPage(partyName);
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.querySelectorAll('.card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+    });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    const visible = state.members.filter(m => m.POLY_NM === partyName && !state.photos.has(m.MONA_CD)).slice(0, 30);
+    prefetchPhotos(visible, 3);
+    return;
+  }
   // 그룹 페이지
   const gMatch = hash.match(/^#\/group\/(\w+)$/);
   if (gMatch) {
@@ -1289,6 +1381,12 @@ function route() {
       view.innerHTML = renderHome();
       document.querySelectorAll('.org-box').forEach(el => {
         el.addEventListener('click', () => { location.hash = `#/group/${el.dataset.group}`; });
+      });
+      document.querySelectorAll('.party-link').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          location.hash = `#/party/${encodeURIComponent(el.dataset.party)}`;
+        });
       });
       // 각 그룹의 상위 6명 사진 프리페치
       const byG = groupMembers();
