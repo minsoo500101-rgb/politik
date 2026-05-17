@@ -853,11 +853,75 @@
   .rel-head {
     padding: 8px 0 18px;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
-  .rel-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 4px; }
-  .rel-sub { font-size: 13px; color: var(--text-2); margin-bottom: 6px; }
+  .rel-head h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 4px; }
+  .rel-sub { font-size: 13px; color: var(--text-2); margin-bottom: 6px; line-height: 1.5; }
   .rel-tip { font-size: 11px; color: var(--dim); }
+  .rel-warning {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(245,158,11,0.1);
+    border-left: 3px solid var(--warn);
+    border-radius: 4px;
+    font-size: 12px; color: var(--warn);
+  }
+  .rel-filters {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .rel-stats {
+    display: flex; flex-wrap: wrap; gap: 18px;
+    padding: 10px 16px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .rel-stat {
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  .rel-stat b {
+    font-size: 18px; color: var(--text); font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .rel-stat span {
+    font-size: 11px; color: var(--text-2);
+  }
+  .rel-legend {
+    margin-top: 14px;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .rel-legend-h {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 1.2px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .rel-legend-rows { display: flex; flex-direction: column; gap: 4px; }
+  .rel-legend-row {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; color: var(--text); font-weight: 600;
+  }
+  .rel-legend-row b {
+    margin-left: auto; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .rl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .rl-line {
+    width: 24px; height: 3px; border-radius: 2px; flex-shrink: 0;
+  }
+  .rel-legend-row.rl-clickable { cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.12s; }
+  .rel-legend-row.rl-clickable:hover { background: var(--bg-elev); }
   .rel-container {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -1446,6 +1510,31 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
   }
+  /* 홈 정당 필터 */
+  .home-filter-bar {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .home-fchip {
+    padding: 5px 11px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 11.5px; font-weight: 600; color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .home-fchip:hover { color: var(--text); border-color: var(--border-strong); }
+  .home-fchip.active {
+    background: var(--text); color: var(--bg-card);
+    border-color: var(--text);
+  }
+  .hf-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .hf-cnt { font-size: 10px; opacity: 0.75; font-variant-numeric: tabular-nums; }
+
   .patch-list { display: flex; flex-direction: column; gap: 8px; }
   .patch-row {
     padding: 12px 14px;
@@ -3258,18 +3347,78 @@ function renderMapLegend() {
   });
 }
 
+if (!state.relFilter) state.relFilter = { topic: 'all', minWeight: 1 };
+
 function renderRelationsPage() {
+  const proposersLoaded = Object.keys(state.billProposers || {}).length;
+  const f = state.relFilter;
   return `
     <div class="group-back" id="back-home">← 조직도</div>
     <div class="rel-head">
-      <h1>관계도</h1>
-      <div class="rel-sub">22대 국회 286명 의원의 정당별 클러스터. 의원 노드 클릭 → 상세 페이지</div>
-      <div class="rel-tip">💡 마우스 휠로 확대 · 드래그로 이동 · 호버 시 의원 정보 툴팁</div>
+      <h1>🕸 위원회별 발의 활동 네트워크</h1>
+      <div class="rel-sub">22대 국회 대표발의 활동을 위원회별로 클러스터링. 노드 크기 = 대표발의 건수, 색 = 정당, 위치 = 소속 위원회</div>
+      <div class="rel-tip">💡 휠 확대 · 드래그 이동 · 의원 클릭 → 상세 · 호버 시 같은 위원회 강조 · 분야 필터로 영역별 활성 의원 발견</div>
+      ${proposersLoaded === 0 ? '<div class="rel-warning">⏳ 발의자 데이터 로드 중… 잠시 후 자동 표시됩니다.</div>' : ''}
     </div>
+    <div class="rel-filters">
+      <div class="pf-group">
+        <span class="pf-label">분야</span>
+        <button class="pf-chip ${f.topic==='all'?'active':''}" data-rt="all">전체</button>
+        ${BILL_TOPICS.filter(t => t.id !== 'misc').map(t => `
+          <button class="pf-chip ${f.topic===t.id?'active':''}" data-rt="${t.id}" style="${f.topic===t.id?`background:${t.color};border-color:${t.color};color:#fff`:''}">
+            ${t.icon} ${escapeHtml(t.label)}
+          </button>
+        `).join('')}
+      </div>
+      <div class="pf-group">
+        <span class="pf-label">최소 발의</span>
+        <button class="pf-chip ${f.minWeight===1?'active':''}" data-rw="1">1건+</button>
+        <button class="pf-chip ${f.minWeight===2?'active':''}" data-rw="2">2건+</button>
+        <button class="pf-chip ${f.minWeight===3?'active':''}" data-rw="3">3건+</button>
+        <button class="pf-chip ${f.minWeight===5?'active':''}" data-rw="5">5건+</button>
+      </div>
+    </div>
+    <div class="rel-stats" id="rel-stats"></div>
     <div class="rel-container" id="rel-container">
-      <div class="rel-loading"><span class="loading-spinner"></span>관계도 그리는 중…</div>
+      <div class="rel-loading"><span class="loading-spinner"></span>네트워크 계산 중…</div>
     </div>
+    <div class="rel-legend" id="rel-legend"></div>
   `;
+}
+
+// 위원회 클러스터 + 대표발의 활동 네트워크 (캐시)
+let _proposerActivityCache = null;
+function buildProposerActivity(topicId) {
+  const cacheKey = topicId || 'all';
+  if (_proposerActivityCache && _proposerActivityCache[cacheKey]) return _proposerActivityCache[cacheKey];
+  if (!_proposerActivityCache) _proposerActivityCache = {};
+  const mps = state.members.filter(m => m._group === 'legislative' && m.HG_NM && m.POLY_NM);
+  const mpByName = new Map();
+  for (const m of mps) mpByName.set(m.HG_NM, m);
+  // 의원별 대표발의 카운트, 통과 카운트, 분야 카운트
+  const leadCount = new Map();  // name → total
+  const passCount = new Map();  // name → passed
+  const topicCount = new Map(); // name → Map(topic, n)
+  const mpCmt = new Map();      // name → committee
+  let billCount = 0;
+  const allBills = state.bills || [];
+  for (const b of allBills) {
+    const info = getBillProposerInfo(b);
+    if (info.kind !== 'mp' || !info.name) continue;
+    if (topicId && topicId !== 'all' && getBillTopic(b).id !== topicId) continue;
+    const m = mpByName.get(info.name);
+    if (!m) continue;
+    billCount++;
+    leadCount.set(info.name, (leadCount.get(info.name) || 0) + 1);
+    if (/가결/.test(b.PROC_RESULT_CD || '')) passCount.set(info.name, (passCount.get(info.name) || 0) + 1);
+    const t = getBillTopic(b).id;
+    if (!topicCount.has(info.name)) topicCount.set(info.name, new Map());
+    topicCount.get(info.name).set(t, (topicCount.get(info.name).get(t) || 0) + 1);
+    if (b.CURR_COMMITTEE) mpCmt.set(info.name, b.CURR_COMMITTEE);
+  }
+  const result = { leadCount, passCount, topicCount, mpCmt, billCount, mpByName, mps };
+  _proposerActivityCache[cacheKey] = result;
+  return result;
 }
 
 function initRelationsGraph() {
@@ -3279,109 +3428,195 @@ function initRelationsGraph() {
   }
   const container = document.getElementById('rel-container');
   if (!container) return;
-  const mps = state.members.filter(m => m._group === 'legislative' && m.HG_NM && m.POLY_NM);
-  if (mps.length < 50) {
-    container.innerHTML = '<div class="empty">의원 데이터 로딩 중…</div>';
+  const proposersLoaded = Object.keys(state.billProposers || {}).length;
+  if (proposersLoaded === 0) {
+    container.innerHTML = '<div class="rel-loading"><span class="loading-spinner"></span>발의자 데이터 로드 중… 잠시 후 자동 표시</div>';
+    setTimeout(() => { if (location.hash === '#/relations' && Object.keys(state.billProposers || {}).length > 0) initRelationsGraph(); }, 2000);
+    return;
+  }
+  const f = state.relFilter || { topic: 'all', minWeight: 1 };
+  const { leadCount, passCount, topicCount, mpCmt, billCount, mpByName, mps } = buildProposerActivity(f.topic);
+
+  // 의원별 활동 노드 — minWeight 이상만
+  const allActive = [];
+  for (const [name, cnt] of leadCount) {
+    if (cnt < (f.minWeight || 1)) continue;
+    const m = mpByName.get(name);
+    if (!m) continue;
+    allActive.push({
+      id: m.MONA_CD,
+      name,
+      party: m.POLY_NM,
+      color: partyColor(m.POLY_NM),
+      mid: m.MONA_CD,
+      region: m.ORIG_NM,
+      cmt: mpCmt.get(name) || m.CMIT_NM || '기타',
+      leadCount: cnt,
+      passCount: passCount.get(name) || 0,
+      passRate: cnt > 0 ? ((passCount.get(name) || 0) / cnt * 100) : 0,
+    });
+  }
+  const nodes = allActive.sort((a,b)=>b.leadCount-a.leadCount).slice(0, 250); // 너무 많으면 잘라냄
+
+  // 위원회 anchor 생성
+  const cmtSet = new Set();
+  for (const n of nodes) cmtSet.add(n.cmt);
+  const cmts = [...cmtSet];
+  const w = Math.min(container.clientWidth || 1000, 1200);
+  const h = 750;
+  // 위원회를 원형으로 배치
+  const cmtAngle = new Map();
+  const radius = Math.min(w, h) * 0.35;
+  cmts.forEach((c, i) => cmtAngle.set(c, (i / cmts.length) * 2 * Math.PI - Math.PI/2));
+  for (const n of nodes) {
+    const a = cmtAngle.get(n.cmt) || 0;
+    n._cx = w/2 + radius * Math.cos(a);
+    n._cy = h/2 + radius * Math.sin(a);
+  }
+
+  // 통계
+  const statsEl = document.getElementById('rel-stats');
+  const totalLead = nodes.reduce((s,n)=>s+n.leadCount, 0);
+  const totalPass = nodes.reduce((s,n)=>s+n.passCount, 0);
+  const partySet = new Map();
+  for (const n of nodes) partySet.set(n.party, (partySet.get(n.party)||0)+1);
+  const dom = [...partySet.entries()].sort((a,b)=>b[1]-a[1])[0];
+  if (statsEl) {
+    statsEl.innerHTML = `
+      <div class="rel-stat"><b>${billCount.toLocaleString()}</b><span>분석 의안 ${f.topic !== 'all' ? '· ' + (BILL_TOPICS.find(t=>t.id===f.topic)?.label || '') : ''}</span></div>
+      <div class="rel-stat"><b>${nodes.length}</b><span>활성 발의자</span></div>
+      <div class="rel-stat"><b>${cmts.length}</b><span>위원회 클러스터</span></div>
+      <div class="rel-stat"><b style="color:var(--ok)">${totalPass.toLocaleString()}</b><span>통과 (${totalLead ? ((totalPass/totalLead)*100).toFixed(1) : 0}%)</span></div>
+      <div class="rel-stat"><b style="color:${partyColor(dom ? dom[0] : '')}">${dom ? dom[0] + ' ' + dom[1] + '명' : '—'}</b><span>최다 활성당</span></div>
+    `;
+  }
+
+  if (nodes.length < 3) {
+    container.innerHTML = '<div class="empty">필터 조건과 일치하는 발의 데이터 없음.</div>';
+    const lg = document.getElementById('rel-legend'); if (lg) lg.innerHTML = '';
     return;
   }
 
-  const w = Math.min(container.clientWidth || 1000, 1200);
-  const h = 700;
   container.innerHTML = '';
   const svg = d3.select(container).append('svg')
     .attr('width', w).attr('height', h)
     .attr('class', 'rel-svg');
 
-  const partyCounts = new Map();
-  for (const m of mps) partyCounts.set(m.POLY_NM, (partyCounts.get(m.POLY_NM) || 0) + 1);
-  const partyNodes = [...partyCounts.entries()].map(([p, n]) => ({
-    id: 'P:' + p, name: p, isParty: true, count: n, color: partyColor(p),
-  }));
-  const mpNodes = mps.map(m => ({
-    id: m.MONA_CD, name: m.HG_NM, party: m.POLY_NM, cmt: m.CMIT_NM,
-    region: m.ORIG_NM, color: partyColor(m.POLY_NM), isParty: false,
-  }));
-  const nodes = [...partyNodes, ...mpNodes];
-  const links = mpNodes.map(m => ({ source: m.id, target: 'P:' + m.party }));
+  const g = svg.append('g');
+  const maxLead = Math.max(...nodes.map(n => n.leadCount), 1);
+  const rScale = d3.scaleSqrt().domain([1, maxLead]).range([5, 28]);
+
+  // 위원회 anchor 라벨 (배경 원호)
+  g.append('g').selectAll('text').data(cmts).join('text')
+    .attr('x', c => w/2 + (radius + 70) * Math.cos(cmtAngle.get(c)))
+    .attr('y', c => h/2 + (radius + 70) * Math.sin(cmtAngle.get(c)))
+    .attr('text-anchor', 'middle')
+    .attr('dy', '0.3em')
+    .attr('font-size', 11).attr('font-weight', 700)
+    .attr('fill', 'var(--text-2)')
+    .style('pointer-events', 'none')
+    .text(c => c.length > 12 ? c.slice(0, 10) + '…' : c);
 
   const sim = d3.forceSimulation(nodes)
-    .force('charge', d3.forceManyBody().strength(d => d.isParty ? -2500 : -28))
-    .force('link', d3.forceLink(links).id(d => d.id).distance(d => d.target.isParty ? 80 : 30).strength(0.4))
-    .force('center', d3.forceCenter(w/2, h/2))
-    .force('collide', d3.forceCollide().radius(d => d.isParty ? 32 : 7))
+    .force('charge', d3.forceManyBody().strength(-12))
+    .force('collide', d3.forceCollide().radius(d => rScale(d.leadCount) + 1.5))
+    .force('x', d3.forceX(d => d._cx).strength(0.18))
+    .force('y', d3.forceY(d => d._cy).strength(0.18))
     .alphaDecay(0.04);
 
-  const g = svg.append('g');
-  const linkSel = g.append('g').attr('stroke-opacity', 0.12).attr('stroke-width', 0.6)
-    .selectAll('line').data(links).join('line')
-    .attr('stroke', d => partyColor((d.target && typeof d.target === 'object' ? d.target.name : d.target.replace('P:','')) || ''));
-
   const nodeSel = g.append('g').selectAll('g').data(nodes).join('g')
-    .style('cursor', d => d.isParty ? 'default' : 'pointer')
+    .style('cursor', 'pointer')
     .on('mouseenter', function(e, d) {
       d3.select(this).raise();
       const tip = document.getElementById('rel-tooltip');
       if (tip) {
-        tip.innerHTML = d.isParty
-          ? `<b>${d.name}</b><br>${d.count}명`
-          : `<b>${d.name}</b><br><span style="color:${d.color}">${d.party}</span><br>${d.region || ''}<br><span style="font-size:10px;color:var(--dim)">${d.cmt || ''}</span>`;
+        tip.innerHTML = `<b>${escapeHtml(d.name)}</b><br><span style="color:${d.color}">${escapeHtml(d.party)}</span><br>${escapeHtml(d.region || '')}<br><span style="font-size:10px;color:var(--dim)">${escapeHtml(d.cmt || '')}</span><br><b style="color:var(--warn)">대표발의 ${d.leadCount}건</b> · 가결 ${d.passCount}건 (${d.passRate.toFixed(0)}%)`;
         tip.style.display = 'block';
         tip.style.borderColor = d.color;
       }
+      // 같은 위원회 강조
+      nodeSel.style('opacity', n2 => n2.cmt === d.cmt ? 1 : 0.22);
     })
     .on('mousemove', function(e) {
       const tip = document.getElementById('rel-tooltip');
-      if (tip) {
-        tip.style.left = (e.clientX + 14) + 'px';
-        tip.style.top  = (e.clientY + 14) + 'px';
-      }
+      if (tip) { tip.style.left = (e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; }
     })
     .on('mouseleave', function() {
       const tip = document.getElementById('rel-tooltip');
       if (tip) tip.style.display = 'none';
+      nodeSel.style('opacity', null);
     })
-    .on('click', (e, d) => { if (!d.isParty) location.hash = `#/m/${encodeURIComponent(d.id)}`; });
+    .on('click', (e, d) => location.hash = `#/m/${encodeURIComponent(d.mid)}`);
 
   nodeSel.append('circle')
-    .attr('r', d => d.isParty ? 28 : 5.5)
+    .attr('r', d => rScale(d.leadCount))
     .attr('fill', d => d.color)
-    .attr('stroke', d => d.isParty ? 'var(--bg-card)' : 'rgba(255,255,255,0.2)')
-    .attr('stroke-width', d => d.isParty ? 3 : 0.5)
-    .style('filter', d => d.isParty ? `drop-shadow(0 0 12px ${d.color})` : '');
+    .attr('stroke', 'var(--bg-card)').attr('stroke-width', 1.5)
+    .attr('fill-opacity', 0.92);
 
-  nodeSel.filter(d => d.isParty).append('text')
-    .attr('text-anchor', 'middle').attr('dy', 4)
-    .attr('fill', '#fff').attr('font-size', 11).attr('font-weight', 700)
+  // Top 20 이름 표시
+  const topIds = new Set(nodes.slice().sort((a,b)=>b.leadCount-a.leadCount).slice(0, 20).map(n => n.id));
+  nodeSel.filter(d => topIds.has(d.id)).append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', d => rScale(d.leadCount) + 11)
+    .attr('font-size', 10)
+    .attr('font-weight', 700)
     .style('pointer-events', 'none')
-    .text(d => d.count);
-
-  nodeSel.filter(d => d.isParty).append('text')
-    .attr('text-anchor', 'middle').attr('dy', 48)
-    .attr('fill', d => d.color).attr('font-size', 11).attr('font-weight', 600)
-    .style('pointer-events', 'none')
-    .style('text-shadow', '0 0 4px var(--bg-card)')
+    .style('text-shadow', '0 0 3px var(--bg-card), 0 0 3px var(--bg-card)')
+    .attr('fill', d => d.color)
     .text(d => d.name);
 
   sim.on('tick', () => {
-    linkSel
-      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
     nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
   });
 
   svg.call(d3.zoom()
-    .scaleExtent([0.5, 4])
+    .scaleExtent([0.3, 5])
     .translateExtent([[-w * 0.5, -h * 0.5], [w * 1.5, h * 1.5]])
     .on('zoom', e => g.attr('transform', e.transform)));
 
-  // 드래그
   function drag(simulation) {
     return d3.drag()
       .on('start', (event, d) => { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
       .on('drag',  (event, d) => { d.fx = event.x; d.fy = event.y; })
-      .on('end',   (event, d) => { if (!event.active) simulation.alphaTarget(0); if (!d.isParty) { d.fx = null; d.fy = null; } });
+      .on('end',   (event, d) => { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; });
   }
   nodeSel.call(drag(sim));
+
+  // 범례
+  const lg = document.getElementById('rel-legend');
+  if (lg) {
+    const partyArr = [...partySet.entries()].sort((a,b)=>b[1]-a[1]);
+    // Top 8 발의왕
+    const topMps = nodes.slice().sort((a,b)=>b.leadCount-a.leadCount).slice(0, 8);
+    // 위원회 Top 5 (가장 활성)
+    const cmtCount = new Map();
+    for (const n of nodes) cmtCount.set(n.cmt, (cmtCount.get(n.cmt)||0)+n.leadCount);
+    const topCmts = [...cmtCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0, 5);
+    lg.innerHTML = `
+      <div class="rel-legend-section">
+        <div class="rel-legend-h">정당별 활성 발의자</div>
+        <div class="rel-legend-rows">
+          ${partyArr.map(([p, n]) => `<div class="rel-legend-row"><span class="rl-dot" style="background:${partyColor(p)}"></span>${escapeHtml(p)} <b>${n}</b></div>`).join('')}
+        </div>
+      </div>
+      <div class="rel-legend-section">
+        <div class="rel-legend-h">발의왕 Top 8 (이번 필터)</div>
+        <div class="rel-legend-rows">
+          ${topMps.map(n => `<div class="rel-legend-row rl-clickable" data-mid="${escapeHtml(n.mid)}"><span class="rl-dot" style="background:${n.color}"></span>${escapeHtml(n.name)} <b>${n.leadCount}건</b></div>`).join('')}
+        </div>
+      </div>
+      <div class="rel-legend-section">
+        <div class="rel-legend-h">위원회별 발의량 Top 5</div>
+        <div class="rel-legend-rows">
+          ${topCmts.map(([c, n]) => `<div class="rel-legend-row"><span class="rl-dot" style="background:var(--text-2)"></span>${escapeHtml(c)} <b>${n}건</b></div>`).join('')}
+        </div>
+      </div>
+    `;
+    lg.querySelectorAll('.rl-clickable').forEach(el => {
+      el.addEventListener('click', () => location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`);
+    });
+  }
 }
 
 function renderLocalDonut() {
@@ -3932,6 +4167,7 @@ function renderCommitteeDetail(cmtName) {
 // ============================================================
 // 필터 state
 if (!state.billsFilter) state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, topic: 'all', q: '', limit: 30 };
+if (!state.homeFeedFilter) state.homeFeedFilter = { party: 'all' };
 
 function applyBillsFilter(bills) {
   const f = state.billsFilter;
@@ -4528,25 +4764,64 @@ function renderHome() {
     .map(([n,c]) => ({ name:n, count:c, color: partyColor(n) }));
 
   // 최근 통과 법안 (패치 노트 피드용) — 가결된 의안만 최신순
-  // 다양성: 같은 발의자 종류·같은 위원회 연속 회피
   const allPassed = (state.bills || []).filter(b => /가결/.test(b.PROC_RESULT_CD || ''))
     .sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+
+  // 정당 필터 (홈 피드 전용)
+  const homeF = state.homeFeedFilter || { party: 'all' };
+  // 정당별 카운트 (가결 의안 기준)
+  const homePartyCounts = new Map();
+  for (const b of allPassed) {
+    const info = getBillProposerInfo(b);
+    if (info.kind === 'mp' && info.party) {
+      homePartyCounts.set(info.party, (homePartyCounts.get(info.party) || 0) + 1);
+    } else if (info.kind === 'gov') {
+      homePartyCounts.set('__gov__', (homePartyCounts.get('__gov__') || 0) + 1);
+    } else if (info.kind === 'chair') {
+      homePartyCounts.set('__chair__', (homePartyCounts.get('__chair__') || 0) + 1);
+    }
+  }
+  const homePartyChips = [
+    { id: 'all', label: '전체', count: allPassed.length, color: 'var(--text)' },
+    ...[...homePartyCounts.entries()]
+      .filter(([id]) => !['__gov__', '__chair__'].includes(id))
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([p, c]) => ({ id: 'p:' + p, label: p, count: c, color: partyColor(p) })),
+    { id: 'gov', label: '⚖ 정부', count: homePartyCounts.get('__gov__') || 0, color: '#475569' },
+    { id: 'chair', label: '🏢 위원장', count: homePartyCounts.get('__chair__') || 0, color: '#94a3b8' },
+  ];
+
+  // 필터 적용 + 다양성 (필터 'all'일 때만)
+  const filteredAllPassed = allPassed.filter(b => {
+    if (homeF.party === 'all') return true;
+    const info = getBillProposerInfo(b);
+    if (homeF.party === 'gov') return info.kind === 'gov';
+    if (homeF.party === 'chair') return info.kind === 'chair';
+    if (homeF.party.startsWith('p:')) {
+      const p = homeF.party.slice(2);
+      return info.kind === 'mp' && info.party === p;
+    }
+    return true;
+  });
   const passedBills = [];
   const recentCmts = []; const recentKinds = [];
-  for (const b of allPassed) {
+  for (const b of filteredAllPassed) {
     if (passedBills.length >= 8) break;
+    if (homeF.party !== 'all') {
+      passedBills.push(b);  // 필터 적용 시 단순 최신순
+      continue;
+    }
     const cmt = b.CURR_COMMITTEE || '';
     const info = getBillProposerInfo(b);
     const sameCmtRecent = recentCmts.slice(-2).filter(c => c === cmt).length;
     const sameKindRecent = recentKinds.slice(-3).filter(k => k === info.kind).length;
-    // 같은 위원회 2번 연속 OR 같은 종류 3번 연속이면 일단 건너뛰고 나중 후순위
     if (sameCmtRecent >= 2 || sameKindRecent >= 3) continue;
     passedBills.push(b);
     recentCmts.push(cmt); recentKinds.push(info.kind);
   }
-  // 8개 못 채웠으면 나머지 채움 (최신순)
-  if (passedBills.length < 8) {
-    for (const b of allPassed) {
+  if (passedBills.length < 8 && homeF.party === 'all') {
+    for (const b of filteredAllPassed) {
       if (passedBills.includes(b)) continue;
       passedBills.push(b);
       if (passedBills.length >= 8) break;
@@ -4576,44 +4851,17 @@ function renderHome() {
           <h2>📋 최신 패치 <span class="patch-live">LIVE</span></h2>
           <a href="#/bills" class="chart-link">전체 패치 노트 →</a>
         </div>
+        <div class="home-filter-bar">
+          ${homePartyChips.map(c => `
+            <button class="home-fchip ${homeF.party === c.id ? 'active' : ''}" data-pid="${escapeHtml(c.id)}" style="${homeF.party === c.id && c.id !== 'all' ? `background:${c.color};border-color:${c.color};color:#fff` : ''}">
+              ${c.id !== 'all' && c.id !== 'gov' && c.id !== 'chair' ? `<span class="hf-dot" style="background:${c.color}"></span>` : ''}
+              ${escapeHtml(c.label)} <span class="hf-cnt">${c.count}</span>
+            </button>
+          `).join('')}
+        </div>
         ${passedBills.length ? `
           <div class="patch-list">
-            ${passedBills.map((b, idx) => {
-              const info = getBillProposerInfo(b);
-              const isFresh = idx < 2;
-              const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
-              const partyColorCss = info.party ? partyColor(info.party) : 'var(--text-2)';
-              const proposerHtml = info.kind === 'gov'
-                ? `<span class="patch-by-gov">⚖ 정부</span>`
-                : info.kind === 'chair'
-                  ? `<span class="patch-by-chair">🏢 ${escapeHtml(info.name)}${info.member ? ` <em style="color:${partyColorCss}">${escapeHtml(info.party)}</em>` : ''}</span>`
-                  : info.kind === 'mp' && info.name
-                    ? `<span class="patch-by-mp" ${info.member ? `data-mid="${escapeHtml(info.member.MONA_CD)}"` : ''} style="cursor:${info.member ? 'pointer':'default'}">👤 ${escapeHtml(info.name)}${info.count > 1 ? ` 외 ${info.count - 1}명` : ''}${info.party ? ` <em style="color:${partyColorCss}">${escapeHtml(info.party)}</em>` : ''}</span>`
-                    : `<span class="patch-by-unknown">발의자 정보 준비 중</span>`;
-              const resultClass = b.PROC_RESULT_CD === '원안가결' ? 'patch-pass' : 'patch-amend';
-              const resultLabel = b.PROC_RESULT_CD === '원안가결' ? 'PASSED' : 'AMENDED+PASSED';
-              const ynRatio = (() => {
-                const y = parseInt(b.YES_TCNT,10), n = parseInt(b.NO_TCNT,10), bl = parseInt(b.BLANK_TCNT,10)||0;
-                if (!y) return '';
-                const tot = y + n + bl;
-                return `<span class="patch-vote">${y}/${tot} 찬성${n ? ` · ${n} 반대` : ''}${bl ? ` · ${bl} 기권` : ''}</span>`;
-              })();
-              return `
-                <div class="patch-row${isFresh ? ' patch-fresh' : ''}"${link ? ` onclick="window.open('${link}','_blank','noopener')"` : ''} style="${link ? 'cursor:pointer' : ''}; border-left-color:${partyColorCss}">
-                  <div class="patch-meta">
-                    <span class="patch-tag ${resultClass}">${resultLabel}</span>
-                    <span class="patch-date">${escapeHtml((b.PROC_DT || '').slice(0,10))}</span>
-                    <span class="patch-num">#${escapeHtml(b.BILL_NO || '—')}</span>
-                    ${isFresh ? '<span class="patch-fresh-dot">NEW</span>' : ''}
-                  </div>
-                  <div class="patch-title">${escapeHtml(b.BILL_NAME || b.BILL_NM || '—')}</div>
-                  <div class="patch-by">
-                    ${proposerHtml}
-                    <span class="patch-cmt">${escapeHtml(b.CURR_COMMITTEE || '')}</span>
-                    ${ynRatio}
-                  </div>
-                </div>`;
-            }).join('')}
+            ${passedBills.map((b, idx) => patchRowHTML(b, idx)).join('')}
           </div>
         ` : `
           <div class="patch-loading">
@@ -5465,8 +5713,27 @@ function route() {
   }
   // 관계도 페이지
   if (hash === '#/relations') {
-    view.innerHTML = renderRelationsPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    const renderRel = () => {
+      view.innerHTML = renderRelationsPage();
+      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      // 분야 필터
+      view.querySelectorAll('.pf-chip[data-rt]').forEach(el => {
+        el.addEventListener('click', () => {
+          state.relFilter.topic = el.dataset.rt;
+          renderRel();
+          setTimeout(initRelationsGraph, 50);
+        });
+      });
+      // 최소 협력 필터
+      view.querySelectorAll('.pf-chip[data-rw]').forEach(el => {
+        el.addEventListener('click', () => {
+          state.relFilter.minWeight = parseInt(el.dataset.rw, 10);
+          renderRel();
+          setTimeout(initRelationsGraph, 50);
+        });
+      });
+    };
+    renderRel();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     setTimeout(initRelationsGraph, 100);
@@ -5574,6 +5841,13 @@ function route() {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
+        });
+      });
+      // 홈 정당 필터 chip
+      document.querySelectorAll('.home-fchip').forEach(el => {
+        el.addEventListener('click', () => {
+          state.homeFeedFilter.party = el.dataset.pid;
+          route();
         });
       });
       // 도넛 차트 클릭 (segment + legend row)
