@@ -1798,6 +1798,70 @@ function initRelationsGraph() {
   nodeSel.call(drag(sim));
 }
 
+function renderLocalDonut() {
+  // 지방정부 정당 분포 — 광역단체장 + 기초단체장 + 광역의회의장 + 교육감
+  const locals = state.members.filter(m =>
+    m._type === 'local_gov_head' || m._type === 'local_gov_muni' ||
+    m._type === 'local_council_speaker' || m._type === 'edu_superintendent'
+  );
+  if (locals.length < 10) return '';
+  const byParty = new Map();
+  for (const m of locals) byParty.set(m.POLY_NM || '무소속', (byParty.get(m.POLY_NM || '무소속') || 0) + 1);
+  const arr = [...byParty.entries()].sort((a,b) => b[1]-a[1])
+    .map(([name, count]) => ({ name, count, color: partyColor(name) }));
+  const total = arr.reduce((s,p) => s+p.count, 0);
+
+  // 카테고리별 카운트
+  const cats = {
+    광역단체장:  locals.filter(m => m._type === 'local_gov_head').length,
+    기초단체장:  locals.filter(m => m._type === 'local_gov_muni').length,
+    광역의회의장: locals.filter(m => m._type === 'local_council_speaker').length,
+    교육감:      locals.filter(m => m._type === 'edu_superintendent').length,
+  };
+
+  const size = 240, R = 100, r = 64;
+  const cx = size/2, cy = size/2;
+  let angle = -Math.PI/2;
+  const segs = arr.map(p => {
+    const frac = p.count / total;
+    const a0 = angle;
+    angle += frac * 2 * Math.PI;
+    const a1 = angle;
+    const large = frac > 0.5 ? 1 : 0;
+    const x0 = cx + R*Math.cos(a0), y0 = cy + R*Math.sin(a0);
+    const x1 = cx + R*Math.cos(a1), y1 = cy + R*Math.sin(a1);
+    const x2 = cx + r*Math.cos(a1), y2 = cy + r*Math.sin(a1);
+    const x3 = cx + r*Math.cos(a0), y3 = cy + r*Math.sin(a0);
+    const d = `M${x0.toFixed(2)},${y0.toFixed(2)} A${R},${R} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)} L${x2.toFixed(2)},${y2.toFixed(2)} A${r},${r} 0 ${large} 0 ${x3.toFixed(2)},${y3.toFixed(2)} Z`;
+    return { d, ...p, percent: (frac*100).toFixed(1) };
+  });
+
+  return `
+    <div class="donut-section">
+      <div class="donut-head">
+        <h2>지방정부 정당 분포</h2>
+        <div class="donut-sub">현재 등록 ${total}명 (광역 ${cats.광역단체장} · 기초 ${cats.기초단체장} · 의장 ${cats.광역의회의장} · 교육감 ${cats.교육감})</div>
+      </div>
+      <div class="donut-wrap">
+        <svg viewBox="0 0 ${size} ${size}" class="donut" width="${size}" height="${size}">
+          ${segs.map(s => `<path d="${s.d}" fill="${s.color}" stroke="var(--bg-card)" stroke-width="2" class="donut-seg" data-party="${escapeHtml(s.name)}"><title>${escapeHtml(s.name)}: ${s.count}명 (${s.percent}%)</title></path>`).join('')}
+          <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="34" font-weight="800" style="fill:var(--text)">${total}</text>
+          <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="11" fill="var(--dim)" letter-spacing="1">지방정부</text>
+        </svg>
+        <div class="donut-legend">
+          ${segs.map(s => `
+            <div class="donut-leg-row" data-party="${escapeHtml(s.name)}">
+              <span class="leg-dot" style="background:${s.color}"></span>
+              <span class="leg-name">${escapeHtml(s.name)}</span>
+              <span class="leg-count">${s.count}</span>
+              <span class="leg-pct">${s.percent}%</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderStats() {
   const mps = state.members.filter(m => m._group === 'legislative' || (!m._group && m.UNITS));
   if (mps.length < 100) return '';
@@ -2016,6 +2080,7 @@ function renderHome() {
       </div>
       <div class="org-grid">${boxes}</div>
       ${renderPartyDonut()}
+      ${renderLocalDonut()}
       ${renderStats()}
     </div>
   `;
