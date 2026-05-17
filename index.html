@@ -5446,24 +5446,34 @@ const AC = (() => {
 
   function search(q) {
     q = q.trim().toLowerCase();
-    if (!q) return { members: [], parties: [], groups: [] };
+    if (!q) return { members: [], parties: [], groups: [], bills: [] };
     // Members (top 8)
     const scored = state.members.map(m => ({ m, s: score(m, q) })).filter(x => x.s > 0);
     scored.sort((a, b) => b.s - a.s || (a.m.HG_NM||'').localeCompare(b.m.HG_NM||'', 'ko'));
-    const members = scored.slice(0, 8).map(x => x.m);
-    // Parties (max 4)
+    const members = scored.slice(0, 6).map(x => x.m);
+    // Parties (max 3)
     const partySet = new Set();
     for (const m of state.members) {
       const p = m.POLY_NM;
       if (p && p.toLowerCase().includes(q)) partySet.add(p);
     }
-    const parties = [...partySet].slice(0, 4);
-    // Groups (max 3)
+    const parties = [...partySet].slice(0, 3);
+    // Groups (max 2)
     const groups = GROUP_ORDER.filter(gid => {
       const g = GROUPS[gid];
       return g.name.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q);
-    }).slice(0, 3);
-    return { members, parties, groups };
+    }).slice(0, 2);
+    // Bills (max 4) — 법안명 또는 위원회 매칭, 최신순
+    const bills = [];
+    if (q.length >= 2 && state.bills?.length) {
+      const matched = state.bills.filter(b => {
+        const nm = (b.BILL_NAME || b.BILL_NM || '').toLowerCase();
+        return nm.includes(q);
+      });
+      matched.sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+      bills.push(...matched.slice(0, 4));
+    }
+    return { members, parties, groups, bills };
   }
 
   function memberRow(m, q) {
@@ -5510,9 +5520,25 @@ const AC = (() => {
         <span class="ac-badge">분류</span>
       </div>`;
   }
+  function billRow(b, q) {
+    const info = getBillProposerInfo(b);
+    const partyC = info.party ? partyColor(info.party) : 'var(--text-2)';
+    const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
+    const tagColor = b.PROC_RESULT_CD === '원안가결' || b.PROC_RESULT_CD === '수정가결' ? 'var(--ok)' :
+                     b.PROC_RESULT_CD === '부결' ? '#c0392b' : 'var(--text-2)';
+    return `
+      <div class="ac-row" role="option" data-action="bill" data-link="${escapeHtml(link)}">
+        <div class="ac-avatar" style="background:${partyC}; color:#fff">📋</div>
+        <div class="ac-info">
+          <div class="ac-name">${hl(b.BILL_NAME || b.BILL_NM || '—', q)}</div>
+          <div class="ac-sub">${escapeHtml((b.PROC_DT || '').slice(0,10))} · ${escapeHtml(b.CURR_COMMITTEE || '—')} · ${info.kind === 'mp' && info.name ? escapeHtml(info.name) : info.kind === 'chair' ? '위원장' : info.kind === 'gov' ? '정부' : ''}</div>
+        </div>
+        <span class="ac-badge" style="background:${tagColor}">${escapeHtml(b.PROC_RESULT_CD || '의안')}</span>
+      </div>`;
+  }
 
   function render(q) {
-    const { members, parties, groups } = search(q);
+    const { members, parties, groups, bills } = search(q);
     items = [];
     let html = '';
     if (groups.length) {
@@ -5524,8 +5550,12 @@ const AC = (() => {
       for (const p of parties) { items.push({ action: 'party', party: p }); html += partyRow(p, q); }
     }
     if (members.length) {
-      html += `<div class="ac-section-h">인물 · ${members.length}건${members.length === 8 ? ' (상위 8)' : ''}</div>`;
+      html += `<div class="ac-section-h">인물 · ${members.length}건${members.length >= 6 ? ' (상위 6)' : ''}</div>`;
       for (const m of members) { items.push({ action: 'member', id: m.MONA_CD }); html += memberRow(m, q); }
+    }
+    if (bills.length) {
+      html += `<div class="ac-section-h">법안 · ${bills.length}건${bills.length >= 4 ? ' (상위 4)' : ''}</div>`;
+      for (const b of bills) { items.push({ action: 'bill', link: b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '') }); html += billRow(b, q); }
     }
     if (!items.length) {
       html = '<div class="ac-empty">결과 없음</div>';
@@ -5555,6 +5585,7 @@ const AC = (() => {
     if (item.action === 'member') location.hash = `#/m/${encodeURIComponent(item.id)}`;
     else if (item.action === 'party') location.hash = `#/party/${encodeURIComponent(item.party)}`;
     else if (item.action === 'group') location.hash = `#/group/${item.gid}`;
+    else if (item.action === 'bill' && item.link) window.open(item.link, '_blank', 'noopener');
   }
 
   $input.addEventListener('input', e => {
