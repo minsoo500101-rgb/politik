@@ -1518,10 +1518,28 @@ function drawMap(geo, layer) {
   for (const m of state.members) {
     if (m._type === 'local_gov_head') lgByRegion.set(m.ORIG_NM, m);
   }
-  // 기초단체장 region → 단체장 매핑 (ORIG_NM은 자치구·시·군 이름)
+  // 기초단체장 region → 단체장 매핑 ("광역 + 시군구" 키로 통일)
+  // GeoJSON code 앞 2자리 → 광역 이름 매핑
+  const PROV_BY_CODE = {
+    '11':'서울','21':'부산','22':'대구','23':'인천','24':'광주','25':'대전','26':'울산','29':'세종',
+    '31':'경기','32':'강원','33':'충북','34':'충남','35':'전북','36':'전남','37':'경북','38':'경남','39':'제주',
+  };
+  function muniMatchKey(feature) {
+    const code = (feature.properties.code || '').toString();
+    const prov = PROV_BY_CODE[code.slice(0,2)];
+    return prov ? `${prov} ${feature.properties.name}` : feature.properties.name;
+  }
+  // member region이 prefix 있으면 그대로, 없으면 광역 추정
   const muniByName = new Map();
   for (const m of state.members) {
-    if (m._type === 'local_gov_muni') muniByName.set(m.ORIG_NM, m);
+    if (m._type !== 'local_gov_muni') continue;
+    let key = m.ORIG_NM;
+    // role에서 광역 추정 (예: "서울특별시 종로구청장" → "서울 종로구")
+    if (key && !/(^|\s)(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)\s/.test(key)) {
+      const rm = (m.MEM_TITLE || m.CMIT_NM || '').match(/(서울|부산|대구|인천|광주|대전|울산|세종)/);
+      if (rm) key = rm[1] + ' ' + m.ORIG_NM;
+    }
+    muniByName.set(key, m);
   }
 
   // 시도 -> 정당 매핑 (시군구 색칠용)
@@ -1539,20 +1557,12 @@ function drawMap(geo, layer) {
   }
 
   const g = svg.append('g').attr('transform', 'translate(20, 20)');
-  // 시군구 레이어용 — 자치구·시·군 이름 정규화 (예: "서울특별시 종로구" → "종로구")
-  function muniShortName(fullName) {
-    if (!fullName) return null;
-    // "서울특별시 종로구" → "종로구"
-    const m = fullName.match(/^[가-힣]+(특별시|광역시|특별자치시|도|특별자치도)\s+(.+)$/);
-    return m ? m[2] : fullName;
-  }
-
   const paths = g.selectAll('path').data(geo.features).join('path')
     .attr('d', path)
     .attr('fill', d => {
       if (layer === 'muni') {
-        const short = muniShortName(d.properties.name);
-        const muni = short ? muniByName.get(short) : null;
+        const key = muniMatchKey(d);
+        const muni = muniByName.get(key);
         if (muni) return partyColor(muni.POLY_NM);
         // 시군구장 데이터 없음 → 광역 색의 옅은 버전 (fallback)
         const r = getRegionForFeature(d);
@@ -1565,8 +1575,8 @@ function drawMap(geo, layer) {
     })
     .attr('fill-opacity', d => {
       if (layer === 'muni') {
-        const short = muniShortName(d.properties.name);
-        return muniByName.has(short) ? 0.85 : 0.35; // 실제 데이터 있으면 진하게
+        const key = muniMatchKey(d);
+        return muniByName.has(key) ? 0.85 : 0.35;
       }
       return 0.85;
     })
@@ -1578,13 +1588,14 @@ function drawMap(geo, layer) {
       const tip = document.getElementById('rel-tooltip');
       if (!tip) return;
       if (layer === 'muni') {
-        const short = muniShortName(d.properties.name);
-        const muni = short ? muniByName.get(short) : null;
+        const key = muniMatchKey(d);
+        const muni = muniByName.get(key);
+        const dispName = key.includes(' ') ? key : d.properties.name;
         if (muni) {
-          tip.innerHTML = `<b>${escapeHtml(d.properties.name)}</b><br>${escapeHtml(muni.HG_NM)} (${escapeHtml(muni.POLY_NM)})<br><span style="color:var(--dim);font-size:10px">${escapeHtml(muni.CMIT_NM || muni.ELECT_GBN_NM || '')}</span>`;
+          tip.innerHTML = `<b>${escapeHtml(dispName)}</b><br>${escapeHtml(muni.HG_NM)} (${escapeHtml(muni.POLY_NM)})<br><span style="color:var(--dim);font-size:10px">${escapeHtml(muni.CMIT_NM || muni.ELECT_GBN_NM || '')}</span>`;
           tip.style.borderColor = partyColor(muni.POLY_NM);
         } else {
-          tip.innerHTML = `<b>${escapeHtml(d.properties.name)}</b><br><span style="color:var(--dim)">기초단체장 데이터 준비 중</span>`;
+          tip.innerHTML = `<b>${escapeHtml(dispName)}</b><br><span style="color:var(--dim)">기초단체장 데이터 준비 중</span>`;
           tip.style.borderColor = 'var(--border-strong)';
         }
       } else {
@@ -1611,10 +1622,9 @@ function drawMap(geo, layer) {
     })
     .on('click', (e, d) => {
       if (layer === 'muni') {
-        const short = muniShortName(d.properties.name);
-        const muni = short ? muniByName.get(short) : null;
+        const key = muniMatchKey(d);
+        const muni = muniByName.get(key);
         if (muni) location.hash = `#/m/${encodeURIComponent(muni.MONA_CD)}`;
-        // 시군구장 없으면 클릭 무효 (광역으로 fallback 안 함)
         return;
       }
       const r = getRegionForFeature(d);
@@ -2461,6 +2471,9 @@ function route() {
   const hash = location.hash || '';
   const filterBar = document.getElementById('filter-bar');
   const navStats = document.querySelector('.nav-stats');
+  // 페이지 전환 시 잔존 툴팁 강제 숨김
+  const _tip = document.getElementById('rel-tooltip');
+  if (_tip) _tip.style.display = 'none';
 
   // 정치 분포 지도 페이지
   if (hash === '#/map') {
