@@ -614,6 +614,54 @@
     .stats-grid { grid-template-columns: 1fr; }
   }
 
+  /* Party info box */
+  .party-info {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+  .pi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px 24px;
+    margin-bottom: 14px;
+  }
+  .pi-row { display: grid; grid-template-columns: 100px 1fr; gap: 12px; font-size: 13px; align-items: baseline; }
+  .pi-k { color: var(--dim); font-size: 11px; }
+  .pi-v { color: var(--text); }
+  .pi-v a { color: var(--link); text-decoration: none; }
+  .pi-v a:hover { text-decoration: underline; }
+  .pi-summary {
+    font-size: 13px; line-height: 1.7;
+    color: var(--text);
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .pi-pred { font-size: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .pi-pred-chain {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    margin-top: 8px;
+  }
+  .pi-pred-item {
+    display: inline-block;
+    padding: 3px 9px;
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--text-2);
+    background: var(--bg-elev);
+  }
+  .pi-pred-item.current {
+    background: transparent;
+    font-weight: 700;
+  }
+  .pi-pred-arrow { color: var(--dim); margin: 0 4px; }
+
   /* Korea map page */
   .map-head { padding: 8px 0 18px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
   .map-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 4px; }
@@ -1174,14 +1222,16 @@ async function loadWikiOverrides() {
   try { localStorage.setItem(CACHE_KEY_WIKIMAP, JSON.stringify({ t: Date.now(), data: map })); } catch {}
 }
 
-// politicians.json — 국회 외 인물 + 정당 지도부 metadata
+// politicians.json — 국회 외 인물 + 정당 metadata
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
+let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 async function loadExtraPoliticians() {
   try {
     const r = await fetch('data/politicians.json?v=' + Date.now());
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
+    PARTY_INFO  = j.parties     || {};
     return (j.people || []).map(p => ({
       MONA_CD: p.id,
       HG_NM: p.name_ko,
@@ -2225,6 +2275,30 @@ function renderPartyPage(partyName) {
       <div class="grid">${restOthers.map(memberCardHTML).join('')}</div>
     </div>` : '';
 
+  const info = PARTY_INFO[partyName];
+  const infoBox = info ? `
+    <div class="party-info">
+      <div class="pi-grid">
+        ${info.founded ? `<div class="pi-row"><span class="pi-k">창당일</span><span class="pi-v">${escapeHtml(info.founded)}</span></div>` : ''}
+        ${info.ideology ? `<div class="pi-row"><span class="pi-k">이념</span><span class="pi-v">${escapeHtml(info.ideology)}</span></div>` : ''}
+        ${info.address ? `<div class="pi-row"><span class="pi-k">중앙당</span><span class="pi-v">${escapeHtml(info.address)}</span></div>` : ''}
+        ${info.members_est ? `<div class="pi-row"><span class="pi-k">당원수 (추정)</span><span class="pi-v">${escapeHtml(info.members_est)}</span></div>` : ''}
+        ${info.wiki ? `<div class="pi-row"><span class="pi-k">위키</span><span class="pi-v"><a href="https://ko.wikipedia.org/wiki/${encodeURIComponent(info.wiki)}" target="_blank" rel="noopener">한국어 위키 →</a></span></div>` : ''}
+      </div>
+      ${info.summary ? `<div class="pi-summary">${escapeHtml(info.summary)}</div>` : ''}
+      ${info.predecessors && info.predecessors.length ? `
+        <div class="pi-pred">
+          <span class="pi-k">이전 정당 계보</span>
+          <div class="pi-pred-chain">
+            ${info.predecessors.map(p => `<span class="pi-pred-item">${escapeHtml(p)}</span>`).join('<span class="pi-pred-arrow">←</span>')}
+            <span class="pi-pred-arrow">←</span>
+            <span class="pi-pred-item current" style="border-color:${color};color:${color}">${escapeHtml(partyName)}</span>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  ` : '';
+
   return `
     <div class="group-back" id="back-home">← 조직도</div>
     <div class="group-header">
@@ -2234,6 +2308,7 @@ function renderPartyPage(partyName) {
         <div class="sub">소속 ${members.length}명 · 지도부 ${leaders.length}명 · 22대 국회의원 ${mps.length}명</div>
       </div>
     </div>
+    ${infoBox}
     ${leadersHtml}
     ${mpsHtml}
     ${othersHtml}
