@@ -766,6 +766,7 @@
     gap: 18px;
   }
   .map-container {
+    position: relative;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 14px;
@@ -774,6 +775,31 @@
     display: flex; align-items: center; justify-content: center;
   }
   .kr-map-svg { display: block; max-width: 100%; cursor: grab; }
+  .kr-map-svg:active { cursor: grabbing; }
+  .map-zoom-ctrl {
+    position: absolute;
+    right: 14px; top: 14px;
+    display: flex; flex-direction: column; gap: 4px;
+    z-index: 10;
+  }
+  .mz-btn {
+    width: 32px; height: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 7px;
+    color: var(--text); font-size: 16px; font-weight: 700;
+    cursor: pointer;
+    display: grid; place-items: center;
+    transition: all 0.13s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    user-select: none;
+    line-height: 1;
+  }
+  .mz-btn:hover {
+    background: var(--text); color: var(--bg-card);
+    border-color: var(--text);
+  }
+  [data-theme="dark"] .mz-btn { box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
   .map-legend {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -2247,6 +2273,7 @@ function renderMapPage() {
     <div class="map-wrap">
       <div class="map-container" id="map-container">
         <div class="rel-loading"><span class="loading-spinner"></span>지도 그리는 중…</div>
+        <div class="map-zoom-ctrl" id="map-zoom-ctrl"></div>
       </div>
       <div class="map-legend" id="map-legend"></div>
     </div>
@@ -2433,8 +2460,25 @@ function drawMap(geo, layer) {
       .text(d => REGION_MAP[d.properties.name] || '');
   }
 
-  // 줌
-  svg.call(d3.zoom().scaleExtent([1, 6]).on('zoom', e => g.attr('transform', `translate(20, 20) ${e.transform.toString()}`)));
+  // 줌 — translateExtent로 화면 밖 드래그 방지
+  const zoom = d3.zoom()
+    .scaleExtent([1, 8])
+    .translateExtent([[-w * 0.15, -h * 0.15], [w * 1.15, h * 1.15]])
+    .on('zoom', e => g.attr('transform', `translate(20, 20) ${e.transform.toString()}`));
+  svg.call(zoom);
+
+  // 줌 컨트롤 (UI 버튼) — container.innerHTML='' 이후이므로 매번 새로 생성
+  const ctrl = document.createElement('div');
+  ctrl.className = 'map-zoom-ctrl';
+  ctrl.innerHTML = `
+    <button class="mz-btn" data-act="in"  title="확대">＋</button>
+    <button class="mz-btn" data-act="out" title="축소">−</button>
+    <button class="mz-btn" data-act="reset" title="원위치">⤾</button>
+  `;
+  container.appendChild(ctrl);
+  ctrl.querySelector('[data-act="in"]').onclick    = () => svg.call(zoom.scaleBy, 1.5);
+  ctrl.querySelector('[data-act="out"]').onclick   = () => svg.call(zoom.scaleBy, 1/1.5);
+  ctrl.querySelector('[data-act="reset"]').onclick = () => svg.call(zoom.transform, d3.zoomIdentity);
 
   // 범례 갱신
   renderMapLegend();
@@ -2572,7 +2616,10 @@ function initRelationsGraph() {
     nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
   });
 
-  svg.call(d3.zoom().scaleExtent([0.5, 4]).on('zoom', e => g.attr('transform', e.transform)));
+  svg.call(d3.zoom()
+    .scaleExtent([0.5, 4])
+    .translateExtent([[-w * 0.5, -h * 0.5], [w * 1.5, h * 1.5]])
+    .on('zoom', e => g.attr('transform', e.transform)));
 
   // 드래그
   function drag(simulation) {
