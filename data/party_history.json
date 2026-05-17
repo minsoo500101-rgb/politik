@@ -1,0 +1,82 @@
+{
+  "_meta": "대한민국 주요 정당사 1948~2025. 보수·민주·진보 계열별로 분류. 날짜는 창당일·당명변경일·해산일 기준.",
+  "streams": [
+    {
+      "id": "conservative",
+      "label": "보수 계열",
+      "color": "#E61E2B",
+      "desc": "자유당 → 민주공화당 → 민주정의당 → 민주자유당 → 신한국당 → 한나라당 → 새누리당 → 자유한국당 → 미래통합당 → 국민의힘"
+    },
+    {
+      "id": "democratic",
+      "label": "민주·자유 계열",
+      "color": "#004EA2",
+      "desc": "민주당 → 신민당 → 신한민주당 → 통일민주당·평화민주당 → 새정치국민회의 → 새천년민주당 → 열린우리당 → 통합민주당 → 더불어민주당"
+    },
+    {
+      "id": "centrist",
+      "label": "중도·국민 계열",
+      "color": "#FF7920",
+      "desc": "국민의당 → 바른미래당 → 민생당 / 개혁신당 / 새로운미래"
+    },
+    {
+      "id": "progressive",
+      "label": "진보·노동 계열",
+      "color": "#D6001C",
+      "desc": "민주노동당 → 통합진보당 → 정의당 → 사회민주당 · 진보당"
+    },
+    {
+      "id": "other",
+      "label": "기타·소수",
+      "color": "#6b7280",
+      "desc": "통일국민당 · 자유민주연합 · 친박연대 · 조국혁신당 등"
+    }
+  ],
+  "parties": [
+    { "name": "한국민주당",       "stream": "democratic",  "from": "1945-09-16", "to": "1949-02-10", "founder": "송진우·김성수", "fate": "민주국민당으로 개편", "wiki": "한국민주당" },
+    { "name": "민주국민당",       "stream": "democratic",  "from": "1949-02-10", "to": "1955-09-18", "fate": "민주당으로 개편", "wiki": "민주국민당" },
+    { "name": "자유당",           "stream": "conservative", "from": "1951-12-23", "to": "1960-04-26", "founder": "이승만", "fate": "4·19 혁명 후 해체", "wiki": "자유당_(1951년)" },
+    { "name": "민주당",           "stream": "democratic",  "from": "1955-09-18", "to": "1961-05-16", "fate": "5·16 쿠데타로 해산", "wiki": "민주당_(1955년)" },
+    { "name": "민주공화당",       "stream": "conservative", "from": "1963-02-26", "to": "1980-10-27", "founder": "박정희·김종필", "fate": "신군부 정치규제로 강제 해산", "wiki": "민주공화당_(대한민국)" },
+    { "name": "신민당",           "stream": "democratic",  "from": "1967-02-07", "to": "1980-10-27", "founder": "유진오·윤보선", "fate": "정치규제법으로 해산", "wiki": "신민당_(1967년)" },
+    { "name": "민주정의당",       "stream": "conservative", "from": "1981-01-15", "to": "1990-01-22", "founder": "전두환", "fate": "3당 합당 (민자당)", "wiki": "민주정의당" },
+    { "name": "민주한국당",       "stream": "democratic",  "from": "1981-01-17", "to": "1988-04-26", "fate": "통합민주당으로 흡수", "wiki": "민주한국당" },
+    { "name": "신한민주당",       "stream": "democratic",  "from": "1985-01-18", "to": "1988-04-26", "founder": "이민우·김영삼·김대중", "fate": "통일민주당·평화민주당으로 분당", "wiki": "신한민주당" },
+    { "name": "통일민주당",       "stream": "democratic",  "from": "1987-05-01", "to": "1990-01-22", "founder": "김영삼", "fate": "3당 합당 (민자당)", "wiki": "통일민주당" },
+    { "name": "평화민주당",       "stream": "democratic",  "from": "1987-11-12", "to": "1991-09-16", "founder": "김대중", "fate": "민주당으로 통합", "wiki": "평화민주당" },
+    { "name": "신민주공화당",     "stream": "conservative", "from": "1987-10-30", "to": "1990-01-22", "founder": "김종필", "fate": "3당 합당 (민자당)", "wiki": "신민주공화당" },
+    { "name": "민주자유당",       "stream": "conservative", "from": "1990-01-22", "to": "1995-12-06", "founder": "노태우·김영삼·김종필 (3당합당)", "fate": "신한국당으로 개편", "wiki": "민주자유당" },
+    { "name": "민주당",           "stream": "democratic",  "from": "1991-09-16", "to": "1995-09-05", "fate": "새정치국민회의로 개편", "wiki": "민주당_(1991년)" },
+    { "name": "통일국민당",       "stream": "other",       "from": "1992-02-08", "to": "1994-12-20", "founder": "정주영", "fate": "신민당과 합당", "wiki": "통일국민당" },
+    { "name": "자유민주연합",     "stream": "conservative", "from": "1995-03-30", "to": "2006-04-07", "founder": "김종필", "fate": "국민중심당으로 합당", "wiki": "자유민주연합" },
+    { "name": "신한국당",         "stream": "conservative", "from": "1995-12-06", "to": "1997-11-21", "founder": "김영삼", "fate": "한나라당으로 개편 (+민주당 일부)", "wiki": "신한국당" },
+    { "name": "새정치국민회의",   "stream": "democratic",  "from": "1995-09-05", "to": "2000-01-20", "founder": "김대중", "fate": "새천년민주당으로 개편", "wiki": "새정치국민회의" },
+    { "name": "한나라당",         "stream": "conservative", "from": "1997-11-21", "to": "2012-02-13", "fate": "새누리당으로 당명 변경", "wiki": "한나라당" },
+    { "name": "새천년민주당",     "stream": "democratic",  "from": "2000-01-20", "to": "2005-05-06", "founder": "김대중", "fate": "민주당으로 개편", "wiki": "새천년민주당" },
+    { "name": "열린우리당",       "stream": "democratic",  "from": "2003-11-11", "to": "2007-08-20", "founder": "노무현 (민주당 분당)", "fate": "대통합민주신당에 합류", "wiki": "열린우리당" },
+    { "name": "대통합민주신당",   "stream": "democratic",  "from": "2007-08-20", "to": "2008-02-17", "fate": "통합민주당으로 통합", "wiki": "대통합민주신당" },
+    { "name": "친박연대",         "stream": "conservative", "from": "2008-03-12", "to": "2010-02-24", "founder": "서청원", "fate": "미래희망연대로 개편 후 한나라당 흡수", "wiki": "친박연대" },
+    { "name": "통합민주당",       "stream": "democratic",  "from": "2008-02-17", "to": "2011-12-16", "fate": "민주통합당으로 통합", "wiki": "통합민주당_(2008년)" },
+    { "name": "민주노동당",       "stream": "progressive", "from": "2000-01-30", "to": "2011-12-13", "founder": "권영길", "fate": "통합진보당으로 통합", "wiki": "민주노동당" },
+    { "name": "진보신당",         "stream": "progressive", "from": "2008-03-16", "to": "2012-10-22", "fate": "진보정의당으로 합당", "wiki": "진보신당" },
+    { "name": "민주통합당",       "stream": "democratic",  "from": "2011-12-16", "to": "2013-05-04", "fate": "민주당으로 당명 변경", "wiki": "민주통합당" },
+    { "name": "통합진보당",       "stream": "progressive", "from": "2011-12-13", "to": "2014-12-19", "founder": "민주노동당+국민참여당+진보신당 통합", "fate": "헌재 위헌정당해산 결정", "wiki": "통합진보당" },
+    { "name": "새누리당",         "stream": "conservative", "from": "2012-02-13", "to": "2017-02-13", "fate": "자유한국당으로 당명 변경 (탄핵 직후)", "wiki": "새누리당" },
+    { "name": "정의당",           "stream": "progressive", "from": "2012-10-21", "to": "2024-02-20", "founder": "통합진보당 분리 (구 진보신당계)", "fate": "녹색정의당으로 통합 후 분당", "wiki": "정의당" },
+    { "name": "민주당",           "stream": "democratic",  "from": "2013-05-04", "to": "2014-03-26", "fate": "새정치민주연합으로 합당", "wiki": "민주당_(2013년)" },
+    { "name": "새정치민주연합",   "stream": "democratic",  "from": "2014-03-26", "to": "2015-12-28", "founder": "문재인·안철수", "fate": "더불어민주당으로 당명 변경", "wiki": "새정치민주연합" },
+    { "name": "더불어민주당",     "stream": "democratic",  "from": "2015-12-28", "to": null, "founder": "문재인 (당명 변경)", "fate": "현재 원내 제1당", "active": true, "wiki": "더불어민주당" },
+    { "name": "국민의당",         "stream": "centrist",    "from": "2016-02-02", "to": "2018-02-13", "founder": "안철수", "fate": "바른정당과 합당 (바른미래당)", "wiki": "국민의당_(2016년)" },
+    { "name": "바른정당",         "stream": "conservative", "from": "2017-01-24", "to": "2018-02-13", "founder": "유승민 (새누리당 탈당파)", "fate": "국민의당과 합당", "wiki": "바른정당" },
+    { "name": "자유한국당",       "stream": "conservative", "from": "2017-02-13", "to": "2020-02-17", "fate": "미래통합당으로 통합", "wiki": "자유한국당" },
+    { "name": "바른미래당",       "stream": "centrist",    "from": "2018-02-13", "to": "2020-02-24", "fate": "민생당으로 분당·통합", "wiki": "바른미래당" },
+    { "name": "미래통합당",       "stream": "conservative", "from": "2020-02-17", "to": "2020-09-02", "founder": "자유한국당+새보수당+미래를향한전진4.0", "fate": "국민의힘으로 당명 변경", "wiki": "미래통합당" },
+    { "name": "민생당",           "stream": "centrist",    "from": "2020-02-24", "to": null, "founder": "바른미래+대안신당+민주평화당", "active": true, "wiki": "민생당" },
+    { "name": "국민의힘",         "stream": "conservative", "from": "2020-09-02", "to": null, "founder": "미래통합당 당명 변경", "active": true, "fate": "현재 원내 제2당", "wiki": "국민의힘" },
+    { "name": "진보당",           "stream": "progressive", "from": "2017-10-15", "to": null, "founder": "민중당 후신", "active": true, "wiki": "진보당_(2020년)" },
+    { "name": "기본소득당",       "stream": "progressive", "from": "2019-06-23", "to": null, "active": true, "wiki": "기본소득당" },
+    { "name": "개혁신당",         "stream": "centrist",    "from": "2024-01-20", "to": null, "founder": "이준석 (국힘 탈당)", "active": true, "wiki": "개혁신당" },
+    { "name": "사회민주당",       "stream": "progressive", "from": "2024-02-20", "to": null, "founder": "정의당 분리", "active": true, "wiki": "사회민주당_(대한민국)" },
+    { "name": "조국혁신당",       "stream": "other",       "from": "2024-03-03", "to": null, "founder": "조국", "active": true, "wiki": "조국혁신당" }
+  ]
+}

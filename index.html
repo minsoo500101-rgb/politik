@@ -1360,6 +1360,166 @@
     .pb-name { font-size: 11px; }
   }
 
+  /* ============ Party history timeline ============ */
+  .ph-page {
+    max-width: 1280px; margin: 0 auto;
+    padding: 8px 24px 60px;
+  }
+  .ph-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  .ph-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .ph-hero h1 {
+    font-size: 26px; font-weight: 800;
+    letter-spacing: -0.6px; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .ph-hero p {
+    font-size: 13px; color: var(--text-2);
+  }
+  .ph-chart-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 22px 22px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    position: relative;
+  }
+  .ph-year-axis {
+    position: relative;
+    height: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .ph-year-mark {
+    position: absolute; top: 0; bottom: 0;
+    border-left: 1px dashed var(--border);
+    color: var(--dim); font-size: 10px;
+  }
+  .ph-year-mark span {
+    position: absolute; left: 4px; top: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ph-section { margin-bottom: 22px; }
+  .ph-section-head {
+    padding: 6px 0 6px 12px;
+    margin-bottom: 8px;
+  }
+  .ph-section-name {
+    font-size: 13px; font-weight: 700; color: var(--text);
+  }
+  .ph-section-desc {
+    font-size: 10.5px; color: var(--text-2);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+  .ph-lane {
+    position: relative;
+    background: linear-gradient(to right, transparent, transparent);
+  }
+  .ph-bar {
+    position: absolute;
+    height: 32px;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.92;
+    transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+    border: 1px solid rgba(255,255,255,0.18);
+    display: flex; align-items: center;
+    padding: 0 8px;
+    min-width: 8px;
+  }
+  .ph-bar:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    z-index: 5;
+  }
+  .ph-bar.ph-active {
+    box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 3px currentColor;
+  }
+  .ph-bar-label {
+    color: #fff; font-size: 11px; font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    letter-spacing: -0.2px;
+  }
+  .ph-now-line {
+    position: absolute;
+    top: 26px; bottom: 22px;
+    border-left: 2px dashed var(--ok);
+    color: var(--ok); font-size: 10px; font-weight: 700;
+  }
+  .ph-now-line span {
+    position: absolute; left: 4px; top: 0;
+    background: var(--bg-card); padding: 0 4px;
+  }
+  .ph-list {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px 8px;
+  }
+  .ph-list h2 {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ph-list-row {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .ph-list-row:hover { background: var(--bg-elev); }
+  .ph-list-row:last-child { border-bottom: none; }
+  .ph-list-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    margin-top: 5px; flex-shrink: 0;
+  }
+  .ph-list-info { flex: 1; }
+  .ph-list-name {
+    font-size: 13px; font-weight: 700; color: var(--text);
+  }
+  .ph-list-now {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 8px;
+    background: var(--ok); color: #fff;
+    margin-left: 4px; letter-spacing: 0.3px;
+  }
+  .ph-list-meta {
+    font-size: 11px; color: var(--text-2);
+    margin-top: 1px;
+  }
+  .ph-list-fate {
+    font-size: 11px; color: var(--dim);
+    font-style: italic; margin-top: 2px;
+  }
+  .ph-foot {
+    margin-top: 18px;
+    font-size: 10.5px; color: var(--dim);
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+  @media (max-width: 800px) {
+    .ph-chart-wrap { padding: 22px 14px 18px; }
+    .ph-bar-label { font-size: 10px; }
+    .ph-hero h1 { font-size: 22px; }
+  }
+
   /* ============ Loading / Empty ============ */
   .loading, .empty {
     padding: 80px 20px; text-align: center;
@@ -1740,7 +1900,21 @@ const state = {
   filterParty: null,
   search: '',
   photos: new Map(), // MONA_CD -> { thumb, title } or { miss:true }
+  partyHistory: null,
 };
+
+async function loadPartyHistory() {
+  if (state.partyHistory) return state.partyHistory;
+  try {
+    const res = await fetch('data/party_history.json', { cache: 'force-cache' });
+    if (!res.ok) throw new Error('party_history fetch failed');
+    state.partyHistory = await res.json();
+  } catch (e) {
+    console.warn('party history load failed', e);
+    state.partyHistory = { streams: [], parties: [] };
+  }
+  return state.partyHistory;
+}
 
 // 영구 사진 캐시 (1주, 누적)
 function loadPhotoCache() {
@@ -2498,6 +2672,125 @@ function renderPartyDonut() {
   `;
 }
 
+// ============================================================
+// Party history timeline
+// ============================================================
+function renderPartyHistoryPage() {
+  const ph = state.partyHistory;
+  if (!ph) return '<div class="loading"><span class="loading-spinner"></span>정당사 데이터 불러오는 중…</div>';
+
+  const MIN_YEAR = 1945, MAX_YEAR = 2026;
+  const SPAN = MAX_YEAR - MIN_YEAR;
+  function yToX(y) { return ((y - MIN_YEAR) / SPAN * 100).toFixed(2) + '%'; }
+  function dateToYear(d) {
+    if (!d) return MAX_YEAR;
+    const y = parseInt(d.slice(0, 4), 10);
+    const m = parseInt((d.slice(5, 7) || '7'), 10);
+    return y + (m - 1) / 12;
+  }
+
+  // 결정적 row assign per stream — 같은 시기 같은 stream 정당이 겹치지 않게
+  const streamRows = new Map();
+  for (const s of ph.streams) streamRows.set(s.id, []);
+  const placed = []; // { party, row, fromY, toY }
+  // 시간 순 정렬
+  const parties = [...ph.parties].sort((a, b) => dateToYear(a.from) - dateToYear(b.from));
+  for (const p of parties) {
+    const fromY = dateToYear(p.from);
+    const toY = dateToYear(p.to);
+    const rows = streamRows.get(p.stream);
+    let row = 0;
+    while (true) {
+      const conflict = placed.some(x => x.party.stream === p.stream && x.row === row && !(toY <= x.fromY || fromY >= x.toY));
+      if (!conflict) break;
+      row++;
+    }
+    placed.push({ party: p, row, fromY, toY });
+    if (!rows.includes(row)) rows.push(row);
+  }
+
+  // Year markers (decade)
+  const decades = [];
+  for (let y = 1950; y <= 2020; y += 10) decades.push(y);
+
+  // Group by stream
+  const ROW_H = 32;
+  const ROW_GAP = 4;
+  const SECTION_GAP = 22;
+  const HEADER_H = 26;
+  const sections = ph.streams.map(s => {
+    const sParties = placed.filter(x => x.party.stream === s.id);
+    const rowCount = Math.max(1, ...sParties.map(x => x.row + 1));
+    const bars = sParties.map(x => {
+      const p = x.party;
+      const left = yToX(x.fromY);
+      const widthPct = ((x.toY - x.fromY) / SPAN * 100).toFixed(2) + '%';
+      const top = (x.row * (ROW_H + ROW_GAP)) + 'px';
+      const isActive = p.active === true;
+      return `
+        <div class="ph-bar${isActive ? ' ph-active' : ''}"
+             style="left:${left}; width:${widthPct}; top:${top}; background:${s.color}"
+             data-wiki="${escapeHtml(p.wiki || '')}"
+             title="${escapeHtml(p.name)} (${p.from?.slice(0,4) || '?'} ~ ${p.to ? p.to.slice(0,4) : '현재'})${p.founder ? ' · ' + escapeHtml(p.founder) : ''}${p.fate ? ' · ' + escapeHtml(p.fate) : ''}">
+          <span class="ph-bar-label">${escapeHtml(p.name)}</span>
+        </div>`;
+    }).join('');
+    return `
+      <div class="ph-section">
+        <div class="ph-section-head" style="border-left:4px solid ${s.color}">
+          <div class="ph-section-name">${escapeHtml(s.label)}</div>
+          <div class="ph-section-desc">${escapeHtml(s.desc)}</div>
+        </div>
+        <div class="ph-lane" style="height:${rowCount * (ROW_H + ROW_GAP)}px">
+          ${bars}
+        </div>
+      </div>`;
+  }).join('');
+
+  // List view (chronological)
+  const listHtml = parties.slice().reverse().map(p => {
+    const s = ph.streams.find(x => x.id === p.stream);
+    const dur = p.to
+      ? `${p.from.slice(0,4)} ~ ${p.to.slice(0,4)} (${Math.round(dateToYear(p.to) - dateToYear(p.from))}년)`
+      : `${p.from.slice(0,4)} ~ 현재`;
+    return `
+      <div class="ph-list-row" data-wiki="${escapeHtml(p.wiki || '')}">
+        <div class="ph-list-dot" style="background:${s?.color || '#888'}"></div>
+        <div class="ph-list-info">
+          <div class="ph-list-name">${escapeHtml(p.name)} ${p.active ? '<span class="ph-list-now">현재</span>' : ''}</div>
+          <div class="ph-list-meta">${escapeHtml(s?.label || '')} · ${dur}${p.founder ? ' · ' + escapeHtml(p.founder) : ''}</div>
+          ${p.fate ? `<div class="ph-list-fate">${escapeHtml(p.fate)}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="ph-page">
+      <div class="ph-hero">
+        <div class="ph-hero-eye">POLITIK · 정당사</div>
+        <h1>대한민국 정당사 1948 → 2025</h1>
+        <p>${ph.parties.length}개 주요 정당 · 5개 계열 · 막대를 클릭하면 위키 페이지로 이동합니다.</p>
+      </div>
+
+      <div class="ph-chart-wrap">
+        <div class="ph-year-axis">
+          ${decades.map(y => `<div class="ph-year-mark" style="left:${yToX(y)}"><span>${y}</span></div>`).join('')}
+        </div>
+        ${sections}
+        <div class="ph-now-line" style="left:${yToX(2026)}"><span>2026</span></div>
+      </div>
+
+      <div class="ph-list">
+        <h2>전체 정당 (시간 역순)</h2>
+        ${listHtml}
+      </div>
+
+      <div class="ph-foot">출처: 위키백과 · 국회사 · 자체 정리. 주요 정당만 수록 (소수정당·교섭단체 미달 정당은 일부 생략).</div>
+    </div>
+  `;
+}
+
 function renderHome() {
   const groups = groupMembers();
   const totalCount = state.members.length;
@@ -2576,6 +2869,7 @@ function renderHome() {
         <div class="dash-hero-r">
           <a class="hero-btn" href="#/map">🗺  정치 분포 지도</a>
           <a class="hero-btn" href="#/relations">🕸  관계도</a>
+          <a class="hero-btn" href="#/history/parties">📅  정당사</a>
         </div>
       </div>
 
@@ -2680,11 +2974,11 @@ function renderHome() {
           </div>
         </div>
 
-        <!-- 역사 -->
-        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/group/historical'">
-          <div class="chart-head"><h3>📜 역대 인물</h3><span class="chart-link">→</span></div>
-          <div class="cta-desc">역대 대통령 13명 · 역대 국무총리 12명</div>
-          <div class="cta-mini">클릭 시 위키에서 2~21대 국회의원 ~5,000명 자동 로드</div>
+        <!-- 정당사 -->
+        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/history/parties'">
+          <div class="chart-head"><h3>📅 정당사 1948→2025</h3><span class="chart-link">→</span></div>
+          <div class="cta-desc">자유당·민주공화당·민자당·새천년민주당·한나라당·국힘·민주… 주요 정당 46개 흐름</div>
+          <div class="cta-mini">계열별 색·기간 막대 · 클릭 시 위키 이동 · 78년간의 정당 변천</div>
         </div>
       </div>
     </div>
@@ -3171,6 +3465,25 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
+  // 정당사 타임라인
+  if (hash === '#/history/parties') {
+    view.innerHTML = renderPartyHistoryPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    loadPartyHistory().then(() => {
+      view.innerHTML = renderPartyHistoryPage();
+      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      // 막대 클릭 → 위키 이동
+      view.querySelectorAll('.ph-bar, .ph-list-row').forEach(el => {
+        el.addEventListener('click', () => {
+          const wiki = el.dataset.wiki;
+          if (wiki) window.open('https://ko.wikipedia.org/wiki/' + encodeURIComponent(wiki), '_blank', 'noopener');
+        });
+      });
+    });
+    return;
+  }
   // 정치 분포 지도 페이지
   if (hash === '#/map') {
     view.innerHTML = renderMapPage();
