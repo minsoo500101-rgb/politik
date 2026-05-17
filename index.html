@@ -1386,6 +1386,127 @@
     .pb-name { font-size: 11px; }
   }
 
+  /* ============ Committee page ============ */
+  .cmt-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .cmt-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+  }
+  .cmt-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .cmt-hero h1 {
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.6px; color: var(--text);
+    margin-bottom: 4px;
+  }
+  .cmt-hero p { font-size: 13px; color: var(--text-2); }
+
+  .cmt-section { margin-bottom: 22px; }
+  .cmt-section h2 {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmt-section h2 .cnt {
+    font-size: 11px; color: var(--dim); font-weight: 600;
+    margin-left: 6px;
+  }
+  .cmt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .cmt-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; flex-direction: column;
+    gap: 9px;
+  }
+  .cmt-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+  }
+  [data-theme="dark"] .cmt-card:hover { box-shadow: 0 8px 18px rgba(0,0,0,0.45); }
+  .cmt-card-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 8px;
+  }
+  .cmt-card-name {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    line-height: 1.3;
+    flex: 1;
+  }
+  .cmt-card-tag {
+    font-size: 9.5px; font-weight: 700; color: var(--bg-card);
+    background: var(--warn);
+    padding: 2px 6px; border-radius: 8px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .cmt-card-stats {
+    display: flex; gap: 14px;
+  }
+  .cmt-card-stats > div {
+    display: flex; align-items: baseline; gap: 3px;
+  }
+  .cmt-card-stats b {
+    font-size: 18px; font-weight: 800; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .cmt-card-stats span {
+    font-size: 11px; color: var(--text-2);
+  }
+  .cmt-card-chair {
+    font-size: 11px; color: var(--text-2);
+  }
+  .cmt-card-chair b { font-weight: 700; }
+  .cmt-card-chair span { color: var(--dim); margin-left: 4px; }
+  .cmt-card-bars {
+    display: flex; gap: 2px;
+    height: 5px; border-radius: 3px; overflow: hidden;
+  }
+  .cmt-card-bar { height: 100%; }
+
+  .cmt-detail { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .cmt-detail-hero {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+  }
+  .cmt-detail-hero h1 {
+    font-size: 24px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.6px; margin-bottom: 14px;
+  }
+  .cmt-detail-stats {
+    display: flex; flex-wrap: wrap; gap: 22px;
+  }
+  .cmt-detail-stats > div {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .cmt-detail-stats b {
+    font-size: 22px; font-weight: 800; color: var(--text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .cmt-detail-stats span {
+    font-size: 11px; color: var(--text-2);
+    letter-spacing: 0.3px;
+  }
+
   /* ============ Bills statistics ============ */
   .bills-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
   .bills-hero {
@@ -2860,6 +2981,160 @@ function renderPartyDonut() {
 }
 
 // ============================================================
+// Committee overview + detail
+// ============================================================
+function getCommitteeMap() {
+  // 모든 22대 의원의 CMIT_NM 집계
+  const map = new Map();
+  const mps = state.members.filter(m => (m._group === 'legislative' || (!m._group && m.UNITS)));
+  for (const m of mps) {
+    const c = (m.CMIT_NM || '').trim();
+    if (!c || c === '—' || c === '비위원') continue;
+    // 분할: "정무위원회, 예산결산특별위원회"
+    for (const part of c.split(/[,·]/).map(s => s.trim())) {
+      if (!part) continue;
+      if (!map.has(part)) map.set(part, []);
+      map.get(part).push(m);
+    }
+  }
+  return map;
+}
+
+function renderCommitteesPage() {
+  const cmtMap = getCommitteeMap();
+  if (cmtMap.size === 0) {
+    return `
+      <div class="group-back" id="back-home">← 조직도</div>
+      <div class="loading"><span class="loading-spinner"></span>위원회 데이터 준비 중…</div>
+    `;
+  }
+  const arr = [...cmtMap.entries()].map(([name, members]) => {
+    const billCount = (state.billsByCommittee?.get(name) || []).length;
+    // 정당 분포
+    const byParty = new Map();
+    for (const m of members) byParty.set(m.POLY_NM, (byParty.get(m.POLY_NM) || 0) + 1);
+    const partyArr = [...byParty.entries()].sort((a, b) => b[1] - a[1]);
+    // 위원장 찾기 (JOB_RES_NM에 위원장 포함이면)
+    const chair = members.find(m => /위원장/.test(m.JOB_RES_NM || ''));
+    const isSpecial = /특별위원회|예산결산|윤리|정보/.test(name);
+    return { name, members, billCount, partyArr, chair, isSpecial };
+  }).sort((a, b) => {
+    // 상임위 먼저, 그 다음 인원 많은 순
+    if (a.isSpecial !== b.isSpecial) return a.isSpecial ? 1 : -1;
+    return b.members.length - a.members.length;
+  });
+  const standing = arr.filter(c => !c.isSpecial);
+  const special = arr.filter(c => c.isSpecial);
+
+  function cardHtml(c) {
+    const top3 = c.partyArr.slice(0, 3);
+    const chairColor = c.chair ? partyColor(c.chair.POLY_NM) : 'var(--text-2)';
+    return `
+      <div class="cmt-card" data-cmt="${escapeHtml(c.name)}">
+        <div class="cmt-card-head">
+          <div class="cmt-card-name">${escapeHtml(c.name)}</div>
+          ${c.isSpecial ? '<span class="cmt-card-tag">특별</span>' : ''}
+        </div>
+        <div class="cmt-card-stats">
+          <div><b>${c.members.length}</b><span>명</span></div>
+          <div><b>${c.billCount}</b><span>건 처리</span></div>
+        </div>
+        ${c.chair ? `<div class="cmt-card-chair">위원장 <b style="color:${chairColor}">${escapeHtml(c.chair.HG_NM)}</b> <span>${escapeHtml(c.chair.POLY_NM)}</span></div>` : '<div class="cmt-card-chair"><span>위원장 정보 없음</span></div>'}
+        <div class="cmt-card-bars">
+          ${top3.map(([p, n]) => `<div class="cmt-card-bar" style="flex:${n}; background:${partyColor(p)}" title="${escapeHtml(p)} ${n}명"></div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="cmt-page">
+      <div class="cmt-hero">
+        <div class="cmt-hero-eye">POLITIK · 22대 국회 위원회</div>
+        <h1>국회 위원회 ${arr.length}개</h1>
+        <p>상임위원회 ${standing.length} · 특별위원회 ${special.length} · 클릭하면 위원 명단 + 처리 의안</p>
+      </div>
+      <div class="cmt-section">
+        <h2>상임위원회 <span class="cnt">${standing.length}</span></h2>
+        <div class="cmt-grid">${standing.map(cardHtml).join('')}</div>
+      </div>
+      ${special.length ? `
+        <div class="cmt-section">
+          <h2>특별위원회·기타 <span class="cnt">${special.length}</span></h2>
+          <div class="cmt-grid">${special.map(cardHtml).join('')}</div>
+        </div>` : ''}
+    </div>
+  `;
+}
+
+function renderCommitteeDetail(cmtName) {
+  const cmtMap = getCommitteeMap();
+  const members = cmtMap.get(cmtName) || [];
+  if (!members.length) {
+    return `
+      <div class="group-back" id="back-home">← 위원회</div>
+      <div class="empty">위원회 "${escapeHtml(cmtName)}"를 찾을 수 없습니다.</div>
+    `;
+  }
+  const bills = state.billsByCommittee?.get(cmtName) || [];
+  // 정당별 그룹
+  const byParty = new Map();
+  for (const m of members) {
+    const p = m.POLY_NM || '무소속';
+    if (!byParty.has(p)) byParty.set(p, []);
+    byParty.get(p).push(m);
+  }
+  const sorted = [...byParty.entries()].sort((a, b) => b[1].length - a[1].length);
+  const chair = members.find(m => /위원장/.test(m.JOB_RES_NM || ''));
+
+  // 최근 처리 의안 10건
+  const recentBills = bills.slice().sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || '')).slice(0, 10);
+  const passed = bills.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length;
+  const passRate = bills.length ? (passed/bills.length*100).toFixed(1) : '0';
+
+  return `
+    <div class="group-back" id="back-cmt">← 위원회</div>
+    <div class="cmt-detail">
+      <div class="cmt-detail-hero">
+        <h1>${escapeHtml(cmtName)}</h1>
+        <div class="cmt-detail-stats">
+          <div><b>${members.length}</b><span>명</span></div>
+          <div><b>${bills.length}</b><span>건 처리</span></div>
+          <div><b>${passRate}<span style="font-size:13px">%</span></b><span>가결률</span></div>
+          ${chair ? `<div><b style="color:${partyColor(chair.POLY_NM)}">${escapeHtml(chair.HG_NM)}</b><span>위원장 · ${escapeHtml(chair.POLY_NM)}</span></div>` : ''}
+        </div>
+      </div>
+
+      ${sorted.map(([party, arr]) => `
+        <div class="sub-section">
+          <h2><span style="color:${partyColor(party)}">●</span> ${escapeHtml(party)} <span class="cnt">${arr.length}명</span></h2>
+          <div class="grid">${arr.map(memberCardHTML).join('')}</div>
+        </div>
+      `).join('')}
+
+      ${recentBills.length ? `
+        <div class="sub-section">
+          <h2>최근 처리 의안 <span class="cnt">${recentBills.length}건</span></h2>
+          <div class="bills-recent">
+            ${recentBills.map(b => {
+              const color = PROC_RESULT_COLOR[b.PROC_RESULT_CD] || 'var(--text-2)';
+              const name = b.BILL_NAME || b.BILL_NM || '—';
+              const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
+              return `
+                <div class="br-row"${link ? ` onclick="window.open('${link}','_blank','noopener')"` : ''} style="${link ? 'cursor:pointer' : ''}">
+                  <div class="br-date">${escapeHtml((b.PROC_DT || '').slice(0,10))}</div>
+                  <div class="br-name">${escapeHtml(name)}</div>
+                  <div class="br-cmt">${escapeHtml(cmtName)}</div>
+                  <div class="br-result" style="color:${color}">${escapeHtml(b.PROC_RESULT_CD || '—')}</div>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>` : ''}
+    </div>
+  `;
+}
+
+// ============================================================
 // Bills statistics page (22대 본회의 처리 의안)
 // ============================================================
 function renderBillsPage() {
@@ -3261,8 +3536,9 @@ function renderHome() {
         </div>
         <div class="dash-hero-r">
           <a class="hero-btn" href="#/map">🗺  지도</a>
+          <a class="hero-btn" href="#/committees">🏢  위원회</a>
+          <a class="hero-btn" href="#/bills">📜  의안</a>
           <a class="hero-btn" href="#/relations">🕸  관계도</a>
-          <a class="hero-btn" href="#/bills">📜  의안 통계</a>
           <a class="hero-btn" href="#/history/parties">📅  정당사</a>
         </div>
       </div>
@@ -3368,11 +3644,18 @@ function renderHome() {
           </div>
         </div>
 
+        <!-- 위원회 -->
+        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/committees'">
+          <div class="chart-head"><h3>🏢 22대 위원회</h3><span class="chart-link">→</span></div>
+          <div class="cta-desc">17개 상임위 · 위원장·간사·정당 분포 · 처리 의안 수</div>
+          <div class="cta-mini">위원회 카드 클릭 → 위원 명단 + 최근 처리 의안</div>
+        </div>
+
         <!-- 의안 통계 -->
         <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/bills'">
           <div class="chart-head"><h3>📜 22대 의안 통계</h3><span class="chart-link">→</span></div>
-          <div class="cta-desc">${state.bills.length ? state.bills.length.toLocaleString() + '건 처리 · 통과율 · 위원회별 · 월별 추이 · 대표발의자 Top 10' : '국회 OPEN API 본회의 처리 의안 ~1.6K건 분석'}</div>
-          <div class="cta-mini">${state.bills.length ? '실시간 국회 데이터' : '백그라운드 로딩 중 · 클릭 시 진행 표시'}</div>
+          <div class="cta-desc">${state.bills.length ? state.bills.length.toLocaleString() + '건 처리 · 통과율 · 위원회별 · 월별 추이 · 박빙 처리' : '국회 OPEN API 본회의 처리 의안 ~1.6K건 분석'}</div>
+          <div class="cta-mini">${state.bills.length ? '실시간 국회 데이터' : '백그라운드 로딩 중'}</div>
         </div>
 
         <!-- 정당사 -->
@@ -3866,6 +4149,30 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
+  // 위원회 상세
+  const cMatch = hash.match(/^#\/committee\/(.+)$/);
+  if (cMatch) {
+    const cmtName = decodeURIComponent(cMatch[1]);
+    view.innerHTML = renderCommitteeDetail(cmtName);
+    document.getElementById('back-cmt')?.addEventListener('click', () => { location.hash = '#/committees'; });
+    document.querySelectorAll('.card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+    });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 위원회 목록
+  if (hash === '#/committees') {
+    view.innerHTML = renderCommitteesPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.querySelectorAll('.cmt-card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/committee/${encodeURIComponent(el.dataset.cmt)}`; });
+    });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
   // 의안 통계
   if (hash === '#/bills') {
     view.innerHTML = renderBillsPage();
