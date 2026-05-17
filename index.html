@@ -1360,6 +1360,120 @@
     .pb-name { font-size: 11px; }
   }
 
+  /* ============ Bills statistics ============ */
+  .bills-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .bills-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 18px;
+  }
+  .bills-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .bills-hero h1 {
+    font-size: 26px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.6px; margin-bottom: 6px;
+  }
+  .bills-hero p {
+    font-size: 13px; color: var(--text-2);
+  }
+  .bills-hero p b { color: var(--text); font-weight: 700; }
+  .bills-monthly {
+    display: flex; gap: 3px; align-items: flex-end;
+    height: 140px;
+    padding: 8px 0 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bm-col {
+    flex: 1; height: 100%;
+    display: flex; flex-direction: column;
+    justify-content: flex-end; align-items: stretch;
+    cursor: default;
+    min-width: 14px;
+  }
+  .bm-bar {
+    background: linear-gradient(180deg, var(--text) 0%, var(--text-2) 100%);
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .bm-col:hover .bm-bar { opacity: 0.7; transform: scaleY(1.02); transform-origin: bottom; }
+  .bm-lbl {
+    font-size: 9px; color: var(--dim);
+    text-align: center;
+    margin-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .bills-month-axis {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--dim);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .bills-recent {
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .br-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 180px 90px;
+    gap: 12px; align-items: center;
+    padding: 9px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    transition: background 0.1s;
+  }
+  .br-row:hover { background: var(--bg-elev); }
+  .br-row:last-child { border-bottom: none; }
+  .br-date { color: var(--dim); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .br-name { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .br-cmt { color: var(--text-2); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .br-result { font-size: 11px; font-weight: 700; text-align: right; }
+  .bills-close { display: flex; flex-direction: column; gap: 6px; }
+  .bc-row {
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 8px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    transition: background 0.12s;
+  }
+  .bc-row:hover { background: var(--bg-elev); }
+  .bc-row:last-child { border-bottom: none; }
+  .bc-name {
+    color: var(--text); font-weight: 600; font-size: 11.5px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    line-height: 1.3;
+  }
+  .bc-vote {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-variant-numeric: tabular-nums;
+  }
+  .bc-yes { color: var(--ok); font-weight: 700; }
+  .bc-no { color: #c0392b; font-weight: 700; }
+  .bc-vs { color: var(--dim); font-size: 10px; }
+  .bc-blank { color: var(--text-2); margin-left: auto; font-size: 10px; }
+  .bc-diff {
+    font-size: 11px; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    align-self: flex-start;
+  }
+  .diff-pass { color: var(--ok); }
+  .diff-fail { color: #c0392b; }
+  .bills-close-meta {
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-2);
+    text-align: center;
+  }
+  @media (max-width: 800px) {
+    .br-row { grid-template-columns: 80px 1fr 80px; }
+    .br-cmt { display: none; }
+    .bm-lbl { display: none; }
+  }
+
   /* ============ Party history timeline ============ */
   .ph-page {
     max-width: 1280px; margin: 0 auto;
@@ -2673,6 +2787,212 @@ function renderPartyDonut() {
 }
 
 // ============================================================
+// Bills statistics page (22대 본회의 처리 의안)
+// ============================================================
+function renderBillsPage() {
+  const bills = state.bills || [];
+  if (!bills.length) {
+    return `
+      <div class="group-back" id="back-home">← 조직도</div>
+      <div class="loading"><span class="loading-spinner"></span>22대 처리 의안 데이터 불러오는 중…<br><br>국회 OPEN API에서 ~1.6K 건 로드 중입니다.</div>
+    `;
+  }
+
+  const total = bills.length;
+  // 결과별 집계 (본회의 처리 의안만 — 원안가결·수정가결·부결·기타)
+  const byResult = new Map();
+  for (const b of bills) {
+    const r = b.PROC_RESULT_CD || '기타';
+    byResult.set(r, (byResult.get(r) || 0) + 1);
+  }
+  const passed = (byResult.get('원안가결') || 0) + (byResult.get('수정가결') || 0);
+  const rejected = (byResult.get('부결') || 0);
+  const passRate = total ? ((passed / total) * 100).toFixed(1) : '0';
+
+  // 평균 투표 참여율 (출석/재적)
+  let voteSum = 0, memberSum = 0, voteCount = 0;
+  for (const b of bills) {
+    const v = parseInt(b.VOTE_TCNT, 10);
+    const mem = parseInt(b.MEMBER_TCNT, 10);
+    if (v > 0 && mem > 0) { voteSum += v; memberSum += mem; voteCount++; }
+  }
+  const avgTurnout = voteCount ? (voteSum / memberSum * 100).toFixed(1) : '—';
+
+  // 만장일치 (NO_TCNT===0 && BLANK_TCNT<=5 && YES_TCNT >= 200)
+  const unanimous = bills.filter(b => {
+    const y = parseInt(b.YES_TCNT, 10), n = parseInt(b.NO_TCNT, 10), bl = parseInt(b.BLANK_TCNT, 10);
+    return y >= 200 && n === 0 && bl <= 5;
+  });
+  // 박빙 처리 (|yes - no| <= 30, yes > 0)
+  const close = bills.filter(b => {
+    const y = parseInt(b.YES_TCNT, 10), n = parseInt(b.NO_TCNT, 10);
+    return y > 0 && n > 0 && Math.abs(y - n) <= 30;
+  }).sort((a, b) => Math.abs(parseInt(a.YES_TCNT,10) - parseInt(a.NO_TCNT,10)) - Math.abs(parseInt(b.YES_TCNT,10) - parseInt(b.NO_TCNT,10))).slice(0, 10);
+
+  // 위원회별 (Top 12)
+  const byCmt = new Map();
+  for (const b of bills) {
+    const c = b.CURR_COMMITTEE || '미상';
+    if (!byCmt.has(c)) byCmt.set(c, { total: 0, passed: 0 });
+    const e = byCmt.get(c);
+    e.total++;
+    if (/가결/.test(b.PROC_RESULT_CD || '')) e.passed++;
+  }
+  const cmtArr = [...byCmt.entries()]
+    .map(([n, v]) => ({ name: n, total: v.total, passed: v.passed, rate: v.total ? (v.passed/v.total*100).toFixed(1) : '0' }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 12);
+  const cmtMax = Math.max(...cmtArr.map(c => c.total));
+
+  // 월별 처리 추이
+  const byMonth = new Map();
+  for (const b of bills) {
+    const d = b.PROC_DT || '';
+    if (!/^\d{4}-?\d{2}/.test(d)) continue;
+    const ym = d.slice(0, 7).replace('-', '');
+    const m = ym.slice(0,4) + '-' + ym.slice(4,6);
+    byMonth.set(m, (byMonth.get(m) || 0) + 1);
+  }
+  const monthArr = [...byMonth.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  const monthMax = Math.max(1, ...monthArr.map(([, c]) => c));
+
+  // 최근 처리 의안 20건
+  const recent = bills.slice().sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || '')).slice(0, 20);
+
+  const resultColors = {
+    '원안가결': 'var(--ok)',
+    '수정가결': '#0ea271',
+    '부결':     '#c0392b',
+    '기타':     'var(--text-2)',
+  };
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="bills-page">
+      <div class="bills-hero">
+        <div class="bills-hero-eye">POLITIK · 22대 본회의 처리 의안</div>
+        <h1>국회 의안 처리 통계</h1>
+        <p>2024.5 ~ 현재 · <b>${total.toLocaleString()}건</b> 처리 · 출처 국회 OPEN API</p>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">전체 처리</div>
+          <div class="kpi-num">${total.toLocaleString()}</div>
+          <div class="kpi-trend">본회의 의결 완료 건</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">가결</div>
+          <div class="kpi-num">${passed.toLocaleString()}<span class="unit">건</span></div>
+          <div class="kpi-trend">원안 ${byResult.get('원안가결')||0} · 수정 ${byResult.get('수정가결')||0} · ${passRate}%</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">부결</div>
+          <div class="kpi-num">${rejected.toLocaleString()}<span class="unit">건</span></div>
+          <div class="kpi-trend">${total ? (rejected/total*100).toFixed(2) : 0}% · 본회의에서 부결</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">평균 출석률</div>
+          <div class="kpi-num">${avgTurnout}<span class="unit">%</span></div>
+          <div class="kpi-trend">투표/재적 평균 · ${voteCount}건 기준</div>
+        </div>
+
+        <!-- 결과 분포 도넛 (간단 막대) -->
+        <div class="dash-card col-4 chart-card">
+          <div class="chart-head"><h3>처리 결과 분포</h3></div>
+          <div class="party-bars">
+            ${[...byResult.entries()].sort((a,b)=>b[1]-a[1]).map(([k,v]) => `
+              <div class="party-bar-row">
+                <div class="pb-name"><span class="pb-dot" style="background:${resultColors[k]}"></span>${escapeHtml(k)}</div>
+                <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(v/total*100).toFixed(1)}%; background:${resultColors[k]}"></div></div>
+                <div class="pb-count">${v.toLocaleString()}</div>
+                <div class="pb-pct">${(v/total*100).toFixed(1)}%</div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- 위원회 Top 12 -->
+        <div class="dash-card col-8 chart-card">
+          <div class="chart-head"><h3>위원회별 처리 의안 Top 12 (회색 = 가결분)</h3></div>
+          <div class="party-bars">
+            ${cmtArr.map(c => `
+              <div class="party-bar-row">
+                <div class="pb-name">${escapeHtml(c.name)}</div>
+                <div class="pb-bar-wrap" style="position:relative">
+                  <div class="pb-bar" style="width:${(c.total/cmtMax*100).toFixed(1)}%; background:var(--text-2)"></div>
+                  <div class="pb-bar" style="width:${(c.passed/cmtMax*100).toFixed(1)}%; background:var(--ok); position:absolute; top:0; left:0; height:100%; border-radius:4px"></div>
+                </div>
+                <div class="pb-count">${c.total}</div>
+                <div class="pb-pct">${c.rate}%</div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- 월별 처리 추이 -->
+        <div class="dash-card col-8 chart-card">
+          <div class="chart-head"><h3>월별 처리 추이 (${monthArr.length}개월)</h3></div>
+          <div class="bills-monthly">
+            ${monthArr.map(([m, c]) => `
+              <div class="bm-col" title="${m} · ${c}건">
+                <div class="bm-bar" style="height:${(c/monthMax*100).toFixed(1)}%"></div>
+                <div class="bm-lbl">${m.slice(5)}</div>
+              </div>`).join('')}
+          </div>
+          <div class="bills-month-axis">
+            <span>${monthArr[0]?.[0] || '—'}</span>
+            <span>${monthArr[monthArr.length-1]?.[0] || '—'}</span>
+          </div>
+        </div>
+
+        <!-- 박빙 처리 의안 -->
+        <div class="dash-card col-4 chart-card">
+          <div class="chart-head"><h3>박빙 처리 Top 10 (찬-반 차이 ≤30)</h3></div>
+          <div class="bills-close">
+            ${close.length ? close.map(b => {
+              const y = parseInt(b.YES_TCNT,10), n = parseInt(b.NO_TCNT,10), bl = parseInt(b.BLANK_TCNT,10)||0;
+              const diff = y - n;
+              const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
+              const name = b.BILL_NAME || b.BILL_NM || '—';
+              return `
+                <div class="bc-row"${link ? ` onclick="window.open('${link}','_blank','noopener')"` : ''} style="${link ? 'cursor:pointer' : ''}">
+                  <div class="bc-name" title="${escapeHtml(name)}">${escapeHtml(name)}</div>
+                  <div class="bc-vote">
+                    <span class="bc-yes">${y}</span>
+                    <span class="bc-vs">vs</span>
+                    <span class="bc-no">${n}</span>
+                    ${bl ? `<span class="bc-blank">기권 ${bl}</span>` : ''}
+                  </div>
+                  <div class="bc-diff ${diff > 0 ? 'diff-pass' : 'diff-fail'}">${diff > 0 ? '+' : ''}${diff}</div>
+                </div>`;
+            }).join('') : '<div class="ac-empty">박빙 의안 없음 (모두 만장일치급)</div>'}
+          </div>
+          <div class="bills-close-meta">만장일치(반대 0, 찬성 ≥200) ${unanimous.length}건</div>
+        </div>
+
+        <!-- 최근 처리 20건 -->
+        <div class="dash-card col-12 chart-card">
+          <div class="chart-head"><h3>최근 처리 의안 20건</h3></div>
+          <div class="bills-recent">
+            ${recent.map(b => {
+              const color = PROC_RESULT_COLOR[b.PROC_RESULT_CD] || 'var(--text-2)';
+              const name = b.BILL_NAME || b.BILL_NM || '—';
+              const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
+              return `
+                <div class="br-row"${link ? ` onclick="window.open('${link}','_blank','noopener')"` : ''} style="${link ? 'cursor:pointer' : ''}">
+                  <div class="br-date">${escapeHtml((b.PROC_DT || '').slice(0,10))}</div>
+                  <div class="br-name">${escapeHtml(name)}</div>
+                  <div class="br-cmt">${escapeHtml(b.CURR_COMMITTEE || '—')}</div>
+                  <div class="br-result" style="color:${color}">${escapeHtml(b.PROC_RESULT_CD || '—')}</div>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
 // Party history timeline
 // ============================================================
 function renderPartyHistoryPage() {
@@ -2867,8 +3187,9 @@ function renderHome() {
           <p>국회의원·내각·시·도지사·대법관·역대 인물 — <b>${totalCount.toLocaleString()}명</b>의 데이터를 객관 수치로</p>
         </div>
         <div class="dash-hero-r">
-          <a class="hero-btn" href="#/map">🗺  정치 분포 지도</a>
+          <a class="hero-btn" href="#/map">🗺  지도</a>
           <a class="hero-btn" href="#/relations">🕸  관계도</a>
+          <a class="hero-btn" href="#/bills">📜  의안 통계</a>
           <a class="hero-btn" href="#/history/parties">📅  정당사</a>
         </div>
       </div>
@@ -2974,10 +3295,17 @@ function renderHome() {
           </div>
         </div>
 
+        <!-- 의안 통계 -->
+        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/bills'">
+          <div class="chart-head"><h3>📜 22대 의안 통계</h3><span class="chart-link">→</span></div>
+          <div class="cta-desc">${state.bills.length ? state.bills.length.toLocaleString() + '건 처리 · 통과율 · 위원회별 · 월별 추이 · 대표발의자 Top 10' : '국회 OPEN API 본회의 처리 의안 ~1.6K건 분석'}</div>
+          <div class="cta-mini">${state.bills.length ? '실시간 국회 데이터' : '백그라운드 로딩 중 · 클릭 시 진행 표시'}</div>
+        </div>
+
         <!-- 정당사 -->
         <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/history/parties'">
           <div class="chart-head"><h3>📅 정당사 1948→2025</h3><span class="chart-link">→</span></div>
-          <div class="cta-desc">자유당·민주공화당·민자당·새천년민주당·한나라당·국힘·민주… 주요 정당 46개 흐름</div>
+          <div class="cta-desc">자유당·민주공화당·민자당·새천년민주당·한나라당·국힘·민주… 45개 정당 흐름</div>
           <div class="cta-mini">계열별 색·기간 막대 · 클릭 시 위키 이동 · 78년간의 정당 변천</div>
         </div>
       </div>
@@ -3465,6 +3793,25 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
+  // 의안 통계
+  if (hash === '#/bills') {
+    view.innerHTML = renderBillsPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // 데이터가 아직 로드 중이면 5초 후 재렌더 시도
+    if (!state.bills.length) {
+      const tryRender = () => {
+        if (location.hash !== '#/bills') return;
+        if (state.bills.length) {
+          view.innerHTML = renderBillsPage();
+          document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+        } else setTimeout(tryRender, 2000);
+      };
+      setTimeout(tryRender, 1500);
+    }
+    return;
+  }
   // 정당사 타임라인
   if (hash === '#/history/parties') {
     view.innerHTML = renderPartyHistoryPage();
