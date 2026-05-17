@@ -7,6 +7,21 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>대한민국 패치 노트 · Korea Patch Notes</title>
+<meta name="description" content="22대 국회 본회의 통과 법안을 패치 노트로. 어느 당·누가 발의했는지, 분야별·정당별·통과 속도까지. 1,595건 처리 데이터·360명 인물·국제 12개국 비교.">
+<meta name="keywords" content="대한민국 정치, 국회 의안, 패치 노트, 22대 국회, 발의자, 정당, 통과 법안, 한국 정치, 정치 데이터, 국제 비교, 정당사, 정치인 데이터">
+<meta name="author" content="Korea Patch Notes">
+<meta name="theme-color" content="#111827">
+<meta property="og:type" content="website">
+<meta property="og:title" content="대한민국 패치 노트 · 통과 법안을 한눈에">
+<meta property="og:description" content="국회 본회의를 통과한 법안을 발의자·정당·분야별로 추적. 22대 1,595건 + 국제 12개국 비교.">
+<meta property="og:url" content="https://minsoo500101-rgb.github.io/politik/">
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%23111827'/%3E%3Ctext x='60' y='150' font-family='Pretendard,sans-serif' font-size='32' font-weight='700' fill='%239ca3af' letter-spacing='8'%3EREPUBLIC OF KOREA · PATCH NOTES%3C/text%3E%3Ctext x='60' y='270' font-family='Pretendard,sans-serif' font-size='84' font-weight='800' fill='%23ffffff'%3E대한민국 패치 노트%3C/text%3E%3Ctext x='60' y='370' font-family='Pretendard,sans-serif' font-size='44' font-weight='600' fill='%23e5e7eb'%3E통과 법안 · 발의자 · 정당 · 분야 한눈에%3C/text%3E%3Ctext x='60' y='540' font-family='Pretendard,sans-serif' font-size='26' fill='%2310b981'%3E📋 v22.1595 · LIVE%3C/text%3E%3C/svg%3E">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="대한민국 패치 노트">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="대한민국 패치 노트 · Korea Patch Notes">
+<meta name="twitter:description" content="22대 국회 통과 법안을 패치 노트로. 발의자·정당·분야 한눈에.">
+<link rel="canonical" href="https://minsoo500101-rgb.github.io/politik/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E📋%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
@@ -1527,7 +1542,18 @@
     .patch-feed { padding: 14px 14px 12px; }
     .patch-feed-head h2 { font-size: 14px; gap: 6px; }
     .patch-title { font-size: 13px; }
-    .patch-vote { width: 100%; margin-left: 0; }
+    .patch-vote { width: 100%; margin-left: 0; font-size: 10px; }
+    .patch-meta { gap: 5px; font-size: 10px; }
+    .patch-topic { font-size: 9px; padding: 1px 5px; }
+    .patch-tag { font-size: 9px; padding: 2px 5px; }
+    .patch-num, .patch-date, .patch-speed { font-size: 10px; }
+    .patch-by { font-size: 11px; gap: 6px; }
+    .patch-by em { font-size: 9.5px; padding: 1px 5px; }
+    .patch-cmt { display: none; }
+    .patch-row { padding: 10px 11px; border-radius: 8px; }
+    .topic-stack-row { grid-template-columns: 80px 1fr 32px; gap: 6px; }
+    .ts-label { font-size: 10px; }
+    .ts-count { font-size: 10.5px; }
   }
 
   /* ============ Committee page ============ */
@@ -1964,6 +1990,50 @@
     font-variant-numeric: tabular-nums;
   }
   .patch-speed b { color: var(--warn); font-weight: 800; }
+  .patch-topic {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 7px; border-radius: 9px;
+    border: 1px solid currentColor;
+    background: rgba(255,255,255,0.04);
+    letter-spacing: 0.2px;
+  }
+  [data-theme="dark"] .patch-topic { background: rgba(0,0,0,0.18); }
+
+  /* 분야별 stack chart */
+  .topic-stacks { display: flex; flex-direction: column; gap: 8px; }
+  .topic-stack-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 40px;
+    gap: 10px; align-items: center;
+  }
+  .ts-label {
+    font-size: 11.5px; font-weight: 700;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ts-bar {
+    height: 14px;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex; gap: 1px;
+    background: var(--bg-elev);
+  }
+  .ts-seg { transition: opacity 0.15s; }
+  .ts-seg:hover { opacity: 0.7; }
+  .ts-count {
+    font-size: 11.5px; font-weight: 700; color: var(--text);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .topic-legend {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; gap: 10px;
+    font-size: 10.5px; color: var(--text-2);
+  }
+  .tl-item { display: inline-flex; align-items: center; gap: 4px; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; }
 
   .bills-close { display: flex; flex-direction: column; gap: 6px; }
   .bc-row {
@@ -2617,6 +2687,71 @@ const state = {
   partyHistory: null,
   worldCompare: null,
 };
+
+// 법안 분야 자동 분류 (BILL_NAME + CURR_COMMITTEE 기반)
+const BILL_TOPICS = [
+  { id: 'env',     label: '환경·기후', icon: '🌱', color: '#10b981',
+    kw: ['환경','기후','대기','수질','폐기물','자원순환','탄소','녹색','생물','자연공원','국립공원','생태','수자원','오염'],
+    cmt: ['기후에너지환경노동위원회','환경노동위원회'] },
+  { id: 'welfare', label: '복지·보건', icon: '🏥', color: '#0ea5e9',
+    kw: ['복지','보건','의료','국민건강','연금','기초생활','장애','노인','아동','육아','한부모','보육','약사','의약품','감염병','정신건강'],
+    cmt: ['보건복지위원회'] },
+  { id: 'labor',   label: '노동', icon: '👷', color: '#f97316',
+    kw: ['노동','근로','산업안전','임금','퇴직','노조','산업재해'],
+    cmt: ['환경노동위원회','기후에너지환경노동위원회'] },
+  { id: 'edu',     label: '교육', icon: '📚', color: '#6366f1',
+    kw: ['교육','학교','학원','대학','학생','학력','평생교육','유아교육','초·중등교육','고등교육','학자금'],
+    cmt: ['교육위원회'] },
+  { id: 'defense', label: '국방·안보', icon: '🛡', color: '#475569',
+    kw: ['국방','군','병역','예비군','군인','방위','병무','군사'],
+    cmt: ['국방위원회'] },
+  { id: 'econ',    label: '경제·산업', icon: '💼', color: '#0d9488',
+    kw: ['산업','경제','중소기업','벤처','상공','자영업','전자상거래','특허','전기·전자','자동차','조세','세법','조세특례','세무'],
+    cmt: ['기획재정위원회','산업통상자원중소벤처기업위원회','정무위원회'] },
+  { id: 'land',    label: '교통·국토', icon: '🚧', color: '#a16207',
+    kw: ['국토','교통','도로','철도','항공','해운','건설','부동산','주택','도시','택지','건축','자동차관리','여객'],
+    cmt: ['국토교통위원회'] },
+  { id: 'agri',    label: '농수산', icon: '🌾', color: '#65a30d',
+    kw: ['농어업','농업','농촌','농산물','임업','산림','수산','해양','어업','축산','식품안전','농어촌','농지'],
+    cmt: ['농림축산식품해양수산위원회'] },
+  { id: 'justice', label: '사법·법무', icon: '⚖', color: '#7c3aed',
+    kw: ['형법','민법','상법','형사소송','민사소송','검찰','법원','법무','사법','공증','변호사','형 집행','보호관찰','법원조직'],
+    cmt: ['법제사법위원회'] },
+  { id: 'culture', label: '문화·체육', icon: '🎨', color: '#e11d48',
+    kw: ['문화','체육','관광','예술','출판','저작권','영화','콘텐츠','국민체육','문화재','박물관','미술관','도서관','방송'],
+    cmt: ['문화체육관광위원회'] },
+  { id: 'foreign', label: '외교·통일', icon: '🌐', color: '#0284c7',
+    kw: ['외교','통일','북한','조약','협정','재외국민','국제','외무','영사'],
+    cmt: ['외교통일위원회'] },
+  { id: 'sci',     label: '과학·통신', icon: '💡', color: '#9333ea',
+    kw: ['과학기술','정보통신','전기통신','정보보호','인공지능','데이터','우주','원자력','방사선','전파','방송통신'],
+    cmt: ['과학기술정보방송통신위원회'] },
+  { id: 'admin',   label: '행정·자치', icon: '🏛', color: '#64748b',
+    kw: ['행정','지방자치','공무원','지방세','주민','선거','정당','국회','국가공무원','지방재정','국가재정','감사'],
+    cmt: ['행정안전위원회','정치개혁특별위원회','운영위원회','국회운영위원회'] },
+  { id: 'safety',  label: '안전·재난', icon: '🚒', color: '#dc2626',
+    kw: ['재난','안전','소방','경찰','범죄','테러','마약','피해자','보호','구조','구급','소방관'],
+    cmt: ['행정안전위원회'] },
+  { id: 'misc',    label: '기타', icon: '📄', color: '#6b7280',
+    kw: [], cmt: [] },
+];
+
+function getBillTopic(b) {
+  const nm = (b.BILL_NAME || b.BILL_NM || '');
+  const cmt = (b.CURR_COMMITTEE || '');
+  // Keyword score (각 토픽별 합산)
+  let bestId = 'misc', bestScore = 0;
+  for (const t of BILL_TOPICS) {
+    if (t.id === 'misc') continue;
+    let s = 0;
+    for (const k of t.kw) if (nm.includes(k)) s += 2;
+    for (const c of t.cmt) if (cmt === c) s += 3;
+    // 위원회 매칭 강한 가중치
+    if (s > bestScore) { bestScore = s; bestId = t.id; }
+  }
+  // 환경/노동 위원회 분리 — 키워드 매칭 우선
+  return BILL_TOPICS.find(t => t.id === bestId);
+}
 
 // 의안에서 대표발의자·정당 추출
 function getBillProposerInfo(b) {
@@ -3796,7 +3931,7 @@ function renderCommitteeDetail(cmtName) {
 // Bills statistics page (22대 본회의 처리 의안)
 // ============================================================
 // 필터 state
-if (!state.billsFilter) state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, q: '', limit: 30 };
+if (!state.billsFilter) state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, topic: 'all', q: '', limit: 30 };
 
 function applyBillsFilter(bills) {
   const f = state.billsFilter;
@@ -3814,6 +3949,9 @@ function applyBillsFilter(bills) {
       if (info.party !== f.party) return false;
     }
     if (f.committee && b.CURR_COMMITTEE !== f.committee) return false;
+    if (f.topic && f.topic !== 'all') {
+      if (getBillTopic(b).id !== f.topic) return false;
+    }
     if (f.q) {
       const q = f.q.toLowerCase();
       const nm = (b.BILL_NAME || b.BILL_NM || '').toLowerCase();
@@ -3828,6 +3966,7 @@ function applyBillsFilter(bills) {
 
 function patchRowHTML(b, freshIdx = -1) {
   const info = getBillProposerInfo(b);
+  const topic = getBillTopic(b);
   const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
   const partyColorCss = info.party ? partyColor(info.party) : 'var(--text-2)';
   const proposerHtml = info.kind === 'gov'
@@ -3860,6 +3999,7 @@ function patchRowHTML(b, freshIdx = -1) {
     <div class="patch-row${isFresh ? ' patch-fresh' : ''}"${link ? ` onclick="window.open('${link}','_blank','noopener')"` : ''} style="${link ? 'cursor:pointer' : ''}; border-left-color:${partyColorCss}">
       <div class="patch-meta">
         <span class="patch-tag ${resultClass}">${resultLabel}</span>
+        <span class="patch-topic" style="color:${topic.color}; border-color:${topic.color}" title="${escapeHtml(topic.label)}">${topic.icon} ${escapeHtml(topic.label)}</span>
         <span class="patch-date">${escapeHtml((b.PROC_DT || '').slice(0,10))}</span>
         <span class="patch-num">#${escapeHtml(b.BILL_NO || '—')}</span>
         ${speedHtml}
@@ -3976,6 +4116,21 @@ function renderBillsPage() {
     const info = getBillProposerInfo(b);
     kindCounts[info.kind] = (kindCounts[info.kind] || 0) + 1;
   }
+  // 분야별 카운트 (BILL_TOPICS)
+  const topicCounts = {};
+  for (const t of BILL_TOPICS) topicCounts[t.id] = 0;
+  for (const b of bills) topicCounts[getBillTopic(b).id]++;
+  // 분야별 정당 분포 (top 5 topics)
+  const topTopics = [...Object.entries(topicCounts)].filter(([id]) => id !== 'misc').sort((a,b)=>b[1]-a[1]).slice(0, 8);
+  const topicPartyMap = {}; // topicId -> { party: count }
+  for (const [tid] of topTopics) topicPartyMap[tid] = new Map();
+  for (const b of bills) {
+    const tid = getBillTopic(b).id;
+    if (!topicPartyMap[tid]) continue;
+    const info = getBillProposerInfo(b);
+    const p = info.party || (info.kind === 'gov' ? '정부' : info.kind === 'chair' ? '위원장' : '기타');
+    topicPartyMap[tid].set(p, (topicPartyMap[tid].get(p) || 0) + 1);
+  }
 
   return `
     <div class="group-back" id="back-home">← 조직도</div>
@@ -4002,6 +4157,15 @@ function renderBillsPage() {
           <button class="pf-chip ${f.kind==='gov'?'active':''}" data-f="kind" data-v="gov">⚖ 정부 <span class="cnt">${kindCounts.gov||0}</span></button>
           <button class="pf-chip ${f.kind==='chair'?'active':''}" data-f="kind" data-v="chair">🏢 위원장 <span class="cnt">${kindCounts.chair||0}</span></button>
           <button class="pf-chip ${f.kind==='mp'?'active':''}" data-f="kind" data-v="mp">👤 의원 <span class="cnt">${kindCounts.mp||0}</span></button>
+        </div>
+        <div class="pf-group">
+          <span class="pf-label">분야</span>
+          <button class="pf-chip ${f.topic==='all'?'active':''}" data-f="topic" data-v="all">전체</button>
+          ${BILL_TOPICS.map(t => `
+            <button class="pf-chip ${f.topic===t.id?'active':''}" data-f="topic" data-v="${t.id}" style="${f.topic===t.id?`background:${t.color};border-color:${t.color}`:''}">
+              ${t.icon} ${escapeHtml(t.label)} <span class="cnt">${topicCounts[t.id]||0}</span>
+            </button>
+          `).join('')}
         </div>
         <div class="pf-group">
           <span class="pf-label">정당</span>
@@ -4068,6 +4232,31 @@ function renderBillsPage() {
                 <div class="pb-count">${v.toLocaleString()}</div>
                 <div class="pb-pct">${(v/total*100).toFixed(1)}%</div>
               </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- 분야별 발의 정당 분포 -->
+        <div class="dash-card col-8 chart-card">
+          <div class="chart-head"><h3>분야별 처리 의안 (정당 분포 stack)</h3></div>
+          <div class="topic-stacks">
+            ${topTopics.map(([tid, cnt]) => {
+              const t = BILL_TOPICS.find(x => x.id === tid);
+              const partyMap = topicPartyMap[tid];
+              const entries = [...partyMap.entries()].sort((a,b)=>b[1]-a[1]);
+              return `
+                <div class="topic-stack-row">
+                  <div class="ts-label" style="color:${t.color}">${t.icon} ${escapeHtml(t.label)}</div>
+                  <div class="ts-bar">
+                    ${entries.map(([p, c]) => `<div class="ts-seg" style="flex:${c}; background:${p === '정부' ? '#475569' : p === '위원장' ? '#94a3b8' : p === '기타' ? '#cbd5e1' : partyColor(p)}" title="${escapeHtml(p)} ${c}건"></div>`).join('')}
+                  </div>
+                  <div class="ts-count">${cnt}</div>
+                </div>`;
+            }).join('')}
+          </div>
+          <div class="topic-legend">
+            ${[...new Set(topTopics.flatMap(([tid]) => [...topicPartyMap[tid].keys()]))].filter(p => !['정부','위원장','기타'].includes(p)).slice(0,6).map(p => `<span class="tl-item"><span class="tl-dot" style="background:${partyColor(p)}"></span>${escapeHtml(p)}</span>`).join('')}
+            <span class="tl-item"><span class="tl-dot" style="background:#475569"></span>정부</span>
+            <span class="tl-item"><span class="tl-dot" style="background:#94a3b8"></span>위원장</span>
           </div>
         </div>
 
