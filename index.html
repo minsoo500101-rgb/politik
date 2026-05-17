@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Politik · 한눈정계</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E🏛%3C/text%3E%3C/svg%3E">
+<title>대한민국 패치 노트 · Korea Patch Notes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E📋%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -76,7 +76,7 @@
     background: linear-gradient(135deg, #111827, #4b5563);
     border-radius: 6px;
     color: #fff; display: grid; place-items: center;
-    font-size: 14px; font-weight: 900;
+    font-size: 16px;
   }
   .brand-sub {
     font-size: 11px; color: var(--dim);
@@ -1386,6 +1386,150 @@
     .pb-name { font-size: 11px; }
   }
 
+  /* ============ Patch feed (홈) ============ */
+  .version-pill {
+    display: inline-block;
+    font-size: 14px; font-weight: 700;
+    padding: 3px 10px;
+    background: var(--ok);
+    color: #fff;
+    border-radius: 16px;
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .patch-feed {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 22px 14px;
+    margin-bottom: 18px;
+  }
+  .patch-feed-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .patch-feed-head h2 {
+    font-size: 16px; font-weight: 800; color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+    letter-spacing: -0.3px;
+  }
+  .patch-live {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px;
+    background: #ef4444;
+    color: #fff;
+    border-radius: 8px;
+    letter-spacing: 0.8px;
+    animation: patch-pulse 2s infinite;
+  }
+  @keyframes patch-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  .patch-list { display: flex; flex-direction: column; gap: 8px; }
+  .patch-row {
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    border-left: 4px solid var(--text-2);
+    transition: transform 0.13s, box-shadow 0.13s, background 0.13s;
+  }
+  .patch-row:hover {
+    transform: translateX(2px);
+    background: var(--bg-card);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  [data-theme="dark"] .patch-row:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .patch-row.patch-fresh {
+    background: linear-gradient(90deg, rgba(5,150,105,0.08) 0%, var(--bg-elev) 60%);
+  }
+  [data-theme="dark"] .patch-row.patch-fresh {
+    background: linear-gradient(90deg, rgba(63,185,80,0.12) 0%, var(--bg-elev) 60%);
+  }
+  .patch-meta {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 6px;
+    font-size: 11px;
+  }
+  .patch-tag {
+    font-weight: 800; font-size: 10px;
+    padding: 2px 7px; border-radius: 5px;
+    letter-spacing: 0.7px;
+    color: #fff;
+  }
+  .patch-pass { background: var(--ok); }
+  .patch-amend { background: #0891b2; }
+  .patch-date {
+    color: var(--text-2); font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .patch-num {
+    color: var(--dim); font-variant-numeric: tabular-nums;
+    font-family: 'Inter', monospace;
+    font-weight: 600;
+  }
+  .patch-fresh-dot {
+    background: #ef4444; color: #fff;
+    font-size: 9px; font-weight: 800;
+    padding: 2px 6px; border-radius: 4px;
+    letter-spacing: 0.7px;
+    margin-left: auto;
+    animation: patch-pulse 1.6s infinite;
+  }
+  .patch-title {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .patch-by {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    font-size: 11.5px;
+  }
+  .patch-by-gov, .patch-by-chair, .patch-by-mp {
+    font-weight: 700; color: var(--text);
+  }
+  .patch-by em {
+    font-style: normal; font-weight: 700;
+    font-size: 10.5px;
+    padding: 1px 6px; border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .patch-by-unknown {
+    color: var(--dim); font-style: italic;
+  }
+  .patch-by-mp[data-mid]:hover {
+    text-decoration: underline;
+  }
+  .patch-cmt {
+    color: var(--text-2);
+    font-size: 11px;
+  }
+  .patch-vote {
+    color: var(--ok); font-weight: 600;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+  }
+  .patch-loading {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 13px;
+  }
+  @media (max-width: 600px) {
+    .patch-feed { padding: 14px 14px 12px; }
+    .patch-feed-head h2 { font-size: 14px; gap: 6px; }
+    .patch-title { font-size: 13px; }
+    .patch-vote { width: 100%; margin-left: 0; }
+  }
+
   /* ============ Committee page ============ */
   .cmt-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
   .cmt-hero {
@@ -1505,6 +1649,142 @@
   .cmt-detail-stats span {
     font-size: 11px; color: var(--text-2);
     letter-spacing: 0.3px;
+  }
+
+  /* ============ World compare ============ */
+  .world-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .world-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .world-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .world-hero h1 {
+    font-size: 26px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.6px; margin-bottom: 6px;
+  }
+  .world-hero p { font-size: 13px; color: var(--text-2); }
+
+  .kpi-pill {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 8px;
+    margin-left: 4px;
+    letter-spacing: 0.3px;
+  }
+  .pill-up { background: rgba(16,185,129,0.15); color: var(--ok); }
+  .pill-down { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .pill-flat { background: var(--bg-elev); color: var(--dim); }
+
+  .world-bars { display: flex; flex-direction: column; gap: 5px; }
+  .world-bar-row {
+    display: grid;
+    grid-template-columns: 24px 90px 1fr 60px;
+    gap: 8px; align-items: center;
+    padding: 3px 4px;
+    border-radius: 4px;
+  }
+  .world-bar-row.is-kr {
+    background: rgba(239,68,68,0.07);
+  }
+  [data-theme="dark"] .world-bar-row.is-kr {
+    background: rgba(239,68,68,0.13);
+  }
+  .wb-flag { font-size: 16px; text-align: center; }
+  .wb-name {
+    font-size: 11.5px; font-weight: 600; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .world-bar-row.is-kr .wb-name {
+    font-weight: 800; color: #ef4444;
+  }
+  .wb-wrap {
+    height: 7px; background: var(--bg-elev);
+    border-radius: 4px; overflow: hidden;
+  }
+  [data-theme="dark"] .wb-wrap { background: rgba(0,0,0,0.35); }
+  .wb-bar {
+    height: 100%; border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .wb-val {
+    font-size: 12px; font-weight: 700; color: var(--text);
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+
+  .world-table-wrap {
+    overflow-x: auto;
+    margin: 0 -4px;
+  }
+  .world-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .world-table thead th {
+    text-align: left;
+    padding: 9px 8px;
+    border-bottom: 2px solid var(--border-strong);
+    color: var(--text-2);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    white-space: nowrap;
+  }
+  .world-table th.num, .world-table td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .world-table tbody td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .world-table tbody tr.is-kr-row {
+    background: rgba(239,68,68,0.06);
+  }
+  [data-theme="dark"] .world-table tbody tr.is-kr-row {
+    background: rgba(239,68,68,0.10);
+  }
+  .world-table tbody tr.is-kr-row td b {
+    color: #ef4444;
+  }
+  .world-table .wt-flag { font-size: 16px; margin-right: 4px; }
+  .world-table .wt-sys {
+    font-size: 11px; color: var(--text-2); line-height: 1.3;
+  }
+  .world-table .wt-sys span { color: var(--dim); font-size: 10.5px; }
+  .world-table .rank-best {
+    color: var(--ok); font-weight: 800;
+  }
+  .world-table .rank-worst {
+    color: #ef4444; font-weight: 700;
+  }
+  .world-sources {
+    padding: 6px 4px;
+  }
+  .world-sources h3 {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin-bottom: 10px;
+  }
+  .world-sources ul {
+    list-style: disc;
+    padding-left: 20px;
+    color: var(--text-2);
+    font-size: 11.5px;
+    line-height: 1.7;
+  }
+  .world-sources li b { color: var(--text); font-weight: 700; }
+  @media (max-width: 700px) {
+    .world-bar-row { grid-template-columns: 20px 70px 1fr 48px; gap: 6px; }
+    .wb-name { font-size: 10.5px; }
   }
 
   /* ============ Bills statistics ============ */
@@ -1867,10 +2147,10 @@
 <header>
   <div class="h-inner">
     <div class="brand" id="brand">
-      <span class="brand-logo">P</span>
+      <span class="brand-logo">📋</span>
       <div>
-        Politik
-        <div class="brand-sub">한눈정계 · v2</div>
+        대한민국 패치 노트
+        <div class="brand-sub">Korea Patch Notes · v22.0</div>
       </div>
     </div>
     <div class="search-wrap">
@@ -1915,9 +2195,9 @@
     </div>
   </div>
   <div class="foot-bottom">
-    <span>Politik · 한눈정계</span>
+    <span>대한민국 패치 노트 · Korea Patch Notes</span>
     <span><a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">소스 코드 (MIT)</a></span>
-    <span id="foot-year">v2.1 · 2026</span>
+    <span id="foot-year">v22.0 · 2026</span>
   </div>
 </footer>
 
@@ -2176,6 +2456,46 @@ async function loadProcessedBills() {
   return all;
 }
 
+const CACHE_KEY_PROPOSERS = 'politik:billproposers:v1';
+async function loadBillProposers() {
+  // 캐시 확인
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_PROPOSERS);
+    if (raw) {
+      const c = JSON.parse(raw);
+      if (Date.now() - c.t < CACHE_TTL) return c.data;
+    }
+  } catch {}
+  // bills 서비스에서 BILL_ID → {PROPOSER, RST_PROPOSER, PUBL_PROPOSER, PROPOSER_KIND, MEMBER_LIST, PROPOSE_DT}
+  // pSize 1000 × N 페이지
+  const p1 = await fetchService(SVC.bills, { AGE: ASSEMBLY_AGE, pIndex: 1, pSize: 1000 });
+  let all = p1.rows.slice();
+  if (p1.total > 1000) {
+    const pages = Math.ceil(p1.total / 1000);
+    const more = await Promise.all(
+      Array.from({length: pages - 1}, (_, i) =>
+        fetchService(SVC.bills, { AGE: ASSEMBLY_AGE, pIndex: i + 2, pSize: 1000 }).then(r => r.rows).catch(() => [])
+      )
+    );
+    all = all.concat(more.flat());
+  }
+  // Map으로 변환 — BILL_ID → 필요한 필드만
+  const map = {};
+  for (const b of all) {
+    if (!b.BILL_ID) continue;
+    map[b.BILL_ID] = {
+      proposer: b.PROPOSER || '',
+      rstProposer: b.RST_PROPOSER || '',
+      publProposer: b.PUBL_PROPOSER || '',
+      proposerKind: b.PROPOSER_KIND || '',
+      memberList: b.MEMBER_LIST || '',
+      proposeDt: b.PROPOSE_DT || '',
+    };
+  }
+  try { localStorage.setItem(CACHE_KEY_PROPOSERS, JSON.stringify({ t: Date.now(), data: map })); } catch {}
+  return map;
+}
+
 // ============================================================
 // State
 // ============================================================
@@ -2183,12 +2503,57 @@ const state = {
   members: [],
   bills: [],
   billsByCommittee: new Map(),
+  billProposers: {}, // BILL_ID -> {proposer, rstProposer, ...}
   partyCounts: new Map(),
   filterParty: null,
   search: '',
   photos: new Map(), // MONA_CD -> { thumb, title } or { miss:true }
   partyHistory: null,
+  worldCompare: null,
 };
+
+// 의안에서 대표발의자·정당 추출
+function getBillProposerInfo(b) {
+  // BILL_NAME 패턴: "(대안)(국토교통위원장)" → 위원장 발의
+  // BILL_NAME 패턴: "(○○○의원 등 ○명)" → 의원 발의
+  const nm = b.BILL_NAME || b.BILL_NM || '';
+  const cmtChair = nm.match(/\(([가-힣A-Za-z·]+위원장)\)/);
+  const govMatch = nm.match(/\((정부)\)/);
+  const memMatch = nm.match(/\(([가-힣]+)의원\s*등\s*(\d+)명\)/);
+  const proposers = state.billProposers?.[b.BILL_ID];
+  let kind = 'unknown', name = '', party = '', count = 0, member = null;
+  // 이름 정리: ", · ; / 의원 등" 등 다양한 구분자로 split → 첫 번째만
+  function firstName(raw) {
+    return String(raw || '').split(/[,·;\/]|\s+의원/)[0].replace(/[ㆍ]/g, '').trim();
+  }
+  function totalCount(memberList, proposer) {
+    const list = String(memberList || proposer || '').split(/[,·;\/ㆍ]/).map(s => s.trim()).filter(Boolean);
+    return list.length;
+  }
+  if (proposers) {
+    if (proposers.proposerKind === '정부') { kind = 'gov'; name = '정부'; }
+    else if (proposers.proposerKind === '위원장') {
+      kind = 'chair';
+      name = firstName(proposers.rstProposer || proposers.proposer) || '위원장';
+      member = state.members.find(m => m.HG_NM === name);
+    }
+    else {
+      kind = 'mp';
+      name = firstName(proposers.rstProposer || proposers.proposer);
+      count = totalCount(proposers.memberList || proposers.publProposer, proposers.proposer);
+      member = state.members.find(m => m.HG_NM === name);
+    }
+  } else if (cmtChair) {
+    kind = 'chair'; name = firstName(cmtChair[1]);
+  } else if (govMatch) {
+    kind = 'gov'; name = '정부';
+  } else if (memMatch) {
+    kind = 'mp'; name = memMatch[1]; count = parseInt(memMatch[2], 10);
+    member = state.members.find(m => m.HG_NM === name);
+  }
+  if (member && !party) party = member.POLY_NM || '';
+  return { kind, name, party, count, member };
+}
 
 async function loadPartyHistory() {
   if (state.partyHistory) return state.partyHistory;
@@ -2981,6 +3346,193 @@ function renderPartyDonut() {
 }
 
 // ============================================================
+// International comparison
+// ============================================================
+async function loadWorldCompare() {
+  if (state.worldCompare) return state.worldCompare;
+  try {
+    const res = await fetch('data/world_compare.json', { cache: 'force-cache' });
+    if (!res.ok) throw new Error('world_compare fetch failed');
+    state.worldCompare = await res.json();
+  } catch (e) {
+    console.warn('world compare load failed', e);
+    state.worldCompare = { metrics: [], countries: [] };
+  }
+  return state.worldCompare;
+}
+
+function renderWorldComparePage() {
+  const wc = state.worldCompare;
+  if (!wc) return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="loading"><span class="loading-spinner"></span>국제 비교 데이터 불러오는 중…</div>
+  `;
+  const { metrics, countries } = wc;
+
+  // 각 metric별 best/worst 계산 (rank용)
+  function rankClass(metricId, value, higher) {
+    const vals = countries.map(c => c[metricId]).filter(v => v != null);
+    if (!vals.length) return '';
+    const max = Math.max(...vals), min = Math.min(...vals);
+    if (higher === 'good') {
+      if (value === max) return 'rank-best';
+      if (value === min) return 'rank-worst';
+    } else if (higher === 'low') {
+      if (value === min) return 'rank-best';
+      if (value === max) return 'rank-worst';
+    }
+    return '';
+  }
+
+  // 한국 강조 row 먼저, 나머지는 코드순
+  const kr = countries.find(c => c.code === 'KR');
+  const others = countries.filter(c => c.code !== 'KR');
+
+  // KR vs 평균 KPI 4종
+  function avg(metric) {
+    const v = others.map(c => c[metric]).filter(x => x != null);
+    if (!v.length) return null;
+    return v.reduce((s, x) => s + x, 0) / v.length;
+  }
+  const krFemale = kr.female_pct, avgFemale = avg('female_pct');
+  const krTurnout = kr.turnout, avgTurnout = avg('turnout');
+  const krDemo = kr.democracy_idx, avgDemo = avg('democracy_idx');
+  const krCorr = kr.corruption_idx, avgCorr = avg('corruption_idx');
+
+  function pillColor(v) { return v > 0 ? 'pill-up' : v < 0 ? 'pill-down' : 'pill-flat'; }
+  function diff(v1, v2, fmt = (x) => x.toFixed(1)) {
+    if (v2 == null) return '';
+    const d = v1 - v2;
+    return `<span class="kpi-pill ${pillColor(d)}">${d > 0 ? '▲' : d < 0 ? '▼' : '='} ${fmt(Math.abs(d))}</span>`;
+  }
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="world-page">
+      <div class="world-hero">
+        <div class="world-hero-eye">REPUBLIC OF KOREA · WORLD COMPARE</div>
+        <h1>🌐 대한민국 vs 세계 ${countries.length - 1}개 민주국가</h1>
+        <p>의원 수 · 여성 비율 · 투표율 · 민주주의 지수 · 부패인식 지수 한눈 비교 (2024-25 기준)</p>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">여성 의원 비율</div>
+          <div class="kpi-num">${krFemale}<span class="unit">%</span></div>
+          <div class="kpi-trend">${countries.length - 1}개국 평균 ${avgFemale.toFixed(1)}% ${diff(krFemale, avgFemale)}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">총선 투표율</div>
+          <div class="kpi-num">${krTurnout}<span class="unit">%</span></div>
+          <div class="kpi-trend">평균 ${avgTurnout.toFixed(1)}% ${diff(krTurnout, avgTurnout)}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">민주주의 지수 (EIU)</div>
+          <div class="kpi-num">${krDemo}<span class="unit">/10</span></div>
+          <div class="kpi-trend">평균 ${avgDemo.toFixed(2)} ${diff(krDemo, avgDemo, x => x.toFixed(2))}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">부패인식 지수 (TI)</div>
+          <div class="kpi-num">${krCorr}<span class="unit">/100</span></div>
+          <div class="kpi-trend">평균 ${avgCorr.toFixed(1)} ${diff(krCorr, avgCorr)}</div>
+        </div>
+
+        <!-- 메트릭별 막대 -->
+        ${['female_pct', 'turnout', 'democracy_idx', 'press_freedom', 'corruption_idx', 'seats_per_100k'].map(mid => {
+          const meta = metrics.find(m => m.id === mid);
+          if (!meta) return '';
+          const sorted = countries.slice().sort((a, b) => {
+            if (meta.higher === 'low') return a[mid] - b[mid];
+            return b[mid] - a[mid];
+          });
+          const max = Math.max(...sorted.map(c => c[mid]));
+          const min = Math.min(...sorted.map(c => c[mid]));
+          return `
+            <div class="dash-card col-6 chart-card">
+              <div class="chart-head">
+                <h3>${escapeHtml(meta.label)}</h3>
+                <span class="chart-link">${escapeHtml(meta.unit)} · ${escapeHtml(meta.desc)}</span>
+              </div>
+              <div class="world-bars">
+                ${sorted.map(c => {
+                  const v = c[mid];
+                  const pct = meta.higher === 'low'
+                    ? (max === min ? 100 : ((max - v) / (max - min)) * 100)
+                    : (max === min ? 100 : (v / max) * 100);
+                  return `
+                    <div class="world-bar-row ${c.code === 'KR' ? 'is-kr' : ''}">
+                      <div class="wb-flag">${c.flag}</div>
+                      <div class="wb-name">${escapeHtml(c.name)}</div>
+                      <div class="wb-wrap"><div class="wb-bar" style="width:${pct.toFixed(1)}%; background:${c.code === 'KR' ? '#ef4444' : 'var(--text-2)'}"></div></div>
+                      <div class="wb-val">${v}${escapeHtml(meta.unit === '%' ? '%' : '')}</div>
+                    </div>`;
+                }).join('')}
+              </div>
+            </div>`;
+        }).join('')}
+
+        <!-- 전체 비교 표 -->
+        <div class="dash-card col-12 chart-card">
+          <div class="chart-head">
+            <h3>전체 데이터 표 (${countries.length}개국)</h3>
+            <span class="chart-link">한국 강조 · 정렬 가능</span>
+          </div>
+          <div class="world-table-wrap">
+            <table class="world-table">
+              <thead>
+                <tr>
+                  <th>국가</th>
+                  <th>의회 구조</th>
+                  <th class="num">의원</th>
+                  <th class="num">10만명당</th>
+                  <th class="num">여성%</th>
+                  <th class="num">평균연령</th>
+                  <th class="num">투표율</th>
+                  <th class="num">민주지수</th>
+                  <th class="num">언론자유</th>
+                  <th class="num">청렴도</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${[kr, ...others].map(c => `
+                  <tr class="${c.highlight ? 'is-kr-row' : ''}">
+                    <td><span class="wt-flag">${c.flag}</span> <b>${escapeHtml(c.name)}</b></td>
+                    <td class="wt-sys">${escapeHtml(c.system)}<br><span>${escapeHtml(c.election)}</span></td>
+                    <td class="num">${c.seats}</td>
+                    <td class="num">${c.seats_per_100k}</td>
+                    <td class="num ${rankClass('female_pct', c.female_pct, 'good')}">${c.female_pct}%</td>
+                    <td class="num">${c.avg_age}</td>
+                    <td class="num ${rankClass('turnout', c.turnout, 'good')}">${c.turnout}%</td>
+                    <td class="num ${rankClass('democracy_idx', c.democracy_idx, 'good')}">${c.democracy_idx}</td>
+                    <td class="num ${rankClass('press_freedom', c.press_freedom, 'low')}">${c.press_freedom}위</td>
+                    <td class="num ${rankClass('corruption_idx', c.corruption_idx, 'good')}">${c.corruption_idx}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 출처 -->
+        <div class="dash-card col-12">
+          <div class="world-sources">
+            <h3>📚 출처 · 방법론</h3>
+            <ul>
+              <li><b>IPU Parline</b> (data.ipu.org) — 의원 수·여성 비율·임기·선거 방식</li>
+              <li><b>EIU Democracy Index 2024</b> — 167개국 0~10 점수 (5개 카테고리)</li>
+              <li><b>RSF World Press Freedom Index 2024</b> — 180개국 순위</li>
+              <li><b>Transparency International CPI 2024</b> — 부패인식 0~100 (높을수록 청렴)</li>
+              <li><b>IDEA / OECD</b> — 투표율</li>
+              <li><b>대한민국 데이터</b> — 22대 국회 직접 집계 · 중앙선거관리위원회 22대 총선 67.0%</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
 // Committee overview + detail
 // ============================================================
 function getCommitteeMap() {
@@ -3526,21 +4078,100 @@ function renderHome() {
   const locArr = [...locByParty.entries()].sort((a,b) => b[1]-a[1])
     .map(([n,c]) => ({ name:n, count:c, color: partyColor(n) }));
 
+  // 최근 통과 법안 (패치 노트 피드용) — 가결된 의안만 최신순
+  // 다양성: 같은 발의자 종류·같은 위원회 연속 회피
+  const allPassed = (state.bills || []).filter(b => /가결/.test(b.PROC_RESULT_CD || ''))
+    .sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+  const passedBills = [];
+  const recentCmts = []; const recentKinds = [];
+  for (const b of allPassed) {
+    if (passedBills.length >= 8) break;
+    const cmt = b.CURR_COMMITTEE || '';
+    const info = getBillProposerInfo(b);
+    const sameCmtRecent = recentCmts.slice(-2).filter(c => c === cmt).length;
+    const sameKindRecent = recentKinds.slice(-3).filter(k => k === info.kind).length;
+    // 같은 위원회 2번 연속 OR 같은 종류 3번 연속이면 일단 건너뛰고 나중 후순위
+    if (sameCmtRecent >= 2 || sameKindRecent >= 3) continue;
+    passedBills.push(b);
+    recentCmts.push(cmt); recentKinds.push(info.kind);
+  }
+  // 8개 못 채웠으면 나머지 채움 (최신순)
+  if (passedBills.length < 8) {
+    for (const b of allPassed) {
+      if (passedBills.includes(b)) continue;
+      passedBills.push(b);
+      if (passedBills.length >= 8) break;
+    }
+  }
+
   return `
     <div class="dash">
       <div class="dash-hero">
         <div class="dash-hero-l">
-          <div class="dash-hero-eye">POLITIK · 한눈정계</div>
-          <h1>대한민국 정계, 한 화면에</h1>
-          <p>국회의원·내각·시·도지사·대법관·역대 인물 — <b>${totalCount.toLocaleString()}명</b>의 데이터를 객관 수치로</p>
+          <div class="dash-hero-eye">REPUBLIC OF KOREA · PATCH NOTES</div>
+          <h1>대한민국 패치 노트 <span class="version-pill">v22.${state.bills?.length || 0}</span></h1>
+          <p>매일 통과되는 법안을 <b>패치 노트</b>로 — 어느 당, 누가 발의했는지 한눈에. 22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 처리, <b>${totalCount.toLocaleString()}명</b> 인물 데이터.</p>
         </div>
         <div class="dash-hero-r">
-          <a class="hero-btn" href="#/map">🗺  지도</a>
-          <a class="hero-btn" href="#/committees">🏢  위원회</a>
           <a class="hero-btn" href="#/bills">📜  의안</a>
-          <a class="hero-btn" href="#/relations">🕸  관계도</a>
+          <a class="hero-btn" href="#/committees">🏢  위원회</a>
+          <a class="hero-btn" href="#/map">🗺  지도</a>
+          <a class="hero-btn" href="#/world">🌐  국제비교</a>
           <a class="hero-btn" href="#/history/parties">📅  정당사</a>
         </div>
+      </div>
+
+      <!-- 패치 노트 피드 — 가장 위 -->
+      <div class="patch-feed">
+        <div class="patch-feed-head">
+          <h2>📋 최신 패치 <span class="patch-live">LIVE</span></h2>
+          <a href="#/bills" class="chart-link">전체 패치 노트 →</a>
+        </div>
+        ${passedBills.length ? `
+          <div class="patch-list">
+            ${passedBills.map((b, idx) => {
+              const info = getBillProposerInfo(b);
+              const isFresh = idx < 2;
+              const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
+              const partyColorCss = info.party ? partyColor(info.party) : 'var(--text-2)';
+              const proposerHtml = info.kind === 'gov'
+                ? `<span class="patch-by-gov">⚖ 정부</span>`
+                : info.kind === 'chair'
+                  ? `<span class="patch-by-chair">🏢 ${escapeHtml(info.name)}${info.member ? ` <em style="color:${partyColorCss}">${escapeHtml(info.party)}</em>` : ''}</span>`
+                  : info.kind === 'mp' && info.name
+                    ? `<span class="patch-by-mp" ${info.member ? `data-mid="${escapeHtml(info.member.MONA_CD)}"` : ''} style="cursor:${info.member ? 'pointer':'default'}">👤 ${escapeHtml(info.name)}${info.count > 1 ? ` 외 ${info.count - 1}명` : ''}${info.party ? ` <em style="color:${partyColorCss}">${escapeHtml(info.party)}</em>` : ''}</span>`
+                    : `<span class="patch-by-unknown">발의자 정보 준비 중</span>`;
+              const resultClass = b.PROC_RESULT_CD === '원안가결' ? 'patch-pass' : 'patch-amend';
+              const resultLabel = b.PROC_RESULT_CD === '원안가결' ? 'PASSED' : 'AMENDED+PASSED';
+              const ynRatio = (() => {
+                const y = parseInt(b.YES_TCNT,10), n = parseInt(b.NO_TCNT,10), bl = parseInt(b.BLANK_TCNT,10)||0;
+                if (!y) return '';
+                const tot = y + n + bl;
+                return `<span class="patch-vote">${y}/${tot} 찬성${n ? ` · ${n} 반대` : ''}${bl ? ` · ${bl} 기권` : ''}</span>`;
+              })();
+              return `
+                <div class="patch-row${isFresh ? ' patch-fresh' : ''}"${link ? ` onclick="window.open('${link}','_blank','noopener')"` : ''} style="${link ? 'cursor:pointer' : ''}; border-left-color:${partyColorCss}">
+                  <div class="patch-meta">
+                    <span class="patch-tag ${resultClass}">${resultLabel}</span>
+                    <span class="patch-date">${escapeHtml((b.PROC_DT || '').slice(0,10))}</span>
+                    <span class="patch-num">#${escapeHtml(b.BILL_NO || '—')}</span>
+                    ${isFresh ? '<span class="patch-fresh-dot">NEW</span>' : ''}
+                  </div>
+                  <div class="patch-title">${escapeHtml(b.BILL_NAME || b.BILL_NM || '—')}</div>
+                  <div class="patch-by">
+                    ${proposerHtml}
+                    <span class="patch-cmt">${escapeHtml(b.CURR_COMMITTEE || '')}</span>
+                    ${ynRatio}
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>
+        ` : `
+          <div class="patch-loading">
+            <span class="loading-spinner"></span>
+            국회 OPEN API에서 의안 데이터 로드 중…
+          </div>
+        `}
       </div>
 
       <div class="dash-grid">
@@ -4149,6 +4780,19 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
+  // 국제 비교
+  if (hash === '#/world') {
+    view.innerHTML = renderWorldComparePage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    loadWorldCompare().then(() => {
+      if (location.hash !== '#/world') return;
+      view.innerHTML = renderWorldComparePage();
+      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    });
+    return;
+  }
   // 위원회 상세
   const cMatch = hash.match(/^#\/committee\/(.+)$/);
   if (cMatch) {
@@ -4317,6 +4961,13 @@ function route() {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           location.hash = `#/party/${encodeURIComponent(el.dataset.party)}`;
+        });
+      });
+      // 패치 노트 발의자 클릭 → 상세
+      document.querySelectorAll('.patch-by-mp[data-mid]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
         });
       });
       // 도넛 차트 클릭 (segment + legend row)
@@ -4569,13 +5220,19 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
         if (!state.billsByCommittee.has(c)) state.billsByCommittee.set(c, []);
         state.billsByCommittee.get(c).push(b);
       }
-      // 정렬 (최신순)
       for (const arr of state.billsByCommittee.values()) {
         arr.sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
       }
-      // 상세 페이지 중이면 재렌더
-      if (location.hash.startsWith('#/m/')) route();
+      // 홈에서 패치 노트 재렌더 (bills가 더 늦게 로드되므로)
+      if (!location.hash) route();
+      if (location.hash.startsWith('#/m/') || location.hash === '#/bills' || location.hash === '#/committees') route();
     }).catch(e => console.warn('bills load failed:', e.message));
+    // 발의자 정보 별도 로드 (5K건 fetch)
+    loadBillProposers().then(map => {
+      state.billProposers = map;
+      // 홈/의안/패치 페이지면 재렌더
+      if (!location.hash || location.hash === '#/bills' || location.hash === '#/patches') route();
+    }).catch(e => console.warn('proposers load failed:', e.message));
   } catch (e) {
     document.getElementById('view').innerHTML = `<div class="empty">데이터 로드 실패: ${escapeHtml(e.message)}<br><br>국회 OPEN API가 일시적으로 응답하지 않거나, 브라우저 네트워크 문제일 수 있습니다.</div>`;
   }

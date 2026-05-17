@@ -1,0 +1,101 @@
+{
+  "_meta": "주요 민주주의 국가 정치 데이터 비교 (2024-2025 기준). 출처: IPU Parline, EIU Democracy Index 2024, V-Dem, OECD, IDEA, Freedom House.",
+  "metrics": [
+    { "id": "seats",          "label": "의원 수",          "unit": "명",   "higher": "context", "desc": "단원제는 단원 수, 양원제는 하원 수" },
+    { "id": "seats_per_100k", "label": "10만명당 의원",     "unit": "명",   "higher": "context", "desc": "인구 대비 의원 비율" },
+    { "id": "female_pct",     "label": "여성 의원 비율",    "unit": "%",    "higher": "good",    "desc": "하원 기준" },
+    { "id": "avg_age",        "label": "평균 연령",         "unit": "세",   "higher": "context", "desc": "현직 의원 평균" },
+    { "id": "turnout",        "label": "최근 총선 투표율",  "unit": "%",    "higher": "good",    "desc": "직전 의회 선거" },
+    { "id": "term_yrs",       "label": "임기",              "unit": "년",   "higher": "context", "desc": "하원 기준" },
+    { "id": "parties",        "label": "원내 정당 수",      "unit": "개",   "higher": "context", "desc": "5석 이상" },
+    { "id": "democracy_idx",  "label": "민주주의 지수",     "unit": "/10",  "higher": "good",    "desc": "EIU 2024" },
+    { "id": "press_freedom",  "label": "언론자유 순위",     "unit": "위",   "higher": "low",     "desc": "RSF 2024 (낮을수록 자유)" },
+    { "id": "corruption_idx", "label": "부패인식 지수",     "unit": "/100", "higher": "good",    "desc": "TI 2024 (높을수록 청렴)" }
+  ],
+  "countries": [
+    {
+      "code": "KR", "name": "대한민국", "flag": "🇰🇷", "system": "단원제 (300석)",
+      "election": "준연동형 비례+지역구", "highlight": true,
+      "seats": 300, "seats_per_100k": 0.58, "female_pct": 20.0, "avg_age": 57.2,
+      "turnout": 67.0, "term_yrs": 4, "parties": 8, "democracy_idx": 8.09, "press_freedom": 47, "corruption_idx": 64,
+      "note": "22대 (2024.5~2028.5). 300석 중 254 지역구·46 비례."
+    },
+    {
+      "code": "US", "name": "미국", "flag": "🇺🇸", "system": "양원제 (435+100)",
+      "election": "다수대표 (소선거구)",
+      "seats": 435, "seats_per_100k": 0.13, "female_pct": 28.7, "avg_age": 57.9,
+      "turnout": 66.6, "term_yrs": 2, "parties": 2, "democracy_idx": 7.85, "press_freedom": 55, "corruption_idx": 65,
+      "note": "하원 임기 2년·상원 6년. 2024 대선 함께 투표."
+    },
+    {
+      "code": "JP", "name": "일본", "flag": "🇯🇵", "system": "양원제 (465+248)",
+      "election": "병립형 비례+지역구",
+      "seats": 465, "seats_per_100k": 0.37, "female_pct": 10.3, "avg_age": 55.6,
+      "turnout": 53.9, "term_yrs": 4, "parties": 9, "democracy_idx": 8.40, "press_freedom": 70, "corruption_idx": 73,
+      "note": "중의원 (하원) 4년·참의원 (상원) 6년."
+    },
+    {
+      "code": "DE", "name": "독일", "flag": "🇩🇪", "system": "양원제 (733+69)",
+      "election": "혼합대표 (MMP)",
+      "seats": 733, "seats_per_100k": 0.87, "female_pct": 35.3, "avg_age": 47.3,
+      "turnout": 76.4, "term_yrs": 4, "parties": 7, "democracy_idx": 8.73, "press_freedom": 10, "corruption_idx": 75,
+      "note": "분데스타크 (하원) 4년·분데스라트 (주 대표) 무임기."
+    },
+    {
+      "code": "UK", "name": "영국", "flag": "🇬🇧", "system": "양원제 (650+800)",
+      "election": "다수대표 (FPTP)",
+      "seats": 650, "seats_per_100k": 0.96, "female_pct": 40.5, "avg_age": 51.0,
+      "turnout": 59.7, "term_yrs": 5, "parties": 9, "democracy_idx": 8.32, "press_freedom": 23, "corruption_idx": 71,
+      "note": "하원 (Commons) 5년·상원 (Lords) 종신."
+    },
+    {
+      "code": "FR", "name": "프랑스", "flag": "🇫🇷", "system": "양원제 (577+348)",
+      "election": "결선투표제",
+      "seats": 577, "seats_per_100k": 0.85, "female_pct": 37.4, "avg_age": 49.0,
+      "turnout": 66.7, "term_yrs": 5, "parties": 11, "democracy_idx": 8.07, "press_freedom": 21, "corruption_idx": 67,
+      "note": "국민의회 (하원) 5년·상원 6년."
+    },
+    {
+      "code": "TW", "name": "대만", "flag": "🇹🇼", "system": "단원제 (113석)",
+      "election": "병립형 비례+지역구",
+      "seats": 113, "seats_per_100k": 0.48, "female_pct": 41.6, "avg_age": 52.0,
+      "turnout": 71.9, "term_yrs": 4, "parties": 4, "democracy_idx": 8.78, "press_freedom": 27, "corruption_idx": 67,
+      "note": "입법원 (Legislative Yuan) 4년."
+    },
+    {
+      "code": "SE", "name": "스웨덴", "flag": "🇸🇪", "system": "단원제 (349석)",
+      "election": "비례대표",
+      "seats": 349, "seats_per_100k": 3.30, "female_pct": 46.4, "avg_age": 47.0,
+      "turnout": 84.2, "term_yrs": 4, "parties": 8, "democracy_idx": 9.39, "press_freedom": 3, "corruption_idx": 82,
+      "note": "릭스다그 (Riksdag) 4년·여성 비율·청렴도 세계 최상위."
+    },
+    {
+      "code": "CA", "name": "캐나다", "flag": "🇨🇦", "system": "양원제 (343+105)",
+      "election": "다수대표 (FPTP)",
+      "seats": 343, "seats_per_100k": 0.88, "female_pct": 30.7, "avg_age": 53.0,
+      "turnout": 62.6, "term_yrs": 4, "parties": 5, "democracy_idx": 8.69, "press_freedom": 14, "corruption_idx": 76,
+      "note": "하원 4년·상원 임명직."
+    },
+    {
+      "code": "AU", "name": "호주", "flag": "🇦🇺", "system": "양원제 (151+76)",
+      "election": "선호투표제 (IRV)",
+      "seats": 151, "seats_per_100k": 0.57, "female_pct": 38.4, "avg_age": 51.0,
+      "turnout": 89.8, "term_yrs": 3, "parties": 6, "democracy_idx": 8.85, "press_freedom": 39, "corruption_idx": 75,
+      "note": "하원 3년·의무투표제."
+    },
+    {
+      "code": "NO", "name": "노르웨이", "flag": "🇳🇴", "system": "단원제 (169석)",
+      "election": "비례대표",
+      "seats": 169, "seats_per_100k": 3.10, "female_pct": 46.2, "avg_age": 45.0,
+      "turnout": 77.2, "term_yrs": 4, "parties": 10, "democracy_idx": 9.81, "press_freedom": 1, "corruption_idx": 81,
+      "note": "스토르팅 (Storting) 4년·민주주의 지수 세계 1위 (EIU 2024)."
+    },
+    {
+      "code": "NZ", "name": "뉴질랜드", "flag": "🇳🇿", "system": "단원제 (123석)",
+      "election": "혼합대표 (MMP)",
+      "seats": 123, "seats_per_100k": 2.30, "female_pct": 50.4, "avg_age": 48.0,
+      "turnout": 78.2, "term_yrs": 3, "parties": 6, "democracy_idx": 9.61, "press_freedom": 19, "corruption_idx": 83,
+      "note": "여성 50%대 돌파 (2020~) · 청렴도 세계 1-2위."
+    }
+  ]
+}
