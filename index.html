@@ -976,12 +976,36 @@
   /* Footer */
   footer {
     border-top: 1px solid var(--border);
-    padding: 24px;
-    text-align: center; font-size: 11px;
+    padding: 36px 28px 28px;
+    font-size: 11px;
     color: var(--dim);
-    margin-top: 60px;
+    margin-top: 80px;
+    background: var(--bg-card);
   }
-  footer a { color: var(--text-2); }
+  .foot-row {
+    max-width: 1280px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+    margin-bottom: 24px;
+  }
+  .foot-col { display: flex; flex-direction: column; gap: 5px; }
+  .foot-col a { color: var(--text-2); text-decoration: none; }
+  .foot-col a:hover { color: var(--link); }
+  .foot-col span b { color: var(--text); font-weight: 600; }
+  .foot-h {
+    color: var(--text); font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .foot-bottom {
+    max-width: 1280px; margin: 0 auto;
+    padding-top: 18px; border-top: 1px solid var(--border);
+    display: flex; gap: 14px; flex-wrap: wrap; justify-content: space-between;
+    color: var(--dim); font-size: 10px;
+  }
+  .foot-bottom a { color: var(--text-2); }
+  .foot-bottom a:hover { color: var(--link); }
 
   @media (max-width: 600px) {
     .h-inner { grid-template-columns: 1fr; gap: 10px; }
@@ -1021,9 +1045,32 @@
 </main>
 
 <footer>
-  데이터: <a href="https://open.assembly.go.kr" target="_blank">국회 OPEN API</a> · 위키미디어 ·
-  마지막 동기화 <span id="last-sync">—</span> ·
-  본 사이트는 객관 수치만 표시하며 평가/의견을 포함하지 않습니다.
+  <div class="foot-row">
+    <div class="foot-col">
+      <div class="foot-h">데이터 출처</div>
+      <a href="https://open.assembly.go.kr" target="_blank" rel="noopener">국회 OPEN API</a>
+      <a href="https://ko.wikipedia.org" target="_blank" rel="noopener">위키미디어 (CC BY-SA)</a>
+      <a href="https://github.com/southkorea/southkorea-maps" target="_blank" rel="noopener">southkorea-maps</a>
+      <span>마지막 동기화 <b id="last-sync">—</b></span>
+    </div>
+    <div class="foot-col">
+      <div class="foot-h">라이선스</div>
+      <span>공공누리 1유형 (출처표시)</span>
+      <span>CC BY-SA 4.0 (위키 콘텐츠)</span>
+      <span>상업적 이용 가능 — 출처 표기 필수</span>
+    </div>
+    <div class="foot-col">
+      <div class="foot-h">원칙</div>
+      <span>객관 수치만 표시</span>
+      <span>평가·의견·해석 없음</span>
+      <span>사실 오류 발견 시 GitHub <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener">이슈</a></span>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>Politik · 한눈정계</span>
+    <span><a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">소스 코드 (MIT)</a></span>
+    <span id="foot-year">v2.1 · 2026</span>
+  </div>
 </footer>
 
 <script>
@@ -2781,6 +2828,8 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     state.members = [...extras, ...members];
     document.getElementById('stat-total').textContent = data.length;
     document.getElementById('last-sync').textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
+    const fy = document.getElementById('foot-year');
+    if (fy) fy.textContent = `v2.1 · ${new Date().getFullYear()}`;
     renderFilters();
     route();
     // 의안은 백그라운드 로드 (홈 표시 후)
