@@ -96,6 +96,90 @@
     transition: border-color 0.15s, box-shadow 0.15s;
   }
   .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(17,24,39,0.08); }
+
+  /* Autocomplete dropdown */
+  .ac-dropdown {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    z-index: 200;
+    max-height: 70vh; overflow-y: auto;
+    display: none;
+  }
+  [data-theme="dark"] .ac-dropdown { box-shadow: 0 8px 28px rgba(0,0,0,0.55); }
+  .ac-dropdown.open { display: block; }
+  .ac-section-h {
+    font-size: 10px; color: var(--dim);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 10px 14px 6px; font-weight: 700;
+    position: sticky; top: 0;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+  }
+  .ac-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  .ac-row:last-child { border-bottom: none; }
+  .ac-row:hover, .ac-row.ac-active { background: var(--bg-elev); }
+  .ac-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    overflow: hidden; flex-shrink: 0;
+    background: var(--bg-elev);
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 700; color: var(--text-2);
+    border: 1px solid var(--border);
+  }
+  .ac-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .ac-info { flex: 1; min-width: 0; }
+  .ac-name {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ac-name mark {
+    background: rgba(255,217,0,0.32);
+    color: inherit; padding: 0 1px; border-radius: 2px;
+  }
+  [data-theme="dark"] .ac-name mark { background: rgba(255,217,0,0.22); }
+  .ac-sub {
+    font-size: 11px; color: var(--text-2);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    margin-top: 1px;
+  }
+  .ac-badge {
+    flex-shrink: 0;
+    font-size: 10px; font-weight: 700; color: #fff;
+    padding: 2px 7px; border-radius: 10px;
+    background: var(--text-2);
+    letter-spacing: 0.2px;
+  }
+  .ac-empty {
+    padding: 28px 14px; text-align: center;
+    color: var(--dim); font-size: 12px;
+  }
+  .ac-foot {
+    padding: 9px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-elev);
+    font-size: 10.5px; color: var(--dim);
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+  .ac-kbd {
+    display: inline-block;
+    padding: 1px 6px; margin: 0 2px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Inter', monospace;
+    font-size: 10px; color: var(--text);
+  }
+
   .search-icon {
     position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
     color: var(--dim); pointer-events: none;
@@ -1344,7 +1428,8 @@
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input class="search" id="search" placeholder="이름·지역구·정당으로 검색...">
+      <input class="search" id="search" placeholder="이름·지역구·정당으로 검색..." autocomplete="off">
+      <div class="ac-dropdown" id="ac-dropdown" role="listbox" aria-label="검색 자동완성"></div>
     </div>
     <div class="nav-stats">
       <div><b id="stat-total">—</b> 등록</div>
@@ -3082,7 +3167,7 @@ function route() {
   const hash = location.hash || '';
   const filterBar = document.getElementById('filter-bar');
   const navStats = document.querySelector('.nav-stats');
-  // 페이지 전환 시 잔존 툴팁 강제 숨김
+  // 페이지 전환 시 잔존 툴팁 강제 숨김 (자동완성은 hashchange 핸들러에서 별도 close)
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
@@ -3214,12 +3299,190 @@ function route() {
   }
 }
 
-window.addEventListener('hashchange', route);
-document.getElementById('brand').addEventListener('click', () => { location.hash = ''; });
-document.getElementById('search').addEventListener('input', e => {
-  state.search = e.target.value;
-  if (!location.hash) route();
+window.addEventListener('hashchange', () => {
+  const _drop = document.getElementById('ac-dropdown');
+  if (_drop) _drop.classList.remove('open');
+  route();
 });
+document.getElementById('brand').addEventListener('click', () => { location.hash = ''; });
+
+// ============================================================
+// Autocomplete (search dropdown)
+// ============================================================
+const AC = (() => {
+  const $input = document.getElementById('search');
+  const $drop = document.getElementById('ac-dropdown');
+  let activeIdx = -1;
+  let items = [];
+
+  function hl(text, q) {
+    if (!q || !text) return escapeHtml(text || '');
+    const idx = text.toLowerCase().indexOf(q.toLowerCase());
+    if (idx < 0) return escapeHtml(text);
+    return escapeHtml(text.slice(0, idx)) + '<mark>' + escapeHtml(text.slice(idx, idx + q.length)) + '</mark>' + escapeHtml(text.slice(idx + q.length));
+  }
+
+  function score(m, q) {
+    const name = (m.HG_NM || '').toLowerCase();
+    if (name === q) return 1000;
+    if (name.startsWith(q)) return 500;
+    if (name.includes(q)) return 200;
+    if ((m.ORIG_NM || '').toLowerCase().includes(q)) return 80;
+    if ((m.POLY_NM || '').toLowerCase().includes(q)) return 50;
+    if ((m.role || '').toLowerCase().includes(q)) return 60;
+    if ((m.region || '').toLowerCase().includes(q)) return 70;
+    if ((m.CMIT_NM || '').toLowerCase().includes(q)) return 30;
+    if ((m._type_label || '').toLowerCase().includes(q)) return 20;
+    return 0;
+  }
+
+  function search(q) {
+    q = q.trim().toLowerCase();
+    if (!q) return { members: [], parties: [], groups: [] };
+    // Members (top 8)
+    const scored = state.members.map(m => ({ m, s: score(m, q) })).filter(x => x.s > 0);
+    scored.sort((a, b) => b.s - a.s || (a.m.HG_NM||'').localeCompare(b.m.HG_NM||'', 'ko'));
+    const members = scored.slice(0, 8).map(x => x.m);
+    // Parties (max 4)
+    const partySet = new Set();
+    for (const m of state.members) {
+      const p = m.POLY_NM;
+      if (p && p.toLowerCase().includes(q)) partySet.add(p);
+    }
+    const parties = [...partySet].slice(0, 4);
+    // Groups (max 3)
+    const groups = GROUP_ORDER.filter(gid => {
+      const g = GROUPS[gid];
+      return g.name.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q);
+    }).slice(0, 3);
+    return { members, parties, groups };
+  }
+
+  function memberRow(m, q) {
+    const photo = state.photos.get(m.MONA_CD);
+    const initial = (m.HG_NM || '?').charAt(0);
+    const av = photo?.thumb
+      ? `<img src="${escapeHtml(photo.thumb)}" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">`
+      : escapeHtml(initial);
+    const sub = [m.POLY_NM, m.ORIG_NM || m.region || m.role, m._type_label].filter(Boolean).join(' · ');
+    const color = partyColor(m.POLY_NM);
+    return `
+      <div class="ac-row" role="option" data-action="member" data-id="${escapeHtml(m.MONA_CD)}">
+        <div class="ac-avatar">${av}</div>
+        <div class="ac-info">
+          <div class="ac-name">${hl(m.HG_NM, q)}</div>
+          <div class="ac-sub">${hl(sub, q)}</div>
+        </div>
+        <span class="ac-badge" style="background:${color}">${escapeHtml(m.POLY_NM || m._type_label || '')}</span>
+      </div>`;
+  }
+  function partyRow(p, q) {
+    const cnt = state.members.filter(m => m.POLY_NM === p).length;
+    const color = partyColor(p);
+    return `
+      <div class="ac-row" role="option" data-action="party" data-party="${escapeHtml(p)}">
+        <div class="ac-avatar" style="background:${color}; color:#fff">●</div>
+        <div class="ac-info">
+          <div class="ac-name">${hl(p, q)}</div>
+          <div class="ac-sub">정당 · ${cnt}명 등록</div>
+        </div>
+        <span class="ac-badge" style="background:${color}">정당</span>
+      </div>`;
+  }
+  function groupRow(gid, q) {
+    const g = GROUPS[gid];
+    const cnt = state.members.filter(m => (m._group || 'legislative') === gid).length;
+    return `
+      <div class="ac-row" role="option" data-action="group" data-gid="${escapeHtml(gid)}">
+        <div class="ac-avatar" style="background:${g.color}; color:#fff">${g.icon}</div>
+        <div class="ac-info">
+          <div class="ac-name">${hl(g.name, q)}</div>
+          <div class="ac-sub">${hl(g.desc, q)} · ${cnt}명</div>
+        </div>
+        <span class="ac-badge">분류</span>
+      </div>`;
+  }
+
+  function render(q) {
+    const { members, parties, groups } = search(q);
+    items = [];
+    let html = '';
+    if (groups.length) {
+      html += '<div class="ac-section-h">분류</div>';
+      for (const gid of groups) { items.push({ action: 'group', gid }); html += groupRow(gid, q); }
+    }
+    if (parties.length) {
+      html += '<div class="ac-section-h">정당</div>';
+      for (const p of parties) { items.push({ action: 'party', party: p }); html += partyRow(p, q); }
+    }
+    if (members.length) {
+      html += `<div class="ac-section-h">인물 · ${members.length}건${members.length === 8 ? ' (상위 8)' : ''}</div>`;
+      for (const m of members) { items.push({ action: 'member', id: m.MONA_CD }); html += memberRow(m, q); }
+    }
+    if (!items.length) {
+      html = '<div class="ac-empty">결과 없음</div>';
+    } else {
+      html += `<div class="ac-foot"><span class="ac-kbd">↑↓</span> 이동 · <span class="ac-kbd">Enter</span> 선택 · <span class="ac-kbd">Esc</span> 닫기</div>`;
+    }
+    $drop.innerHTML = html;
+    $drop.classList.add('open');
+    activeIdx = -1;
+  }
+  function close() {
+    $drop.classList.remove('open');
+    activeIdx = -1;
+  }
+  function setActive(idx) {
+    const rows = $drop.querySelectorAll('.ac-row');
+    rows.forEach(r => r.classList.remove('ac-active'));
+    if (idx < 0 || idx >= rows.length) { activeIdx = -1; return; }
+    activeIdx = idx;
+    rows[idx].classList.add('ac-active');
+    rows[idx].scrollIntoView({ block: 'nearest' });
+  }
+  function go(item) {
+    if (!item) return;
+    close();
+    $input.blur();
+    if (item.action === 'member') location.hash = `#/m/${encodeURIComponent(item.id)}`;
+    else if (item.action === 'party') location.hash = `#/party/${encodeURIComponent(item.party)}`;
+    else if (item.action === 'group') location.hash = `#/group/${item.gid}`;
+  }
+
+  $input.addEventListener('input', e => {
+    state.search = e.target.value;
+    const q = e.target.value.trim();
+    if (q.length === 0) { close(); if (!location.hash) route(); return; }
+    render(q);
+    if (!location.hash) route();
+  });
+  $input.addEventListener('focus', () => {
+    const q = $input.value.trim();
+    if (q.length > 0) render(q);
+  });
+  $input.addEventListener('keydown', e => {
+    if (!$drop.classList.contains('open')) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(activeIdx + 1, items.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(activeIdx - 1, -1)); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIdx >= 0) go(items[activeIdx]);
+      else if (items.length) go(items[0]);
+    }
+    else if (e.key === 'Escape') { close(); }
+  });
+  $drop.addEventListener('mousedown', e => {
+    const row = e.target.closest('.ac-row');
+    if (!row) return;
+    e.preventDefault();
+    const idx = [...$drop.querySelectorAll('.ac-row')].indexOf(row);
+    go(items[idx]);
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) close();
+  });
+  return { close };
+})();
 
 // 다크 모드 토글
 const THEME_KEY = 'politik:theme';
