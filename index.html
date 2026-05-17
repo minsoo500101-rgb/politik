@@ -1495,9 +1495,19 @@
     text-align: center;
   }
   @media (max-width: 800px) {
-    .br-row { grid-template-columns: 80px 1fr 80px; }
-    .br-cmt { display: none; }
+    .br-row {
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "name result" "date cmt";
+      gap: 4px 10px;
+    }
+    .br-name   { grid-area: name; white-space: normal; line-height: 1.35; }
+    .br-result { grid-area: result; align-self: start; font-size: 10.5px; padding: 2px 6px; border-radius: 8px; background: var(--bg-elev); }
+    .br-date   { grid-area: date; }
+    .br-cmt    { grid-area: cmt; font-size: 10.5px; }
     .bm-lbl { display: none; }
+    .bm-col { min-width: 6px; }
+    .bills-hero h1 { font-size: 22px; }
+    .bills-page, .ph-page { padding: 8px 14px 40px; }
   }
 
   /* ============ Party history timeline ============ */
@@ -1713,6 +1723,22 @@
     .d-hero { grid-template-columns: 1fr; padding: 24px 20px; }
     .d-avatar { width: 80px; height: 80px; font-size: 32px; }
     .d-info h1 { font-size: 24px; }
+    header { padding: 10px 14px; }
+    .brand-sub { display: none; }
+    .nav-stats { font-size: 11px; gap: 10px; }
+    .map-wrap { grid-template-columns: 1fr; }
+    .map-container { min-height: 480px; }
+    .mz-btn { width: 28px; height: 28px; font-size: 14px; }
+  }
+  @media (max-width: 480px) {
+    .dash-hero-r { flex-wrap: wrap; gap: 6px; }
+    .hero-btn { flex: 1 1 calc(50% - 3px); justify-content: center; padding: 10px 8px; font-size: 12px; }
+    .dash-hero-l h1 { font-size: 22px; }
+    .dash-hero-l p { font-size: 12px; }
+    .dash-hero-eye { letter-spacing: 1.8px; }
+    .ph-bar-label { font-size: 9.5px; }
+    .ph-hero h1, .bills-hero h1 { font-size: 20px; }
+    .group-back { font-size: 12px; }
   }
 </style>
 </head>
