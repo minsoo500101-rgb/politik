@@ -960,6 +960,322 @@
   .bill-name { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bill-result { font-size: 11px; font-weight: 600; text-align: right; }
 
+  /* ============ Dashboard (Bento Home V6) ============ */
+  .dash {
+    max-width: 1280px; margin: 0 auto;
+    padding: 24px 24px 60px;
+  }
+  .dash-hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    padding: 28px 30px 26px;
+    margin-bottom: 18px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    position: relative; overflow: hidden;
+  }
+  .dash-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(0,78,162,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(230,30,43,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .dash-hero-l, .dash-hero-r { position: relative; z-index: 1; }
+  .dash-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .dash-hero-l h1 {
+    font-size: 30px; font-weight: 800;
+    letter-spacing: -0.8px; color: var(--text);
+    margin-bottom: 8px; line-height: 1.2;
+  }
+  .dash-hero-l p {
+    font-size: 13.5px; color: var(--text-2);
+    line-height: 1.5;
+  }
+  .dash-hero-l p b { color: var(--text); font-weight: 700; }
+  .dash-hero-r {
+    display: flex; gap: 8px; flex-shrink: 0;
+  }
+  .hero-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    color: var(--text); font-weight: 600; font-size: 13px;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+  .hero-btn:hover {
+    background: var(--text); color: var(--bg-card);
+    border-color: var(--text);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    text-decoration: none;
+  }
+  [data-theme="dark"] .hero-btn:hover { box-shadow: 0 6px 14px rgba(0,0,0,0.5); }
+
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 14px;
+  }
+  .dash-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    position: relative;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .col-3  { grid-column: span 3; }
+  .col-4  { grid-column: span 4; }
+  .col-6  { grid-column: span 6; }
+  .col-8  { grid-column: span 8; }
+  .col-12 { grid-column: span 12; }
+
+  /* KPI */
+  .kpi { padding: 16px 18px 14px; }
+  .kpi-label {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .kpi-num {
+    font-size: 32px; font-weight: 800;
+    color: var(--text); line-height: 1.05;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 6px;
+  }
+  .kpi-num .unit {
+    font-size: 14px; font-weight: 600; color: var(--dim);
+    margin-left: 3px; letter-spacing: 0;
+  }
+  .kpi-trend {
+    font-size: 11px; color: var(--text-2);
+    line-height: 1.4;
+  }
+
+  /* Group boxes */
+  .grpbox {
+    cursor: pointer;
+    display: flex; flex-direction: column;
+  }
+  .grpbox:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+  [data-theme="dark"] .grpbox:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.45); }
+  .grpbox-top {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .grpbox-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: grid; place-items: center;
+    font-size: 18px; color: #fff;
+    flex-shrink: 0;
+  }
+  [data-theme="dark"] .grpbox-icon {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%) !important;
+  }
+  .grpbox-name {
+    font-size: 14px; font-weight: 700; color: var(--text);
+  }
+  .grpbox-num {
+    font-size: 28px; font-weight: 800;
+    color: var(--text); line-height: 1;
+    letter-spacing: -0.8px;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 4px;
+  }
+  .grpbox-num .unit {
+    font-size: 13px; font-weight: 600; color: var(--dim);
+    margin-left: 3px;
+  }
+  .grpbox-desc {
+    font-size: 11px; color: var(--text-2);
+    margin-bottom: 12px; min-height: 30px;
+    line-height: 1.4;
+  }
+  .grpbox-avatars {
+    display: flex; gap: -4px; margin-top: auto;
+    padding-top: 4px;
+  }
+  .grpbox-avatars .org-preview-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    margin-left: -5px; border: 2px solid var(--bg-card);
+    background: var(--bg-elev);
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 700; color: var(--text-2);
+    overflow: hidden;
+  }
+  .grpbox-avatars .org-preview-avatar:first-child { margin-left: 0; }
+  .grpbox-avatars .org-preview-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
+  /* Chart cards */
+  .chart-card { display: flex; flex-direction: column; }
+  .chart-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .chart-head h3 {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.2px;
+  }
+  .chart-link {
+    font-size: 11px; color: var(--text-2);
+    font-weight: 600; cursor: pointer;
+    text-decoration: none;
+  }
+  .chart-link:hover { color: var(--link); }
+
+  /* Party bars */
+  .party-bars { display: flex; flex-direction: column; gap: 7px; }
+  .party-bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 38px 46px;
+    gap: 10px; align-items: center;
+    cursor: pointer;
+    padding: 3px 4px; border-radius: 6px;
+    transition: background 0.12s;
+  }
+  .party-bar-row:hover { background: var(--bg-elev); }
+  .pb-name {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pb-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .pb-bar-wrap {
+    height: 8px; background: var(--bg-elev);
+    border-radius: 4px; overflow: hidden;
+  }
+  [data-theme="dark"] .pb-bar-wrap { background: rgba(0,0,0,0.35); }
+  .pb-bar {
+    height: 100%; border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .pb-count {
+    font-size: 13px; font-weight: 700;
+    color: var(--text); text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .pb-pct {
+    font-size: 11px; color: var(--dim);
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+
+  /* Mini bars */
+  .mini-bars { display: flex; flex-direction: column; gap: 6px; }
+  .mini-bar-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 30px;
+    gap: 8px; align-items: center;
+  }
+  .mb-lbl {
+    font-size: 11px; color: var(--text-2); font-weight: 600;
+  }
+  .mb-wrap {
+    height: 6px; background: var(--bg-elev);
+    border-radius: 3px; overflow: hidden;
+  }
+  [data-theme="dark"] .mb-wrap { background: rgba(0,0,0,0.35); }
+  .mb-bar {
+    height: 100%; background: linear-gradient(90deg, var(--text-2), var(--text));
+    border-radius: 3px;
+  }
+  .mb-cnt {
+    font-size: 11px; font-weight: 700; color: var(--text);
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+
+  /* Mini list */
+  .mini-list { display: flex; flex-direction: column; gap: 4px; }
+  .ml-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 6px;
+    cursor: pointer; transition: background 0.12s;
+  }
+  .ml-row:hover { background: var(--bg-elev); }
+  .ml-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .ml-name {
+    flex: 1; font-size: 12px; color: var(--text); font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ml-cnt {
+    font-size: 12px; color: var(--text); font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* CTA card */
+  .cta-card { cursor: pointer; }
+  .cta-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+  [data-theme="dark"] .cta-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.45); }
+  .cta-desc {
+    font-size: 13px; color: var(--text); font-weight: 600;
+    line-height: 1.5; margin-bottom: 8px;
+  }
+  .cta-mini {
+    font-size: 11px; color: var(--text-2);
+    line-height: 1.5;
+  }
+
+  /* Judicial / Executive mini */
+  .judicial-mini { display: flex; flex-direction: column; gap: 7px; }
+  .jm-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 12px;
+  }
+  .jm-row:last-child { border-bottom: none; }
+  .jm-row span { color: var(--text-2); }
+  .jm-row b { color: var(--text); font-weight: 700; }
+
+  /* Responsive — collapse 12-col to fewer */
+  @media (max-width: 1100px) {
+    .col-3 { grid-column: span 6; }
+    .col-4 { grid-column: span 6; }
+    .col-6 { grid-column: span 12; }
+    .col-8 { grid-column: span 12; }
+  }
+  @media (max-width: 700px) {
+    .dash { padding: 16px 14px 50px; }
+    .dash-hero { grid-template-columns: 1fr; padding: 22px 20px; }
+    .dash-hero-l h1 { font-size: 24px; }
+    .dash-hero-r { flex-wrap: wrap; }
+    .hero-btn { flex: 1; justify-content: center; }
+    .col-3, .col-4, .col-6, .col-8 { grid-column: span 12; }
+    .kpi-num { font-size: 26px; }
+    .grpbox-num { font-size: 24px; }
+    .party-bar-row { grid-template-columns: 90px 1fr 32px 40px; gap: 8px; }
+    .pb-name { font-size: 11px; }
+  }
+
   /* ============ Loading / Empty ============ */
   .loading, .empty {
     padding: 80px 20px; text-align: center;
@@ -2100,85 +2416,192 @@ function renderPartyDonut() {
 function renderHome() {
   const groups = groupMembers();
   const totalCount = state.members.length;
-  // 그룹별 미리보기 아바타 5명 추출 (사진 있는 우선)
-  function topPreview(arr, n = 6) {
+  const mps = state.members.filter(m => m._group === 'legislative' || (!m._group && m.UNITS));
+  const locals = state.members.filter(m =>
+    m._type === 'local_gov_head' || m._type === 'local_gov_muni' ||
+    m._type === 'local_council_speaker' || m._type === 'edu_superintendent'
+  );
+
+  // KPI 계산
+  const now = new Date().getFullYear();
+  const ages = mps.map(m => { const y = parseInt((m.BTH_DATE||'').slice(0,4),10); return y ? now-y : null; }).filter(a => a != null);
+  const avgAge = ages.length ? (ages.reduce((s,a) => s+a, 0) / ages.length).toFixed(1) : '—';
+  const female = mps.filter(m => m.SEX_GBN_NM === '여').length;
+  const femalePct = mps.length ? (female/mps.length*100).toFixed(1) : '0';
+
+  // 그룹별 미리보기
+  function topPreview(arr, n = 5) {
     const withPhoto = arr.filter(m => state.photos.get(m.MONA_CD)?.thumb);
     const rest = arr.filter(m => !state.photos.get(m.MONA_CD)?.thumb);
     return [...withPhoto, ...rest].slice(0, n);
   }
-  const boxes = GROUP_ORDER.map(gid => {
+
+  // 4부 박스 (컴팩트)
+  const groupBoxes = GROUP_ORDER.map(gid => {
     const g = GROUPS[gid];
     const members = groups[gid] || [];
-    const previews = topPreview(members);
-    let subList = '';
-    if (gid === 'legislative') {
-      const byParty = new Map();
-      for (const m of members) byParty.set(m.POLY_NM, (byParty.get(m.POLY_NM)||0)+1);
-      const top = [...byParty.entries()].sort((a,b) => b[1]-a[1]).slice(0, 4);
-      subList = top.map(([p, c]) => `<div class="sub-row party-link" data-party="${escapeHtml(p)}" style="cursor:pointer"><span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${partyColor(p)};margin-right:6px;vertical-align:middle"></span>${escapeHtml(p)}</span><b>${c}</b></div>`).join('');
-    } else {
-      // type별 분포
-      const byType = new Map();
-      for (const m of members) byType.set(m._type, (byType.get(m._type)||0)+1);
-      subList = (TYPE_ORDER[gid] || [...byType.keys()])
-        .filter(t => byType.has(t))
-        .map(t => `<div class="sub-row"><span>${escapeHtml(TYPE_GROUP_LABEL[t]||t)}</span><b>${byType.get(t)}명</b></div>`).join('');
-    }
+    const previews = topPreview(members, 4);
     return `
-      <div class="org-box" data-group="${gid}">
-        <div class="org-box-head">
-          <div class="org-icon" style="background:${g.color}">${g.icon}</div>
-          <div>
-            <div class="org-name">${g.name}</div>
-            <div class="org-desc">${g.desc}</div>
-          </div>
-          <div>
-            <div class="org-count">${members.length}</div>
-            <div class="org-count-unit">명</div>
-          </div>
+      <div class="dash-card grpbox" data-group="${gid}">
+        <div class="grpbox-top">
+          <div class="grpbox-icon" style="background:${g.color}">${g.icon}</div>
+          <div class="grpbox-name">${g.name}</div>
         </div>
-        <div class="org-box-body">
-          <div class="org-sub-list">${subList || '<div class="sub-row"><span>등록된 인물 없음</span><b>—</b></div>'}</div>
-          <div class="org-preview">
-            ${previews.map(m => {
-              const photo = state.photos.get(m.MONA_CD);
-              const initial = (m.HG_NM||'?').charAt(0);
-              return `<div class="org-preview-avatar" title="${escapeHtml(m.HG_NM)}">${photo?.thumb ? `<img src="${escapeHtml(photo.thumb)}" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">` : escapeHtml(initial)}</div>`;
-            }).join('')}
-          </div>
-        </div>
-        <div class="org-box-foot">
-          <span>전체 보기</span>
-          <span class="arrow">→</span>
+        <div class="grpbox-num">${members.length}<span class="unit">명</span></div>
+        <div class="grpbox-desc">${g.desc}</div>
+        <div class="grpbox-avatars">
+          ${previews.map(m => {
+            const photo = state.photos.get(m.MONA_CD);
+            const initial = (m.HG_NM||'?').charAt(0);
+            return `<div class="org-preview-avatar" title="${escapeHtml(m.HG_NM)}">${photo?.thumb ? `<img src="${escapeHtml(photo.thumb)}" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">` : escapeHtml(initial)}</div>`;
+          }).join('')}
         </div>
       </div>
     `;
   }).join('');
 
-  // 통계 — 상위 핫 stats
-  const statsRow = [
-    { num: groups.legislative?.length || 0, label: '국회의원' },
-    { num: groups.executive?.length || 0, label: '행정부' },
-    { num: groups.judicial?.length || 0, label: '사법부' },
-    { num: groups.local?.length || 0, label: '지방정부' },
-    { num: groups.historical?.length || 0, label: '역사' },
-  ];
+  // 정당별 의석 (메인 미니 정렬)
+  const byParty = new Map();
+  for (const m of mps) byParty.set(m.POLY_NM, (byParty.get(m.POLY_NM)||0)+1);
+  const partyArr = [...byParty.entries()].sort((a,b) => b[1]-a[1])
+    .map(([n,c]) => ({ name:n, count:c, color: partyColor(n) }));
+  const partyMax = Math.max(...partyArr.map(p => p.count));
+
+  // 선수 분포
+  const terms = new Map();
+  for (const m of mps) terms.set(m.REELE_GBN_NM || '초선', (terms.get(m.REELE_GBN_NM || '초선')||0)+1);
+  const TERM_ORDER = ['초선','재선','3선','4선','5선','6선','7선','8선'];
+  const termArr = TERM_ORDER.filter(t => terms.has(t)).map(t => ({ t, c: terms.get(t) }));
+  const termMax = Math.max(...termArr.map(t => t.c));
+
+  // 지방 정당 분포 (mini)
+  const locByParty = new Map();
+  for (const m of locals) locByParty.set(m.POLY_NM || '무소속', (locByParty.get(m.POLY_NM || '무소속')||0)+1);
+  const locArr = [...locByParty.entries()].sort((a,b) => b[1]-a[1])
+    .map(([n,c]) => ({ name:n, count:c, color: partyColor(n) }));
 
   return `
-    <div class="org">
-      <div class="org-hero">
-        <div class="badge-line">POLITIK · 한눈정계 v2</div>
-        <h1>대한민국 정계, 한 화면에</h1>
-        <div class="sub">국회의원·내각·시·도지사·대법관·역대 인물 — 6,000여 명의 데이터를 객관 수치로</div>
-        <div class="stats-row">
-          ${statsRow.map(s => `<div class="stat-item"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('')}
+    <div class="dash">
+      <div class="dash-hero">
+        <div class="dash-hero-l">
+          <div class="dash-hero-eye">POLITIK · 한눈정계</div>
+          <h1>대한민국 정계, 한 화면에</h1>
+          <p>국회의원·내각·시·도지사·대법관·역대 인물 — <b>${totalCount.toLocaleString()}명</b>의 데이터를 객관 수치로</p>
         </div>
-        <div class="meta">데이터 <b><a href="https://open.assembly.go.kr" target="_blank">국회 OPEN API</a></b> · <b>위키미디어</b> · 평가/의견 없음 · 수치만 표시</div>
+        <div class="dash-hero-r">
+          <a class="hero-btn" href="#/map">🗺  정치 분포 지도</a>
+          <a class="hero-btn" href="#/relations">🕸  관계도</a>
+        </div>
       </div>
-      <div class="org-grid">${boxes}</div>
-      ${renderPartyDonut()}
-      ${renderLocalDonut()}
-      ${renderStats()}
+
+      <div class="dash-grid">
+        <!-- KPI 행 -->
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">전체 등록</div>
+          <div class="kpi-num">${totalCount.toLocaleString()}</div>
+          <div class="kpi-trend">현직 + 역대 직접 등록 · 위키 lazy ~5천 추가</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">22대 국회</div>
+          <div class="kpi-num">${mps.length}<span class="unit">/300</span></div>
+          <div class="kpi-trend">민주 ${byParty.get('더불어민주당')||0} · 국힘 ${byParty.get('국민의힘')||0} · 외 ${mps.length-(byParty.get('더불어민주당')||0)-(byParty.get('국민의힘')||0)}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">22대 평균 나이</div>
+          <div class="kpi-num">${avgAge}<span class="unit">세</span></div>
+          <div class="kpi-trend">여성 ${female}명 (${femalePct}%)</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">지방정부</div>
+          <div class="kpi-num">${locals.length}</div>
+          <div class="kpi-trend">광역 17 · 기초 226 · 의장 17 · 교육감 17</div>
+        </div>
+
+        <!-- 4부 박스 -->
+        ${groupBoxes.replace(/dash-card grpbox/g, 'dash-card col-3 grpbox')}
+
+        <!-- 정당별 의석 (큰 카드) -->
+        <div class="dash-card col-6 chart-card">
+          <div class="chart-head">
+            <h3>22대 국회 정당별 의석</h3>
+            <a href="#/group/legislative" class="chart-link">전체 보기 →</a>
+          </div>
+          <div class="party-bars">
+            ${partyArr.map(p => `
+              <div class="party-bar-row party-link" data-party="${escapeHtml(p.name)}">
+                <div class="pb-name"><span class="pb-dot" style="background:${p.color}"></span>${escapeHtml(p.name)}</div>
+                <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(p.count/partyMax*100).toFixed(1)}%; background:${p.color}"></div></div>
+                <div class="pb-count">${p.count}</div>
+                <div class="pb-pct">${(p.count/mps.length*100).toFixed(1)}%</div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- 선수 분포 -->
+        <div class="dash-card col-3 chart-card">
+          <div class="chart-head"><h3>선수 분포</h3></div>
+          <div class="mini-bars">
+            ${termArr.map(t => `
+              <div class="mini-bar-row">
+                <div class="mb-lbl">${escapeHtml(t.t)}</div>
+                <div class="mb-wrap"><div class="mb-bar" style="width:${(t.c/termMax*100).toFixed(1)}%"></div></div>
+                <div class="mb-cnt">${t.c}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- 지방 정당 분포 (mini list) -->
+        <div class="dash-card col-3 chart-card">
+          <div class="chart-head"><h3>지방정부 정당</h3></div>
+          <div class="mini-list">
+            ${locArr.slice(0,6).map(p => `
+              <div class="ml-row party-link" data-party="${escapeHtml(p.name)}">
+                <span class="ml-dot" style="background:${p.color}"></span>
+                <span class="ml-name">${escapeHtml(p.name)}</span>
+                <b class="ml-cnt">${p.count}</b>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- 지도 진입 큰 카드 -->
+        <div class="dash-card col-8 chart-card cta-card" onclick="location.hash='#/map'">
+          <div class="chart-head">
+            <h3>🗺 정치 분포 지도</h3>
+            <span class="chart-link">열기 →</span>
+          </div>
+          <div class="cta-desc">17개 시·도 + 250개 시·군·구 정당색 · 호버 시 단체장 표시 · 줌·드래그 가능</div>
+          <div class="cta-mini">광역 17명 · 기초 226명 · 광역의회 의장 17명 · 교육감 17명 정당색 시각화</div>
+        </div>
+
+        <!-- 사법 카드 -->
+        <div class="dash-card col-4 chart-card">
+          <div class="chart-head"><h3>⚖ 사법부</h3><a href="#/group/judicial" class="chart-link">→</a></div>
+          <div class="judicial-mini">
+            <div class="jm-row"><span>대법원장</span><b>${(groups.judicial||[]).find(m => /대법원장/.test(m.role || ''))?.HG_NM || '—'}</b></div>
+            <div class="jm-row"><span>대법관</span><b>${(groups.judicial||[]).filter(m => m.ELECT_GBN_NM === '대법관').length}명</b></div>
+            <div class="jm-row"><span>헌재소장</span><b>${(groups.judicial||[]).find(m => /헌법재판소장/.test(m.role || ''))?.HG_NM || '—'}</b></div>
+            <div class="jm-row"><span>헌법재판관</span><b>${(groups.judicial||[]).filter(m => m.ELECT_GBN_NM === '헌법재판관').length}명</b></div>
+          </div>
+        </div>
+
+        <!-- 행정부 카드 -->
+        <div class="dash-card col-4 chart-card">
+          <div class="chart-head"><h3>🏢 이재명 정부</h3><a href="#/group/executive" class="chart-link">→</a></div>
+          <div class="judicial-mini">
+            <div class="jm-row"><span>대통령</span><b>이재명</b></div>
+            <div class="jm-row"><span>국무총리</span><b>김민석</b></div>
+            <div class="jm-row"><span>부총리</span><b>2명</b></div>
+            <div class="jm-row"><span>장관</span><b>17명</b></div>
+          </div>
+        </div>
+
+        <!-- 역사 -->
+        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/group/historical'">
+          <div class="chart-head"><h3>📜 역대 인물</h3><span class="chart-link">→</span></div>
+          <div class="cta-desc">역대 대통령 13명 · 역대 국무총리 12명</div>
+          <div class="cta-mini">클릭 시 위키에서 2~21대 국회의원 ~5,000명 자동 로드</div>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -2760,8 +3183,10 @@ function route() {
       if (filterBar) filterBar.style.display = '';
     } else {
       view.innerHTML = renderHome();
-      document.querySelectorAll('.org-box').forEach(el => {
-        el.addEventListener('click', () => { location.hash = `#/group/${el.dataset.group}`; });
+      document.querySelectorAll('.grpbox, .org-box').forEach(el => {
+        el.addEventListener('click', () => {
+          if (el.dataset.group) location.hash = `#/group/${el.dataset.group}`;
+        });
       });
       document.querySelectorAll('.party-link').forEach(el => {
         el.addEventListener('click', (e) => {
