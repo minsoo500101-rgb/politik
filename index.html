@@ -4699,6 +4699,74 @@ function renderPartyPage(partyName) {
       <div class="grid">${restOthers.map(memberCardHTML).join('')}</div>
     </div>` : '';
 
+  // 정당 패치 기여도 (해당 정당 의원이 대표발의 → 본회의 처리한 의안)
+  const partyMpNames = new Set(mps.map(m => m.HG_NM));
+  const partyBills = (state.bills || []).filter(b => {
+    const info = getBillProposerInfo(b);
+    return info.kind === 'mp' && partyMpNames.has(info.name);
+  });
+  const partyPassed = partyBills.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length;
+  const partyPassRate = partyBills.length ? (partyPassed / partyBills.length * 100).toFixed(1) : '0';
+  // Top 발의 의원
+  const proposerCounts = new Map();
+  for (const b of partyBills) {
+    const info = getBillProposerInfo(b);
+    proposerCounts.set(info.name, (proposerCounts.get(info.name) || 0) + 1);
+  }
+  const topProposers = [...proposerCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const proposersTotal = Object.keys(state.billProposers || {}).length;
+  const partyPatchHtml = proposersTotal === 0 ? `
+    <div class="sub-section">
+      <h2>📋 ${escapeHtml(partyName)}의 패치 기여도</h2>
+      <div style="color:var(--dim);font-size:12px;padding:14px 0">발의자 데이터 로드 중…</div>
+    </div>
+  ` : partyBills.length === 0 ? '' : `
+    <div class="sub-section">
+      <h2>📋 ${escapeHtml(partyName)}의 패치 기여도 <span class="cnt">${partyBills.length}건 대표발의</span></h2>
+      <div class="dash-grid" style="margin-bottom:14px">
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">대표발의 총</div>
+          <div class="kpi-num">${partyBills.length}</div>
+          <div class="kpi-trend">본회의 처리 도달분</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">가결</div>
+          <div class="kpi-num" style="color:var(--ok)">${partyPassed}</div>
+          <div class="kpi-trend">통과율 ${partyPassRate}%</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">발의 의원</div>
+          <div class="kpi-num">${proposerCounts.size}</div>
+          <div class="kpi-trend">${mps.length}명 중 ${(proposerCounts.size/mps.length*100).toFixed(0)}%</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">평균/인</div>
+          <div class="kpi-num">${proposerCounts.size ? (partyBills.length/proposerCounts.size).toFixed(1) : '—'}</div>
+          <div class="kpi-trend">발의 의원 기준</div>
+        </div>
+        <div class="dash-card col-6 chart-card">
+          <div class="chart-head"><h3>발의 Top 8 의원</h3></div>
+          <div class="mini-list">
+            ${topProposers.map(([name, cnt]) => {
+              const mem = mps.find(x => x.HG_NM === name);
+              return `<div class="ml-row"${mem ? ` onclick="location.hash='#/m/${encodeURIComponent(mem.MONA_CD)}'"` : ''} style="${mem?'cursor:pointer':''}">
+                <span class="ml-dot" style="background:${color}"></span>
+                <span class="ml-name">${escapeHtml(name)}</span>
+                <b class="ml-cnt">${cnt}건</b>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="dash-card col-6 chart-card">
+          <div class="chart-head"><h3>최근 발의 → 처리</h3></div>
+          <div class="patch-list" style="max-height:320px;overflow-y:auto">
+            ${partyBills.slice().sort((a,b)=>(b.PROC_DT||'').localeCompare(a.PROC_DT||'')).slice(0,5).map(b => patchRowHTML(b, -1)).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
   const info = PARTY_INFO[partyName];
   const infoBox = info ? `
     <div class="party-info">
@@ -4733,6 +4801,7 @@ function renderPartyPage(partyName) {
       </div>
     </div>
     ${infoBox}
+    ${partyPatchHtml}
     ${leadersHtml}
     ${mpsHtml}
     ${othersHtml}
@@ -4890,6 +4959,35 @@ function renderDetail(id) {
     </div>
   ` : '';
 
+  // 본인이 대표발의한 처리 의안 (RST_PROPOSER === m.HG_NM)
+  const mineBills = [];
+  if (m.HG_NM && state.bills?.length && Object.keys(state.billProposers || {}).length) {
+    for (const b of state.bills) {
+      const info = getBillProposerInfo(b);
+      if (info.kind === 'mp' && info.name === m.HG_NM) mineBills.push(b);
+    }
+    mineBills.sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+  }
+  const minePassed = mineBills.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length;
+  const mineRejected = mineBills.filter(b => /부결|폐기/.test(b.PROC_RESULT_CD || '')).length;
+  const minePassRate = mineBills.length ? (minePassed / mineBills.length * 100).toFixed(1) : '0';
+  const mineHtml = mineBills.length ? `
+    <div class="d-section">
+      <h2>📋 ${escapeHtml(m.HG_NM)} 의원 대표발의 → 본회의 처리 — ${mineBills.length}건</h2>
+      <div class="d-grid" style="margin-bottom:14px;">
+        <div class="d-stat"><div class="d-stat-label">가결</div><div class="d-stat-value" style="color:var(--ok)">${minePassed}</div></div>
+        <div class="d-stat"><div class="d-stat-label">부결·폐기</div><div class="d-stat-value" style="color:#c0392b">${mineRejected}</div></div>
+        <div class="d-stat"><div class="d-stat-label">통과율</div><div class="d-stat-value">${minePassRate}%</div></div>
+      </div>
+      <div class="patch-list">
+        ${mineBills.slice(0, 10).map((b, idx) => patchRowHTML(b, -1)).join('')}
+      </div>
+      ${mineBills.length > 10 ? `<div style="font-size:11px;color:var(--dim);margin-top:8px;text-align:right">…외 ${mineBills.length - 10}건</div>` : ''}
+    </div>
+  ` : (m._group === 'legislative' || (!m._group && m.UNITS)) && Object.keys(state.billProposers || {}).length === 0
+    ? `<div class="d-section"><h2>📋 대표발의 법안</h2><div style="font-size:12px;color:var(--dim);padding:14px 0">발의자 데이터 로드 중…</div></div>`
+    : '';
+
   // 위원회별 본회의 처리 법안
   const cmtBills = m.CMIT_NM ? (state.billsByCommittee.get(m.CMIT_NM) || []) : [];
   const passed = cmtBills.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length;
@@ -4976,6 +5074,7 @@ function renderDetail(id) {
           <h2>약력</h2>
           <div style="color:var(--dim);font-size:12px">위키미디어에서 추가 정보를 불러오는 중… 잠시 후 다시 확인해주세요.</div>
         </div>`}
+        ${mineHtml}
         ${billsHtml}
         ${colleaguesHtml}
         <div class="d-section">
@@ -5230,6 +5329,13 @@ function route() {
     document.getElementById('back-btn')?.addEventListener('click', () => { location.hash = ''; });
     document.querySelectorAll('.col-card').forEach(el => {
       el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+    });
+    // 패치 노트에서 발의자 클릭 → 상세 (다른 의원이면 이동)
+    document.querySelectorAll('.patch-by-mp[data-mid]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (el.dataset.mid !== memberId) location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
+      });
     });
     window.scrollTo(0, 0);
     // Bio 데이터 (사진 + 위키 요약) 없으면 비동기 fetch + 재렌더
