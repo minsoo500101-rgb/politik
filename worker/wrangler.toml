@@ -1,0 +1,17 @@
+# Cloudflare Worker 설정 — wrangler 사용 시
+# 설치: npm install -g wrangler
+# 배포: wrangler deploy
+#
+# 환경변수 설정:
+#   wrangler secret put DATA_GO_KR_KEY
+#   (data.go.kr 가입 후 발급받은 키 입력)
+
+name = "nec-proxy"
+main = "nec-proxy.js"
+compatibility_date = "2026-05-23"
+
+[vars]
+# DATA_GO_KR_KEY는 secret으로 별도 설정 (위 참조)
+
+# 무료 플랜: 100,000 요청/일, 10ms CPU/요청
+# 충분히 안에서 동작

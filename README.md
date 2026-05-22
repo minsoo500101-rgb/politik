@@ -6,6 +6,98 @@
 
 ---
 
+## 🚀 제대로 배포하는 4단계
+
+### 단계 1 — 호스팅 업그레이드 (GH Pages → Vercel/Netlify)
+
+| 옵션 | 무료한도 | SSR/SSG | API 라우트 | CDN 속도 | 추천 |
+|---|---|---|---|---|---|
+| **GitHub Pages** (현재) | 100GB/월 | ❌ | ❌ | 기본 | 시작용 |
+| **Vercel** ⭐ | 100GB/월 | ✅ | ✅ | 매우 빠름 | **추천** |
+| **Netlify** | 100GB/월 | ✅ | ✅ | 빠름 | 대안 |
+| **Cloudflare Pages** | 무제한 | ✅ | ✅ Worker | 가장 빠름 | 트래픽 큰 경우 |
+
+**Vercel 5분 배포** (코드 0줄 변경):
+```bash
+# 옵션 A: GitHub 연동 (가장 쉬움)
+1. https://vercel.com/new 접속
+2. "Import Git Repository" → minsoo500101-rgb/politik 선택
+3. "Deploy" 클릭 — vercel.json 자동 인식
+4. 1-2분 후 https://politik-{random}.vercel.app 자동 배포 완료
+
+# 옵션 B: CLI
+npm install -g vercel
+cd D:\politik && vercel
+```
+
+**Netlify 5분 배포** (대안):
+```bash
+# 옵션 A: GitHub 연동
+1. https://app.netlify.com/start → GitHub → 저장소 선택
+2. "Deploy site" — netlify.toml 자동 인식
+
+# 옵션 B: 드래그앤드롭
+1. https://app.netlify.com/drop
+2. D:\politik 폴더 통째로 드래그
+```
+
+### 단계 2 — 커스텀 도메인 (신뢰도·기억성)
+
+도메인 추천 (1.5만원 ~ 3.5만원/년):
+- `patchkr.com` / `koreapatch.com` (.com 1.5만)
+- `패치노트.kr` (.kr 한글 도메인 3.5만)
+- `정계패치.com` (.com 한글 표시)
+
+구매처: [가비아](https://gabia.com) · [카페24](https://hosting.cafe24.com) · [Namecheap](https://namecheap.com)
+
+DNS 설정 (Vercel 예시):
+```
+# A 레코드
+@   76.76.21.21
+
+# CNAME 레코드
+www patchkr.com
+```
+
+배포 플랫폼에서 도메인 추가:
+- **Vercel**: Project Settings → Domains → Add → `patchkr.com`
+- **Netlify**: Site Settings → Domain management → Add custom domain
+- **GH Pages**: 저장소 Settings → Pages → Custom domain (이때 `CNAME` 파일 자동 생성)
+
+SSL은 모두 자동 발급 (Let's Encrypt).
+
+### 단계 3 — Cloudflare Worker NEC 프록시 (선거 후보 실시간 데이터)
+
+중앙선관위 CORS 차단으로 못 가져오던 **2026 지방선거 후보·공약** 데이터를 실시간 fetch 가능하게:
+
+```bash
+cd worker
+npm install -g wrangler
+wrangler login
+wrangler deploy  # ← 30초
+# 결과: https://nec-proxy.{your-subdomain}.workers.dev
+```
+
+상세: [`worker/README.md`](./worker/README.md)
+
+### 단계 4 — 분석 도구 (Plausible 권장)
+
+| 도구 | 가격 | 개인정보 | 무게 |
+|---|---|---|---|
+| **Plausible** ⭐ | $9/월 (or 셀프호스팅 무료) | 100% 익명·쿠키 X | 1KB |
+| **Umami** | 셀프호스팅 무료 | 익명 | 2KB |
+| **GA4** | 무료 | 추적·동의 필요 | 50KB+ |
+
+Plausible 추가 (1줄):
+```html
+<!-- index.html <head>에 추가 -->
+<script defer data-domain="patchkr.com" src="https://plausible.io/js/script.js"></script>
+```
+
+---
+
+---
+
 ## 핵심 데이터
 
 | 항목 | 수치 |
