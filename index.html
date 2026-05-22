@@ -1766,6 +1766,285 @@
     letter-spacing: 0.3px;
   }
 
+  /* Detail page — election card */
+  .d-election-card {
+    background: var(--bg-elev);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--ok);
+  }
+  .d-election-card.d-election-lost { border-left-color: #94a3b8; opacity: 0.85; }
+  .d-election-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+    font-size: 11.5px; flex-wrap: wrap;
+  }
+  .d-election-year { color: var(--text); font-weight: 800; font-variant-numeric: tabular-nums; }
+  .d-election-name { color: var(--text-2); font-weight: 600; }
+  .d-election-region {
+    padding: 2px 7px; border-radius: 8px;
+    background: var(--bg-card); color: var(--text);
+    font-size: 10.5px; font-weight: 700;
+  }
+  .d-election-badge {
+    margin-left: auto;
+    padding: 2px 8px; border-radius: 5px;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.6px;
+    color: #fff;
+  }
+  .d-election-badge.won { background: var(--ok); }
+  .d-election-badge.lost { background: #c0392b; }
+  .d-election-vs {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 8px; align-items: center;
+    margin-bottom: 8px;
+  }
+  .d-election-me, .d-election-opp {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+  }
+  .d-election-opp { align-items: flex-end; }
+  .d-election-me b, .d-election-opp b {
+    font-size: 14px; font-weight: 800;
+  }
+  .d-election-me span, .d-election-opp span {
+    font-size: 10.5px; color: var(--text-2);
+  }
+  .d-election-pct {
+    font-size: 18px !important; font-weight: 800; color: var(--text) !important;
+    font-variant-numeric: tabular-nums;
+  }
+  .d-election-mid {
+    text-align: center;
+    color: var(--dim); font-size: 11px; font-weight: 700;
+  }
+  .d-election-gap {
+    font-size: 11px; color: var(--text-2);
+    padding-top: 8px; border-top: 1px dashed var(--border);
+  }
+
+  /* ============ Local elections ============ */
+  .le-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .le-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .le-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .le-hero h1 {
+    font-size: 26px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.6px; margin-bottom: 6px;
+  }
+  .le-hero p { font-size: 13px; color: var(--text-2); }
+
+  .le-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+  .le-section h2 {
+    font-size: 18px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.3px; margin-bottom: 6px;
+  }
+  .le-summary {
+    font-size: 12.5px; color: var(--text-2);
+    line-height: 1.55; margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .le-results-by-party {
+    margin-bottom: 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .le-cat-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 60px;
+    gap: 10px; align-items: center;
+  }
+  .le-cat-label {
+    font-size: 12px; font-weight: 700; color: var(--text);
+  }
+  .le-cat-bar {
+    height: 14px; border-radius: 4px;
+    overflow: hidden;
+    display: flex; gap: 1px;
+    background: var(--bg-elev);
+  }
+  .le-cat-seg { transition: opacity 0.13s; }
+  .le-cat-seg:hover { opacity: 0.7; }
+  .le-cat-total {
+    font-size: 11.5px; font-weight: 700; color: var(--text);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .le-cat-legend {
+    grid-column: 1 / -1;
+    display: flex; flex-wrap: wrap; gap: 10px;
+    font-size: 10.5px; color: var(--text-2);
+    margin-left: 110px;
+    margin-bottom: 6px;
+  }
+  .le-cat-leg-item {
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .le-cat-leg-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  .le-table {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .le-table-head {
+    display: grid;
+    grid-template-columns: 60px 1fr 110px 1fr;
+    gap: 12px;
+    padding: 6px 10px;
+    font-size: 10px; color: var(--dim);
+    letter-spacing: 1.2px; text-transform: uppercase;
+    font-weight: 700;
+    border-bottom: 2px solid var(--border-strong);
+    margin-bottom: 2px;
+  }
+  .le-table-head > div:nth-child(4) { text-align: right; }
+  .le-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 110px 1fr;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    align-items: center;
+    transition: background 0.12s;
+  }
+  .le-row:hover { background: var(--bg-elev); }
+  .le-row.le-close {
+    background: rgba(239,68,68,0.05);
+    border-left: 3px solid #ef4444;
+  }
+  .le-row.le-flip {
+    background: linear-gradient(90deg, rgba(245,158,11,0.08) 0%, transparent 60%);
+  }
+  [data-theme="dark"] .le-row.le-close { background: rgba(239,68,68,0.1); }
+  [data-theme="dark"] .le-row.le-flip { background: linear-gradient(90deg, rgba(245,158,11,0.15) 0%, transparent 60%); }
+
+  .le-region {
+    font-size: 13px; font-weight: 700; color: var(--text);
+  }
+  .le-winner-side, .le-runner-side { min-width: 0; }
+  .le-bar-wrap {
+    position: relative;
+    height: 32px;
+    background: var(--bg-elev);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  [data-theme="dark"] .le-bar-wrap { background: rgba(0,0,0,0.25); }
+  .le-bar {
+    position: absolute; top: 0; height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .le-bar-w { left: 0; opacity: 0.85; }
+  .le-bar-r { right: 0; opacity: 0.55; }
+  .le-runner-side .le-bar-r { right: 0; left: auto; }
+  .le-name {
+    position: relative;
+    padding: 0 10px;
+    line-height: 32px;
+    font-size: 12.5px; font-weight: 700; color: var(--text);
+    z-index: 2;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .le-name em {
+    font-style: normal; font-weight: 600;
+    font-size: 10.5px;
+    padding: 1px 6px; border-radius: 6px;
+    background: rgba(255,255,255,0.5);
+    margin-left: 4px;
+  }
+  [data-theme="dark"] .le-name em { background: rgba(0,0,0,0.4); }
+  .le-name-r { text-align: right; padding-right: 50px; }
+  .le-pct {
+    position: absolute; top: 0; right: 10px;
+    line-height: 32px;
+    font-size: 12.5px; font-weight: 800; color: var(--text);
+    font-variant-numeric: tabular-nums;
+    z-index: 2;
+  }
+  .le-runner-side .le-pct { right: auto; left: 10px; }
+  .le-gap {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 3px;
+    font-size: 11px;
+  }
+  .le-gap-val {
+    color: var(--text-2); font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .le-close-tag {
+    color: #ef4444; font-weight: 800;
+    background: rgba(239,68,68,0.1);
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 10px;
+  }
+  .le-flip-tag {
+    color: var(--warn); font-weight: 800;
+    background: rgba(245,158,11,0.12);
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 9.5px;
+    letter-spacing: 0.3px;
+  }
+  .le-highlight {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    padding: 4px 10px;
+    background: rgba(16,185,129,0.08);
+    border-radius: 4px;
+    font-size: 10.5px;
+    color: var(--ok);
+    font-weight: 600;
+  }
+  [data-theme="dark"] .le-highlight { background: rgba(16,185,129,0.15); }
+
+  .le-foot {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-top: 18px;
+  }
+  .le-foot h3 {
+    font-size: 12px; color: var(--text); font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .le-foot ul {
+    list-style: disc;
+    padding-left: 20px;
+    color: var(--text-2);
+    font-size: 11.5px;
+    line-height: 1.7;
+  }
+  .le-foot li b { color: var(--text); font-weight: 700; }
+
+  @media (max-width: 800px) {
+    .le-row, .le-table-head { grid-template-columns: 50px 1fr 60px 1fr; gap: 6px; }
+    .le-name { font-size: 11px; padding: 0 6px; }
+    .le-pct { font-size: 11px; right: 6px; }
+    .le-name em { display: none; }
+    .le-cat-row { grid-template-columns: 70px 1fr 45px; gap: 6px; }
+    .le-cat-legend { margin-left: 76px; font-size: 9.5px; }
+  }
+
   /* ============ World compare ============ */
   .world-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
   .world-hero {
@@ -2775,6 +3054,7 @@ const state = {
   photos: new Map(), // MONA_CD -> { thumb, title } or { miss:true }
   partyHistory: null,
   worldCompare: null,
+  localElections: null,
 };
 
 // 법안 분야 자동 분류 (BILL_NAME + CURR_COMMITTEE 기반)
@@ -3831,6 +4111,166 @@ function renderPartyDonut() {
 }
 
 // ============================================================
+// Local elections (지방선거)
+// ============================================================
+async function loadLocalElections() {
+  if (state.localElections) return state.localElections;
+  try {
+    const r = await fetch('data/local_elections.json', { cache: 'force-cache' });
+    if (!r.ok) throw new Error('local_elections fetch failed');
+    state.localElections = await r.json();
+  } catch (e) {
+    console.warn('local elections load failed', e);
+    state.localElections = { elections: [] };
+  }
+  return state.localElections;
+}
+
+function renderLocalElectionsPage() {
+  const le = state.localElections;
+  if (!le || !le.elections?.length) return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="loading"><span class="loading-spinner"></span>지방선거 데이터 불러오는 중…</div>
+  `;
+  const elections = le.elections; // [0]=2022, [1]=2018
+  const e2022 = elections.find(e => e.id.includes('2022'));
+  const e2018 = elections.find(e => e.id.includes('2018'));
+
+  function partyBadge(p) {
+    const c = partyColor(p);
+    return `<span class="le-party" style="background:${c}">${escapeHtml(p)}</span>`;
+  }
+
+  function governorRow(g, prev) {
+    const winnerColor = partyColor(g.winner_party);
+    const isClose = g.gap < 5;
+    const flipFromPrev = prev && prev.winner_party !== g.winner_party;
+    return `
+      <div class="le-row ${isClose ? 'le-close' : ''} ${flipFromPrev ? 'le-flip' : ''}">
+        <div class="le-region">${escapeHtml(g.region)}</div>
+        <div class="le-winner-side">
+          <div class="le-bar-wrap">
+            <div class="le-bar le-bar-w" style="width:${g.winner_pct}%; background:${winnerColor}"></div>
+            <div class="le-name">${escapeHtml(g.winner)} <em style="color:${winnerColor}">${escapeHtml(g.winner_party)}</em></div>
+            <div class="le-pct">${g.winner_pct}%</div>
+          </div>
+        </div>
+        <div class="le-gap">
+          ${flipFromPrev ? '<span class="le-flip-tag">정권교체</span>' : ''}
+          ${isClose ? `<span class="le-close-tag">박빙 ${g.gap.toFixed(1)}%p</span>` : `<span class="le-gap-val">+${g.gap.toFixed(1)}%p</span>`}
+        </div>
+        <div class="le-runner-side">
+          <div class="le-bar-wrap">
+            <div class="le-bar le-bar-r" style="width:${g.runner_up_pct}%; background:${partyColor(g.runner_up_party)}"></div>
+            <div class="le-name le-name-r">${escapeHtml(g.runner_up)} <em style="color:${partyColor(g.runner_up_party)}">${escapeHtml(g.runner_up_party)}</em></div>
+            <div class="le-pct">${g.runner_up_pct}%</div>
+          </div>
+        </div>
+        ${g.highlight ? `<div class="le-highlight">⭐ ${escapeHtml(g.highlight)}</div>` : ''}
+      </div>`;
+  }
+
+  function partyResultsHtml(rbp) {
+    if (!rbp) return '';
+    return Object.entries(rbp).map(([cat, parties]) => {
+      const total = Object.values(parties).reduce((s, n) => s + n, 0);
+      const entries = Object.entries(parties).sort((a, b) => b[1] - a[1]);
+      return `
+        <div class="le-cat-row">
+          <div class="le-cat-label">${escapeHtml(cat)}</div>
+          <div class="le-cat-bar">
+            ${entries.map(([p, n]) => `<div class="le-cat-seg" style="flex:${n}; background:${cat === '교육감' ? (p === '진보' ? '#0ea5e9' : '#dc2626') : partyColor(p)}" title="${escapeHtml(p)} ${n}"></div>`).join('')}
+          </div>
+          <div class="le-cat-total">${total}석</div>
+        </div>
+        <div class="le-cat-legend">${entries.map(([p, n]) => `<span class="le-cat-leg-item"><span class="le-cat-leg-dot" style="background:${cat === '교육감' ? (p === '진보' ? '#0ea5e9' : '#dc2626') : partyColor(p)}"></span>${escapeHtml(p)} ${n}</span>`).join('')}</div>
+      `;
+    }).join('');
+  }
+
+  // 2022 결과 + 2018 비교
+  const e2018Map = {};
+  if (e2018) for (const g of e2018.governors) e2018Map[g.region] = g;
+  // 박빙 / 정권교체 카운트
+  const closeRaces2022 = e2022.governors.filter(g => g.gap < 5);
+  const flips2022 = e2022.governors.filter(g => e2018Map[g.region] && e2018Map[g.region].winner_party !== g.winner_party);
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="le-page">
+      <div class="le-hero">
+        <div class="le-hero-eye">REPUBLIC OF KOREA · LOCAL ELECTIONS</div>
+        <h1>🗳 지방선거 — 17개 광역단체장</h1>
+        <p>제8회 (2022-06-01) · 제7회 (2018-06-13) 전국동시지방선거. 출처: 중앙선거관리위원회 공식 집계</p>
+      </div>
+
+      <div class="dash-grid" style="margin-bottom:18px">
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">2022 투표율</div>
+          <div class="kpi-num">${e2022.turnout}<span class="unit">%</span></div>
+          <div class="kpi-trend">2018 ${e2018.turnout}% 대비 ${(e2022.turnout - e2018.turnout).toFixed(1)}%p</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">2022 광역 의석</div>
+          <div class="kpi-num"><span style="color:${partyColor('국민의힘')}">12</span> : <span style="color:${partyColor('더불어민주당')}">5</span></div>
+          <div class="kpi-trend">국힘 12 / 민주 5 (2018: 한국 2 / 민주 14 / 무 1)</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">박빙 (격차 ≤5%p)</div>
+          <div class="kpi-num">${closeRaces2022.length}<span class="unit">곳</span></div>
+          <div class="kpi-trend">${closeRaces2022.map(g => g.region).join(' · ')}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">정권 교체 (2018→2022)</div>
+          <div class="kpi-num">${flips2022.length}<span class="unit">곳</span></div>
+          <div class="kpi-trend">2018 민주 압승 → 2022 국힘 우세</div>
+        </div>
+      </div>
+
+      <!-- 2022 광역단체장 -->
+      <div class="le-section">
+        <h2>📅 ${escapeHtml(e2022.name)} (${e2022.date})</h2>
+        <p class="le-summary">${escapeHtml(e2022.summary)}</p>
+        <div class="le-results-by-party">
+          ${partyResultsHtml(e2022.results_by_party)}
+        </div>
+        <div class="le-table">
+          <div class="le-table-head">
+            <div>지역</div><div>당선자</div><div>격차</div><div>차점자</div>
+          </div>
+          ${e2022.governors.map(g => governorRow(g, e2018Map[g.region])).join('')}
+        </div>
+      </div>
+
+      <!-- 2018 광역단체장 -->
+      <div class="le-section">
+        <h2>📅 ${escapeHtml(e2018.name)} (${e2018.date})</h2>
+        <p class="le-summary">${escapeHtml(e2018.summary)}</p>
+        <div class="le-results-by-party">
+          ${partyResultsHtml(e2018.results_by_party)}
+        </div>
+        <div class="le-table">
+          <div class="le-table-head">
+            <div>지역</div><div>당선자</div><div>격차</div><div>차점자</div>
+          </div>
+          ${e2018.governors.map(g => governorRow(g)).join('')}
+        </div>
+      </div>
+
+      <div class="le-foot">
+        <h3>📚 출처 · 방법론</h3>
+        <ul>
+          <li><b>중앙선거관리위원회</b> · 선거통계시스템 (info.nec.go.kr)</li>
+          <li>득표율: 유효투표 기준 · 무효표 제외</li>
+          <li>격차 = 1위 득표율 − 2위 득표율 (퍼센트포인트)</li>
+          <li>"정권교체" = 2018·2022년 당선 정당이 다른 지역 (당 변경 포함)</li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
 // International comparison
 // ============================================================
 async function loadWorldCompare() {
@@ -4849,6 +5289,7 @@ function renderHome() {
           <a class="hero-btn" href="#/bills">📜  의안</a>
           <a class="hero-btn" href="#/committees">🏢  위원회</a>
           <a class="hero-btn" href="#/map">🗺  지도</a>
+          <a class="hero-btn" href="#/elections">🗳  지방선거</a>
           <a class="hero-btn" href="#/world">🌐  국제비교</a>
           <a class="hero-btn" href="#/history/parties">📅  정당사</a>
         </div>
@@ -5417,6 +5858,58 @@ function renderDetail(id) {
   const minePassed = mineBills.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length;
   const mineRejected = mineBills.filter(b => /부결|폐기/.test(b.PROC_RESULT_CD || '')).length;
   const minePassRate = mineBills.length ? (minePassed / mineBills.length * 100).toFixed(1) : '0';
+  // 광역단체장이면 선거 결과 표시
+  let electionHtml = '';
+  if (m._type === 'local_gov_head' && state.localElections?.elections?.length) {
+    const matches = [];
+    for (const e of state.localElections.elections) {
+      const g = e.governors.find(gv => gv.winner === m.HG_NM && (gv.region === m.ORIG_NM || gv.region === (m.region || ''))) ||
+                e.governors.find(gv => gv.winner === m.HG_NM);
+      if (g) matches.push({ e, g, role: 'winner' });
+      else {
+        const r = e.governors.find(gv => gv.runner_up === m.HG_NM);
+        if (r) matches.push({ e, g: r, role: 'runner' });
+      }
+    }
+    if (matches.length) {
+      electionHtml = `
+        <div class="d-section">
+          <h2>🗳 지방선거 결과 — ${matches.length}회 출마</h2>
+          ${matches.map(({e, g, role}) => {
+            const isWinner = role === 'winner';
+            const myPct = isWinner ? g.winner_pct : g.runner_up_pct;
+            const myParty = isWinner ? g.winner_party : g.runner_up_party;
+            const oppName = isWinner ? g.runner_up : g.winner;
+            const oppParty = isWinner ? g.runner_up_party : g.winner_party;
+            const oppPct = isWinner ? g.runner_up_pct : g.winner_pct;
+            return `
+              <div class="d-election-card ${isWinner ? 'd-election-won' : 'd-election-lost'}">
+                <div class="d-election-head">
+                  <span class="d-election-year">${e.date.slice(0,4)}</span>
+                  <span class="d-election-name">${escapeHtml(e.name)}</span>
+                  <span class="d-election-region">${escapeHtml(g.region)}</span>
+                  <span class="d-election-badge ${isWinner ? 'won' : 'lost'}">${isWinner ? '당선' : '낙선'}</span>
+                </div>
+                <div class="d-election-vs">
+                  <div class="d-election-me">
+                    <b style="color:${partyColor(myParty)}">${escapeHtml(m.HG_NM)}</b>
+                    <span>${escapeHtml(myParty)}</span>
+                    <b class="d-election-pct">${myPct}%</b>
+                  </div>
+                  <div class="d-election-mid">vs</div>
+                  <div class="d-election-opp">
+                    <b style="color:${partyColor(oppParty)}">${escapeHtml(oppName)}</b>
+                    <span>${escapeHtml(oppParty)}</span>
+                    <b class="d-election-pct">${oppPct}%</b>
+                  </div>
+                </div>
+                <div class="d-election-gap">격차 ${g.gap.toFixed(1)}%p · 투표율 ${g.turnout || '—'}%${g.highlight ? ` · ${escapeHtml(g.highlight)}` : ''}</div>
+              </div>`;
+          }).join('')}
+        </div>`;
+    }
+  }
+
   const mineHtml = mineBills.length ? `
     <div class="d-section">
       <h2>📋 ${escapeHtml(m.HG_NM)} 의원 대표발의 → 본회의 처리 — ${mineBills.length}건</h2>
@@ -5520,6 +6013,7 @@ function renderDetail(id) {
           <h2>약력</h2>
           <div style="color:var(--dim);font-size:12px">위키미디어에서 추가 정보를 불러오는 중… 잠시 후 다시 확인해주세요.</div>
         </div>`}
+        ${electionHtml}
         ${mineHtml}
         ${billsHtml}
         ${colleaguesHtml}
@@ -5585,6 +6079,19 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
+  // 지방선거
+  if (hash === '#/elections') {
+    view.innerHTML = renderLocalElectionsPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    loadLocalElections().then(() => {
+      if (location.hash !== '#/elections') return;
+      view.innerHTML = renderLocalElectionsPage();
+      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    });
+    return;
+  }
   // 국제 비교
   if (hash === '#/world') {
     view.innerHTML = renderWorldComparePage();
@@ -6168,6 +6675,11 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       // 홈/의안/패치 페이지면 재렌더
       if (!location.hash || location.hash === '#/bills' || location.hash === '#/patches') route();
     }).catch(e => console.warn('proposers load failed:', e.message));
+    // 지방선거 데이터 백그라운드 로드 (광역단체장 detail에 사용)
+    loadLocalElections().then(() => {
+      // 광역단체장 detail 페이지 중이면 재렌더
+      if (location.hash.startsWith('#/m/')) route();
+    }).catch(e => console.warn('elections load failed:', e.message));
   } catch (e) {
     document.getElementById('view').innerHTML = `<div class="empty">데이터 로드 실패: ${escapeHtml(e.message)}<br><br>국회 OPEN API가 일시적으로 응답하지 않거나, 브라우저 네트워크 문제일 수 있습니다.</div>`;
   }
