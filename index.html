@@ -1211,6 +1211,21 @@
     text-decoration: none;
   }
   [data-theme="dark"] .hero-btn:hover { box-shadow: 0 6px 14px rgba(0,0,0,0.5); }
+  .hero-btn-live {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff !important; border-color: #ef4444 !important;
+    box-shadow: 0 0 0 0 rgba(239,68,68,0.45);
+    animation: hero-live-pulse 2s infinite;
+  }
+  .hero-btn-live:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+  }
+  @keyframes hero-live-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.45); }
+    70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
 
   .dash-grid {
     display: grid;
@@ -1764,6 +1779,240 @@
   .cmt-detail-stats span {
     font-size: 11px; color: var(--text-2);
     letter-spacing: 0.3px;
+  }
+
+  /* ============ Election 2026 (진행 중) ============ */
+  .e26-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .e26-hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px; align-items: center;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 30px;
+    margin-bottom: 18px;
+    position: relative; overflow: hidden;
+  }
+  .e26-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 100% 50%, rgba(239,68,68,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .e26-hero-l, .e26-hero-r { position: relative; z-index: 1; }
+  .e26-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .e26-hero-l h1 {
+    font-size: 28px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.6px; margin-bottom: 6px;
+  }
+  .e26-hero-l p { font-size: 13px; color: var(--text-2); margin-bottom: 10px; }
+  .e26-status {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    font-size: 12px; font-weight: 700; color: var(--text);
+  }
+  .e26-status-dot { width: 8px; height: 8px; border-radius: 50%; animation: patch-pulse 1.8s infinite; }
+  .e26-dday {
+    font-size: 56px; font-weight: 900;
+    color: #ef4444; letter-spacing: -2px;
+    line-height: 1; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .e26-dday-label {
+    margin-top: 4px;
+    font-size: 11px; color: var(--text-2);
+    font-weight: 600; text-align: center;
+    letter-spacing: 0.4px;
+  }
+
+  .e26-notice {
+    display: flex; gap: 12px;
+    padding: 14px 18px;
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-left: 4px solid var(--warn);
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-size: 12.5px; line-height: 1.55;
+  }
+  [data-theme="dark"] .e26-notice { background: rgba(245,158,11,0.13); }
+  .e26-notice-icon { font-size: 20px; flex-shrink: 0; }
+  .e26-notice-body { color: var(--text); }
+  .e26-notice-body b { color: var(--warn); font-weight: 800; }
+
+  .e26-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+  .e26-section h2 {
+    font-size: 16px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.3px; margin-bottom: 14px;
+  }
+  .e26-sub { font-size: 12px; color: var(--text-2); margin-bottom: 14px; }
+
+  .e26-pos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .e26-pos-card {
+    display: flex; gap: 12px; align-items: center;
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+  }
+  .e26-pos-icon { font-size: 22px; flex-shrink: 0; }
+  .e26-pos-label { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .e26-pos-count { font-size: 18px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 3px; }
+  .e26-pos-count b { font-size: 18px; }
+  .e26-pos-meta { font-size: 10.5px; color: var(--text-2); }
+
+  .e26-timeline {
+    display: flex; flex-direction: column;
+    border-left: 2px solid var(--border);
+    padding-left: 0;
+    margin-left: 14px;
+  }
+  .e26-tl-row {
+    display: grid;
+    grid-template-columns: 90px 20px 1fr;
+    gap: 10px; align-items: center;
+    padding: 8px 0;
+    position: relative;
+    margin-left: -1px;
+  }
+  .e26-tl-date {
+    font-size: 11px; font-weight: 700; color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    padding-right: 4px;
+  }
+  .e26-tl-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg-card);
+    border: 2px solid var(--border-strong);
+    margin-left: -7px;
+  }
+  .e26-tl-row.past .e26-tl-dot { background: var(--text-2); border-color: var(--text-2); }
+  .e26-tl-row.today .e26-tl-dot {
+    background: #ef4444; border-color: #ef4444;
+    box-shadow: 0 0 0 4px rgba(239,68,68,0.2);
+    animation: patch-pulse 1.6s infinite;
+  }
+  .e26-tl-label { font-size: 12.5px; color: var(--text); font-weight: 600; }
+  .e26-tl-row.past .e26-tl-label { color: var(--text-2); }
+  .e26-tl-row.today .e26-tl-label { color: #ef4444; font-weight: 800; }
+  .e26-today-badge {
+    background: #ef4444; color: #fff;
+    font-size: 10px; font-weight: 800;
+    padding: 1px 6px; border-radius: 4px;
+    margin-left: 6px; letter-spacing: 0.5px;
+  }
+
+  .e26-region-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .e26-region-card {
+    background: var(--bg-elev);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .e26-region-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .e26-region-name {
+    font-size: 13.5px; font-weight: 800; color: var(--text);
+  }
+  .e26-region-muni {
+    font-size: 10.5px; color: var(--text-2);
+    padding: 2px 7px; border-radius: 8px;
+    background: var(--bg-card);
+    font-weight: 600;
+  }
+  .e26-region-incumbent {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0;
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 10px;
+    font-size: 11.5px;
+  }
+  .e26-region-il { color: var(--text-2); }
+  .e26-region-iv b { color: var(--text); font-weight: 700; }
+  .e26-region-iv em {
+    font-style: normal; font-weight: 700;
+    font-size: 10.5px;
+    padding: 1px 5px; border-radius: 6px;
+    background: var(--bg-card);
+  }
+  .e26-region-links {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .e26-link {
+    flex: 1; min-width: 0;
+    text-align: center;
+    padding: 6px 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 10.5px; font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.12s;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .e26-link:hover {
+    background: var(--text); color: var(--bg-card);
+    border-color: var(--text); text-decoration: none;
+  }
+
+  .e26-sources {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .e26-sources li a {
+    display: block;
+    padding: 10px 14px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 12.5px;
+    text-decoration: none;
+    transition: all 0.12s;
+  }
+  .e26-sources li a:hover {
+    background: var(--text); color: var(--bg-card); text-decoration: none;
+  }
+  .e26-foot {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    font-size: 12px; line-height: 1.6;
+    color: var(--text-2);
+  }
+  .e26-foot b { color: var(--text); font-weight: 700; }
+
+  @media (max-width: 700px) {
+    .e26-hero { grid-template-columns: 1fr; padding: 22px 20px; }
+    .e26-hero-l h1 { font-size: 22px; }
+    .e26-dday { font-size: 40px; }
+    .e26-tl-row { grid-template-columns: 75px 20px 1fr; }
+    .e26-tl-date { font-size: 10px; }
+    .e26-tl-label { font-size: 11.5px; }
   }
 
   /* Detail page — election card */
@@ -3055,6 +3304,7 @@ const state = {
   partyHistory: null,
   worldCompare: null,
   localElections: null,
+  election2026: null,
 };
 
 // 법안 분야 자동 분류 (BILL_NAME + CURR_COMMITTEE 기반)
@@ -4104,6 +4354,188 @@ function renderPartyDonut() {
               <span class="leg-count">${s.count}</span>
               <span class="leg-pct">${s.percent}%</span>
             </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// 제9회 지방선거 (진행 중)
+// ============================================================
+async function loadElection2026() {
+  if (state.election2026) return state.election2026;
+  try {
+    const r = await fetch('data/election_2026.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error('election_2026 fetch failed');
+    state.election2026 = await r.json();
+  } catch (e) {
+    console.warn('election2026 load failed', e);
+    state.election2026 = null;
+  }
+  return state.election2026;
+}
+
+function renderElection2026Page() {
+  const d = state.election2026;
+  if (!d) return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="loading"><span class="loading-spinner"></span>제9회 지방선거 데이터 불러오는 중…</div>
+  `;
+  const { election: ev, positions, regions, sources, key_dates } = d;
+
+  // D-day 계산
+  const today = new Date();
+  const eday = new Date(ev.date + 'T06:00:00+09:00');
+  const dayDiff = Math.ceil((eday - today) / 86400000);
+  const dDay = dayDiff > 0 ? `D-${dayDiff}` : dayDiff === 0 ? 'D-Day' : `D+${Math.abs(dayDiff)}`;
+  const phase = (() => {
+    const now = today.getTime();
+    if (now < new Date('2026-05-14T00:00:00+09:00').getTime()) return { tag: '예비후보자 등록', color: 'var(--text-2)' };
+    if (now < new Date('2026-05-21T00:00:00+09:00').getTime()) return { tag: '후보자 등록 완료', color: 'var(--warn)' };
+    if (now < new Date('2026-05-29T00:00:00+09:00').getTime()) return { tag: '선거운동 중', color: '#ef4444' };
+    if (now < new Date('2026-05-31T00:00:00+09:00').getTime()) return { tag: '사전투표 진행', color: '#0ea5e9' };
+    if (now < new Date('2026-06-03T06:00:00+09:00').getTime()) return { tag: '선거 직전', color: '#ef4444' };
+    if (now < new Date('2026-06-03T18:00:00+09:00').getTime()) return { tag: '투표 진행 중 (06~18시)', color: 'var(--ok)' };
+    if (now < new Date('2026-07-01T00:00:00+09:00').getTime()) return { tag: '당선자 확정·인수기', color: 'var(--text-2)' };
+    return { tag: '선거 종료', color: 'var(--dim)' };
+  })();
+
+  function regionLinks(name) {
+    const encoded = encodeURIComponent(name + ' 후보 지방선거 2026');
+    return {
+      nec: `https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml`,
+      policy: `https://policy.nec.go.kr/svc/policy/PolicyContentMain.do`,
+      news: `https://search.naver.com/search.naver?query=${encoded}`,
+      news2: `https://www.google.com/search?q=${encoded}`,
+    };
+  }
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="e26-page">
+      <div class="e26-hero">
+        <div class="e26-hero-l">
+          <div class="e26-eye">REPUBLIC OF KOREA · GENERAL LOCAL ELECTION · 2026</div>
+          <h1>🗳 ${escapeHtml(ev.name)}</h1>
+          <p>${escapeHtml(ev.date)} 수요일 · ${escapeHtml(ev.voting_hours)} · 만 ${ev.voter_age}세 이상 · 1인 ${d.ballots_per_voter}표</p>
+          <div class="e26-status"><span class="e26-status-dot" style="background:${phase.color}"></span>${escapeHtml(phase.tag)}</div>
+        </div>
+        <div class="e26-hero-r">
+          <div class="e26-dday">${dDay}</div>
+          <div class="e26-dday-label">${ev.date.replace(/-/g, '.')} 선거일까지</div>
+        </div>
+      </div>
+
+      <div class="e26-notice">
+        <div class="e26-notice-icon">ℹ️</div>
+        <div class="e26-notice-body">
+          <b>실시간 후보자·공약 데이터에 대해</b><br>
+          중앙선거관리위원회 공식 시스템은 외부 fetch (CORS) 차단으로 본 사이트에서 직접 가져올 수 없습니다.
+          각 지역 카드 하단 <b>공식 NEC 정보</b> · <b>정책공약마당</b> 링크를 통해 후보자 명단·5대 공약·재산·학력·전과 등을
+          공식 사이트에서 확인하실 수 있습니다.
+        </div>
+      </div>
+
+      <div class="dash-grid" style="margin-bottom:18px">
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">선출 총 의석</div>
+          <div class="kpi-num">${d.total_seats.toLocaleString()}<span class="unit">석</span></div>
+          <div class="kpi-trend">광역 17 · 기초 226 · 지방의원 ~3700 · 교육감 17</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">유권자 (추정)</div>
+          <div class="kpi-num">${ev.voter_estimate.split('명')[0]}</div>
+          <div class="kpi-trend">선거인명부 기준 · 만 ${ev.voter_age}세 이상</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">사전투표</div>
+          <div class="kpi-num">2일</div>
+          <div class="kpi-trend">${escapeHtml(ev.early_voting.split('(')[0].trim())}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">선거운동 기간</div>
+          <div class="kpi-num">13<span class="unit">일</span></div>
+          <div class="kpi-trend">${escapeHtml(ev.campaign_period.split('(')[0].trim())}</div>
+        </div>
+      </div>
+
+      <!-- 7장 투표지 안내 -->
+      <div class="e26-section">
+        <h2>📋 선출 직책 ${positions.length}종 — 1인 ${d.ballots_per_voter}표 (교육감 포함)</h2>
+        <div class="e26-pos-grid">
+          ${positions.map(p => `
+            <div class="e26-pos-card">
+              <div class="e26-pos-icon">${p.icon}</div>
+              <div class="e26-pos-body">
+                <div class="e26-pos-label">${escapeHtml(p.label)}</div>
+                <div class="e26-pos-count"><b>${p.count.toLocaleString()}</b>석</div>
+                <div class="e26-pos-meta">${escapeHtml(p.term)} · 투표지 ${escapeHtml(p.ballot_color)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- 일정 -->
+      <div class="e26-section">
+        <h2>📅 선거 일정</h2>
+        <div class="e26-timeline">
+          ${key_dates.map(kd => {
+            const dd = new Date(kd.date + 'T00:00:00+09:00');
+            const past = dd < today;
+            const todayMatch = dd.toDateString() === today.toDateString();
+            return `
+              <div class="e26-tl-row ${past ? 'past' : ''} ${todayMatch ? 'today' : ''}">
+                <div class="e26-tl-date">${escapeHtml(kd.date)}</div>
+                <div class="e26-tl-dot"></div>
+                <div class="e26-tl-label">${escapeHtml(kd.label)}${todayMatch ? ' <span class="e26-today-badge">오늘</span>' : ''}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- 17개 광역 -->
+      <div class="e26-section">
+        <h2>🗺 17개 광역 — 현직 + 후보자 검색 링크</h2>
+        <p class="e26-sub">현직 단체장 임기 만료 (2026.6.30) → 새 당선자 2026.7.1 취임. 각 지역 카드의 외부 링크로 공식 후보 명단·공약 확인 가능.</p>
+        <div class="e26-region-grid">
+          ${regions.map(r => {
+            const links = regionLinks(r.name);
+            const partyC = partyColor(r.incumbent_party);
+            return `
+              <div class="e26-region-card">
+                <div class="e26-region-head">
+                  <div class="e26-region-name">${escapeHtml(r.name)}</div>
+                  <span class="e26-region-muni">${r.muni_count > 0 ? `${r.muni_count}개 기초` : '단층제'}</span>
+                </div>
+                <div class="e26-region-incumbent">
+                  <div class="e26-region-il">현직 (~2026.6.30)</div>
+                  <div class="e26-region-iv"><b>${escapeHtml(r.incumbent)}</b> <em style="color:${partyC}">${escapeHtml(r.incumbent_party)}</em></div>
+                </div>
+                <div class="e26-region-links">
+                  <a href="${links.nec}" target="_blank" rel="noopener" class="e26-link e26-link-nec">📊 NEC 선거통계</a>
+                  <a href="${links.policy}" target="_blank" rel="noopener" class="e26-link e26-link-policy">📋 정책공약마당</a>
+                  <a href="${links.news}" target="_blank" rel="noopener" class="e26-link e26-link-news">🔍 네이버 후보 검색</a>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- 공식 출처 -->
+      <div class="e26-section">
+        <h2>📚 공식 출처</h2>
+        <ul class="e26-sources">
+          ${sources.map(s => `<li><a href="${s.url}" target="_blank" rel="noopener"><b>${escapeHtml(s.label)}</b> →</a></li>`).join('')}
+        </ul>
+        <div class="e26-foot">
+          <b>왜 이 사이트에서 후보 데이터를 직접 표시하지 않나?</b><br>
+          중앙선거관리위원회 시스템 (info.nec.go.kr, policy.nec.go.kr)은 외부 도메인 fetch를 차단(CORS)합니다.
+          공식 데이터의 무결성과 권위를 위해서도, 후보·공약 정보는 NEC 직접 확인을 권장드립니다.
+          본 사이트는 <b>22대 국회 의안 패치 노트</b>가 본업이며, 지방선거는 공식 사이트로 가는 빠른 진입점만 제공합니다.
         </div>
       </div>
     </div>
@@ -5286,10 +5718,11 @@ function renderHome() {
           <p>매일 통과되는 법안을 <b>패치 노트</b>로 — 어느 당, 누가 발의했는지 한눈에. 22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 처리, <b>${totalCount.toLocaleString()}명</b> 인물 데이터.</p>
         </div>
         <div class="dash-hero-r">
+          <a class="hero-btn hero-btn-live" href="#/election2026">🔴  9회 지선 LIVE</a>
           <a class="hero-btn" href="#/bills">📜  의안</a>
           <a class="hero-btn" href="#/committees">🏢  위원회</a>
           <a class="hero-btn" href="#/map">🗺  지도</a>
-          <a class="hero-btn" href="#/elections">🗳  지방선거</a>
+          <a class="hero-btn" href="#/elections">🗳  역대 지선</a>
           <a class="hero-btn" href="#/world">🌐  국제비교</a>
           <a class="hero-btn" href="#/history/parties">📅  정당사</a>
         </div>
@@ -6079,7 +6512,20 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
-  // 지방선거
+  // 제9회 지방선거 (진행 중)
+  if (hash === '#/election2026') {
+    view.innerHTML = renderElection2026Page();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    loadElection2026().then(() => {
+      if (location.hash !== '#/election2026') return;
+      view.innerHTML = renderElection2026Page();
+      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    });
+    return;
+  }
+  // 지방선거 (역대)
   if (hash === '#/elections') {
     view.innerHTML = renderLocalElectionsPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });

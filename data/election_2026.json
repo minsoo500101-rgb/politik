@@ -1,0 +1,65 @@
+{
+  "_meta": "제9회 전국동시지방선거 (2026-06-03) 안내. 후보자 데이터는 중앙선관위 CORS 제약으로 직접 fetch 불가 — 공식 사이트 링크 제공.",
+  "syncedAt": "2026-05-22",
+  "election": {
+    "id": "kr.election.2026.local.9",
+    "name": "제9회 전국동시지방선거",
+    "short": "9회 지선",
+    "date": "2026-06-03",
+    "voting_hours": "06:00 ~ 18:00",
+    "early_voting": "2026-05-29 ~ 2026-05-30 (06:00 ~ 18:00)",
+    "campaign_period": "2026-05-21 ~ 2026-06-02 (13일간)",
+    "candidate_registration": "2026-05-14 ~ 2026-05-15",
+    "preliminary_registration": "2026-02-13 ~ (지역별 차이)",
+    "voter_age": 18,
+    "voter_estimate": "약 44,265,000명 (선거인명부 기준)"
+  },
+  "positions": [
+    { "id":"governor",  "label":"광역단체장",   "count": 17,   "term":"4년 (2026.7.1 ~ 2030.6.30)", "ballot_color": "white",  "icon":"🏛" },
+    { "id":"muni_head", "label":"기초단체장",   "count": 226,  "term":"4년", "ballot_color":"yellow", "icon":"🏘" },
+    { "id":"gov_rep",   "label":"광역의회 의원 (지역구)", "count": 705,  "term":"4년", "ballot_color":"blue", "icon":"🗣" },
+    { "id":"gov_prop",  "label":"광역의회 의원 (비례)",  "count": 87,   "term":"4년", "ballot_color":"green", "icon":"🗣" },
+    { "id":"muni_rep",  "label":"기초의회 의원 (지역구)", "count": 2602, "term":"4년", "ballot_color":"pink", "icon":"📣" },
+    { "id":"muni_prop", "label":"기초의회 의원 (비례)",  "count": 386,  "term":"4년", "ballot_color":"hot pink", "icon":"📣" },
+    { "id":"edu",       "label":"교육감",       "count": 17,   "term":"4년 (정당공천 X, 무지명)", "ballot_color":"흰색 + 별표", "icon":"🎓" }
+  ],
+  "total_seats": 4040,
+  "ballots_per_voter": 7,
+  "regions": [
+    { "code":"11", "name":"서울특별시",       "incumbent":"오세훈",     "incumbent_party":"국민의힘",     "muni_count": 25 },
+    { "code":"21", "name":"부산광역시",       "incumbent":"박형준",     "incumbent_party":"국민의힘",     "muni_count": 16 },
+    { "code":"22", "name":"대구광역시",       "incumbent":"홍준표 (사퇴)·김선조 권한대행", "incumbent_party":"국민의힘", "muni_count": 9 },
+    { "code":"23", "name":"인천광역시",       "incumbent":"유정복",     "incumbent_party":"국민의힘",     "muni_count": 10 },
+    { "code":"24", "name":"광주광역시",       "incumbent":"강기정",     "incumbent_party":"더불어민주당", "muni_count": 5 },
+    { "code":"25", "name":"대전광역시",       "incumbent":"이장우",     "incumbent_party":"국민의힘",     "muni_count": 5 },
+    { "code":"26", "name":"울산광역시",       "incumbent":"김두겸",     "incumbent_party":"국민의힘",     "muni_count": 5 },
+    { "code":"29", "name":"세종특별자치시",   "incumbent":"최민호",     "incumbent_party":"국민의힘",     "muni_count": 0 },
+    { "code":"31", "name":"경기도",           "incumbent":"김동연",     "incumbent_party":"더불어민주당", "muni_count": 31 },
+    { "code":"32", "name":"강원특별자치도",   "incumbent":"김진태",     "incumbent_party":"국민의힘",     "muni_count": 18 },
+    { "code":"33", "name":"충청북도",         "incumbent":"김영환",     "incumbent_party":"국민의힘",     "muni_count": 11 },
+    { "code":"34", "name":"충청남도",         "incumbent":"김태흠",     "incumbent_party":"국민의힘",     "muni_count": 15 },
+    { "code":"35", "name":"전북특별자치도",   "incumbent":"김관영",     "incumbent_party":"더불어민주당", "muni_count": 14 },
+    { "code":"36", "name":"전라남도",         "incumbent":"김영록",     "incumbent_party":"더불어민주당", "muni_count": 22 },
+    { "code":"37", "name":"경상북도",         "incumbent":"이철우",     "incumbent_party":"국민의힘",     "muni_count": 22 },
+    { "code":"38", "name":"경상남도",         "incumbent":"박완수",     "incumbent_party":"국민의힘",     "muni_count": 18 },
+    { "code":"39", "name":"제주특별자치도",   "incumbent":"오영훈",     "incumbent_party":"더불어민주당", "muni_count": 0 }
+  ],
+  "sources": [
+    { "label":"중앙선거관리위원회 선거통계시스템",     "url":"https://info.nec.go.kr/" },
+    { "label":"중앙선관위 정책공약마당",               "url":"https://policy.nec.go.kr/" },
+    { "label":"중앙선거관리위원회 (NEC) 본 사이트",   "url":"https://www.nec.go.kr/" },
+    { "label":"내 투표소 찾기 (NEC)",                  "url":"https://www.nec.go.kr/site/nec/ex/bbs/View.do?cbIdx=1101&bcIdx=224073" },
+    { "label":"data.go.kr 후보자 정보 OpenAPI",        "url":"https://www.data.go.kr/data/15001065/openapi.do" }
+  ],
+  "key_dates": [
+    { "date":"2026-02-13", "label":"예비후보자 등록 시작 (광역단체장·교육감)" },
+    { "date":"2026-05-14", "label":"후보자 등록 시작" },
+    { "date":"2026-05-15", "label":"후보자 등록 마감" },
+    { "date":"2026-05-21", "label":"공식 선거운동 시작 (13일간)" },
+    { "date":"2026-05-29", "label":"사전투표 1일차 (06:00 ~ 18:00)" },
+    { "date":"2026-05-30", "label":"사전투표 2일차" },
+    { "date":"2026-06-02", "label":"선거운동 마지막 날" },
+    { "date":"2026-06-03", "label":"제9회 전국동시지방선거 (06:00 ~ 18:00)" },
+    { "date":"2026-07-01", "label":"당선자 임기 시작" }
+  ]
+}
