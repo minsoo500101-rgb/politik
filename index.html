@@ -3059,11 +3059,11 @@ const GROUPS = {
 };
 const GROUP_ORDER = ['legislative', 'executive', 'judicial', 'local', 'historical'];
 const TYPE_ORDER = {
-  legislative: ['assembly_leader', 'committee_chair'],
+  legislative: ['assembly_leader', 'committee_chair', 'committee_secretary'],
   executive: ['president', 'prime_minister', 'minister', 'vice_minister', 'chief_of_staff', 'agency_head'],
   judicial:  ['judge'],
   local:     ['local_gov_head', 'local_gov_muni', 'local_council_speaker', 'edu_superintendent'],
-  historical:['former_president', 'former_pm', 'former_member'],
+  historical:['former_president', 'former_pm', 'former_party_leader', 'former_judge', 'former_local', 'former_member'],
 };
 const TYPE_GROUP_LABEL = {
   president: '대통령',
@@ -3071,16 +3071,20 @@ const TYPE_GROUP_LABEL = {
   minister: '17개 부처 장관',
   vice_minister: '부처 차관',
   chief_of_staff: '대통령실',
-  agency_head: '외청·헌법기관·위원회',
+  agency_head: '외청·헌법기관·위원회·검찰',
   judge: '사법부',
   assembly_leader: '국회 의장단',
   committee_chair: '국회 상임위원장',
+  committee_secretary: '국회 상임위 간사',
   local_gov_head: '광역단체장',
   local_gov_muni: '기초단체장 (자치구·시·군)',
   local_council_speaker: '광역의회 의장',
   edu_superintendent: '교육감',
   former_president: '역대 대통령',
   former_pm: '역대 국무총리',
+  former_party_leader: '역대 정당 대표',
+  former_judge: '역대 사법부 수장',
+  former_local: '역대 광역단체장',
   former_member: '역대 국회의원',
 };
 
@@ -6123,12 +6127,13 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     // committee_chair / assembly_leader 중복 제거 — 22대 MP 본인 이름이 이미 있으면 chair 정보를 MEM_TITLE에 병합 후 제외
     const mpNames = new Set(members.map(m => m.HG_NM));
     const filteredExtras = extras.filter(e => {
-      if ((e._type === 'committee_chair' || e._type === 'assembly_leader') && mpNames.has(e.HG_NM)) {
-        // MP 항목에 위원장/의장 역할 정보 병합
+      // 22대 MP 본인과 이름이 매칭되면 병합 후 별도 entry 제거
+      if (['committee_chair','committee_secretary','assembly_leader'].includes(e._type) && mpNames.has(e.HG_NM)) {
         const mp = members.find(m => m.HG_NM === e.HG_NM);
         if (mp) {
           mp.MEM_TITLE = (mp.MEM_TITLE || '') + (mp.MEM_TITLE ? '\n\n' : '') + `[직책] ${e.CMIT_NM || e._type_label}` + (e.MEM_TITLE ? '\n' + e.MEM_TITLE : '');
-          mp._chairRole = e.CMIT_NM;
+          if (e._type === 'committee_chair') mp._chairRole = e.CMIT_NM;
+          if (e._type === 'committee_secretary') mp._secretaryRole = e.CMIT_NM;
         }
         return false;
       }
