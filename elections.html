@@ -10,8 +10,8 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="역대 지방선거 결과 — 제7회(2018) · 제8회(2022)">
 <meta property="og:description" content="2018년 6·13 지방선거(7회), 2022년 6·1 지방선거(8회) 17개 광역단체장 비교. 당선자·차점자·득표율·격차·박빙 race·정권교체 지역.">
-<meta property="og:url" content="https://minsoo500101-rgb.github.io/politik/elections.html">
-<meta property="og:image" content="https://minsoo500101-rgb.github.io/politik/og-image.png">
+<meta property="og:url" content="https://politik-phi.vercel.app/elections.html">
+<meta property="og:image" content="https://politik-phi.vercel.app/og-image.png">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="대한민국 패치 노트">
 
@@ -19,17 +19,22 @@
 <meta name="twitter:title" content="역대 지방선거 결과 — 제7회(2018) · 제8회(2022)">
 <meta name="twitter:description" content="2018년 6·13 지방선거(7회), 2022년 6·1 지방선거(8회) 17개 광역단체장 비교. 당선자·차점자·득표율·격차·박빙 race·정권교체 지역.">
 
-<link rel="canonical" href="https://minsoo500101-rgb.github.io/politik/elections.html">
+<link rel="canonical" href="https://politik-phi.vercel.app/elections.html">
 <link rel="alternate" type="application/rss+xml" title="대한민국 패치 노트" href="/feed.xml">
 
 <!-- 검색엔진 인증 (메인과 동일) -->
 <meta name="naver-site-verification" content="REPLACE_WITH_NAVER_VERIFICATION_CODE">
 <meta name="google-site-verification" content="REPLACE_WITH_GOOGLE_VERIFICATION_CODE">
 
-<!-- JS 활성: SPA로 즉시 리다이렉트 -->
-<script>location.replace('/politik/#/elections');</script>
+<!-- JS 활성: SPA로 즉시 리다이렉트 (GH Pages /politik/ + Vercel / 모두 호환) -->
+<script>
+(function(){
+  var BASE = location.pathname.indexOf('/politik/') === 0 ? '/politik' : '';
+  location.replace(BASE + '/#/elections');
+})();
+</script>
 <!-- JS 비활성: meta refresh 폴백 -->
-<meta http-equiv="refresh" content="0; url=/politik/#/elections">
+<meta http-equiv="refresh" content="0; url=./#/elections">
 
 <style>
 body { font-family: 'Pretendard Variable', 'Inter', -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 24px; color: #1f2937; }
@@ -56,13 +61,13 @@ strong { color: #111827; }
   <li><strong>역대 시도지사 23명</strong> + 정당별 의석 (광역·기초·광역의회·교육감)</li>
 </ul>
 
-<a class="cta" href="/politik/#/elections">📋 인터랙티브 사이트 열기 →</a>
+<a class="cta" href="./#/elections">📋 인터랙티브 사이트 열기 →</a>
 
 <div class="footer">
 <strong>대한민국 패치 노트</strong> · Korea Patch Notes<br>
 출처: 국회 OPEN API (공공누리 1유형) · 위키미디어 · 중앙선거관리위원회<br>
 <a href="https://github.com/minsoo500101-rgb/politik">GitHub 저장소 (MIT)</a> ·
-<a href="/politik/">홈으로</a>
+<a href="./">홈으로</a>
 </div>
 </body>
 </html>

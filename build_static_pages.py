@@ -135,8 +135,8 @@ TEMPLATE = """<!DOCTYPE html>
 <meta property="og:type" content="website">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta property="og:url" content="https://minsoo500101-rgb.github.io/politik/{file}">
-<meta property="og:image" content="https://minsoo500101-rgb.github.io/politik/og-image.png">
+<meta property="og:url" content="https://politik-phi.vercel.app/{file}">
+<meta property="og:image" content="https://politik-phi.vercel.app/og-image.png">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="대한민국 패치 노트">
 
@@ -144,17 +144,22 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{desc}">
 
-<link rel="canonical" href="https://minsoo500101-rgb.github.io/politik/{file}">
+<link rel="canonical" href="https://politik-phi.vercel.app/{file}">
 <link rel="alternate" type="application/rss+xml" title="대한민국 패치 노트" href="/feed.xml">
 
 <!-- 검색엔진 인증 (메인과 동일) -->
 <meta name="naver-site-verification" content="REPLACE_WITH_NAVER_VERIFICATION_CODE">
 <meta name="google-site-verification" content="REPLACE_WITH_GOOGLE_VERIFICATION_CODE">
 
-<!-- JS 활성: SPA로 즉시 리다이렉트 -->
-<script>location.replace('/politik/{hash}');</script>
+<!-- JS 활성: SPA로 즉시 리다이렉트 (GH Pages /politik/ + Vercel / 모두 호환) -->
+<script>
+(function(){{
+  var BASE = location.pathname.indexOf('/politik/') === 0 ? '/politik' : '';
+  location.replace(BASE + '/{hash}');
+}})();
+</script>
 <!-- JS 비활성: meta refresh 폴백 -->
-<meta http-equiv="refresh" content="0; url=/politik/{hash}">
+<meta http-equiv="refresh" content="0; url=./{hash}">
 
 <style>
 body {{ font-family: 'Pretendard Variable', 'Inter', -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 24px; color: #1f2937; }}
@@ -176,13 +181,13 @@ strong {{ color: #111827; }}
 {content_html}
 </ul>
 
-<a class="cta" href="/politik/{hash}">📋 인터랙티브 사이트 열기 →</a>
+<a class="cta" href="./{hash}">📋 인터랙티브 사이트 열기 →</a>
 
 <div class="footer">
 <strong>대한민국 패치 노트</strong> · Korea Patch Notes<br>
 출처: 국회 OPEN API (공공누리 1유형) · 위키미디어 · 중앙선거관리위원회<br>
 <a href="https://github.com/minsoo500101-rgb/politik">GitHub 저장소 (MIT)</a> ·
-<a href="/politik/">홈으로</a>
+<a href="./">홈으로</a>
 </div>
 </body>
 </html>

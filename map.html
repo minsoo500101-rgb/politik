@@ -10,8 +10,8 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="정치 분포 지도 — 17개 시도 + 250개 시군구">
 <meta property="og:description" content="대한민국 17개 광역시도 + 250개 시군구의 광역단체장·기초단체장 정당색 지도. 줌·드래그 인터랙티브, 호버 시 단체장 정보 표시.">
-<meta property="og:url" content="https://minsoo500101-rgb.github.io/politik/map.html">
-<meta property="og:image" content="https://minsoo500101-rgb.github.io/politik/og-image.png">
+<meta property="og:url" content="https://politik-phi.vercel.app/map.html">
+<meta property="og:image" content="https://politik-phi.vercel.app/og-image.png">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="대한민국 패치 노트">
 
@@ -19,17 +19,22 @@
 <meta name="twitter:title" content="정치 분포 지도 — 17개 시도 + 250개 시군구">
 <meta name="twitter:description" content="대한민국 17개 광역시도 + 250개 시군구의 광역단체장·기초단체장 정당색 지도. 줌·드래그 인터랙티브, 호버 시 단체장 정보 표시.">
 
-<link rel="canonical" href="https://minsoo500101-rgb.github.io/politik/map.html">
+<link rel="canonical" href="https://politik-phi.vercel.app/map.html">
 <link rel="alternate" type="application/rss+xml" title="대한민국 패치 노트" href="/feed.xml">
 
 <!-- 검색엔진 인증 (메인과 동일) -->
 <meta name="naver-site-verification" content="REPLACE_WITH_NAVER_VERIFICATION_CODE">
 <meta name="google-site-verification" content="REPLACE_WITH_GOOGLE_VERIFICATION_CODE">
 
-<!-- JS 활성: SPA로 즉시 리다이렉트 -->
-<script>location.replace('/politik/#/map');</script>
+<!-- JS 활성: SPA로 즉시 리다이렉트 (GH Pages /politik/ + Vercel / 모두 호환) -->
+<script>
+(function(){
+  var BASE = location.pathname.indexOf('/politik/') === 0 ? '/politik' : '';
+  location.replace(BASE + '/#/map');
+})();
+</script>
 <!-- JS 비활성: meta refresh 폴백 -->
-<meta http-equiv="refresh" content="0; url=/politik/#/map">
+<meta http-equiv="refresh" content="0; url=./#/map">
 
 <style>
 body { font-family: 'Pretendard Variable', 'Inter', -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 24px; color: #1f2937; }
@@ -55,13 +60,13 @@ strong { color: #111827; }
   <li><strong>클릭</strong>: 해당 단체장 상세 페이지로 이동</li>
 </ul>
 
-<a class="cta" href="/politik/#/map">📋 인터랙티브 사이트 열기 →</a>
+<a class="cta" href="./#/map">📋 인터랙티브 사이트 열기 →</a>
 
 <div class="footer">
 <strong>대한민국 패치 노트</strong> · Korea Patch Notes<br>
 출처: 국회 OPEN API (공공누리 1유형) · 위키미디어 · 중앙선거관리위원회<br>
 <a href="https://github.com/minsoo500101-rgb/politik">GitHub 저장소 (MIT)</a> ·
-<a href="/politik/">홈으로</a>
+<a href="./">홈으로</a>
 </div>
 </body>
 </html>

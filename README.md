@@ -1,6 +1,7 @@
 # 📋 대한민국 패치 노트 (Korea Patch Notes)
 
-[**🔗 라이브 사이트 →**](https://minsoo500101-rgb.github.io/politik/)
+[**🔗 라이브 사이트 (Vercel) →**](https://politik-phi.vercel.app/)
+미러: [GH Pages](https://minsoo500101-rgb.github.io/politik/)
 
 22대 국회 본회의 통과 법안을 **패치 노트** 형식으로 시각화. 어느 당·누가 발의했는지, 분야별·통과 속도까지 한눈에.
 

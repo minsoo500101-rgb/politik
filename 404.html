@@ -10,21 +10,17 @@
 <!-- SPA fallback — GH Pages는 모든 경로를 404로 라우팅하므로, 여기서 메인 페이지로 보내면서 hash로 경로 보존 -->
 <script>
 (function() {
+  var BASE = location.pathname.indexOf('/politik/') === 0 ? '/politik' : '';
   var path = location.pathname;
-  // /politik/ 접두어 제거
-  if (path.indexOf('/politik/') === 0) path = path.slice('/politik'.length);
-  // 정적 SEO 페이지 (bills.html 등)는 이미 존재 — 여기로 안 옴
-  // 진짜 SPA 라우트 (예: /m/SOMETHING)만 해당
+  if (BASE && path.indexOf(BASE) === 0) path = path.slice(BASE.length);
   if (path && path !== '/' && path !== '/index.html') {
-    var hash = '#' + path;
-    var target = '/politik/' + hash;
-    location.replace(target);
+    location.replace(BASE + '/#' + path);
   } else {
-    location.replace('/politik/');
+    location.replace(BASE + '/');
   }
 })();
 </script>
-<meta http-equiv="refresh" content="2; url=/politik/">
+<meta http-equiv="refresh" content="2; url=/">
 
 <style>
 body { font-family: 'Pretendard Variable', 'Inter', -apple-system, sans-serif; max-width: 600px; margin: 80px auto; padding: 24px; text-align: center; color: #1f2937; }
