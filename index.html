@@ -2037,6 +2037,39 @@
     padding: 1px 5px; border-radius: 6px;
     background: var(--bg-card);
   }
+  .e26-cands {
+    background: rgba(16,185,129,0.06);
+    border-left: 3px solid var(--ok);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+  }
+  [data-theme="dark"] .e26-cands { background: rgba(16,185,129,0.14); }
+  .e26-cands-h {
+    font-size: 10.5px; font-weight: 800; color: var(--ok);
+    letter-spacing: 0.5px; text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .e26-cand-row {
+    font-size: 11.5px; line-height: 1.5;
+    color: var(--text); margin-bottom: 2px;
+    display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+  }
+  .e26-cand-row b { font-weight: 700; }
+  .e26-cand-row em {
+    font-style: normal; font-weight: 700;
+    font-size: 10px;
+    padding: 1px 5px; border-radius: 5px;
+    background: var(--bg-card);
+  }
+  .e26-cand-job {
+    font-size: 10px; color: var(--text-2);
+    margin-left: auto;
+  }
+  .e26-cand-more {
+    margin-top: 4px; font-size: 10.5px; color: var(--dim);
+    text-align: right;
+  }
   .e26-region-links {
     display: flex; gap: 6px; flex-wrap: wrap;
   }
@@ -3412,6 +3445,7 @@ const state = {
   worldCompare: null,
   localElections: null,
   election2026: null,
+  nec2026Governors: null,
 };
 
 // 법안 분야 자동 분류 (BILL_NAME + CURR_COMMITTEE 기반)
@@ -4483,6 +4517,59 @@ async function loadElection2026() {
   return state.election2026;
 }
 
+// NEC 프록시 설정 (localStorage 저장)
+const NEC_PROXY_KEY = 'politik:necProxyUrl';
+function getNecProxy() {
+  try { return localStorage.getItem(NEC_PROXY_KEY) || ''; } catch { return ''; }
+}
+function setNecProxy(url) {
+  try {
+    if (url) localStorage.setItem(NEC_PROXY_KEY, url.replace(/\/$/, ''));
+    else localStorage.removeItem(NEC_PROXY_KEY);
+  } catch {}
+}
+async function necFetch(path) {
+  const base = getNecProxy();
+  if (!base) throw new Error('NEC 프록시 URL 미설정');
+  const r = await fetch(base + path);
+  if (!r.ok) throw new Error(`NEC API ${r.status}`);
+  return r.json();
+}
+
+// 2026 지선 후보자 캐시 + 로드 (광역단체장 sgTypecode=3)
+const CACHE_KEY_NEC_2026 = 'politik:nec2026Candidates:v1';
+const NEC_CACHE_TTL = 3 * 3600 * 1000; // 3시간
+async function loadNec2026Governors() {
+  if (state.nec2026Governors) return state.nec2026Governors;
+  // localStorage 캐시
+  try {
+    const raw = localStorage.getItem(CACHE_KEY_NEC_2026);
+    if (raw) {
+      const c = JSON.parse(raw);
+      if (Date.now() - c.t < NEC_CACHE_TTL) {
+        state.nec2026Governors = c.data;
+        return c.data;
+      }
+    }
+  } catch {}
+  if (!getNecProxy()) {
+    state.nec2026Governors = { _noProxy: true, items: [] };
+    return state.nec2026Governors;
+  }
+  try {
+    // 광역단체장 (sgTypecode=3)
+    const j = await necFetch('/candidates?sgId=20260603&sgTypecode=3&numOfRows=500');
+    // 응답 정규화 (response → body → items → item)
+    let items = j?.response?.body?.items?.item || j?.body?.items?.item || j?.items?.item || j?.item || [];
+    if (!Array.isArray(items)) items = items ? [items] : [];
+    state.nec2026Governors = { items, fetchedAt: Date.now() };
+    try { localStorage.setItem(CACHE_KEY_NEC_2026, JSON.stringify({ t: Date.now(), data: state.nec2026Governors })); } catch {}
+  } catch (e) {
+    state.nec2026Governors = { _error: e.message, items: [] };
+  }
+  return state.nec2026Governors;
+}
+
 function renderElection2026Page() {
   const d = state.election2026;
   if (!d) return `
@@ -4534,15 +4621,47 @@ function renderElection2026Page() {
         </div>
       </div>
 
-      <div class="e26-notice">
-        <div class="e26-notice-icon">ℹ️</div>
-        <div class="e26-notice-body">
-          <b>실시간 후보자·공약 데이터에 대해</b><br>
-          중앙선거관리위원회 공식 시스템은 외부 fetch (CORS) 차단으로 본 사이트에서 직접 가져올 수 없습니다.
-          각 지역 카드 하단 <b>공식 NEC 정보</b> · <b>정책공약마당</b> 링크를 통해 후보자 명단·5대 공약·재산·학력·전과 등을
-          공식 사이트에서 확인하실 수 있습니다.
-        </div>
-      </div>
+      ${(() => {
+        const proxy = getNecProxy();
+        const necData = state.nec2026Governors;
+        if (proxy && necData && !necData._error && (necData.items || []).length > 0) {
+          // 데이터 활성 + 정상 로드
+          const items = necData.items;
+          return `
+            <div class="e26-notice" style="background:rgba(16,185,129,0.08);border-left-color:var(--ok);border-color:rgba(16,185,129,0.25)">
+              <div class="e26-notice-icon">🟢</div>
+              <div class="e26-notice-body">
+                <b style="color:var(--ok)">중앙선관위 실시간 데이터 연결됨</b> — 광역단체장 ${items.length}명 fetch 완료 ·
+                <a href="#" id="nec-disconnect" style="color:var(--text-2)">해제</a>
+              </div>
+            </div>
+          `;
+        } else if (proxy && necData && necData._error) {
+          return `
+            <div class="e26-notice" style="background:rgba(220,38,38,0.08);border-left-color:#dc2626">
+              <div class="e26-notice-icon">⚠️</div>
+              <div class="e26-notice-body">
+                <b>프록시 연결 실패</b> — ${escapeHtml(necData._error)} ·
+                <a href="#" id="nec-disconnect" style="color:var(--text-2)">설정 초기화</a>
+              </div>
+            </div>
+          `;
+        } else {
+          // 프록시 미설정
+          return `
+            <div class="e26-notice">
+              <div class="e26-notice-icon">ℹ️</div>
+              <div class="e26-notice-body">
+                <b>실시간 후보자·공약 데이터 활성화하기</b><br>
+                중앙선거관리위원회 API(data.go.kr)는 CORS 차단으로 직접 fetch 불가 →
+                <b>Cloudflare Worker 프록시</b>를 5분에 배포하면 후보자 명단·5대 공약을 본 사이트에 직접 표시할 수 있습니다.
+                <a href="https://github.com/minsoo500101-rgb/politik/tree/main/worker" target="_blank" rel="noopener" style="color:var(--warn);font-weight:700">→ 5분 배포 가이드</a><br>
+                <a href="#" id="nec-setup-btn" style="display:inline-block;margin-top:8px;padding:5px 12px;background:var(--text);color:var(--bg-card);border-radius:6px;font-weight:700;font-size:11.5px;text-decoration:none">⚙ 프록시 URL 입력</a>
+              </div>
+            </div>
+          `;
+        }
+      })()}
 
       <div class="dash-grid" style="margin-bottom:18px">
         <div class="dash-card col-3 kpi">
@@ -4611,6 +4730,24 @@ function renderElection2026Page() {
           ${regions.map(r => {
             const links = regionLinks(r.name);
             const partyC = partyColor(r.incumbent_party);
+            // 실시간 후보자 데이터 (NEC API)
+            const liveCands = (state.nec2026Governors?.items || []).filter(c => {
+              const sd = c.sdName || c.SD_NAME || '';
+              return sd === r.name || sd === r.name.replace('특별자치도','도').replace('특별자치시','시').replace('광역시','').replace('특별시','');
+            });
+            const liveHtml = liveCands.length ? `
+              <div class="e26-cands">
+                <div class="e26-cands-h">📋 등록 후보 ${liveCands.length}명</div>
+                ${liveCands.slice(0, 6).map(c => {
+                  const name = c.huboNm || c.name || c.NAME || '—';
+                  const party = c.partyName || c.PARTY_NAME || '—';
+                  const pc = partyColor(party);
+                  const job = c.jobName || c.JOB_NAME || '';
+                  return `<div class="e26-cand-row"><b>${escapeHtml(name)}</b> <em style="color:${pc}">${escapeHtml(party)}</em>${job ? `<span class="e26-cand-job">${escapeHtml(job)}</span>` : ''}</div>`;
+                }).join('')}
+                ${liveCands.length > 6 ? `<div class="e26-cand-more">…외 ${liveCands.length - 6}명</div>` : ''}
+              </div>
+            ` : '';
             return `
               <div class="e26-region-card">
                 <div class="e26-region-head">
@@ -4621,10 +4758,11 @@ function renderElection2026Page() {
                   <div class="e26-region-il">현직 (~2026.6.30)</div>
                   <div class="e26-region-iv"><b>${escapeHtml(r.incumbent)}</b> <em style="color:${partyC}">${escapeHtml(r.incumbent_party)}</em></div>
                 </div>
+                ${liveHtml}
                 <div class="e26-region-links">
-                  <a href="${links.nec}" target="_blank" rel="noopener" class="e26-link e26-link-nec">📊 NEC 선거통계</a>
-                  <a href="${links.policy}" target="_blank" rel="noopener" class="e26-link e26-link-policy">📋 정책공약마당</a>
-                  <a href="${links.news}" target="_blank" rel="noopener" class="e26-link e26-link-news">🔍 네이버 후보 검색</a>
+                  <a href="${links.nec}" target="_blank" rel="noopener" class="e26-link e26-link-nec">📊 NEC 통계</a>
+                  <a href="${links.policy}" target="_blank" rel="noopener" class="e26-link e26-link-policy">📋 공약</a>
+                  <a href="${links.news}" target="_blank" rel="noopener" class="e26-link e26-link-news">🔍 검색</a>
                 </div>
               </div>
             `;
@@ -6621,15 +6759,49 @@ function route() {
 
   // 제9회 지방선거 (진행 중)
   if (hash === '#/election2026') {
-    view.innerHTML = renderElection2026Page();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    const renderE26 = () => {
+      view.innerHTML = renderElection2026Page();
+      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      // NEC 프록시 설정 버튼
+      document.getElementById('nec-setup-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = getNecProxy();
+        const url = prompt('NEC 프록시 URL 입력\n예: https://nec-proxy.your-subdomain.workers.dev\n(worker/README.md 참조)', current);
+        if (url !== null) {
+          setNecProxy(url.trim());
+          if (url.trim()) {
+            // 즉시 로드 시도
+            loadNec2026Governors().then(() => renderE26());
+          } else {
+            state.nec2026Governors = null;
+            renderE26();
+          }
+        }
+      });
+      document.getElementById('nec-disconnect')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('NEC 프록시 연결을 해제할까요?')) {
+          setNecProxy('');
+          state.nec2026Governors = null;
+          try { localStorage.removeItem(CACHE_KEY_NEC_2026); } catch {}
+          renderE26();
+        }
+      });
+    };
+    renderE26();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     loadElection2026().then(() => {
       if (location.hash !== '#/election2026') return;
-      view.innerHTML = renderElection2026Page();
-      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      renderE26();
     });
+    // NEC 데이터 로드 (프록시 설정되어 있으면)
+    if (getNecProxy()) {
+      loadNec2026Governors().then(() => {
+        if (location.hash !== '#/election2026') return;
+        renderE26();
+      });
+    }
     return;
   }
   // 지방선거 (역대)

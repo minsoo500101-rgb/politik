@@ -1,40 +1,34 @@
-// Cloudflare Worker — 중앙선거관리위원회 / 정책공약마당 CORS 프록시
-// 배포: https://workers.cloudflare.com/ → Create Service → 이 파일 붙여넣기
-// 호스트: nec-proxy.{your-subdomain}.workers.dev
+// Cloudflare Worker — 중앙선거관리위원회 OpenAPI (data.go.kr) 프록시
+// 배포: https://workers.cloudflare.com/ → Create Worker → 이 파일 붙여넣기
+// 또는: cd worker && wrangler deploy
 //
-// 사용법:
-//   GET /candidates?sgId=20260603&sgTypecode=4
-//   GET /policies?sgId=20260603&candidateId=...
-//   GET /raw?url=https%3A%2F%2Finfo.nec.go.kr%2F...
+// 환경변수 (Secret):
+//   DATA_GO_KR_KEY — data.go.kr OpenAPI 인증키 (Decoding 키 사용)
 //
-// 클라이언트:
-//   fetch('https://nec-proxy.you.workers.dev/raw?url=' + encodeURIComponent(realUrl))
-//
-// 환경변수 (선택):
-//   DATA_GO_KR_KEY — data.go.kr OpenAPI 키 (등록 후 발급)
+// 엔드포인트:
+//   GET /candidates?sgId=20260603&sgTypecode=4&pageNo=1&numOfRows=300
+//   GET /policies?sgId=20260603&sgTypecode=4&cnddtId=...
+//   GET /winners?sgId=20220601&sgTypecode=4
+//   GET /codes?sgId=20260603
+//   GET /search?name=이재명
+//   GET /health
 
-const ALLOWED_HOSTS = [
-  'info.nec.go.kr',
-  'policy.nec.go.kr',
-  'www.nec.go.kr',
-  'apis.data.go.kr',
-];
+const NEC_BASE = 'http://apis.data.go.kr/9760000';
 
 const ALLOWED_ORIGINS = [
+  'https://politik-phi.vercel.app',
   'https://minsoo500101-rgb.github.io',
-  'https://patchkr.com',           // 커스텀 도메인 추가 시
-  'https://*.vercel.app',
-  'https://*.netlify.app',
-  'http://localhost:8091',          // 로컬 개발
+  'https://patchkr.com',
+  'http://localhost:8091',
+  'http://127.0.0.1:8091',
 ];
 
 function corsHeaders(origin) {
-  const allowed = ALLOWED_ORIGINS.some(p => {
-    if (p.includes('*')) return new RegExp(p.replace('*', '.*')).test(origin || '');
-    return p === origin;
-  }) ? origin : ALLOWED_ORIGINS[0];
+  const allowed = ALLOWED_ORIGINS.includes(origin)
+    || /^https:\/\/.*\.vercel\.app$/.test(origin || '')
+    || /^https:\/\/.*\.netlify\.app$/.test(origin || '');
   return {
-    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Origin': allowed ? origin : ALLOWED_ORIGINS[0],
     'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
@@ -51,68 +45,148 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
-    // 1) data.go.kr OpenAPI — 후보자 등록 정보
+    const key = env.DATA_GO_KR_KEY;
+    if (!key && url.pathname !== '/' && url.pathname !== '/health') {
+      return jsonErr(503, 'DATA_GO_KR_KEY 환경변수 미설정. wrangler secret put DATA_GO_KR_KEY', origin);
+    }
+
+    // 1) 후보자 정보 조회 (15000908)
+    // 예: /candidates?sgId=20260603&sgTypecode=4
+    //   sgTypecode: 1=대선, 2=총선, 3=시도지사, 4=구시군의장, 5=시도의원, 6=구시군의원,
+    //               7=교육감, 8=교육의원, 9=비례시도의원, 10=비례구시군의원, 11=교육감
     if (url.pathname === '/candidates') {
-      const sgId = url.searchParams.get('sgId') || '20260603';
-      const sgTypecode = url.searchParams.get('sgTypecode') || '4'; // 4=광역단체장
-      const key = env.DATA_GO_KR_KEY;
-      if (!key) return jsonErr(503, 'DATA_GO_KR_KEY 환경변수 미설정', origin);
-      const apiUrl = `https://apis.data.go.kr/9760000/PofelcddInfoInqireService2/getPoelpcddRegistSttusInfoInqire?serviceKey=${key}&sgId=${sgId}&sgTypecode=${sgTypecode}&pageNo=1&numOfRows=300&resultType=json`;
-      return forward(apiUrl, origin, 600);
+      const params = passThrough(url.searchParams, ['sgId', 'sgTypecode', 'pageNo', 'numOfRows', 'sggName', 'sdName']);
+      params.set('ServiceKey', key);
+      params.set('resultType', 'json');
+      if (!params.has('numOfRows')) params.set('numOfRows', '500');
+      if (!params.has('pageNo')) params.set('pageNo', '1');
+      return forward(
+        `${NEC_BASE}/PofelcddInfoInqireService/getPoelpcddRegistSttusInfoInqire?${params}`,
+        origin, 600
+      );
     }
 
-    // 2) 정책공약마당 — 후보자 공약 PDF/JSON
+    // 2) 선거공약 정보 (15040587) — 후보자별 5대 공약
+    // /policies?sgId=20260603&sgTypecode=4&cnddtId=XXXX
     if (url.pathname === '/policies') {
-      const sgId = url.searchParams.get('sgId') || '20260603';
-      const apiUrl = `https://policy.nec.go.kr/svc/policy/openapi/getPolicyList.do?sgId=${sgId}&pageNo=1&numOfRows=500`;
-      return forward(apiUrl, origin, 600);
+      const params = passThrough(url.searchParams, ['sgId', 'sgTypecode', 'cnddtId', 'pageNo', 'numOfRows']);
+      params.set('ServiceKey', key);
+      params.set('resultType', 'json');
+      if (!params.has('numOfRows')) params.set('numOfRows', '50');
+      return forward(
+        `${NEC_BASE}/ElecPrmsInfoInqireService/getCnddtElecPrmsInfoInqire?${params}`,
+        origin, 600
+      );
     }
 
-    // 3) 일반 raw 프록시 (화이트리스트 도메인만)
-    if (url.pathname === '/raw') {
-      const target = url.searchParams.get('url');
-      if (!target) return jsonErr(400, 'url 파라미터 필요', origin);
-      let targetUrl;
-      try { targetUrl = new URL(target); } catch { return jsonErr(400, '잘못된 URL', origin); }
-      if (!ALLOWED_HOSTS.includes(targetUrl.host)) {
-        return jsonErr(403, `허용되지 않은 호스트: ${targetUrl.host}`, origin);
+    // 3) 당선인 정보 (15000864) — 역대 당선 결과
+    // /winners?sgId=20220601&sgTypecode=4
+    if (url.pathname === '/winners') {
+      const params = passThrough(url.searchParams, ['sgId', 'sgTypecode', 'pageNo', 'numOfRows']);
+      params.set('ServiceKey', key);
+      params.set('resultType', 'json');
+      if (!params.has('numOfRows')) params.set('numOfRows', '500');
+      return forward(
+        `${NEC_BASE}/PofelcddElecInfoInqireService/getPoeswfCnddtRegistSttusInfoInqire?${params}`,
+        origin, 3600
+      );
+    }
+
+    // 4) 코드 정보 (15000897) — 알려진 선거 ID·종류 목록
+    // /codes?sgId=20260603 (없으면 전체)
+    if (url.pathname === '/codes') {
+      const params = passThrough(url.searchParams, ['sgId', 'pageNo', 'numOfRows']);
+      params.set('ServiceKey', key);
+      params.set('resultType', 'json');
+      if (!params.has('numOfRows')) params.set('numOfRows', '100');
+      return forward(
+        `${NEC_BASE}/CommonCodeService/getCommonSgCodeList?${params}`,
+        origin, 86400  // 코드는 변경 거의 없음 → 1일 캐시
+      );
+    }
+
+    // 5) 후보자 통합검색 (15140045) — 이름 기반 모든 선거 검색
+    // /search?name=이재명
+    if (url.pathname === '/search') {
+      const params = passThrough(url.searchParams, ['name', 'huboNm', 'pageNo', 'numOfRows']);
+      // API 파라미터는 huboNm 또는 cnddtNm
+      if (params.has('name') && !params.has('huboNm')) {
+        params.set('huboNm', params.get('name'));
+        params.delete('name');
       }
-      return forward(targetUrl.toString(), origin, 300);
+      params.set('ServiceKey', key);
+      params.set('resultType', 'json');
+      if (!params.has('numOfRows')) params.set('numOfRows', '50');
+      return forward(
+        `${NEC_BASE}/CnddtNmInfoInqireService/getCnddtNmInfoInqire?${params}`,
+        origin, 1800
+      );
     }
 
-    // 4) 헬스체크
+    // 6) 헬스체크
     if (url.pathname === '/' || url.pathname === '/health') {
-      return new Response(JSON.stringify({
-        name: 'NEC Proxy',
-        version: '1.0.0',
-        endpoints: ['/candidates', '/policies', '/raw'],
-        allowed_hosts: ALLOWED_HOSTS,
-      }, null, 2), {
-        headers: { 'Content-Type': 'application/json; charset=utf-8', ...corsHeaders(origin) },
-      });
+      return jsonOk({
+        name: 'NEC Proxy (data.go.kr)',
+        version: '2.0.0',
+        hasKey: !!key,
+        endpoints: {
+          '/candidates': 'sgId, sgTypecode (+ pageNo, numOfRows, sggName, sdName) — 후보자 명단',
+          '/policies':   'sgId, sgTypecode, cnddtId — 후보 5대 공약',
+          '/winners':    'sgId, sgTypecode — 역대 당선인',
+          '/codes':      '[sgId] — 선거 ID/종류/지역 코드',
+          '/search':     'name — 이름으로 모든 선거 통합 검색',
+        },
+        sgTypecode: {
+          '1': '대통령선거', '2': '국회의원선거', '3': '시·도지사선거',
+          '4': '구·시·군의장선거', '5': '시·도의원선거', '6': '구·시·군의원선거',
+          '7': '교육감선거', '8': '교육의원선거',
+          '9': '비례시도의원', '10': '비례구시군의원', '11': '교육감(공약대상)',
+        },
+        sample_sgId: {
+          '20260603': '제9회 전국동시지방선거 (2026)',
+          '20240410': '제22대 국회의원선거 (2024)',
+          '20220601': '제8회 전국동시지방선거 (2022)',
+          '20220309': '제20대 대통령선거 (2022)',
+          '20180613': '제7회 전국동시지방선거 (2018)',
+        },
+      }, origin);
     }
 
-    return jsonErr(404, 'Not Found — /candidates · /policies · /raw 중 하나 사용', origin);
+    return jsonErr(404, 'Not Found — /candidates, /policies, /winners, /codes, /search, /health', origin);
   },
 };
+
+function passThrough(sp, allowed) {
+  const out = new URLSearchParams();
+  for (const k of allowed) if (sp.has(k)) out.set(k, sp.get(k));
+  return out;
+}
 
 async function forward(targetUrl, origin, cacheSecs = 300) {
   try {
     const r = await fetch(targetUrl, {
       cf: { cacheTtl: cacheSecs, cacheEverything: true },
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; KoreaPatchNotes/1.0; +https://github.com/minsoo500101-rgb/politik)',
-        'Accept': 'application/json, text/html, */*',
+        'User-Agent': 'Mozilla/5.0 (compatible; KoreaPatchNotes/2.0; +https://politik-phi.vercel.app)',
+        'Accept': 'application/json, application/xml, text/xml, */*',
       },
     });
-    const body = await r.text();
-    const ct = r.headers.get('content-type') || 'application/octet-stream';
+    const ct = r.headers.get('content-type') || '';
+    let body = await r.text();
+
+    // XML → JSON 자동 변환 (실패 시 그대로)
+    if (ct.includes('xml') || body.startsWith('<?xml')) {
+      try {
+        body = JSON.stringify(parseXmlSimple(body));
+      } catch (_) { /* leave as XML */ }
+    }
+
     return new Response(body, {
       status: r.status,
       headers: {
-        'Content-Type': ct,
+        'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': `public, max-age=${cacheSecs}`,
-        'X-Proxy-Target': targetUrl,
+        'X-Proxy-Target': new URL(targetUrl).pathname,
         ...corsHeaders(origin),
       },
     });
@@ -121,8 +195,37 @@ async function forward(targetUrl, origin, cacheSecs = 300) {
   }
 }
 
+// 매우 단순한 XML → JS 객체 (NEC 응답 구조: <response><body><items><item>...</item></items></body></response>)
+function parseXmlSimple(xml) {
+  function parseEl(s) {
+    const obj = {};
+    const re = /<([\w-]+)>([\s\S]*?)<\/\1>/g;
+    let m;
+    while ((m = re.exec(s)) !== null) {
+      const [, tag, val] = m;
+      const trimmed = val.trim();
+      const child = trimmed.includes('<') ? parseEl(trimmed) : trimmed;
+      if (obj[tag] === undefined) obj[tag] = child;
+      else if (Array.isArray(obj[tag])) obj[tag].push(child);
+      else obj[tag] = [obj[tag], child];
+    }
+    return obj;
+  }
+  return parseEl(xml.replace(/<\?xml[^?]*\?>/, ''));
+}
+
+function jsonOk(data, origin) {
+  return new Response(JSON.stringify(data, null, 2), {
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, max-age=60',
+      ...corsHeaders(origin),
+    },
+  });
+}
+
 function jsonErr(status, message, origin) {
-  return new Response(JSON.stringify({ error: message }), {
+  return new Response(JSON.stringify({ error: message, status }), {
     status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',

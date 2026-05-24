@@ -1,9 +1,21 @@
 # Cloudflare Worker — NEC API 프록시
 
+> **📊 자세한 API 활용은 [API_GUIDE.md](./API_GUIDE.md) 참조**
+
 ## 무엇을 하나?
 
-중앙선거관리위원회 (info.nec.go.kr, policy.nec.go.kr) 및 data.go.kr OpenAPI에 **CORS 우회 프록시**를 제공.
-이걸 통해 본 사이트에서 **후보자 명단·공약·재산·전과** 등 실시간 데이터를 fetch할 수 있게 됩니다.
+중앙선거관리위원회 (data.go.kr OpenAPI)에 **CORS 우회 프록시**를 제공.
+이걸 통해 본 사이트에서 **후보자 명단·공약·당선인 데이터**를 직접 fetch할 수 있습니다.
+
+## 5개 엔드포인트 제공
+
+| 경로 | 데이터 | API ID |
+|---|---|---|
+| `/candidates` | 후보자 정보 (이름·정당·성별·학력·경력) | 15000908 |
+| `/policies` | 후보자 5대 공약 (분야·제목·내용) | 15040587 |
+| `/winners` | 역대 당선인 | 15000864 |
+| `/codes` | 선거 ID·종류·지역 코드 | 15000897 |
+| `/search` | 이름으로 통합 검색 | 15140045 |
 
 ## 무료 한도
 - Cloudflare Workers 무료 플랜: **100,000 요청/일**
