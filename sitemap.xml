@@ -1,49 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- 메인 (SPA 진입점) -->
   <url>
     <loc>https://minsoo500101-rgb.github.io/politik/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <lastmod>2026-05-23</lastmod>
   </url>
+
+  <!-- 정적 SEO 랜딩 페이지 (각 라우트별 독립 인덱싱) -->
   <url>
-    <loc>https://minsoo500101-rgb.github.io/politik/#/bills</loc>
+    <loc>https://minsoo500101-rgb.github.io/politik/bills.html</loc>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
+    <lastmod>2026-05-23</lastmod>
   </url>
   <url>
-    <loc>https://minsoo500101-rgb.github.io/politik/#/election2026</loc>
+    <loc>https://minsoo500101-rgb.github.io/politik/election2026.html</loc>
     <changefreq>hourly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
+    <lastmod>2026-05-23</lastmod>
   </url>
   <url>
-    <loc>https://minsoo500101-rgb.github.io/politik/#/committees</loc>
+    <loc>https://minsoo500101-rgb.github.io/politik/committees.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://minsoo500101-rgb.github.io/politik/map.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://minsoo500101-rgb.github.io/politik/#/map</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://minsoo500101-rgb.github.io/politik/world.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://minsoo500101-rgb.github.io/politik/elections.html</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://minsoo500101-rgb.github.io/politik/#/world</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://minsoo500101-rgb.github.io/politik/relations.html</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
-  <url>
-    <loc>https://minsoo500101-rgb.github.io/politik/#/elections</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
+
+  <!-- SPA 라우트 (hash) — 일부 검색엔진은 이것도 따라감 -->
   <url>
     <loc>https://minsoo500101-rgb.github.io/politik/#/history/parties</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://minsoo500101-rgb.github.io/politik/#/relations</loc>
-    <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>

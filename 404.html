@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — 페이지를 찾을 수 없음 · 대한민국 패치 노트</title>
+<meta name="description" content="요청하신 페이지를 찾을 수 없습니다. 메인 페이지로 이동합니다.">
+<meta name="robots" content="noindex">
+
+<!-- SPA fallback — GH Pages는 모든 경로를 404로 라우팅하므로, 여기서 메인 페이지로 보내면서 hash로 경로 보존 -->
+<script>
+(function() {
+  var path = location.pathname;
+  // /politik/ 접두어 제거
+  if (path.indexOf('/politik/') === 0) path = path.slice('/politik'.length);
+  // 정적 SEO 페이지 (bills.html 등)는 이미 존재 — 여기로 안 옴
+  // 진짜 SPA 라우트 (예: /m/SOMETHING)만 해당
+  if (path && path !== '/' && path !== '/index.html') {
+    var hash = '#' + path;
+    var target = '/politik/' + hash;
+    location.replace(target);
+  } else {
+    location.replace('/politik/');
+  }
+})();
+</script>
+<meta http-equiv="refresh" content="2; url=/politik/">
+
+<style>
+body { font-family: 'Pretendard Variable', 'Inter', -apple-system, sans-serif; max-width: 600px; margin: 80px auto; padding: 24px; text-align: center; color: #1f2937; }
+h1 { font-size: 48px; font-weight: 800; margin-bottom: 8px; color: #6b7280; }
+p { font-size: 16px; color: #4b5563; margin-bottom: 24px; }
+a { display: inline-block; padding: 12px 24px; background: #111827; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>404</h1>
+<p>요청하신 페이지를 찾을 수 없습니다.<br>잠시 후 메인 페이지로 이동합니다.</p>
+<a href="/politik/">🏠 대한민국 패치 노트 홈으로</a>
+</body>
+</html>
