@@ -148,7 +148,7 @@ TEMPLATE = """<!DOCTYPE html>
 <link rel="alternate" type="application/rss+xml" title="대한민국 패치 노트" href="/feed.xml">
 
 <!-- 검색엔진 인증 (메인과 동일) -->
-<meta name="naver-site-verification" content="REPLACE_WITH_NAVER_VERIFICATION_CODE">
+<meta name="naver-site-verification" content="e354b1694e63ff02edb65f01e966f5e0a555d754">
 <meta name="google-site-verification" content="REPLACE_WITH_GOOGLE_VERIFICATION_CODE">
 
 <!-- JS 활성: SPA로 즉시 리다이렉트 (GH Pages /politik/ + Vercel / 모두 호환) -->
