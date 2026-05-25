@@ -95,6 +95,25 @@ def build():
     except Exception as e:
         print(f"[WARN] politicians.json 파싱 실패: {e}")
 
+    # 법안 detail URL 추가 (캐시된 데이터 기반 — 없으면 skip)
+    # 실제 BILL_ID는 API 호출 후 매핑 필요. 여기선 sitemap-bills.xml 별도 추천.
+    # 대신 핵심 50건만 추가
+    try:
+        # ./data/bills_sample.json 같은 파일이 있으면 fetch
+        import urllib.request
+        bills_path = Path("D:/politik/data/bills_cache.json")
+        if bills_path.exists():
+            bills = json.load(bills_path.open(encoding="utf-8"))
+            out.append(f"\n  <!-- 법안 detail (상위 {len(bills)}건) -->")
+            for b in bills:
+                bid = b.get("BILL_ID", "")
+                if bid:
+                    import urllib.parse
+                    enc = urllib.parse.quote(bid, safe='')
+                    out.append(url_entry(f"/#/bill/{enc}", "0.4", "monthly"))
+    except Exception:
+        pass
+
     out.append("</urlset>")
     content = "\n".join(out)
     Path("D:/politik/sitemap.xml").write_text(content, encoding="utf-8")
