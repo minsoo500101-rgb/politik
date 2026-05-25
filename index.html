@@ -2105,6 +2105,106 @@
     font-size: 9.5px; font-weight: 800;
     color: var(--text);
   }
+  .e26-cand-click:hover { background: var(--bg-card); border-radius: 4px; }
+  .e26-cand-summary {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin-top: 4px;
+  }
+  .e26-cand-sgg {
+    font-size: 10px;
+    padding: 2px 6px;
+    background: var(--bg-card);
+    border-radius: 4px;
+    color: var(--text-2);
+  }
+  .e26-cand-sgg b { color: var(--text); margin-left: 3px; font-variant-numeric: tabular-nums; }
+
+  /* 5대 공약 모달 */
+  .promise-modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .promise-modal {
+    background: var(--bg-card);
+    border-radius: 14px;
+    padding: 22px 26px;
+    max-width: 720px; width: 100%;
+    max-height: 85vh; overflow-y: auto;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .promise-modal-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .promise-modal-title {
+    font-size: 18px; font-weight: 800; color: var(--text);
+    line-height: 1.3;
+  }
+  .promise-modal-title em {
+    font-style: normal; font-weight: 700;
+    font-size: 12px; margin-left: 8px;
+    padding: 2px 8px; border-radius: 8px;
+    background: var(--bg-elev);
+  }
+  .promise-modal-sub {
+    font-size: 12px; color: var(--text-2);
+    margin-top: 3px;
+  }
+  .promise-modal-close {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    font-size: 16px; font-weight: 800;
+    color: var(--text-2);
+    flex-shrink: 0; margin-left: 12px;
+  }
+  .promise-modal-close:hover { background: var(--text); color: var(--bg-card); }
+  .promise-item {
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border-left: 4px solid var(--text-2);
+  }
+  .promise-num {
+    display: inline-block;
+    background: var(--text); color: var(--bg-card);
+    width: 22px; height: 22px; line-height: 22px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 11px; font-weight: 800;
+    margin-right: 8px;
+  }
+  .promise-realm {
+    display: inline-block;
+    font-size: 10.5px; font-weight: 700;
+    padding: 1px 7px; border-radius: 8px;
+    background: rgba(16,185,129,0.15);
+    color: var(--ok);
+    margin-left: 6px;
+  }
+  .promise-title {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    margin: 6px 0 4px;
+  }
+  .promise-cont {
+    font-size: 12px; color: var(--text-2);
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .promise-loading {
+    text-align: center; padding: 30px;
+    color: var(--dim); font-size: 13px;
+  }
   .e26-cand-row em {
     font-style: normal; font-weight: 700;
     font-size: 10px;
@@ -4660,6 +4760,86 @@ async function necFetch(endpoint, params = {}) {
   }
   return r.json();
 }
+// 후보자 5대 공약 모달
+async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
+  // 모달 DOM 생성
+  let modal = document.getElementById('promise-modal-bg');
+  if (modal) modal.remove();
+  modal = document.createElement('div');
+  modal.id = 'promise-modal-bg';
+  modal.className = 'promise-modal-bg';
+  modal.innerHTML = `
+    <div class="promise-modal" id="promise-modal-box">
+      <div class="promise-modal-head">
+        <div>
+          <div class="promise-modal-title">${escapeHtml(name)} <em style="color:${partyColor(party)}">${escapeHtml(party)}</em></div>
+          <div class="promise-modal-sub">${escapeHtml(region)} · 9회 지방선거 후보자 5대 공약</div>
+        </div>
+        <button class="promise-modal-close" id="promise-modal-close">×</button>
+      </div>
+      <div id="promise-modal-body">
+        <div class="promise-loading"><span class="loading-spinner"></span>공약 fetch 중…</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  // 닫기 핸들러
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  document.getElementById('promise-modal-close').addEventListener('click', () => modal.remove());
+  document.addEventListener('keydown', function esc(e) {
+    if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', esc); }
+  });
+  // 공약 fetch
+  if (!cnddtId) {
+    document.getElementById('promise-modal-body').innerHTML = '<div class="promise-loading">후보자 ID 없음 — 공약 조회 불가</div>';
+    return;
+  }
+  try {
+    const j = await necFetch('policies', { sgId: '20260603', sgTypecode, cnddtId });
+    let items = j?.response?.body?.items?.item || j?.body?.items?.item || [];
+    if (!Array.isArray(items)) items = items ? [items] : [];
+    if (!items.length) {
+      const code = j?.response?.header?.resultCode || '';
+      const msg = code === 'INFO-03'
+        ? '이 후보자는 5대 공약을 등록하지 않았거나 NEC에 아직 반영되지 않음.'
+        : '공약 데이터 없음.';
+      document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">${msg}<br><br><a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="color:var(--link)">정책공약마당 (NEC) →</a></div>`;
+      return;
+    }
+    // 첫 번째 아이템에 prmsCnt, prmsTitle1~10, prmsRealmName1~10, prmsCont1~10 형태
+    const c = items[0];
+    const cnt = parseInt(c.prmsCnt || '0', 10) || 5;
+    const promises = [];
+    for (let i = 1; i <= 10; i++) {
+      if (c['prmsTitle' + i] || c['prmsCont' + i]) {
+        promises.push({
+          ord: c['prmsOrd' + i] || i,
+          realm: c['prmsRealmName' + i] || '',
+          title: c['prmsTitle' + i] || '',
+          cont: c['prmsCont' + i] || '',
+        });
+      }
+    }
+    if (!promises.length) {
+      document.getElementById('promise-modal-body').innerHTML = '<div class="promise-loading">공약 내용이 비어있음.</div>';
+      return;
+    }
+    const pc = partyColor(party);
+    document.getElementById('promise-modal-body').innerHTML = promises.map((p, i) => `
+      <div class="promise-item" style="border-left-color:${pc}">
+        <div>
+          <span class="promise-num">${escapeHtml(p.ord)}</span>
+          ${p.realm ? `<span class="promise-realm">${escapeHtml(p.realm)}</span>` : ''}
+        </div>
+        <div class="promise-title">${escapeHtml(p.title)}</div>
+        ${p.cont ? `<div class="promise-cont">${escapeHtml(p.cont)}</div>` : ''}
+      </div>
+    `).join('') + `<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center">출처: 중앙선거관리위원회 (data.go.kr OpenAPI)</div>`;
+  } catch (e) {
+    document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">공약 fetch 실패: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
 // (legacy 호환 — localStorage 설정이 있으면 외부 URL 사용)
 const NEC_PROXY_KEY = 'politik:necProxyUrl';
 function getNecProxy() {
@@ -4672,9 +4852,34 @@ function setNecProxy(url) {
   } catch {}
 }
 
-// 2026 지선 후보자 캐시 + 로드 (광역단체장 sgTypecode=3)
-const CACHE_KEY_NEC_2026 = 'politik:nec2026Candidates:v2';
+// 2026 지선 후보자 — 광역단체장(3) + 기초단체장(4) + 교육감(11) 통합 fetch
+const CACHE_KEY_NEC_2026 = 'politik:nec2026Candidates:v3';
 const NEC_CACHE_TTL = 3 * 3600 * 1000; // 3시간
+
+async function fetchAllPages(sgTypecode) {
+  // 1페이지 (100건) 호출
+  const r1 = await necFetch('candidates', { sgId: '20260603', sgTypecode, numOfRows: '100', pageNo: '1' });
+  const body = r1?.response?.body || r1?.body || {};
+  const total = parseInt(body.totalCount || '0', 10);
+  let items = body?.items?.item || [];
+  if (!Array.isArray(items)) items = items ? [items] : [];
+  if (total <= items.length) return { items, total };
+  // 추가 페이지 병렬 fetch
+  const pages = Math.ceil(total / 100);
+  const restPromises = [];
+  for (let p = 2; p <= pages; p++) {
+    restPromises.push(necFetch('candidates', { sgId: '20260603', sgTypecode, numOfRows: '100', pageNo: String(p) })
+      .then(r => {
+        let it = r?.response?.body?.items?.item || r?.body?.items?.item || [];
+        if (!Array.isArray(it)) it = it ? [it] : [];
+        return it;
+      })
+      .catch(() => []));
+  }
+  const rest = await Promise.all(restPromises);
+  return { items: items.concat(...rest), total };
+}
+
 async function loadNec2026Governors() {
   if (state.nec2026Governors) return state.nec2026Governors;
   try {
@@ -4688,15 +4893,25 @@ async function loadNec2026Governors() {
     }
   } catch {}
   try {
-    const j = await necFetch('candidates', { sgId: '20260603', sgTypecode: '3', numOfRows: '500' });
-    let items = j?.response?.body?.items?.item || j?.body?.items?.item || j?.items?.item || j?.item || [];
-    if (!Array.isArray(items)) items = items ? [items] : [];
-    // resultCode 확인 (INFO-03 = 데이터 없음)
-    const code = j?.response?.header?.resultCode || j?.header?.resultCode || '';
-    state.nec2026Governors = { items, fetchedAt: Date.now(), resultCode: code };
+    // 광역단체장(3) + 기초단체장(4) + 교육감(11) 병렬 fetch
+    const [g, m, e] = await Promise.all([
+      fetchAllPages('3').catch(() => ({items:[], total:0})),
+      fetchAllPages('4').catch(() => ({items:[], total:0})),
+      fetchAllPages('11').catch(() => ({items:[], total:0})),
+    ]);
+    state.nec2026Governors = {
+      items: g.items,           // 광역단체장 (legacy 키 호환)
+      governors: g.items,
+      munis: m.items,
+      eduSupers: e.items,
+      totalGov: g.total,
+      totalMuni: m.total,
+      totalEdu: e.total,
+      fetchedAt: Date.now(),
+    };
     try { localStorage.setItem(CACHE_KEY_NEC_2026, JSON.stringify({ t: Date.now(), data: state.nec2026Governors })); } catch {}
   } catch (e) {
-    state.nec2026Governors = { _error: e.message, items: [] };
+    state.nec2026Governors = { _error: e.message, items: [], governors: [], munis: [], eduSupers: [] };
   }
   return state.nec2026Governors;
 }
@@ -4863,24 +5078,61 @@ function renderElection2026Page() {
             const links = regionLinks(r.name);
             const partyC = partyColor(r.incumbent_party);
             // 실시간 후보자 데이터 (NEC API)
-            const liveCands = (state.nec2026Governors?.items || []).filter(c => {
-              const sd = c.sdName || c.SD_NAME || '';
-              return sd === r.name || sd === r.name.replace('특별자치도','도').replace('특별자치시','시').replace('광역시','').replace('특별시','');
+            const necData = state.nec2026Governors || {};
+            // 광역단체장
+            const liveCands = (necData.governors || necData.items || []).filter(c => {
+              const sd = c.sdName || '';
+              return sd === r.name || sd.includes(r.name.replace('특별자치도','').replace('특별자치시','').replace('광역시','').replace('특별시','')) ||
+                     (sd === '전남광주통합특별시' && (r.name === '광주광역시' || r.name === '전라남도'));
             });
+            // 기초단체장 (해당 광역에 속한)
+            const liveMunis = (necData.munis || []).filter(c => {
+              const sd = c.sdName || '';
+              return sd === r.name || sd.includes(r.name.replace('특별자치도','').replace('특별자치시','').replace('광역시','').replace('특별시','')) ||
+                     (sd === '전남광주통합특별시' && (r.name === '광주광역시' || r.name === '전라남도'));
+            });
+            // 교육감 (해당 광역)
+            const liveEdu = (necData.eduSupers || []).filter(c => {
+              const sd = c.sdName || '';
+              return sd === r.name || sd.includes(r.name.replace('특별자치도','').replace('특별자치시','').replace('광역시','').replace('특별시','')) ||
+                     (sd === '전남광주통합특별시' && (r.name === '광주광역시' || r.name === '전라남도'));
+            });
+            // 기초단체장 시군구 그룹화
+            const muniGroups = {};
+            for (const m of liveMunis) {
+              const k = m.sggName || '?';
+              if (!muniGroups[k]) muniGroups[k] = [];
+              muniGroups[k].push(m);
+            }
             // 기호순 정렬
-            const sorted = liveCands.slice().sort((a, b) => parseInt(a.giho||'99',10) - parseInt(b.giho||'99',10));
-            const liveHtml = liveCands.length ? `
+            const sortByGiho = (a, b) => parseInt(a.giho||'99',10) - parseInt(b.giho||'99',10);
+            const sorted = liveCands.slice().sort(sortByGiho);
+            function candRowHtml(c, kind) {
+              const name = c.name || c.huboNm || '—';
+              const party = c.jdName || c.partyName || (kind==='edu'?'무소속(교육감)':'무소속');
+              const pc = partyColor(party);
+              const giho = c.giho || '';
+              const age = c.age ? `${c.age}세` : '';
+              const id = c.huboid || c.cnddtId || '';
+              const clickAttr = id ? `data-cnddt="${escapeHtml(id)}" data-sgtype="${kind==='gov'?'3':kind==='muni'?'4':'11'}" data-name="${escapeHtml(name)}" data-party="${escapeHtml(party)}" data-region="${escapeHtml((c.sdName||'')+(c.sggName&&c.sggName!==c.sdName?' '+c.sggName:''))}" style="cursor:pointer"` : '';
+              return `<div class="e26-cand-row e26-cand-click"${clickAttr}><span class="e26-cand-giho">${escapeHtml(giho)}</span><b>${escapeHtml(name)}</b> <em style="color:${pc}">${escapeHtml(party)}</em>${age ? `<span class="e26-cand-job">${age}</span>` : ''}</div>`;
+            }
+            const liveHtml = (liveCands.length || liveMunis.length || liveEdu.length) ? `
               <div class="e26-cands">
-                <div class="e26-cands-h">📋 등록 후보 ${liveCands.length}명</div>
-                ${sorted.slice(0, 8).map(c => {
-                  const name = c.name || c.huboNm || '—';
-                  const party = c.jdName || c.partyName || '무소속';
-                  const pc = partyColor(party);
-                  const giho = c.giho || '';
-                  const age = c.age ? `${c.age}세` : '';
-                  return `<div class="e26-cand-row"><span class="e26-cand-giho">${escapeHtml(giho)}</span><b>${escapeHtml(name)}</b> <em style="color:${pc}">${escapeHtml(party)}</em>${age ? `<span class="e26-cand-job">${age}</span>` : ''}</div>`;
-                }).join('')}
-                ${liveCands.length > 8 ? `<div class="e26-cand-more">…외 ${liveCands.length - 8}명</div>` : ''}
+                ${liveCands.length ? `
+                  <div class="e26-cands-h">🏛 광역단체장 ${liveCands.length}명</div>
+                  ${sorted.slice(0, 6).map(c => candRowHtml(c, 'gov')).join('')}
+                  ${liveCands.length > 6 ? `<div class="e26-cand-more">…외 ${liveCands.length - 6}명</div>` : ''}
+                ` : ''}
+                ${liveEdu.length ? `
+                  <div class="e26-cands-h" style="margin-top:8px">🎓 교육감 ${liveEdu.length}명</div>
+                  ${liveEdu.slice().sort(sortByGiho).slice(0, 4).map(c => candRowHtml(c, 'edu')).join('')}
+                  ${liveEdu.length > 4 ? `<div class="e26-cand-more">…외 ${liveEdu.length - 4}명</div>` : ''}
+                ` : ''}
+                ${Object.keys(muniGroups).length ? `
+                  <div class="e26-cands-h" style="margin-top:8px">🏘 기초단체장 — ${Object.keys(muniGroups).length}개 시군구 · 총 ${liveMunis.length}명</div>
+                  <div class="e26-cand-summary">${Object.keys(muniGroups).slice(0, 8).map(k => `<span class="e26-cand-sgg">${escapeHtml(k.replace(/^(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)\\s*/, ''))} <b>${muniGroups[k].length}</b></span>`).join('')}${Object.keys(muniGroups).length > 8 ? ` <span class="e26-cand-sgg">…외 ${Object.keys(muniGroups).length - 8}개</span>` : ''}</div>
+                ` : ''}
               </div>
             ` : '';
             return `
@@ -6905,6 +7157,18 @@ function route() {
     const renderE26 = () => {
       view.innerHTML = renderElection2026Page();
       document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      // 후보 클릭 → 5대 공약 모달
+      document.querySelectorAll('.e26-cand-click').forEach(el => {
+        el.addEventListener('click', () => {
+          openPromiseModal({
+            cnddtId: el.dataset.cnddt,
+            sgTypecode: el.dataset.sgtype,
+            name: el.dataset.name,
+            party: el.dataset.party,
+            region: el.dataset.region,
+          });
+        });
+      });
     };
     renderE26();
     if (filterBar) filterBar.style.display = 'none';
