@@ -4,8 +4,12 @@
 // 환경변수: LAW_GO_KR_OC (회원 ID, 무료 가입 후 발급)
 // 도메인 등록: open.law.go.kr 가입 시 politik-phi.vercel.app 등록
 //
-// GET /api/law?action=search&query=항공안전법
+// GET /api/law?action=search&query=항공안전법       (현행법령)
+// GET /api/law?action=search&query=...&target=prec  (판례)
+// GET /api/law?action=search&query=...&target=detc  (헌재 결정)
+// GET /api/law?action=search&query=...&target=expc  (법령해석례)
 // GET /api/law?action=detail&mst=259420
+// GET /api/law?action=detail&id=...&target=prec     (판례 상세)
 // GET /api/law?action=health
 
 const LAW_BASE = 'https://www.law.go.kr/DRF';
@@ -15,7 +19,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
 
   const oc = process.env.LAW_GO_KR_OC;
-  const { action = 'health', query, mst, target = 'law' } = req.query;
+  const { action = 'health', query, mst, id, target = 'law' } = req.query;
 
   if (action === 'health') {
     return res.status(200).json({
@@ -55,8 +59,17 @@ export default async function handler(req, res) {
     if (!query) return res.status(400).json({ error: 'query 파라미터 필요' });
     url = `${LAW_BASE}/lawSearch.do?OC=${oc}&target=${target}&query=${encodeURIComponent(query)}&type=JSON&display=20`;
   } else if (action === 'detail') {
-    if (!mst) return res.status(400).json({ error: 'mst 파라미터 필요 (법령 마스터번호)' });
-    url = `${LAW_BASE}/lawService.do?OC=${oc}&target=${target}&MST=${encodeURIComponent(mst)}&type=JSON`;
+    // 법령은 MST(마스터번호), 판례/헌재 결정은 ID 사용
+    if (target === 'law') {
+      if (!mst) return res.status(400).json({ error: 'mst 파라미터 필요 (법령 마스터번호)' });
+      url = `${LAW_BASE}/lawService.do?OC=${oc}&target=law&MST=${encodeURIComponent(mst)}&type=JSON`;
+    } else if (target === 'prec' || target === 'detc' || target === 'expc' || target === 'admrul' || target === 'ordin') {
+      const realId = id || mst;
+      if (!realId) return res.status(400).json({ error: 'id 파라미터 필요' });
+      url = `${LAW_BASE}/lawService.do?OC=${oc}&target=${target}&ID=${encodeURIComponent(realId)}&type=JSON`;
+    } else {
+      return res.status(400).json({ error: '지원하지 않는 target' });
+    }
   } else {
     return res.status(400).json({ error: 'action은 search 또는 detail' });
   }

@@ -16,8 +16,14 @@
     {
       "source": "/data/(.*\\.json)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=600, s-maxage=3600" },
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800" },
         { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/(.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp))",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=2592000, immutable" }
       ]
     },
     {

@@ -131,8 +131,14 @@
 }
 </script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://ko.wikipedia.org">
+<link rel="dns-prefetch" href="https://open.assembly.go.kr">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
+<link rel="preload" as="fetch" href="data/politicians.json?v=5" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <style>
   :root {
@@ -1955,6 +1961,41 @@
     font-size: 11.5px; font-weight: 800; color: var(--text);
     letter-spacing: 0.3px;
     margin-bottom: 8px;
+  }
+
+  /* 판례·헌재 결정 리스트 */
+  .bd-prec-list {
+    display: flex; flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .bd-prec-item {
+    display: block;
+    padding: 10px 12px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text) !important;
+    text-decoration: none !important;
+    transition: all 0.15s;
+  }
+  .bd-prec-item:hover {
+    border-color: var(--accent);
+    background: var(--bg-card);
+    transform: translateX(2px);
+  }
+  .bd-prec-name {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin-bottom: 4px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .bd-prec-meta {
+    display: flex; gap: 10px;
+    font-size: 11px; color: var(--dim);
+    flex-wrap: wrap;
+  }
+  .bd-prec-meta span {
+    display: inline-flex; align-items: center;
   }
 
   /* 트렌드 바 (홈 위) */
@@ -4080,9 +4121,12 @@ async function loadWikiOverrides() {
 // politicians.json — 국회 외 인물 + 정당 metadata
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
+// 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
+const POLITICIANS_VER = 5;
 async function loadExtraPoliticians() {
   try {
-    const r = await fetch('data/politicians.json?v=' + Date.now());
+    // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
+    const r = await fetch('data/politicians.json?v=' + POLITICIANS_VER);
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
@@ -6480,6 +6524,31 @@ async function loadLawByName(billName) {
   }
 }
 
+// 관련 판례/헌재 결정 검색 (target=prec or detc)
+async function loadLawRelated(billName, target = 'prec') {
+  const cleaned = billName
+    .replace(/일부개정법률안.*$/, '')
+    .replace(/전부개정법률안.*$/, '')
+    .replace(/제정법률안.*$/, '')
+    .replace(/폐지법률안.*$/, '')
+    .replace(/\(.*\)$/, '')
+    .replace(/\s*법률안\s*$/, '')
+    .trim();
+  if (!cleaned) return [];
+  try {
+    const r = await fetch(`/api/law?action=search&query=${encodeURIComponent(cleaned)}&target=${target}`);
+    if (!r.ok) return [];
+    const j = await r.json();
+    if (j.error) return [];
+    // 판례: { PrecSearch: { prec: [...] } }, 헌재: { DetcSearch: { detc: [...] } }
+    const root = j?.PrecSearch || j?.DetcSearch || j?.LawSearch || j;
+    const items = root?.prec || root?.detc || root?.PREC || root?.DETC || [];
+    return Array.isArray(items) ? items : (items ? [items] : []);
+  } catch {
+    return [];
+  }
+}
+
 async function loadBillWiki(billName) {
   // 법률명에서 "일부개정법률안" 등 접미사 제거
   const cleaned = billName
@@ -6746,6 +6815,22 @@ function renderBillDetailPage(billId) {
         <h3>⚖ 현행 법령 본문 (국가법령정보센터)</h3>
         <div id="bd-law-body">
           <div class="loading-inline"><span class="loading-spinner"></span>법령 검색 중…</div>
+        </div>
+      </div>
+
+      <!-- 관련 판례 (대법원) -->
+      <div class="bd-card" id="bd-prec-card">
+        <h3>⚖ 관련 판례 (대법원·하급심)</h3>
+        <div id="bd-prec-body">
+          <div class="loading-inline"><span class="loading-spinner"></span>판례 검색 중…</div>
+        </div>
+      </div>
+
+      <!-- 관련 헌재 결정 -->
+      <div class="bd-card" id="bd-detc-card">
+        <h3>📜 관련 헌법재판소 결정</h3>
+        <div id="bd-detc-body">
+          <div class="loading-inline"><span class="loading-spinner"></span>헌재 결정 검색 중…</div>
         </div>
       </div>
 
@@ -8350,6 +8435,75 @@ function route() {
 
         html += `<a class="bd-wiki-link" href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(lawName)}" target="_blank" rel="noopener">국가법령정보센터 전체 →</a>`;
         body.innerHTML = html;
+      });
+      // 관련 판례 (target=prec)
+      loadLawRelated(bill.BILL_NAME || '', 'prec').then(items => {
+        const body = document.getElementById('bd-prec-body');
+        if (!body || location.hash !== hash) return;
+        if (!items || !items.length) {
+          body.innerHTML = `<div class="bd-content-empty">관련 판례 미발견.<br><a href="https://www.law.go.kr/precSc.do?menuId=7&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener" style="color:var(--link)">대법원 판례 직접 검색 →</a></div>`;
+          return;
+        }
+        let html = `<div class="bd-prec-list">`;
+        items.slice(0, 6).forEach(p => {
+          const caseName = p.사건명 || p.판례명 || p.사건명_원문 || '판례';
+          const caseNo = p.사건번호 || '';
+          const court = p.법원명 || '';
+          const date = p.선고일자 || '';
+          const id = p.판례일련번호 || '';
+          const url = id ? `https://www.law.go.kr/precInfoP.do?precSeq=${id}` : `https://www.law.go.kr/precSc.do?menuId=7&query=${encodeURIComponent(caseName)}`;
+          html += `
+            <a class="bd-prec-item" href="${url}" target="_blank" rel="noopener">
+              <div class="bd-prec-name">${escapeHtml(caseName)}</div>
+              <div class="bd-prec-meta">
+                ${court ? `<span>${escapeHtml(court)}</span>` : ''}
+                ${caseNo ? `<span>${escapeHtml(caseNo)}</span>` : ''}
+                ${date ? `<span>${escapeHtml(String(date))}</span>` : ''}
+              </div>
+            </a>`;
+        });
+        html += `</div>`;
+        if (items.length > 6) html += `<div class="bd-content-empty">…외 ${items.length - 6}건</div>`;
+        html += `<a class="bd-wiki-link" href="https://www.law.go.kr/precSc.do?menuId=7&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener">대법원 판례 전체 →</a>`;
+        body.innerHTML = html;
+      }).catch(() => {
+        const body = document.getElementById('bd-prec-body');
+        if (body) body.innerHTML = `<div class="bd-content-empty">판례 검색 실패.</div>`;
+      });
+      // 헌법재판소 결정 (target=detc)
+      loadLawRelated(bill.BILL_NAME || '', 'detc').then(items => {
+        const body = document.getElementById('bd-detc-body');
+        if (!body || location.hash !== hash) return;
+        if (!items || !items.length) {
+          body.innerHTML = `<div class="bd-content-empty">관련 헌재 결정 미발견.<br><a href="https://www.law.go.kr/conSc.do?menuId=9&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener" style="color:var(--link)">헌법재판소 결정문 직접 검색 →</a></div>`;
+          return;
+        }
+        let html = `<div class="bd-prec-list">`;
+        items.slice(0, 4).forEach(p => {
+          const caseName = p.사건명 || '헌재 결정';
+          const caseNo = p.사건번호 || '';
+          const result = p.결정요지 || p.결정유형 || '';
+          const date = p.선고일자 || p.종국일자 || '';
+          const id = p.결정일련번호 || p.판례일련번호 || '';
+          const url = id ? `https://www.law.go.kr/detcInfoP.do?detcSeq=${id}` : `https://www.law.go.kr/conSc.do?menuId=9&query=${encodeURIComponent(caseName)}`;
+          html += `
+            <a class="bd-prec-item" href="${url}" target="_blank" rel="noopener">
+              <div class="bd-prec-name">${escapeHtml(caseName)}</div>
+              <div class="bd-prec-meta">
+                <span style="color:var(--ok)">헌법재판소</span>
+                ${caseNo ? `<span>${escapeHtml(caseNo)}</span>` : ''}
+                ${date ? `<span>${escapeHtml(String(date))}</span>` : ''}
+                ${result ? `<span>${escapeHtml(String(result).slice(0,30))}</span>` : ''}
+              </div>
+            </a>`;
+        });
+        html += `</div>`;
+        if (items.length > 4) html += `<div class="bd-content-empty">…외 ${items.length - 4}건</div>`;
+        html += `<a class="bd-wiki-link" href="https://www.law.go.kr/conSc.do?menuId=9&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener">헌법재판소 결정문 전체 →</a>`;
+        body.innerHTML = html;
+      }).catch(() => {
+        const body = document.getElementById('bd-detc-body');
+        if (body) body.innerHTML = `<div class="bd-content-empty">헌재 결정 검색 실패.</div>`;
       });
       loadBillWiki(bill.BILL_NAME || '').then(wiki => {
         const body = document.getElementById('bd-wiki-body');
