@@ -2205,6 +2205,28 @@
     text-align: center; padding: 30px;
     color: var(--dim); font-size: 13px;
   }
+  /* 9회 지선 정당 통계 */
+  .e26-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .e26-stat-mini {
+    background: var(--bg-elev);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .e26-stat-num {
+    font-size: 24px; font-weight: 800;
+    color: var(--text); line-height: 1;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 4px;
+  }
+  .e26-stat-lbl {
+    font-size: 11px; color: var(--text-2);
+    font-weight: 600;
+  }
   .e26-cand-row em {
     font-style: normal; font-weight: 700;
     font-size: 10px;
@@ -5032,6 +5054,46 @@ function renderElection2026Page() {
           <div class="kpi-trend">${escapeHtml(ev.campaign_period.split('(')[0].trim())}</div>
         </div>
       </div>
+
+      ${(() => {
+        // 정당별 후보자 분포 (실시간 NEC 데이터)
+        const nec = state.nec2026Governors;
+        if (!nec || nec._error || !(nec.governors||[]).length) return '';
+        const all = [
+          ...(nec.governors||[]).map(c => ({...c, kind:'광역단체장'})),
+          ...(nec.munis||[]).map(c => ({...c, kind:'기초단체장'})),
+          ...(nec.eduSupers||[]).map(c => ({...c, kind:'교육감'})),
+        ];
+        const byParty = {};
+        for (const c of all) {
+          const p = c.jdName || '무소속';
+          byParty[p] = (byParty[p] || 0) + 1;
+        }
+        const sorted = Object.entries(byParty).sort((a,b)=>b[1]-a[1]);
+        const totalReg = nec.totalGov + nec.totalMuni + nec.totalEdu;
+        return `
+          <div class="e26-section">
+            <h2>📊 9회 지선 등록 후보자 ${totalReg.toLocaleString()}명 — 정당별 분포</h2>
+            <div class="e26-stats-grid">
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalGov||0).toLocaleString()}</div><div class="e26-stat-lbl">광역단체장 후보</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalMuni||0).toLocaleString()}</div><div class="e26-stat-lbl">기초단체장 후보</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalEdu||0).toLocaleString()}</div><div class="e26-stat-lbl">교육감 후보 (무지명)</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${sorted.length}</div><div class="e26-stat-lbl">정당·무소속 종류</div></div>
+            </div>
+            <div class="party-bars" style="margin-top:14px">
+              ${sorted.slice(0, 10).map(([p, n]) => `
+                <div class="party-bar-row party-link" data-party="${escapeHtml(p)}">
+                  <div class="pb-name"><span class="pb-dot" style="background:${partyColor(p)}"></span>${escapeHtml(p)}</div>
+                  <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(n/totalReg*100).toFixed(1)}%; background:${partyColor(p)}"></div></div>
+                  <div class="pb-count">${n}</div>
+                  <div class="pb-pct">${(n/totalReg*100).toFixed(1)}%</div>
+                </div>
+              `).join('')}
+            </div>
+            <div style="margin-top:10px;font-size:11px;color:var(--dim);text-align:center">출처: 중앙선거관리위원회 OpenAPI (data.go.kr) · 카드 후보 클릭 → 5대 공약</div>
+          </div>
+        `;
+      })()}
 
       <!-- 7장 투표지 안내 -->
       <div class="e26-section">
