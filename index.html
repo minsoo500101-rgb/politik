@@ -1665,6 +1665,134 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
   }
+  /* 법안 상세 페이지 */
+  .bill-detail {
+    max-width: 920px; margin: 0 auto; padding: 8px 24px 60px;
+  }
+  .bd-hero {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px 20px;
+    margin-bottom: 14px;
+    padding-left: 22px;
+  }
+  .bd-meta-row {
+    display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+    font-size: 12px; color: var(--text-2);
+    margin-bottom: 10px;
+  }
+  .bd-meta-row b { color: var(--text); font-weight: 700; margin-right: 4px; }
+  .bd-num {
+    font-family: 'Inter', monospace;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .bd-title {
+    font-size: 22px; font-weight: 800; color: var(--text);
+    line-height: 1.3; margin: 8px 0 14px;
+    letter-spacing: -0.3px;
+  }
+  .bd-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 12px;
+  }
+  .bd-card h3 {
+    font-size: 13px; font-weight: 800; color: var(--text);
+    margin-bottom: 12px;
+    letter-spacing: -0.2px;
+  }
+  .loading-inline {
+    padding: 16px 0; text-align: center;
+    color: var(--dim); font-size: 12px;
+  }
+  /* 표결 */
+  .bd-vote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .bd-vote {
+    background: var(--bg-elev);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .bd-vote b { font-size: 22px; font-weight: 800; display: block; line-height: 1; }
+  .bd-vote span { font-size: 11px; color: var(--text-2); }
+  .bd-vote-y b { color: var(--ok); }
+  .bd-vote-n b { color: #dc2626; }
+  .bd-vote-bl b { color: var(--text-2); }
+  .bd-vote-t b { color: var(--text); font-size: 16px; }
+  .bd-vote-bar {
+    height: 12px; border-radius: 6px;
+    background: var(--bg-elev);
+    display: flex; overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .bd-vote-bar-y { background: var(--ok); }
+  .bd-vote-bar-n { background: #dc2626; }
+  .bd-vote-bar-bl { background: var(--text-2); opacity: 0.5; }
+  .bd-vote-pct {
+    text-align: center; font-size: 13px; font-weight: 700;
+    color: var(--ok);
+    font-variant-numeric: tabular-nums;
+  }
+  /* 본문 */
+  .bd-content-summary {
+    font-size: 13.5px; line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    padding: 12px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    border-left: 3px solid var(--text-2);
+  }
+  /* 위키 */
+  .bd-wiki-thumb {
+    float: right; margin: 0 0 10px 14px;
+    width: 120px; border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .bd-wiki-extract {
+    font-size: 13px; line-height: 1.7;
+    color: var(--text);
+  }
+  .bd-wiki-link {
+    display: inline-block; margin-top: 10px;
+    color: var(--link); font-size: 12px; font-weight: 600;
+  }
+  /* 링크 카드 */
+  .bd-link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+  }
+  .bd-link {
+    display: block;
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 12.5px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .bd-link:hover {
+    background: var(--text); color: var(--bg-card);
+    text-decoration: none;
+  }
+  .bd-content-empty {
+    padding: 14px;
+    color: var(--dim);
+    font-size: 12.5px;
+    text-align: center;
+  }
+
   /* 5대 데이터 영역 카드 그리드 */
   .domain-grid {
     display: grid;
@@ -6055,7 +6183,8 @@ function applyBillsFilter(bills) {
 function patchRowHTML(b, freshIdx = -1) {
   const info = getBillProposerInfo(b);
   const topic = getBillTopic(b);
-  const link = b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '');
+  // 내부 detail 페이지 (이전: likms 외부 링크)
+  const link = b.BILL_ID ? `#/bill/${encodeURIComponent(b.BILL_ID)}` : '';
   const partyColorCss = info.party ? partyColor(info.party) : 'var(--text-2)';
   const proposerHtml = info.kind === 'gov'
     ? `<span class="patch-by-gov">⚖ 정부</span>`
@@ -6084,7 +6213,7 @@ function patchRowHTML(b, freshIdx = -1) {
     }
   }
   return `
-    <div class="patch-row${isFresh ? ' patch-fresh' : ''}"${link ? ` onclick="window.open('${link}','_blank','noopener')"` : ''} style="${link ? 'cursor:pointer' : ''}; border-left-color:${partyColorCss}">
+    <div class="patch-row${isFresh ? ' patch-fresh' : ''}"${link ? ` onclick="location.hash='${link}'"` : ''} style="${link ? 'cursor:pointer' : ''}; border-left-color:${partyColorCss}">
       <div class="patch-meta">
         <span class="patch-tag ${resultClass}">${resultLabel}</span>
         <span class="patch-topic" style="color:${topic.color}; border-color:${topic.color}" title="${escapeHtml(topic.label)}">${topic.icon} ${escapeHtml(topic.label)}</span>
@@ -6100,6 +6229,135 @@ function patchRowHTML(b, freshIdx = -1) {
         ${ynRatio}
       </div>
     </div>`;
+}
+
+// 법안 상세 페이지 — /bill/{billId}
+// 국회 API에서 SUMMARY/제안이유 fetch + 위키 검색 + 외부 링크
+async function loadBillDetail(billId) {
+  try {
+    const r = await fetch(`/api/bill?billId=${encodeURIComponent(billId)}`);
+    if (!r.ok) throw new Error('API ' + r.status);
+    return await r.json();
+  } catch (e) {
+    return { _error: e.message };
+  }
+}
+async function loadBillWiki(billName) {
+  // 법률명에서 "일부개정법률안" 등 접미사 제거
+  const cleaned = billName
+    .replace(/일부개정법률안.*$/, '')
+    .replace(/전부개정법률안.*$/, '')
+    .replace(/제정법률안.*$/, '')
+    .replace(/\(.*\)$/, '')
+    .replace(/\s*법률안\s*$/, '법')
+    .trim();
+  try {
+    const r = await fetch(`https://ko.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleaned)}`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (j.type === 'disambiguation' || !j.extract) return null;
+    return j;
+  } catch {
+    return null;
+  }
+}
+
+function renderBillDetailPage(billId) {
+  // state에서 기본 데이터
+  const bill = state.bills?.find(b => b.BILL_ID === billId);
+  const proposer = state.billProposers?.[billId];
+  if (!bill) {
+    return `
+      <div class="group-back" id="back-bills">← 패치 노트</div>
+      <div class="loading"><span class="loading-spinner"></span>법안 데이터 로드 중…</div>
+    `;
+  }
+  const info = getBillProposerInfo(bill);
+  const topic = getBillTopic(bill);
+  const partyC = info.party ? partyColor(info.party) : 'var(--text-2)';
+  const result = bill.PROC_RESULT_CD || '—';
+  const resultColor = /가결/.test(result) ? 'var(--ok)' : result === '부결' ? '#dc2626' : 'var(--text-2)';
+  const y = parseInt(bill.YES_TCNT,10) || 0;
+  const n = parseInt(bill.NO_TCNT,10) || 0;
+  const bl = parseInt(bill.BLANK_TCNT,10) || 0;
+  const tot = y + n + bl;
+  const likmsUrl = bill.LINK_URL || `https://likms.assembly.go.kr/bill/billDetail.do?billId=${billId}`;
+  const proposeDt = proposer?.proposeDt || '';
+  const procDt = bill.PROC_DT || '';
+  const days = proposeDt && procDt ? Math.round((new Date(procDt) - new Date(proposeDt))/86400000) : null;
+  // 네이버·구글 뉴스 검색 링크
+  const newsQ = encodeURIComponent(bill.BILL_NAME?.replace(/\(.*\)$/,'').trim() || '');
+  const naverNews = `https://search.naver.com/search.naver?where=news&query=${newsQ}`;
+  const googleNews = `https://www.google.com/search?q=${newsQ}&tbm=nws`;
+
+  return `
+    <div class="group-back" id="back-bills">← 패치 노트</div>
+    <div class="bill-detail">
+      <div class="bd-hero" style="border-left:6px solid ${partyC}">
+        <div class="bd-meta-row">
+          <span class="patch-tag" style="background:${resultColor}">${escapeHtml(result)}</span>
+          <span class="patch-topic" style="color:${topic.color};border-color:${topic.color}">${topic.icon} ${escapeHtml(topic.label)}</span>
+          <span class="bd-num">#${escapeHtml(bill.BILL_NO||'—')}</span>
+          ${days != null ? `<span class="patch-speed">⏱ 처리 ${days < 30 ? `<b>${days}일</b>` : days < 365 ? `${days}일` : `${(days/365).toFixed(1)}년`}</span>` : ''}
+        </div>
+        <h1 class="bd-title">${escapeHtml(bill.BILL_NAME || '—')}</h1>
+        <div class="bd-meta-row">
+          <span><b>위원회</b> ${escapeHtml(bill.CURR_COMMITTEE || '—')}</span>
+          <span><b>처리일</b> ${escapeHtml(procDt.slice(0,10))}</span>
+          ${proposeDt ? `<span><b>발의일</b> ${escapeHtml(proposeDt.slice(0,10))}</span>` : ''}
+          <span><b>의안 종류</b> ${escapeHtml(bill.BILL_KIND_CD || '—')}</span>
+        </div>
+        <div class="bd-meta-row" style="margin-top:6px">
+          <span><b>발의</b> ${info.kind === 'gov' ? '⚖ 정부' : info.kind === 'chair' ? `🏢 ${escapeHtml(info.name)}` : info.kind === 'mp' ? `👤 ${escapeHtml(info.name)}${info.count > 1 ? ` 외 ${info.count-1}명` : ''}` : '—'}${info.party ? ` <em style="color:${partyC};font-style:normal;font-weight:700;padding:1px 6px;border-radius:6px;background:var(--bg-card);font-size:11px;margin-left:4px">${escapeHtml(info.party)}</em>` : ''}</span>
+        </div>
+      </div>
+
+      <!-- 표결 결과 -->
+      ${y > 0 ? `
+        <div class="bd-card">
+          <h3>📊 표결 결과</h3>
+          <div class="bd-vote-grid">
+            <div class="bd-vote bd-vote-y"><b>${y}</b><span>찬성</span></div>
+            <div class="bd-vote bd-vote-n"><b>${n}</b><span>반대</span></div>
+            <div class="bd-vote bd-vote-bl"><b>${bl}</b><span>기권</span></div>
+            <div class="bd-vote bd-vote-t"><b>${tot}/${bill.MEMBER_TCNT}</b><span>참여 / 재적</span></div>
+          </div>
+          <div class="bd-vote-bar">
+            <div class="bd-vote-bar-y" style="width:${(y/tot*100).toFixed(1)}%"></div>
+            <div class="bd-vote-bar-n" style="width:${(n/tot*100).toFixed(1)}%"></div>
+            <div class="bd-vote-bar-bl" style="width:${(bl/tot*100).toFixed(1)}%"></div>
+          </div>
+          <div class="bd-vote-pct">${(y/tot*100).toFixed(1)}% 찬성</div>
+        </div>` : ''}
+
+      <!-- 법안 내용 (API 로드 중) -->
+      <div class="bd-card" id="bd-content-card">
+        <h3>📜 법안 내용 (제안이유·주요 내용)</h3>
+        <div id="bd-content-body">
+          <div class="loading-inline"><span class="loading-spinner"></span>국회 API에서 법안 본문 fetch 중…</div>
+        </div>
+      </div>
+
+      <!-- 위키 (사회적 맥락) -->
+      <div class="bd-card" id="bd-wiki-card">
+        <h3>📖 사회적 맥락 (위키피디아)</h3>
+        <div id="bd-wiki-body">
+          <div class="loading-inline"><span class="loading-spinner"></span>위키피디아 검색 중…</div>
+        </div>
+      </div>
+
+      <!-- 외부 링크 -->
+      <div class="bd-card">
+        <h3>🔗 외부 자료</h3>
+        <div class="bd-link-grid">
+          <a class="bd-link" href="${likmsUrl}" target="_blank" rel="noopener">📑 국회 의안정보시스템 (원문 PDF)</a>
+          <a class="bd-link" href="${naverNews}" target="_blank" rel="noopener">📰 네이버 뉴스 검색</a>
+          <a class="bd-link" href="${googleNews}" target="_blank" rel="noopener">🔍 구글 뉴스 검색</a>
+          <a class="bd-link" href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener">⚖ 국가법령정보센터</a>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderBillsPage() {
@@ -7497,6 +7755,43 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
+  // 법안 상세 (/bill/{billId})
+  const bMatch = hash.match(/^#\/bill\/(.+)$/);
+  if (bMatch) {
+    const billId = decodeURIComponent(bMatch[1]);
+    view.innerHTML = renderBillDetailPage(billId);
+    document.getElementById('back-bills')?.addEventListener('click', () => { location.hash = '#/bills'; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // 비동기 fetch: 법안 본문 + 위키
+    const bill = state.bills?.find(b => b.BILL_ID === billId);
+    if (bill) {
+      loadBillDetail(billId).then(data => {
+        const body = document.getElementById('bd-content-body');
+        if (!body || location.hash !== hash) return;
+        const summary = data?.bill?.SUMMARY || data?.bill?.PROPOSER_REASON || '';
+        if (summary) {
+          body.innerHTML = `<div class="bd-content-summary">${escapeHtml(summary)}</div>`;
+        } else {
+          body.innerHTML = `<div class="bd-content-empty">국회 OPEN API에 본문 요약이 등록되지 않은 의안입니다. 아래 '국회 의안정보시스템' 링크에서 원문 PDF 확인 가능.</div>`;
+        }
+      });
+      loadBillWiki(bill.BILL_NAME || '').then(wiki => {
+        const body = document.getElementById('bd-wiki-body');
+        if (!body || location.hash !== hash) return;
+        if (wiki && wiki.extract) {
+          body.innerHTML = `
+            ${wiki.thumbnail ? `<img class="bd-wiki-thumb" src="${escapeHtml(wiki.thumbnail.source)}" alt="">` : ''}
+            <div class="bd-wiki-extract">${escapeHtml(wiki.extract)}</div>
+            <a class="bd-wiki-link" href="${escapeHtml(wiki.content_urls?.desktop?.page || ('https://ko.wikipedia.org/wiki/' + encodeURIComponent(wiki.title)))}" target="_blank" rel="noopener">한국어 위키 전체 →</a>
+          `;
+        } else {
+          body.innerHTML = `<div class="bd-content-empty">관련 위키 항목 없음. 외부 자료 링크 확인.</div>`;
+        }
+      });
+    }
+    return;
+  }
   // 제9회 지방선거 (진행 중)
   if (hash === '#/election2026') {
     const renderE26 = () => {
