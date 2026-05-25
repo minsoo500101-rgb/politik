@@ -98,7 +98,7 @@ export default async function handler(req, res) {
   try {
     const r = await fetch(targetUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; KoreaPatchNotes/1.0; +https://politik-phi.vercel.app)',
+        'User-Agent': 'Mozilla/5.0 (compatible; KoreaPatchNotes/1.0; +https://patchkr.com)',
         'Accept': 'application/json, application/xml, */*',
       },
     });

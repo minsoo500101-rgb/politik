@@ -1,6 +1,6 @@
 # 📋 대한민국 패치 노트 (Korea Patch Notes)
 
-[**🔗 라이브 사이트 →**](https://politik-phi.vercel.app/)
+[**🔗 라이브 사이트 →**](https://patchkr.com/)
 미러: [GH Pages](https://minsoo500101-rgb.github.io/politik/)
 
 > **한국의 모든 것 한 곳에** — 정치·법안·선거·인물·역사를 데이터로.
@@ -103,7 +103,7 @@ wrangler deploy  # ← 30초
 
 1. https://open.law.go.kr 무료 가입
 2. "내 정보" → "API 신청" → **회원ID (OC)** 확인
-3. "API 사용 서버 등록" → `politik-phi.vercel.app` 도메인 추가
+3. "API 사용 서버 등록" → `patchkr.com` 도메인 추가
 4. Vercel 환경변수 설정:
    ```bash
    echo "YOUR_OC" | vercel env add LAW_GO_KR_OC production

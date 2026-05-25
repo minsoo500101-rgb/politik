@@ -50,5 +50,13 @@
   ],
   "rewrites": [
     { "source": "/((?!data|.*\\..*).*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "politik-phi.vercel.app" }],
+      "destination": "https://patchkr.com/$1",
+      "permanent": true
+    }
   ]
 }
