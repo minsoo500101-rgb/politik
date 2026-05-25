@@ -1665,6 +1665,108 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
   }
+  /* 5대 데이터 영역 카드 그리드 */
+  .domain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .domain-card {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 18px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .domain-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--text-2);
+    opacity: 0.4; transition: opacity 0.18s, width 0.18s;
+  }
+  .domain-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--text);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  }
+  .domain-card:hover::before { width: 6px; opacity: 1; }
+  [data-theme="dark"] .domain-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.5); }
+  .domain-icon {
+    font-size: 32px; line-height: 1; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .domain-body { flex: 1; min-width: 0; }
+  .domain-h {
+    font-size: 16px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.3px; margin-bottom: 4px;
+  }
+  .domain-meta {
+    font-size: 11.5px; color: var(--text-2);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .domain-stats {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .domain-stats span:first-child {
+    font-size: 18px; font-weight: 800; color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .domain-stats span:first-child b { font-size: 22px; }
+  .domain-stats span:last-child {
+    font-size: 10.5px; color: var(--dim);
+  }
+  /* 영역별 액센트 */
+  .domain-politics::before  { background: #6366f1; }
+  .domain-bills::before     { background: #10b981; }
+  .domain-elections::before { background: #ef4444; }
+  .domain-people::before    { background: #f97316; }
+  .domain-history::before   { background: #a16207; }
+
+  /* 핵심 인사이트 (2칸) */
+  .insight-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .insight-half { padding: 16px 18px; }
+  @media (max-width: 700px) {
+    .insight-row { grid-template-columns: 1fr; }
+  }
+
+  /* 보조 도구 (작은 alt-link) */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .tool-card {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-2);
+    font-size: 12.5px; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .tool-card:hover {
+    color: var(--text);
+    border-color: var(--text);
+    background: var(--bg-elev);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  .tool-card span { font-size: 16px; }
+
   /* 홈 9회 지선 LIVE 카드 */
   .home-e26-card {
     display: grid;
@@ -6597,12 +6699,8 @@ function renderHome() {
         </div>
         <div class="dash-hero-r">
           <a class="hero-btn hero-btn-live" href="#/election2026">🔴  9회 지선 LIVE</a>
-          <a class="hero-btn" href="#/bills">📜  의안</a>
-          <a class="hero-btn" href="#/committees">🏢  위원회</a>
+          <a class="hero-btn" href="#/bills">📜  법안</a>
           <a class="hero-btn" href="#/map">🗺  지도</a>
-          <a class="hero-btn" href="#/elections">🗳  역대 지선</a>
-          <a class="hero-btn" href="#/world">🌐  국제비교</a>
-          <a class="hero-btn" href="#/history/parties">📅  정당사</a>
         </div>
       </div>
 
@@ -6658,40 +6756,78 @@ function renderHome() {
         `}
       </div>
 
-      <div class="dash-grid">
-        <!-- KPI 행 -->
-        <div class="dash-card col-3 kpi">
-          <div class="kpi-label">전체 등록</div>
-          <div class="kpi-num">${totalCount.toLocaleString()}</div>
-          <div class="kpi-trend">현직 + 역대 직접 등록 · 위키 lazy ~5천 추가</div>
-        </div>
-        <div class="dash-card col-3 kpi">
-          <div class="kpi-label">22대 국회</div>
-          <div class="kpi-num">${mps.length}<span class="unit">/300</span></div>
-          <div class="kpi-trend">민주 ${byParty.get('더불어민주당')||0} · 국힘 ${byParty.get('국민의힘')||0} · 외 ${mps.length-(byParty.get('더불어민주당')||0)-(byParty.get('국민의힘')||0)}</div>
-        </div>
-        <div class="dash-card col-3 kpi">
-          <div class="kpi-label">22대 평균 나이</div>
-          <div class="kpi-num">${avgAge}<span class="unit">세</span></div>
-          <div class="kpi-trend">여성 ${female}명 (${femalePct}%)</div>
-        </div>
-        <div class="dash-card col-3 kpi">
-          <div class="kpi-label">지방정부</div>
-          <div class="kpi-num">${locals.length}</div>
-          <div class="kpi-trend">광역 17 · 기초 226 · 의장 17 · 교육감 17</div>
+      <!-- 5대 데이터 영역 — 큰 카드 그리드 -->
+      <div class="domain-grid">
+        <div class="domain-card domain-politics" onclick="location.hash='#/group/executive'">
+          <div class="domain-icon">🏛</div>
+          <div class="domain-body">
+            <div class="domain-h">정치 (Politics)</div>
+            <div class="domain-meta">대통령 · 국무총리 · 17부처 · 외청 · 헌법기관</div>
+            <div class="domain-stats">
+              <span><b>${(groups.executive||[]).length}</b>명</span>
+              <span>장관 17 · 차관 26 · 외청 23 · 대통령실 4</span>
+            </div>
+          </div>
         </div>
 
-        <!-- 4부 박스 -->
-        ${groupBoxes.replace(/dash-card grpbox/g, 'dash-card col-3 grpbox')}
+        <div class="domain-card domain-bills" onclick="location.hash='#/bills'">
+          <div class="domain-icon">📜</div>
+          <div class="domain-body">
+            <div class="domain-h">법안 (Bills)</div>
+            <div class="domain-meta">22대 국회 본회의 통과 의안 · 15개 분야</div>
+            <div class="domain-stats">
+              <span><b>${(state.bills?.length||0).toLocaleString()}</b>건</span>
+              <span>발의자 17,224 매핑 · 통과 속도</span>
+            </div>
+          </div>
+        </div>
 
-        <!-- 정당별 의석 (큰 카드) -->
-        <div class="dash-card col-6 chart-card">
+        <div class="domain-card domain-elections" onclick="location.hash='#/election2026'">
+          <div class="domain-icon">🗳</div>
+          <div class="domain-body">
+            <div class="domain-h">선거 (Elections)</div>
+            <div class="domain-meta">9회 지방선거 · 697명 후보자 실시간 · 역대 결과</div>
+            <div class="domain-stats">
+              <span><b>${state.nec2026Governors ? ((state.nec2026Governors.totalGov||0)+(state.nec2026Governors.totalMuni||0)+(state.nec2026Governors.totalEdu||0)).toLocaleString() : '697'}</b>명</span>
+              <span>광역 · 기초 · 교육감 + 5대 공약</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="domain-card domain-people" onclick="location.hash='#/group/legislative'">
+          <div class="domain-icon">👥</div>
+          <div class="domain-body">
+            <div class="domain-h">인물 (People)</div>
+            <div class="domain-meta">22대 의원 · 단체장 · 사법부 · 검찰 + 역대</div>
+            <div class="domain-stats">
+              <span><b>${totalCount.toLocaleString()}</b>명</span>
+              <span>국회 ${mps.length} · 지방 ${locals.length} · 사법 ${(groups.judicial||[]).length}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="domain-card domain-history" onclick="location.hash='#/history/parties'">
+          <div class="domain-icon">📚</div>
+          <div class="domain-body">
+            <div class="domain-h">역사 (History)</div>
+            <div class="domain-meta">정당사 1948~ · 역대 대통령 · 총리 · 광역단체장</div>
+            <div class="domain-stats">
+              <span><b>${(groups.historical||[]).length}</b>명</span>
+              <span>정당 45 · 대통령 13 · 총리 12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 핵심 인사이트 (정당 막대 + 지방 분포) 한 줄로 -->
+      <div class="insight-row">
+        <div class="dash-card chart-card insight-half">
           <div class="chart-head">
             <h3>22대 국회 정당별 의석</h3>
-            <a href="#/group/legislative" class="chart-link">전체 보기 →</a>
+            <a href="#/group/legislative" class="chart-link">전체 →</a>
           </div>
           <div class="party-bars">
-            ${partyArr.map(p => `
+            ${partyArr.slice(0, 6).map(p => `
               <div class="party-bar-row party-link" data-party="${escapeHtml(p.name)}">
                 <div class="pb-name"><span class="pb-dot" style="background:${p.color}"></span>${escapeHtml(p.name)}</div>
                 <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(p.count/partyMax*100).toFixed(1)}%; background:${p.color}"></div></div>
@@ -6700,25 +6836,13 @@ function renderHome() {
               </div>`).join('')}
           </div>
         </div>
-
-        <!-- 선수 분포 -->
-        <div class="dash-card col-3 chart-card">
-          <div class="chart-head"><h3>선수 분포</h3></div>
-          <div class="mini-bars">
-            ${termArr.map(t => `
-              <div class="mini-bar-row">
-                <div class="mb-lbl">${escapeHtml(t.t)}</div>
-                <div class="mb-wrap"><div class="mb-bar" style="width:${(t.c/termMax*100).toFixed(1)}%"></div></div>
-                <div class="mb-cnt">${t.c}</div>
-              </div>`).join('')}
+        <div class="dash-card chart-card insight-half">
+          <div class="chart-head">
+            <h3>지방정부 정당 분포</h3>
+            <a href="#/map" class="chart-link">지도 →</a>
           </div>
-        </div>
-
-        <!-- 지방 정당 분포 (mini list) -->
-        <div class="dash-card col-3 chart-card">
-          <div class="chart-head"><h3>지방정부 정당</h3></div>
           <div class="mini-list">
-            ${locArr.slice(0,6).map(p => `
+            ${locArr.slice(0, 6).map(p => `
               <div class="ml-row party-link" data-party="${escapeHtml(p.name)}">
                 <span class="ml-dot" style="background:${p.color}"></span>
                 <span class="ml-name">${escapeHtml(p.name)}</span>
@@ -6726,59 +6850,15 @@ function renderHome() {
               </div>`).join('')}
           </div>
         </div>
+      </div>
 
-        <!-- 지도 진입 큰 카드 -->
-        <div class="dash-card col-8 chart-card cta-card" onclick="location.hash='#/map'">
-          <div class="chart-head">
-            <h3>🗺 정치 분포 지도</h3>
-            <span class="chart-link">열기 →</span>
-          </div>
-          <div class="cta-desc">17개 시·도 + 250개 시·군·구 정당색 · 호버 시 단체장 표시 · 줌·드래그 가능</div>
-          <div class="cta-mini">광역 17명 · 기초 226명 · 광역의회 의장 17명 · 교육감 17명 정당색 시각화</div>
-        </div>
-
-        <!-- 사법 카드 -->
-        <div class="dash-card col-4 chart-card">
-          <div class="chart-head"><h3>⚖ 사법부</h3><a href="#/group/judicial" class="chart-link">→</a></div>
-          <div class="judicial-mini">
-            <div class="jm-row"><span>대법원장</span><b>${(groups.judicial||[]).find(m => /대법원장/.test(m.role || ''))?.HG_NM || '—'}</b></div>
-            <div class="jm-row"><span>대법관</span><b>${(groups.judicial||[]).filter(m => m.ELECT_GBN_NM === '대법관').length}명</b></div>
-            <div class="jm-row"><span>헌재소장</span><b>${(groups.judicial||[]).find(m => /헌법재판소장/.test(m.role || ''))?.HG_NM || '—'}</b></div>
-            <div class="jm-row"><span>헌법재판관</span><b>${(groups.judicial||[]).filter(m => m.ELECT_GBN_NM === '헌법재판관').length}명</b></div>
-          </div>
-        </div>
-
-        <!-- 행정부 카드 -->
-        <div class="dash-card col-4 chart-card">
-          <div class="chart-head"><h3>🏢 이재명 정부</h3><a href="#/group/executive" class="chart-link">→</a></div>
-          <div class="judicial-mini">
-            <div class="jm-row"><span>대통령</span><b>이재명</b></div>
-            <div class="jm-row"><span>국무총리</span><b>김민석</b></div>
-            <div class="jm-row"><span>부총리</span><b>2명</b></div>
-            <div class="jm-row"><span>장관</span><b>17명</b></div>
-          </div>
-        </div>
-
-        <!-- 위원회 -->
-        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/committees'">
-          <div class="chart-head"><h3>🏢 22대 위원회</h3><span class="chart-link">→</span></div>
-          <div class="cta-desc">17개 상임위 · 위원장·간사·정당 분포 · 처리 의안 수</div>
-          <div class="cta-mini">위원회 카드 클릭 → 위원 명단 + 최근 처리 의안</div>
-        </div>
-
-        <!-- 의안 통계 -->
-        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/bills'">
-          <div class="chart-head"><h3>📜 22대 의안 통계</h3><span class="chart-link">→</span></div>
-          <div class="cta-desc">${state.bills.length ? state.bills.length.toLocaleString() + '건 처리 · 통과율 · 위원회별 · 월별 추이 · 박빙 처리' : '국회 OPEN API 본회의 처리 의안 ~1.6K건 분석'}</div>
-          <div class="cta-mini">${state.bills.length ? '실시간 국회 데이터' : '백그라운드 로딩 중'}</div>
-        </div>
-
-        <!-- 정당사 -->
-        <div class="dash-card col-4 chart-card cta-card" onclick="location.hash='#/history/parties'">
-          <div class="chart-head"><h3>📅 정당사 1948→2025</h3><span class="chart-link">→</span></div>
-          <div class="cta-desc">자유당·민주공화당·민자당·새천년민주당·한나라당·국힘·민주… 45개 정당 흐름</div>
-          <div class="cta-mini">계열별 색·기간 막대 · 클릭 시 위키 이동 · 78년간의 정당 변천</div>
-        </div>
+      <!-- 보조 도구 (작은 카드 4개) -->
+      <div class="tool-grid">
+        <a class="tool-card" href="#/map"><span>🗺</span> 정치 분포 지도</a>
+        <a class="tool-card" href="#/committees"><span>🏢</span> 위원회 25개</a>
+        <a class="tool-card" href="#/world"><span>🌐</span> 국제 비교</a>
+        <a class="tool-card" href="#/elections"><span>🗳</span> 역대 지방선거</a>
+        <a class="tool-card" href="#/relations"><span>🕸</span> 발의 네트워크</a>
       </div>
     </div>
   `;
