@@ -61,8 +61,20 @@ export default {
       if (!params.has('numOfRows')) params.set('numOfRows', '500');
       if (!params.has('pageNo')) params.set('pageNo', '1');
       return forward(
-        `${NEC_BASE}/PofelcddInfoInqireService/getPoelpcddRegistSttusInfoInqire?${params}`,
+        // 정확한 메서드명: getPofelcddRegistSttusInfoInqire (Po-FEL-cdd)
+        `${NEC_BASE}/PofelcddInfoInqireService/getPofelcddRegistSttusInfoInqire?${params}`,
         origin, 600
+      );
+    }
+    // 역대 지방선거 실시상황 (NEW)
+    if (url.pathname === '/local-status') {
+      const params = passThrough(url.searchParams, ['sgId', 'sgTypecode', 'pageNo', 'numOfRows']);
+      params.set('ServiceKey', key);
+      params.set('resultType', 'json');
+      if (!params.has('numOfRows')) params.set('numOfRows', '300');
+      return forward(
+        `${NEC_BASE}/ScgnLocElctExctSttnService/getScgnLocElctExctSttnInfoInqire?${params}`,
+        origin, 3600
       );
     }
 
