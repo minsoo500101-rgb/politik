@@ -54,14 +54,15 @@ for i in range(150, 0, -3):
 
 # 텍스트
 # Eyebrow
-draw.text((60, 90), "REPUBLIC OF KOREA · PATCH NOTES", font=font(28, bold=True), fill="#9ca3af")
+draw.text((60, 90), "REPUBLIC OF KOREA · COMPREHENSIVE DATA", font=font(24, bold=True), fill="#9ca3af")
 
 # 메인 타이틀
-draw.text((60, 160), "대한민국", font=font(110, bold=True), fill="#ffffff")
-draw.text((60, 290), "패치 노트", font=font(110, bold=True), fill="#ffffff")
+draw.text((60, 150), "대한민국", font=font(100, bold=True), fill="#ffffff")
+draw.text((60, 270), "패치 노트", font=font(100, bold=True), fill="#ffffff")
 
-# 부제
-draw.text((60, 440), "22대 국회 · 통과 법안 1,595건 · 발의자·정당·분야 한눈에", font=font(28), fill="#d1d5db")
+# 슬로건
+draw.text((60, 400), "한국의 모든 것 한 곳에", font=font(36, bold=True), fill="#10b981")
+draw.text((60, 450), "정치 · 법안 · 선거 · 인물 · 역사를 데이터로", font=font(22), fill="#d1d5db")
 
 # 우측 빨간 LIVE 박스
 live_x, live_y = W - 280, 50

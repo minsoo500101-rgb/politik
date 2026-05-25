@@ -184,7 +184,7 @@ strong {{ color: #111827; }}
 <a class="cta" href="./{hash}">📋 인터랙티브 사이트 열기 →</a>
 
 <div class="footer">
-<strong>대한민국 패치 노트</strong> · Korea Patch Notes<br>
+<strong>대한민국 패치 노트</strong> — 한국의 모든 것 한 곳에 (정치·법안·선거·인물·역사 종합 데이터)<br>
 출처: 국회 OPEN API (공공누리 1유형) · 위키미디어 · 중앙선거관리위원회<br>
 <a href="https://github.com/minsoo500101-rgb/politik">GitHub 저장소 (MIT)</a> ·
 <a href="./">홈으로</a>
