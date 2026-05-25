@@ -3925,12 +3925,18 @@ function drawMap(geo, layer) {
   const PROV_SPECIFIC_RENAME = {
     '23': { '남구': '미추홀구' },  // 인천만
   };
+  // 광역 자체 변경 (군위군 2023.7.1 경북→대구 편입, geojson 2018 버전이라 옛 코드 유지)
+  const CODE_PROV_OVERRIDE = {
+    '37380': '대구',  // 경북 군위군 → 대구광역시 편입
+  };
   // 제주 행정시 → 광역단체장 (제주특별자치도지사)
   const PROV_FALLBACK = new Set(['세종시','제주시','서귀포시']);
 
   function muniMatchKey(feature) {
     const code = (feature.properties.code || '').toString();
-    const prov = PROV_BY_CODE[code.slice(0,2)];
+    // 광역 자체 변경 (군위군 등)
+    const overrideProv = CODE_PROV_OVERRIDE[code];
+    const prov = overrideProv || PROV_BY_CODE[code.slice(0,2)];
     let name = feature.properties.name;
     // 1) 광역별 특수 개명 (인천 남구 → 미추홀구)
     const renamed = PROV_SPECIFIC_RENAME[code.slice(0,2)]?.[name];
