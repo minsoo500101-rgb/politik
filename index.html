@@ -3900,8 +3900,9 @@ function drawMap(geo, layer) {
     '31':'경기','32':'강원','33':'충북','34':'충남','35':'전북','36':'전남','37':'경북','38':'경남','39':'제주',
   };
   // 행정구 → 모시 (자치 X 일반시 행정구는 시장 1명이 관할)
+  // 광역코드별 분리 (남구는 부산·대구·광주·울산·인천 모두 존재)
   const ADMIN_DISTRICT_TO_CITY = {
-    // 경기
+    // 경기 (31)
     '수원시장안구':'수원시','수원시권선구':'수원시','수원시팔달구':'수원시','수원시영통구':'수원시',
     '성남시수정구':'성남시','성남시중원구':'성남시','성남시분당구':'성남시',
     '안양시만안구':'안양시','안양시동안구':'안양시',
@@ -3909,18 +3910,20 @@ function drawMap(geo, layer) {
     '고양시덕양구':'고양시','고양시일산동구':'고양시','고양시일산서구':'고양시',
     '용인시처인구':'용인시','용인시기흥구':'용인시','용인시수지구':'용인시',
     '부천시오정구':'부천시','부천시소사구':'부천시','부천시원미구':'부천시',
-    // 충북
+    // 충북 (33)
     '청주시상당구':'청주시','청주시서원구':'청주시','청주시흥덕구':'청주시','청주시청원구':'청주시',
-    // 충남
+    // 충남 (34)
     '천안시동남구':'천안시','천안시서북구':'천안시',
-    // 전북
+    // 전북 (35)
     '전주시완산구':'전주시','전주시덕진구':'전주시',
-    // 경북
+    // 경북 (37)
     '포항시남구':'포항시','포항시북구':'포항시',
-    // 경남
+    // 경남 (38)
     '창원시의창구':'창원시','창원시성산구':'창원시','창원시마산합포구':'창원시','창원시마산회원구':'창원시','창원시진해구':'창원시',
-    // 인천 — 2018년 개명
-    '남구':'미추홀구',
+  };
+  // 광역코드별 특수 별칭 (인천 남구만 미추홀구로 개명)
+  const PROV_SPECIFIC_RENAME = {
+    '23': { '남구': '미추홀구' },  // 인천만
   };
   // 제주 행정시 → 광역단체장 (제주특별자치도지사)
   const PROV_FALLBACK = new Set(['세종시','제주시','서귀포시']);
@@ -3929,26 +3932,42 @@ function drawMap(geo, layer) {
     const code = (feature.properties.code || '').toString();
     const prov = PROV_BY_CODE[code.slice(0,2)];
     let name = feature.properties.name;
-    // 행정구 → 모시 변환
-    if (ADMIN_DISTRICT_TO_CITY[name]) name = ADMIN_DISTRICT_TO_CITY[name];
+    // 1) 광역별 특수 개명 (인천 남구 → 미추홀구)
+    const renamed = PROV_SPECIFIC_RENAME[code.slice(0,2)]?.[name];
+    if (renamed) name = renamed;
+    // 2) 행정구 → 모시 변환
+    else if (ADMIN_DISTRICT_TO_CITY[name]) name = ADMIN_DISTRICT_TO_CITY[name];
     return prov ? `${prov} ${name}` : name;
   }
-  // 행정구인지 여부 (true면 모시 시장의 정당 사용, 라벨은 행정구 이름 유지)
   function isAdminDistrict(feature) {
     return !!ADMIN_DISTRICT_TO_CITY[feature.properties.name];
   }
   function isProvFallback(feature) {
     return PROV_FALLBACK.has(feature.properties.name);
   }
+  // 정식 광역 명칭 → 단축 매핑
+  const FULL_TO_SHORT_PROV = {
+    '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천',
+    '광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종',
+    '경기도':'경기','강원특별자치도':'강원','강원도':'강원',
+    '충청북도':'충북','충청남도':'충남',
+    '전북특별자치도':'전북','전라북도':'전북','전라남도':'전남',
+    '경상북도':'경북','경상남도':'경남','제주특별자치도':'제주',
+  };
   // member region이 prefix 있으면 그대로, 없으면 광역 추정
   const muniByName = new Map();
   for (const m of state.members) {
     if (m._type !== 'local_gov_muni') continue;
     let key = m.ORIG_NM;
-    // role에서 광역 추정 (예: "서울특별시 종로구청장" → "서울 종로구")
+    // role에서 광역 추정 — 정식 명칭(충청북도) 또는 단축형(충북) 모두 매칭
     if (key && !/(^|\s)(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)\s/.test(key)) {
-      const rm = (m.MEM_TITLE || m.CMIT_NM || '').match(/(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/);
-      if (rm) key = rm[1] + ' ' + m.ORIG_NM;
+      const fullRm = (m.MEM_TITLE || m.CMIT_NM || '').match(/(서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시|경기도|강원특별자치도|강원도|충청북도|충청남도|전북특별자치도|전라북도|전라남도|경상북도|경상남도|제주특별자치도)/);
+      if (fullRm) {
+        key = FULL_TO_SHORT_PROV[fullRm[1]] + ' ' + m.ORIG_NM;
+      } else {
+        const shortRm = (m.MEM_TITLE || m.CMIT_NM || '').match(/(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/);
+        if (shortRm) key = shortRm[1] + ' ' + m.ORIG_NM;
+      }
     }
     muniByName.set(key, m);
   }
