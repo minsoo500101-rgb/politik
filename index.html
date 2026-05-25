@@ -1665,6 +1665,126 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
   }
+  /* 랭킹 페이지 */
+  .rank-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .rank-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+  }
+  .rank-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .rank-hero h1 {
+    font-size: 24px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.4px; margin-bottom: 4px;
+  }
+  .rank-hero p { font-size: 13px; color: var(--text-2); }
+  .rank-list { display: flex; flex-direction: column; gap: 5px; }
+  .rank-row {
+    display: grid;
+    grid-template-columns: 40px 200px 1fr 60px 80px;
+    gap: 10px; align-items: center;
+    padding: 7px 8px;
+    border-radius: 6px;
+    transition: background 0.12s;
+    font-size: 12.5px;
+  }
+  .rank-row:nth-child(odd) { background: var(--bg-elev); }
+  .rank-click:hover { background: var(--bg-card); cursor: pointer; }
+  .rank-num {
+    font-size: 14px; font-weight: 800; color: var(--text-2);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-row:nth-child(1) .rank-num { color: #fbbf24; font-size: 18px; }
+  .rank-row:nth-child(2) .rank-num { color: #94a3b8; font-size: 16px; }
+  .rank-row:nth-child(3) .rank-num { color: #cd7f32; font-size: 15px; }
+  .rank-name b { font-weight: 700; color: var(--text); }
+  .rank-name em {
+    font-style: normal; font-weight: 700;
+    font-size: 10.5px;
+    margin-left: 5px;
+    padding: 1px 6px; border-radius: 6px;
+    background: var(--bg-card);
+  }
+  .rank-bar-wrap {
+    height: 6px; background: var(--bg-elev);
+    border-radius: 3px; overflow: hidden;
+  }
+  [data-theme="dark"] .rank-bar-wrap { background: rgba(0,0,0,0.35); }
+  .rank-bar {
+    height: 100%; border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  .rank-count {
+    font-size: 13px; font-weight: 800; color: var(--text);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-pass {
+    font-size: 11px; color: var(--ok);
+    text-align: right; font-weight: 600;
+  }
+
+  /* 정당 × 분야 매트릭스 */
+  .rank-matrix-wrap { overflow-x: auto; }
+  .rank-matrix {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+  }
+  .rank-matrix th {
+    padding: 8px 6px;
+    background: var(--bg-elev);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: 2px solid var(--border-strong);
+  }
+  .rank-matrix th:first-child {
+    text-align: left;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--dim);
+  }
+  .rank-matrix td {
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-party {
+    text-align: left !important;
+    white-space: nowrap;
+  }
+  .rank-party .pb-dot { display: inline-block; margin-right: 5px; vertical-align: middle; }
+  .rank-cell {
+    font-weight: 600;
+    transition: background 0.13s;
+  }
+  .rank-cell:hover { transform: scale(1.05); }
+  .rank-tot {
+    font-weight: 800; color: var(--text);
+    border-left: 1px solid var(--border-strong);
+  }
+  .rank-legend {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 10.5px; font-weight: 600;
+  }
+  .rank-leg { display: inline-flex; align-items: center; gap: 3px; }
+
+  @media (max-width: 700px) {
+    .rank-row { grid-template-columns: 30px 120px 1fr 50px; gap: 6px; font-size: 11.5px; }
+    .rank-pass { display: none; }
+    .rank-name em { display: none; }
+  }
+
   /* 법안 상세 페이지 */
   .bill-detail {
     max-width: 920px; margin: 0 auto; padding: 8px 24px 60px;
@@ -1791,6 +1911,46 @@
     color: var(--dim);
     font-size: 12.5px;
     text-align: center;
+  }
+
+  /* 트렌드 바 (홈 위) */
+  .trend-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 2.5fr;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 14px;
+  }
+  .trend-item {
+    display: flex; align-items: center; gap: 12px;
+    padding-left: 12px;
+    border-left: 2px solid var(--border);
+  }
+  .trend-item:first-child { padding-left: 0; border-left: none; }
+  .trend-num {
+    font-size: 26px; font-weight: 800; color: var(--text);
+    line-height: 1; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+  }
+  .trend-lbl {
+    font-size: 11px; color: var(--text-2);
+    line-height: 1.4;
+  }
+  .trend-lbl b { color: var(--text); }
+  .trend-hot {
+    background: linear-gradient(90deg, rgba(239,68,68,0.06) 0%, transparent 100%);
+    padding-left: 14px !important;
+    border-left-color: #ef4444 !important;
+  }
+  [data-theme="dark"] .trend-hot { background: linear-gradient(90deg, rgba(239,68,68,0.12) 0%, transparent 100%); }
+  @media (max-width: 700px) {
+    .trend-bar { grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px 14px; }
+    .trend-hot { grid-column: 1 / -1; }
+    .trend-item { border-left: none; padding-left: 0; }
+    .trend-num { font-size: 20px; }
   }
 
   /* 5대 데이터 영역 카드 그리드 */
@@ -6262,6 +6422,171 @@ async function loadBillWiki(billName) {
   }
 }
 
+// 인물별 활동 랭킹 + 분야 분포 분석
+function getRankingsData() {
+  const bills = state.bills || [];
+  const proposers = state.billProposers || {};
+  // 1. 발의자 랭킹 — 대표발의 건수
+  const leadCount = new Map(); // name → { count, passed, party, mid, topics:Map }
+  for (const b of bills) {
+    const info = getBillProposerInfo(b);
+    if (info.kind !== 'mp' || !info.name) continue;
+    const passed = /가결/.test(b.PROC_RESULT_CD || '');
+    const t = getBillTopic(b).id;
+    if (!leadCount.has(info.name)) {
+      leadCount.set(info.name, { count: 0, passed: 0, party: info.party, mid: info.member?.MONA_CD || '', topics: new Map() });
+    }
+    const r = leadCount.get(info.name);
+    r.count++;
+    if (passed) r.passed++;
+    r.topics.set(t, (r.topics.get(t) || 0) + 1);
+  }
+  const topProposers = [...leadCount.entries()]
+    .map(([name, d]) => ({ name, ...d, passRate: d.count > 0 ? (d.passed / d.count * 100) : 0 }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 30);
+
+  // 2. 정당별 분야 집중도 (정당 × 토픽 매트릭스)
+  const partyTopics = {}; // party → topicId → count
+  for (const b of bills) {
+    const info = getBillProposerInfo(b);
+    if (info.kind !== 'mp' || !info.party) continue;
+    const t = getBillTopic(b).id;
+    if (!partyTopics[info.party]) partyTopics[info.party] = {};
+    partyTopics[info.party][t] = (partyTopics[info.party][t] || 0) + 1;
+  }
+  // 정당별 합계
+  const partyTotals = Object.entries(partyTopics).map(([p, ts]) => {
+    const total = Object.values(ts).reduce((s, n) => s + n, 0);
+    return { party: p, total, topics: ts };
+  }).sort((a, b) => b.total - a.total).slice(0, 6);
+
+  // 3. 분야별 활동량 (전체)
+  const topicTotal = {};
+  for (const t of BILL_TOPICS) topicTotal[t.id] = 0;
+  for (const b of bills) topicTotal[getBillTopic(b).id]++;
+  const topTopics = [...Object.entries(topicTotal)]
+    .filter(([id]) => id !== 'misc')
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  // 4. 위원회별 처리량
+  const cmtTotal = {};
+  for (const b of bills) {
+    const c = b.CURR_COMMITTEE || '미상';
+    cmtTotal[c] = (cmtTotal[c] || 0) + 1;
+  }
+  const topCmts = [...Object.entries(cmtTotal)].sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+  return { topProposers, partyTotals, topTopics, topCmts };
+}
+
+function renderRankingsPage() {
+  if (!state.bills?.length) {
+    return `
+      <div class="group-back" id="back-home">← 조직도</div>
+      <div class="loading"><span class="loading-spinner"></span>의안 데이터 로드 중…</div>
+    `;
+  }
+  const { topProposers, partyTotals, topTopics, topCmts } = getRankingsData();
+  const maxLead = topProposers[0]?.count || 1;
+  const maxTopic = topTopics[0]?.[1] || 1;
+  const maxCmt = topCmts[0]?.[1] || 1;
+
+  return `
+    <div class="group-back" id="back-home">← 조직도</div>
+    <div class="rank-page">
+      <div class="rank-hero">
+        <div class="rank-hero-eye">22대 국회 · 활동 랭킹</div>
+        <h1>📊 발의자·정당·분야 랭킹</h1>
+        <p>22대 국회 본회의 처리 의안 <b>${state.bills.length.toLocaleString()}건</b> 기준 · 대표발의자·정당 분야 집중도·위원회 처리량 분석</p>
+      </div>
+
+      <div class="dash-grid">
+        <!-- 발의 Top 30 -->
+        <div class="dash-card col-12 chart-card">
+          <div class="chart-head"><h3>🏆 대표발의 Top 30 (가결률 포함)</h3></div>
+          <div class="rank-list">
+            ${topProposers.map((p, i) => `
+              <div class="rank-row ${p.mid ? 'rank-click' : ''}" ${p.mid ? `data-mid="${escapeHtml(p.mid)}"` : ''}>
+                <div class="rank-num">${i + 1}</div>
+                <div class="rank-name"><b>${escapeHtml(p.name)}</b> <em style="color:${partyColor(p.party)}">${escapeHtml(p.party || '무소속')}</em></div>
+                <div class="rank-bar-wrap"><div class="rank-bar" style="width:${(p.count/maxLead*100).toFixed(1)}%; background:${partyColor(p.party)}"></div></div>
+                <div class="rank-count">${p.count}건</div>
+                <div class="rank-pass">${p.passRate.toFixed(0)}% 통과</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- 정당 × 분야 매트릭스 (top 6 정당, top 8 분야) -->
+        <div class="dash-card col-12 chart-card">
+          <div class="chart-head"><h3>🎯 정당별 분야 집중도 (정당이 어떤 영역에 발의?)</h3></div>
+          <div class="rank-matrix-wrap">
+            <table class="rank-matrix">
+              <thead>
+                <tr>
+                  <th>정당</th>
+                  ${topTopics.slice(0,8).map(([tid]) => { const t = BILL_TOPICS.find(x=>x.id===tid); return `<th title="${escapeHtml(t.label)}">${t.icon}</th>`; }).join('')}
+                  <th class="rank-tot">합계</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${partyTotals.map(p => {
+                  const cells = topTopics.slice(0,8).map(([tid]) => {
+                    const v = p.topics[tid] || 0;
+                    const ratio = p.total > 0 ? v / p.total : 0;
+                    const intensity = Math.min(1, ratio * 4); // 25% 이상이면 최대 진하기
+                    const bg = `rgba(${parseInt(partyColor(p.party).slice(1,3),16)},${parseInt(partyColor(p.party).slice(3,5),16)},${parseInt(partyColor(p.party).slice(5,7),16)},${intensity * 0.4})`;
+                    return `<td class="rank-cell" style="background:${bg}" title="${(ratio*100).toFixed(1)}%">${v}</td>`;
+                  }).join('');
+                  return `<tr>
+                    <td class="rank-party"><span class="pb-dot" style="background:${partyColor(p.party)}"></span><b>${escapeHtml(p.party)}</b></td>
+                    ${cells}
+                    <td class="rank-tot">${p.total}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+            <div class="rank-legend">${topTopics.slice(0,8).map(([tid]) => { const t = BILL_TOPICS.find(x=>x.id===tid); return `<span class="rank-leg" style="color:${t.color}">${t.icon} ${escapeHtml(t.label)}</span>`; }).join('')}</div>
+          </div>
+        </div>
+
+        <!-- 분야별 활동량 -->
+        <div class="dash-card col-6 chart-card">
+          <div class="chart-head"><h3>📂 분야별 처리 의안 Top 10</h3></div>
+          <div class="party-bars">
+            ${topTopics.map(([tid, n]) => {
+              const t = BILL_TOPICS.find(x => x.id === tid);
+              return `
+                <div class="party-bar-row">
+                  <div class="pb-name" style="color:${t.color}">${t.icon} ${escapeHtml(t.label)}</div>
+                  <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(n/maxTopic*100).toFixed(1)}%; background:${t.color}"></div></div>
+                  <div class="pb-count">${n}</div>
+                  <div class="pb-pct">${(n/state.bills.length*100).toFixed(1)}%</div>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- 위원회별 처리량 -->
+        <div class="dash-card col-6 chart-card">
+          <div class="chart-head"><h3>🏢 위원회별 처리 의안 Top 10</h3><a href="#/committees" class="chart-link">전체 →</a></div>
+          <div class="party-bars">
+            ${topCmts.map(([c, n]) => `
+              <div class="party-bar-row">
+                <div class="pb-name">${escapeHtml(c)}</div>
+                <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(n/maxCmt*100).toFixed(1)}%; background:var(--text-2)"></div></div>
+                <div class="pb-count">${n}</div>
+                <div class="pb-pct">${(n/state.bills.length*100).toFixed(1)}%</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderBillDetailPage(billId) {
   // state에서 기본 데이터
   const bill = state.bills?.find(b => b.BILL_ID === billId);
@@ -6988,6 +7313,52 @@ function renderHome() {
         `;
       })()}
 
+      ${(() => {
+        // 이번 주 트렌드 (최근 7일 처리 의안)
+        if (!state.bills?.length) return '';
+        const now = Date.now();
+        const weekAgo = now - 7 * 86400000;
+        const monthAgo = now - 30 * 86400000;
+        const weekBills = state.bills.filter(b => {
+          const d = new Date(b.PROC_DT).getTime();
+          return d >= weekAgo && d <= now;
+        });
+        const monthBills = state.bills.filter(b => {
+          const d = new Date(b.PROC_DT).getTime();
+          return d >= monthAgo && d <= now;
+        });
+        // 핫 분야 (이번 주)
+        const weekTopics = {};
+        for (const b of weekBills) {
+          const t = getBillTopic(b).id;
+          weekTopics[t] = (weekTopics[t] || 0) + 1;
+        }
+        const hotTopic = Object.entries(weekTopics).filter(([id]) => id !== 'misc').sort((a,b)=>b[1]-a[1])[0];
+        const hotTopicInfo = hotTopic ? BILL_TOPICS.find(t => t.id === hotTopic[0]) : null;
+        // 가결률
+        const weekPassed = weekBills.filter(b => /가결/.test(b.PROC_RESULT_CD||'')).length;
+        const weekRate = weekBills.length ? (weekPassed/weekBills.length*100).toFixed(0) : '—';
+        return `
+          <div class="trend-bar">
+            <div class="trend-item">
+              <div class="trend-num">${weekBills.length}</div>
+              <div class="trend-lbl">이번 주 처리</div>
+            </div>
+            <div class="trend-item">
+              <div class="trend-num">${monthBills.length}</div>
+              <div class="trend-lbl">최근 30일</div>
+            </div>
+            <div class="trend-item">
+              <div class="trend-num" style="color:var(--ok)">${weekRate}%</div>
+              <div class="trend-lbl">주간 가결률</div>
+            </div>
+            <div class="trend-item trend-hot">
+              ${hotTopicInfo ? `<div class="trend-num" style="color:${hotTopicInfo.color}">${hotTopicInfo.icon}</div><div class="trend-lbl"><b>${escapeHtml(hotTopicInfo.label)}</b> ${hotTopic[1]}건 — 이번 주 핫</div>` : '<div class="trend-num">—</div><div class="trend-lbl">데이터 부족</div>'}
+            </div>
+          </div>
+        `;
+      })()}
+
       <!-- 패치 노트 피드 — 가장 위 -->
       <div class="patch-feed">
         <div class="patch-feed-head">
@@ -7110,9 +7481,10 @@ function renderHome() {
         </div>
       </div>
 
-      <!-- 보조 도구 (작은 카드 4개) -->
+      <!-- 보조 도구 -->
       <div class="tool-grid">
         <a class="tool-card" href="#/map"><span>🗺</span> 정치 분포 지도</a>
+        <a class="tool-card" href="#/rankings"><span>📊</span> 발의자 랭킹</a>
         <a class="tool-card" href="#/committees"><span>🏢</span> 위원회 25개</a>
         <a class="tool-card" href="#/world"><span>🌐</span> 국제 비교</a>
         <a class="tool-card" href="#/elections"><span>🗳</span> 역대 지방선거</a>
@@ -7755,6 +8127,20 @@ function route() {
   const _tip = document.getElementById('rel-tooltip');
   if (_tip) _tip.style.display = 'none';
 
+  // 발의자·정당·분야 랭킹 (/rankings)
+  if (hash === '#/rankings') {
+    view.innerHTML = renderRankingsPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.querySelectorAll('.rank-click[data-mid]').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`; });
+    });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    if (!state.bills?.length) {
+      setTimeout(() => { if (location.hash === '#/rankings' && state.bills?.length) route(); }, 2000);
+    }
+    return;
+  }
   // 법안 상세 (/bill/{billId})
   const bMatch = hash.match(/^#\/bill\/(.+)$/);
   if (bMatch) {
