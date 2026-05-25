@@ -2205,6 +2205,55 @@
     text-align: center; padding: 30px;
     color: var(--dim); font-size: 13px;
   }
+  /* 후보자 detail 모달 — 기본 정보 */
+  .cand-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 12px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+  }
+  .cand-info-row {
+    display: flex; flex-direction: column;
+    font-size: 11px;
+  }
+  .cand-info-row span { color: var(--text-2); margin-bottom: 2px; }
+  .cand-info-row b { color: var(--text); font-weight: 700; font-size: 13px; }
+  .cand-section {
+    background: var(--bg-elev);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  .cand-section-h {
+    font-size: 10.5px; font-weight: 800; color: var(--dim);
+    letter-spacing: 0.7px; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .cand-section-body {
+    font-size: 12.5px; color: var(--text);
+    line-height: 1.55;
+  }
+  .cand-section-divider {
+    margin: 16px 0 10px;
+    text-align: center;
+    position: relative;
+  }
+  .cand-section-divider::before {
+    content: ''; position: absolute; top: 50%; left: 0; right: 0;
+    border-top: 1px solid var(--border); z-index: 0;
+  }
+  .cand-section-divider span {
+    display: inline-block;
+    position: relative; z-index: 1;
+    background: var(--bg-card);
+    padding: 0 12px;
+    font-size: 12px; font-weight: 700;
+    color: var(--text);
+  }
+
   /* 9회 지선 정당 통계 */
   .e26-stats-grid {
     display: grid;
@@ -4784,21 +4833,54 @@ async function necFetch(endpoint, params = {}) {
 }
 // 후보자 5대 공약 모달
 async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
+  // state에서 후보자 풀 정보 찾기
+  const nec = state.nec2026Governors || {};
+  const allCands = [...(nec.governors||[]), ...(nec.munis||[]), ...(nec.eduSupers||[])];
+  const c = allCands.find(x => x.huboid === cnddtId);
+  const pc = partyColor(party);
+
   // 모달 DOM 생성
   let modal = document.getElementById('promise-modal-bg');
   if (modal) modal.remove();
   modal = document.createElement('div');
   modal.id = 'promise-modal-bg';
   modal.className = 'promise-modal-bg';
+
+  // 기본 정보 섹션 (후보자 데이터가 있으면)
+  let infoHtml = '';
+  if (c) {
+    const rows = [];
+    if (c.giho) rows.push(['기호', c.giho + '번']);
+    if (c.gender) rows.push(['성별', c.gender]);
+    if (c.age) rows.push(['연령', c.age + '세']);
+    if (c.birthday) {
+      const b = c.birthday;
+      rows.push(['생년월일', `${b.slice(0,4)}-${b.slice(4,6)}-${b.slice(6,8)}`]);
+    }
+    if (c.job) rows.push(['직업', c.job]);
+    if (c.status) rows.push(['등록상태', c.status]);
+    if (c.addr) rows.push(['주소', c.addr]);
+    infoHtml = `
+      <div class="cand-info-grid">
+        ${rows.map(([k,v]) => `<div class="cand-info-row"><span>${escapeHtml(k)}</span><b>${escapeHtml(v)}</b></div>`).join('')}
+      </div>
+      ${c.edu ? `<div class="cand-section"><div class="cand-section-h">🎓 학력</div><div class="cand-section-body">${escapeHtml(c.edu)}</div></div>` : ''}
+      ${c.career1 ? `<div class="cand-section"><div class="cand-section-h">💼 경력 1</div><div class="cand-section-body">${escapeHtml(c.career1)}</div></div>` : ''}
+      ${c.career2 ? `<div class="cand-section"><div class="cand-section-h">💼 경력 2</div><div class="cand-section-body">${escapeHtml(c.career2)}</div></div>` : ''}
+    `;
+  }
+
   modal.innerHTML = `
     <div class="promise-modal" id="promise-modal-box">
-      <div class="promise-modal-head">
+      <div class="promise-modal-head" style="border-left:6px solid ${pc};padding-left:10px;margin-left:-10px">
         <div>
-          <div class="promise-modal-title">${escapeHtml(name)} <em style="color:${partyColor(party)}">${escapeHtml(party)}</em></div>
-          <div class="promise-modal-sub">${escapeHtml(region)} · 9회 지방선거 후보자 5대 공약</div>
+          <div class="promise-modal-title">${escapeHtml(name)} <em style="color:${pc}">${escapeHtml(party)}</em></div>
+          <div class="promise-modal-sub">${escapeHtml(region)} · 9회 지방선거 후보자</div>
         </div>
         <button class="promise-modal-close" id="promise-modal-close">×</button>
       </div>
+      ${infoHtml}
+      <div class="cand-section-divider"><span>📋 5대 공약</span></div>
       <div id="promise-modal-body">
         <div class="promise-loading"><span class="loading-spinner"></span>공약 fetch 중…</div>
       </div>
