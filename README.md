@@ -97,7 +97,23 @@ wrangler deploy  # ← 30초
 
 상세: [`worker/README.md`](./worker/README.md)
 
-### 단계 4 — 분석 도구 (Plausible 권장)
+### 단계 4 — 국가법령정보 API (법안 본문 자동 표시)
+
+법안 detail 페이지에 **현행 법령 본문**을 표시하려면:
+
+1. https://open.law.go.kr 무료 가입
+2. "내 정보" → "API 신청" → **회원ID (OC)** 확인
+3. "API 사용 서버 등록" → `politik-phi.vercel.app` 도메인 추가
+4. Vercel 환경변수 설정:
+   ```bash
+   echo "YOUR_OC" | vercel env add LAW_GO_KR_OC production
+   echo "YOUR_OC" | vercel env add LAW_GO_KR_OC preview
+   ```
+5. git push → 자동 배포 → `/bill/{billId}` 페이지에 법령 조문 자동 표시
+
+미설정 시: 외부 링크만 표시. 사이트는 정상 작동.
+
+### 단계 5 — 분석 도구 (Plausible 권장)
 
 | 도구 | 가격 | 개인정보 | 무게 |
 |---|---|---|---|

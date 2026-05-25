@@ -1912,6 +1912,33 @@
     font-size: 12.5px;
     text-align: center;
   }
+  /* 법령 본문 */
+  .bd-law-meta {
+    background: var(--bg-elev);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .bd-law-meta b { color: var(--text); font-weight: 700; margin-right: 6px; }
+  .bd-law-article {
+    padding: 10px 12px;
+    background: var(--bg-elev);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border-left: 3px solid var(--ok);
+  }
+  .bd-law-article b {
+    font-size: 12.5px; color: var(--text);
+    display: block; margin-bottom: 4px;
+  }
+  .bd-law-content {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
 
   /* 트렌드 바 (홈 위) */
   .trend-bar {
@@ -6402,6 +6429,40 @@ async function loadBillDetail(billId) {
     return { _error: e.message };
   }
 }
+// 국가법령정보 — 법령 검색 (OC 설정되어 있을 때만 작동)
+async function loadLawByName(billName) {
+  // 법률명 정제
+  const cleaned = billName
+    .replace(/일부개정법률안.*$/, '')
+    .replace(/전부개정법률안.*$/, '')
+    .replace(/제정법률안.*$/, '')
+    .replace(/폐지법률안.*$/, '')
+    .replace(/\(.*\)$/, '')
+    .replace(/\s*법률안\s*$/, '')
+    .trim();
+  if (!cleaned) return null;
+  try {
+    const r = await fetch(`/api/law?action=search&query=${encodeURIComponent(cleaned)}`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (j.error) return null;
+    // 응답: { LawSearch: { law: [{ 법령ID, 법령명, ...}] } }
+    const laws = j?.LawSearch?.law || j?.LawSearch?.LAW || [];
+    const list = Array.isArray(laws) ? laws : (laws ? [laws] : []);
+    if (!list.length) return null;
+    // 첫 결과 본문 fetch
+    const top = list[0];
+    const mst = top.법령ID || top.MST || top['법령마스터번호'];
+    if (!mst) return { search: top, detail: null };
+    const r2 = await fetch(`/api/law?action=detail&mst=${encodeURIComponent(mst)}`);
+    if (!r2.ok) return { search: top, detail: null };
+    const j2 = await r2.json();
+    return { search: top, detail: j2?.법령 || j2?.Law || j2 };
+  } catch (e) {
+    return null;
+  }
+}
+
 async function loadBillWiki(billName) {
   // 법률명에서 "일부개정법률안" 등 접미사 제거
   const cleaned = billName
@@ -6660,6 +6721,14 @@ function renderBillDetailPage(billId) {
         <h3>📜 법안 내용 (제안이유·주요 내용)</h3>
         <div id="bd-content-body">
           <div class="loading-inline"><span class="loading-spinner"></span>국회 API에서 법안 본문 fetch 중…</div>
+        </div>
+      </div>
+
+      <!-- 법령 본문 (국가법령정보) -->
+      <div class="bd-card" id="bd-law-card">
+        <h3>⚖ 현행 법령 본문 (국가법령정보센터)</h3>
+        <div id="bd-law-body">
+          <div class="loading-inline"><span class="loading-spinner"></span>법령 검색 중…</div>
         </div>
       </div>
 
@@ -8161,6 +8230,49 @@ function route() {
         } else {
           body.innerHTML = `<div class="bd-content-empty">국회 OPEN API <code style="background:var(--bg-elev);padding:1px 5px;border-radius:3px">nzmimeepazxkubdpn</code> 서비스는 발의자·일자·결과만 제공하며 본문 SUMMARY는 미포함입니다.<br><br>법안 원문은 아래 <b>국회 의안정보시스템</b> 링크의 PDF에서 확인할 수 있습니다.</div>`;
         }
+      });
+      // 법령 본문 fetch (open.law.go.kr)
+      loadLawByName(bill.BILL_NAME || '').then(law => {
+        const body = document.getElementById('bd-law-body');
+        if (!body || location.hash !== hash) return;
+        if (!law) {
+          body.innerHTML = `
+            <div class="bd-content-empty">
+              관련 현행 법령을 찾을 수 없습니다. (개정안이 아닌 신규 법안이거나, 법령 정보가 아직 등록되지 않음)
+              <br><br>
+              <a href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener" style="color:var(--link)">국가법령정보센터에서 직접 검색 →</a>
+              <br><br>
+              <small style="opacity:0.6">법령 OpenAPI 키(LAW_GO_KR_OC) 미설정 시 외부 링크만 표시. open.law.go.kr 가입 후 환경변수 추가하면 본문 자동 표시.</small>
+            </div>`;
+          return;
+        }
+        const search = law.search || {};
+        const detail = law.detail;
+        const lawName = search.법령명한글 || search.법령명 || search.lawNameKor || '—';
+        const ministry = search.소관부처명 || search.소관부처 || '';
+        const promulgateDt = search.공포일자 || search.공포일 || '';
+        let articlesHtml = '';
+        if (detail && detail.조문) {
+          // 조문 첫 5개 미리보기
+          const arts = Array.isArray(detail.조문?.조문단위) ? detail.조문.조문단위 : [detail.조문?.조문단위].filter(Boolean);
+          const top = arts.slice(0, 3);
+          articlesHtml = top.map(a => `
+            <div class="bd-law-article">
+              <b>${escapeHtml(a.조문번호 ? '제' + a.조문번호 + '조' : '')} ${escapeHtml(a.조문제목 || '')}</b>
+              <div class="bd-law-content">${escapeHtml((a.조문내용 || '').slice(0, 300))}${(a.조문내용||'').length > 300 ? '…' : ''}</div>
+            </div>
+          `).join('');
+          if (arts.length > 3) articlesHtml += `<div class="bd-content-empty">…외 ${arts.length - 3}개 조문</div>`;
+        }
+        body.innerHTML = `
+          <div class="bd-law-meta">
+            <div><b>법령명</b> ${escapeHtml(lawName)}</div>
+            ${ministry ? `<div><b>소관부처</b> ${escapeHtml(ministry)}</div>` : ''}
+            ${promulgateDt ? `<div><b>공포일자</b> ${escapeHtml(promulgateDt)}</div>` : ''}
+          </div>
+          ${articlesHtml || '<div class="bd-content-empty">조문 미리보기 없음</div>'}
+          <a class="bd-wiki-link" href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(lawName)}" target="_blank" rel="noopener">국가법령정보센터 전체 →</a>
+        `;
       });
       loadBillWiki(bill.BILL_NAME || '').then(wiki => {
         const body = document.getElementById('bd-wiki-body');
