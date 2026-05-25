@@ -1939,6 +1939,23 @@
     line-height: 1.6;
     white-space: pre-wrap;
   }
+  .bd-law-section {
+    background: var(--bg-elev);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--warn);
+  }
+  .bd-law-section.bd-law-amend {
+    border-left-color: var(--ok);
+    background: rgba(16,185,129,0.06);
+  }
+  [data-theme="dark"] .bd-law-section.bd-law-amend { background: rgba(16,185,129,0.10); }
+  .bd-law-section-h {
+    font-size: 11.5px; font-weight: 800; color: var(--text);
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+  }
 
   /* 트렌드 바 (홈 위) */
   .trend-bar {
@@ -8231,48 +8248,108 @@ function route() {
           body.innerHTML = `<div class="bd-content-empty">국회 OPEN API <code style="background:var(--bg-elev);padding:1px 5px;border-radius:3px">nzmimeepazxkubdpn</code> 서비스는 발의자·일자·결과만 제공하며 본문 SUMMARY는 미포함입니다.<br><br>법안 원문은 아래 <b>국회 의안정보시스템</b> 링크의 PDF에서 확인할 수 있습니다.</div>`;
         }
       });
-      // 법령 본문 fetch (open.law.go.kr)
+      // 법령 본문 fetch (open.law.go.kr) — 개정문·제개정이유·조문 모두 표시
       loadLawByName(bill.BILL_NAME || '').then(law => {
         const body = document.getElementById('bd-law-body');
         if (!body || location.hash !== hash) return;
         if (!law) {
           body.innerHTML = `
             <div class="bd-content-empty">
-              관련 현행 법령을 찾을 수 없습니다. (개정안이 아닌 신규 법안이거나, 법령 정보가 아직 등록되지 않음)
+              관련 현행 법령을 찾을 수 없습니다. (신규 법안이거나 법령 미등록)
               <br><br>
               <a href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener" style="color:var(--link)">국가법령정보센터에서 직접 검색 →</a>
-              <br><br>
-              <small style="opacity:0.6">법령 OpenAPI 키(LAW_GO_KR_OC) 미설정 시 외부 링크만 표시. open.law.go.kr 가입 후 환경변수 추가하면 본문 자동 표시.</small>
             </div>`;
           return;
         }
         const search = law.search || {};
-        const detail = law.detail;
-        const lawName = search.법령명한글 || search.법령명 || search.lawNameKor || '—';
-        const ministry = search.소관부처명 || search.소관부처 || '';
-        const promulgateDt = search.공포일자 || search.공포일 || '';
-        let articlesHtml = '';
-        if (detail && detail.조문) {
-          // 조문 첫 5개 미리보기
-          const arts = Array.isArray(detail.조문?.조문단위) ? detail.조문.조문단위 : [detail.조문?.조문단위].filter(Boolean);
-          const top = arts.slice(0, 3);
-          articlesHtml = top.map(a => `
-            <div class="bd-law-article">
-              <b>${escapeHtml(a.조문번호 ? '제' + a.조문번호 + '조' : '')} ${escapeHtml(a.조문제목 || '')}</b>
-              <div class="bd-law-content">${escapeHtml((a.조문내용 || '').slice(0, 300))}${(a.조문내용||'').length > 300 ? '…' : ''}</div>
-            </div>
-          `).join('');
-          if (arts.length > 3) articlesHtml += `<div class="bd-content-empty">…외 ${arts.length - 3}개 조문</div>`;
+        const detail = law.detail || {};
+        const lawName = search.법령명한글 || '—';
+        const ministry = search.소관부처명 || '';
+        const promulgateDt = search.공포일자 || '';
+
+        function extractText(field) {
+          if (!field) return '';
+          // 개정문내용·제개정이유내용은 list of list of string 형태
+          const arr = Array.isArray(field) ? field : [field];
+          return arr.flat(Infinity).filter(s => typeof s === 'string').join('\n');
         }
-        body.innerHTML = `
+
+        // 제개정이유 (왜 바꾸는지)
+        const reasonText = extractText(detail.제개정이유?.제개정이유내용);
+        // 개정문 (어떻게 바꾸는지)
+        const amendText = extractText(detail.개정문?.개정문내용);
+        // 부칙 (시행일 등)
+        const addendumArr = detail.부칙?.부칙단위;
+        const addendums = Array.isArray(addendumArr) ? addendumArr : (addendumArr ? [addendumArr] : []);
+        // 조문 (현행)
+        const articleArr = detail.조문?.조문단위;
+        const articles = Array.isArray(articleArr) ? articleArr : (articleArr ? [articleArr] : []);
+
+        // 본문 구성
+        let html = `
           <div class="bd-law-meta">
             <div><b>법령명</b> ${escapeHtml(lawName)}</div>
             ${ministry ? `<div><b>소관부처</b> ${escapeHtml(ministry)}</div>` : ''}
-            ${promulgateDt ? `<div><b>공포일자</b> ${escapeHtml(promulgateDt)}</div>` : ''}
+            ${promulgateDt ? `<div><b>공포일자</b> ${escapeHtml(String(promulgateDt))}</div>` : ''}
           </div>
-          ${articlesHtml || '<div class="bd-content-empty">조문 미리보기 없음</div>'}
-          <a class="bd-wiki-link" href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(lawName)}" target="_blank" rel="noopener">국가법령정보센터 전체 →</a>
         `;
+
+        // 제개정이유 (사회적 영향)
+        if (reasonText) {
+          html += `
+            <div class="bd-law-section">
+              <div class="bd-law-section-h">💡 제·개정이유 (왜 바꾸는지)</div>
+              <div class="bd-law-content">${escapeHtml(reasonText.slice(0, 1200))}${reasonText.length > 1200 ? '…' : ''}</div>
+            </div>
+          `;
+        }
+
+        // 개정문 (실제 변경 내용)
+        if (amendText) {
+          html += `
+            <div class="bd-law-section bd-law-amend">
+              <div class="bd-law-section-h">📋 개정 내용 (실제 변경된 조항)</div>
+              <div class="bd-law-content">${escapeHtml(amendText.slice(0, 2000))}${amendText.length > 2000 ? '…' : ''}</div>
+            </div>
+          `;
+        }
+
+        // 조문 (현행 법령 미리보기)
+        if (articles.length) {
+          html += `<div class="bd-law-section-h" style="margin-top:14px">📜 현행 조문 (상위 ${Math.min(5, articles.length)}/${articles.length})</div>`;
+          articles.slice(0, 5).forEach(a => {
+            const num = a.조문번호 ? `제${a.조문번호}조` : '';
+            const title = a.조문제목 || '';
+            const content = (a.조문내용 || '').trim();
+            html += `
+              <div class="bd-law-article">
+                <b>${escapeHtml(num)}${title ? ' ' + escapeHtml(title) : ''}</b>
+                ${content ? `<div class="bd-law-content">${escapeHtml(content.slice(0, 400))}${content.length > 400 ? '…' : ''}</div>` : ''}
+              </div>`;
+          });
+          if (articles.length > 5) html += `<div class="bd-content-empty">…외 ${articles.length - 5}개 조문</div>`;
+        }
+
+        // 부칙 (시행일)
+        if (addendums.length) {
+          const first = addendums[0];
+          const addText = extractText(first.부칙내용 || first.조문내용);
+          if (addText) {
+            html += `
+              <div class="bd-law-section" style="margin-top:14px">
+                <div class="bd-law-section-h">📎 부칙 (시행일·경과조치)</div>
+                <div class="bd-law-content">${escapeHtml(addText.slice(0, 600))}${addText.length > 600 ? '…' : ''}</div>
+              </div>
+            `;
+          }
+        }
+
+        if (!reasonText && !amendText && !articles.length) {
+          html += `<div class="bd-content-empty">법령 본문 데이터가 비어있음 — 외부 링크 확인.</div>`;
+        }
+
+        html += `<a class="bd-wiki-link" href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(lawName)}" target="_blank" rel="noopener">국가법령정보센터 전체 →</a>`;
+        body.innerHTML = html;
       });
       loadBillWiki(bill.BILL_NAME || '').then(wiki => {
         const body = document.getElementById('bd-wiki-body');
