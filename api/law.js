@@ -64,8 +64,11 @@ export default async function handler(req, res) {
   try {
     const r = await fetch(url, {
       headers: {
-        'User-Agent': 'KoreaPatchNotes/1.0 (politik-phi.vercel.app)',
+        'User-Agent': 'Mozilla/5.0 (compatible; KoreaPatchNotes/1.0)',
         'Accept': 'application/json',
+        // ★ open.law.go.kr API는 Origin/Referer 헤더가 등록된 도메인과 일치해야 작동
+        'Origin': 'https://politik-phi.vercel.app',
+        'Referer': 'https://politik-phi.vercel.app/',
       },
     });
     const ct = r.headers.get('content-type') || '';
