@@ -3372,8 +3372,6 @@
       <div class="ac-dropdown" id="ac-dropdown" role="listbox" aria-label="검색 자동완성"></div>
     </div>
     <div class="nav-stats">
-      <div><b id="stat-total">—</b> 등록</div>
-      <div><b id="stat-shown">—</b> 표시</div>
       <button class="theme-toggle" id="theme-toggle" title="다크 모드 전환">🌙</button>
     </div>
   </div>
@@ -7038,7 +7036,8 @@ function renderGrid() {
     );
   });
 
-  document.getElementById('stat-shown').textContent = filtered.length;
+  const _statShown = document.getElementById('stat-shown');
+  if (_statShown) _statShown.textContent = filtered.length;
 
   if (filtered.length === 0) {
     return '<div class="empty">검색 결과가 없습니다.</div>';
@@ -8007,8 +8006,10 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       return true;
     });
     state.members = [...filteredExtras, ...members];
-    document.getElementById('stat-total').textContent = data.length;
-    document.getElementById('last-sync').textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
+    const _statTotal = document.getElementById('stat-total');
+    if (_statTotal) _statTotal.textContent = data.length;
+    const _lastSync = document.getElementById('last-sync');
+    if (_lastSync) _lastSync.textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
     const fy = document.getElementById('foot-year');
     if (fy) fy.textContent = `v2.1 · ${new Date().getFullYear()}`;
     renderFilters();
