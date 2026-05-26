@@ -2754,6 +2754,51 @@
   }
   .community-note b { color: var(--text); font-weight: 700; }
 
+  /* ============ Changelog ============ */
+  .changelog-list {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .changelog-entry {
+    padding: 18px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.15s;
+  }
+  .changelog-entry:hover { border-color: var(--accent); }
+  .changelog-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .changelog-v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 800;
+    color: var(--accent);
+    background: rgba(59,130,246,0.1);
+    padding: 3px 9px; border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  .changelog-date {
+    font-size: 11.5px; color: var(--dim);
+  }
+  .changelog-latest {
+    font-size: 10px; font-weight: 800;
+    padding: 2px 8px; border-radius: 6px;
+    background: var(--ok); color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .changelog-title {
+    font-size: 16px; font-weight: 800;
+    margin: 4px 0 8px;
+    color: var(--text);
+  }
+  .changelog-items {
+    margin: 0; padding-left: 20px;
+    font-size: 13px; line-height: 1.7;
+    color: var(--text-2);
+  }
+  .changelog-items li { margin-bottom: 3px; }
+
   /* ============ 탐색 도구 그리드 (홈) ============ */
   .explore-section {
     margin-top: 28px;
@@ -5513,6 +5558,164 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* ============ Skeleton UI ============ */
+  .sk-shimmer {
+    background: linear-gradient(90deg,
+      var(--bg-elev) 0%,
+      var(--border) 50%,
+      var(--bg-elev) 100%);
+    background-size: 200% 100%;
+    animation: skShimmer 1.4s linear infinite;
+    border-radius: 6px;
+  }
+  @keyframes skShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .sk-line { height: 12px; margin: 8px 0; }
+  .sk-line.lg { height: 18px; }
+  .sk-line.sm { height: 9px; }
+  .sk-card {
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .sk-avatar { width: 40px; height: 40px; border-radius: 50%; }
+  .sk-row { display: flex; gap: 12px; align-items: center; }
+  .sk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  /* ============ 통합 검색 (홈) ============ */
+  .gsearch-wrap {
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto 24px;
+  }
+  .gsearch-input-row {
+    display: flex; align-items: center;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .gsearch-input-row:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+  }
+  .gsearch-icon {
+    font-size: 18px; margin-right: 10px; color: var(--dim);
+  }
+  .gsearch-input {
+    flex: 1;
+    border: 0; outline: 0; background: transparent;
+    font-size: 15px; color: var(--text);
+    font-family: inherit;
+  }
+  .gsearch-input::placeholder { color: var(--dim); }
+  .gsearch-clear {
+    cursor: pointer; color: var(--dim);
+    padding: 4px 8px; border-radius: 6px;
+    font-size: 16px; line-height: 1;
+  }
+  .gsearch-clear:hover { background: var(--bg-elev); color: var(--text); }
+  .gsearch-hint {
+    text-align: center; font-size: 11px; color: var(--dim);
+    margin-top: 6px;
+  }
+  .gsearch-dd {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 6px;
+    max-height: 70vh; overflow-y: auto;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    z-index: 50;
+    display: none;
+  }
+  [data-theme="dark"] .gsearch-dd { box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+  .gsearch-dd.show { display: block; }
+  .gsearch-section {
+    padding: 8px 14px 4px;
+    font-size: 11px; font-weight: 700;
+    color: var(--dim);
+    letter-spacing: 0.5px; text-transform: uppercase;
+    background: var(--bg-elev);
+    border-bottom: 1px solid var(--border);
+  }
+  .gsearch-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+    text-decoration: none !important;
+    color: var(--text);
+  }
+  .gsearch-item:last-child { border-bottom: 0; }
+  .gsearch-item:hover, .gsearch-item.active {
+    background: var(--bg-elev);
+  }
+  .gsearch-item-icon {
+    width: 28px; height: 28px;
+    background: var(--bg-elev);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+    overflow: hidden;
+  }
+  .gsearch-item-icon img { width: 100%; height: 100%; object-fit: cover; }
+  .gsearch-item-body { flex: 1; min-width: 0; }
+  .gsearch-item-t {
+    font-size: 13px; font-weight: 700;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .gsearch-item-meta {
+    font-size: 11px; color: var(--dim);
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .gsearch-item-kind {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 8px;
+    background: var(--bg-elev);
+    color: var(--dim);
+    flex-shrink: 0;
+  }
+  .gsearch-empty {
+    padding: 20px; text-align: center;
+    color: var(--dim); font-size: 12.5px;
+  }
+  /* 데이터 최신성 배지 */
+  .freshness-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px;
+    background: rgba(16,185,129,0.12);
+    color: var(--ok);
+    border-radius: 8px;
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .freshness-badge::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--ok);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @media (max-width: 560px) {
+    .gsearch-wrap { margin-bottom: 16px; }
+    .gsearch-input-row { padding: 10px 12px; }
+    .gsearch-input { font-size: 14px; }
+    .gsearch-icon { font-size: 16px; margin-right: 8px; }
+  }
+
   /* Footer */
   footer {
     border-top: 1px solid var(--border);
@@ -5643,7 +5846,21 @@
 <div class="rel-tooltip" id="rel-tooltip"></div>
 
 <main id="view">
-  <div class="loading"><span class="loading-spinner"></span>국회 데이터 불러오는 중…</div>
+  <div class="dash" style="max-width:1280px;margin:0 auto;padding:24px 20px">
+    <div class="sk-card" style="margin-bottom:18px">
+      <div class="sk-line lg sk-shimmer" style="width:60%;max-width:380px"></div>
+      <div class="sk-line sk-shimmer" style="width:90%;max-width:560px;margin-top:14px"></div>
+      <div class="sk-line sm sk-shimmer" style="width:40%;margin-top:10px"></div>
+    </div>
+    <div class="sk-card" style="height:64px"><div class="sk-line lg sk-shimmer" style="width:80%;max-width:640px;margin-top:14px"></div></div>
+    <div class="sk-grid">
+      <div class="sk-card"><div class="sk-row"><div class="sk-avatar sk-shimmer"></div><div style="flex:1"><div class="sk-line sk-shimmer" style="width:60%"></div><div class="sk-line sm sk-shimmer" style="width:40%"></div></div></div></div>
+      <div class="sk-card"><div class="sk-row"><div class="sk-avatar sk-shimmer"></div><div style="flex:1"><div class="sk-line sk-shimmer" style="width:60%"></div><div class="sk-line sm sk-shimmer" style="width:40%"></div></div></div></div>
+      <div class="sk-card"><div class="sk-row"><div class="sk-avatar sk-shimmer"></div><div style="flex:1"><div class="sk-line sk-shimmer" style="width:60%"></div><div class="sk-line sm sk-shimmer" style="width:40%"></div></div></div></div>
+      <div class="sk-card"><div class="sk-row"><div class="sk-avatar sk-shimmer"></div><div style="flex:1"><div class="sk-line sk-shimmer" style="width:60%"></div><div class="sk-line sm sk-shimmer" style="width:40%"></div></div></div></div>
+    </div>
+    <div class="loading" style="padding:30px 20px"><span class="loading-spinner"></span>국회 데이터 불러오는 중…</div>
+  </div>
 </main>
 
 <footer>
@@ -5662,6 +5879,7 @@
     <div class="foot-col">
       <div class="foot-h">서비스</div>
       <a href="#/about">소개 · 사이트 정보</a>
+      <a href="#/changelog">📋 변경 이력</a>
       <a href="#/business">광고 · 데이터 문의</a>
       <a href="#/donate">☕ 후원하기</a>
       <a href="#/privacy">개인정보 처리방침</a>
@@ -9297,6 +9515,114 @@ function renderDexCard(m, group) {
 // ============================================================
 // 커뮤니티 안내 (/community)
 // ============================================================
+// ============================================================
+// 변경 이력 (/changelog) — 투명성·신뢰
+// ============================================================
+const CHANGELOG = [
+  { v: 'V14.0', date: '2026-05-26', title: '통합 검색 + 스켈레톤 UI', items: [
+    '홈 상단 통합 검색바 — 정치인·법안·9회 지선 후보·정치 용어 즉시 검색 (Ctrl+K 단축키)',
+    '초기 로딩 스켈레톤 UI로 교체 — 깜빡임·빈 화면 제거',
+    '변경 이력 페이지 신설 — 모든 업데이트 공개 기록',
+    '데이터 최신성 배지 — 실시간 갱신일 표시'
+  ]},
+  { v: 'V13.7', date: '2026-05-26', title: '커뮤니티 안전 안내 페이지', items: [
+    '/community 신설 — 자체 게시판 미운영 사유·외부 토론 채널 안내',
+    'GitHub Discussions·카카오 오픈채팅·이슈 템플릿 4개 채널'
+  ]},
+  { v: 'V13.6', date: '2026-05-25', title: 'stance 시스템 (스톡트윗 스타일)', items: [
+    '인물별 지지·반대 익명 태그 (localStorage)',
+    '/stances 페이지 — 내 정치 입장 자기 라벨'
+  ]},
+  { v: 'V13.5', date: '2026-05-24', title: '9회 지선 전 데이터 클릭 가능', items: [
+    '통계 카드·테이블 행·정당 막대·직책 카드 모두 클릭 → 통합 후보자 리스트 모달'
+  ]},
+  { v: 'V13.4', date: '2026-05-23', title: '9회 지선 페이지 UI 개편', items: [
+    '후보자 검색 박스 추가',
+    '17 시도별 분포 테이블'
+  ]},
+  { v: 'V13.3', date: '2026-05-22', title: 'UI 정리', items: [
+    '홈 슬림화 + 모바일 일관성',
+    '푸터·헤더 디자인 통합'
+  ]},
+  { v: 'V13.2', date: '2026-05-21', title: '활동 점수 형평성 개선', items: [
+    '의원만 활동 등급 적용',
+    '나머지는 그룹별 아이콘 배지 (📜 역사·⚖ 사법·🏢 행정·🌏 지방)'
+  ]},
+  { v: 'V13.1', date: '2026-05-20', title: '정치인 도감 (/dex)', items: [
+    'Pokedex 스타일 컬렉션 페이지',
+    '삼권+지방+역사 통합 검색·필터'
+  ]},
+  { v: 'V12.8', date: '2026-05-18', title: '의원 활동 점수', items: [
+    '발의(40)+통과율(30)+다양성(15)+위원회(15) 100점 만점',
+    '랭킹 페이지 점수·정당별 평균 통합'
+  ]},
+  { v: 'V12.7', date: '2026-05-15', title: '9회 지선 광역의원 추가', items: [
+    '광역의원 + 비례 광역의원 후보 데이터 통합'
+  ]},
+  { v: 'V12.0', date: '2026-05-10', title: '북마크 + 정치 용어 사전 + 의원 비교', items: [
+    '관심 의원 저장 (localStorage)',
+    '95개 용어 8 카테고리',
+    '의원 2~3명 비교 페이지'
+  ]},
+  { v: 'V11.0', date: '2026-05-01', title: '국가법령정보 + 위키 페이지뷰', items: [
+    '법안 → 법령 본문·판례·헌재 결정 자동 fetch',
+    '인물 관심도 30일 추이 그래프'
+  ]},
+  { v: 'V10.0', date: '2026-04-15', title: '법안 상세 + Vercel API 프록시', items: [
+    'likms 본문 + 위키 + 네이버 뉴스 통합',
+    '15개 분야 자동 분류·통과 속도 통계'
+  ]},
+  { v: 'V9.0', date: '2026-03-01', title: '9회 지방선거 LIVE', items: [
+    '광역단체장·기초단체장·교육감 후보자 실시간',
+    '5대 공약 모달'
+  ]},
+  { v: 'V8.0', date: '2026-02-01', title: 'patchkr.com 도메인 마이그레이션', items: [
+    '커스텀 도메인 + PWA + 소셜 공유'
+  ]},
+  { v: 'V7.0', date: '2026-01-01', title: '역대 정치사 데이터', items: [
+    '정당사 1948~ 45개',
+    '역대 대통령·총리·광역단체장·사법부 수장'
+  ]},
+  { v: 'V1.0', date: '2025-09-01', title: '초기 출시', items: [
+    '22대 국회의원 286명',
+    '17부처 장관·차관'
+  ]}
+];
+
+function renderChangelogPage() {
+  const total = CHANGELOG.length;
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="community-page">
+      <div class="community-hero">
+        <h1>📋 변경 이력 · Changelog</h1>
+        <p>${total}개 업데이트 · 모든 기능 변화 투명 공개 · 시간순.<br>
+        <span style="color:var(--dim);font-size:12px">최신 버전: <b style="color:var(--text)">${CHANGELOG[0].v}</b> (${CHANGELOG[0].date})</span></p>
+      </div>
+      <div class="changelog-list">
+        ${CHANGELOG.map((c, i) => `
+          <div class="changelog-entry">
+            <div class="changelog-head">
+              <span class="changelog-v">${escapeHtml(c.v)}</span>
+              <span class="changelog-date">${escapeHtml(c.date)}</span>
+              ${i === 0 ? '<span class="changelog-latest">최신</span>' : ''}
+            </div>
+            <h3 class="changelog-title">${escapeHtml(c.title)}</h3>
+            <ul class="changelog-items">
+              ${c.items.map(it => `<li>${escapeHtml(it)}</li>`).join('')}
+            </ul>
+          </div>
+        `).join('')}
+      </div>
+      <div class="community-note" style="margin-top:18px">
+        <h3>업데이트 주기</h3>
+        <p>주요 기능은 GitHub에 즉시 푸시되어 1~3분 내 배포됩니다. 데이터는 매일 자동 갱신 (국회 OPEN API · 중앙선관위 · 위키미디어).</p>
+        <p style="color:var(--dim);font-size:11.5px;margin-top:10px">전체 커밋 히스토리: <a href="https://github.com/minsoo500101-rgb/politik/commits/main" target="_blank" rel="noopener" style="color:var(--link)">GitHub commits →</a></p>
+      </div>
+    </div>
+  `;
+}
+
 function renderCommunityPage() {
   return `
     <div class="group-back" id="back-home">← 홈</div>
@@ -11161,7 +11487,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <span class="version-pill">v22.${state.bills?.length || 0}</span></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.0 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -11178,6 +11504,26 @@ function renderHome() {
           <a class="hero-btn" href="#/bills">📜  법안</a>
           <a class="hero-btn" href="#/map">🗺  지도</a>
         </div>
+      </div>
+
+      <!-- 통합 검색 -->
+      <div class="gsearch-wrap" id="gsearch-wrap">
+        <div class="gsearch-input-row">
+          <span class="gsearch-icon">🔍</span>
+          <input class="gsearch-input" id="gsearch-input" type="search"
+            placeholder="정치인·법안·9회 지선 후보·정치 용어 통합 검색…" autocomplete="off">
+          <span class="gsearch-clear" id="gsearch-clear" style="display:none">✕</span>
+        </div>
+        <div class="gsearch-hint">
+          한 번에 검색 — 의원·후보·법안·용어 ${(state.members?.length || 0).toLocaleString()}+ 항목
+          · <span class="freshness-badge">실시간 · ${(() => {
+            const d = new Date();
+            const mm = String(d.getMonth()+1).padStart(2,'0');
+            const dd = String(d.getDate()).padStart(2,'0');
+            return d.getFullYear()+'-'+mm+'-'+dd;
+          })()}</span>
+        </div>
+        <div class="gsearch-dd" id="gsearch-dd"></div>
       </div>
 
       ${(() => {
@@ -12154,6 +12500,14 @@ function route() {
     window.scrollTo(0, 0);
     return;
   }
+  // 변경 이력 (/changelog)
+  if (hash === '#/changelog') {
+    view.innerHTML = renderChangelogPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
   // 내 stance — 지지/반대 모아보기 (/stances)
   if (hash === '#/stances') {
     view.innerHTML = renderStancesPage();
@@ -13053,9 +13407,235 @@ function route() {
         for (const m of arr) if (!state.photos.has(m.MONA_CD)) prefetch.push(m);
       }
       prefetchPhotos(prefetch, 3);
+      // 통합 검색 (홈)
+      setupGlobalSearch();
       if (filterBar) filterBar.style.display = 'none';
     }
   }
+}
+
+// ============================================================
+// 통합 검색 (정치인 + 법안 + 9회 지선 후보 + 용어)
+// ============================================================
+function setupGlobalSearch() {
+  const input = document.getElementById('gsearch-input');
+  const dd = document.getElementById('gsearch-dd');
+  const clear = document.getElementById('gsearch-clear');
+  if (!input || !dd) return;
+  // glossary 비동기 로드
+  loadGlossary().catch(() => {});
+  // 9회 지선 후보 통합 풀
+  function getNec2026Pool() {
+    const nec = state.nec2026Governors;
+    if (!nec) return [];
+    const pool = [];
+    const sources = [
+      { arr: nec.governors, kind: '광역단체장' },
+      { arr: nec.muni, kind: '기초단체장' },
+      { arr: nec.edu, kind: '교육감' },
+      { arr: nec.localAssembly, kind: '광역의원' },
+      { arr: nec.localAssemblyProp, kind: '비례 광역의원' }
+    ];
+    for (const s of sources) {
+      if (!Array.isArray(s.arr)) continue;
+      for (const c of s.arr) {
+        pool.push({
+          kind: '9회 후보',
+          kindFull: s.kind,
+          name: c.HUBO_NM || c.name || '',
+          party: c.JD_NM || c.party || '',
+          region: c.SGG_NAME || c.region || '',
+          raw: c
+        });
+      }
+    }
+    return pool;
+  }
+  let activeIdx = -1;
+  let results = [];
+
+  function runSearch(q) {
+    q = (q || '').trim().toLowerCase();
+    if (!q || q.length < 1) { dd.classList.remove('show'); return; }
+    const out = { people: [], bills: [], nec: [], glossary: [] };
+    // 정치인 (이름 부분일치)
+    const members = state.members || [];
+    for (const m of members) {
+      const name = (m.HG_NM || '').toLowerCase();
+      const party = (m.POLY_NM || '').toLowerCase();
+      const region = (m.ORIG_NM || '').toLowerCase();
+      if (name.includes(q) || party.includes(q) || region.includes(q)) {
+        out.people.push(m);
+        if (out.people.length >= 6) break;
+      }
+    }
+    // 법안 (제목 부분일치)
+    const bills = state.bills || [];
+    for (const b of bills) {
+      const name = (b.BILL_NAME || b.BILL_NM || '').toLowerCase();
+      const proposer = (b.PROPOSER || '').toLowerCase();
+      if (name.includes(q) || proposer.includes(q)) {
+        out.bills.push(b);
+        if (out.bills.length >= 6) break;
+      }
+    }
+    // 9회 지선 후보
+    const necPool = getNec2026Pool();
+    for (const c of necPool) {
+      const n = (c.name || '').toLowerCase();
+      const p = (c.party || '').toLowerCase();
+      const r = (c.region || '').toLowerCase();
+      if (n.includes(q) || p.includes(q) || r.includes(q)) {
+        out.nec.push(c);
+        if (out.nec.length >= 6) break;
+      }
+    }
+    // 용어 사전
+    const gloss = glossaryState.data;
+    if (gloss?.terms) {
+      for (const t of gloss.terms) {
+        const term = (t.term || '').toLowerCase();
+        const desc = (t.short || '').toLowerCase();
+        if (term.includes(q) || desc.includes(q)) {
+          out.glossary.push(t);
+          if (out.glossary.length >= 6) break;
+        }
+      }
+    }
+    // 결과 렌더
+    const total = out.people.length + out.bills.length + out.nec.length + out.glossary.length;
+    if (total === 0) {
+      dd.innerHTML = '<div class="gsearch-empty">검색 결과가 없습니다. 다른 키워드를 시도해 보세요.</div>';
+      dd.classList.add('show');
+      results = [];
+      activeIdx = -1;
+      return;
+    }
+    results = [];
+    let html = '';
+    if (out.people.length) {
+      html += '<div class="gsearch-section">👥 정치인 (' + out.people.length + ')</div>';
+      for (const m of out.people) {
+        const photo = state.photos?.get(m.MONA_CD);
+        const link = '#/m/' + encodeURIComponent(m.MONA_CD || m.HG_NM);
+        const meta = [m.POLY_NM, m.ORIG_NM, (m._typeLabel || '')].filter(Boolean).join(' · ');
+        results.push({ link });
+        html += '<a class="gsearch-item" href="' + link + '">'
+          + '<div class="gsearch-item-icon">' + (photo?.thumb ? '<img src="' + escapeHtml(photo.thumb) + '" alt="" onerror="this.replaceWith(document.createTextNode(\'' + escapeHtml((m.HG_NM||'?').charAt(0)) + '\'))">' : escapeHtml((m.HG_NM||'?').charAt(0))) + '</div>'
+          + '<div class="gsearch-item-body">'
+          + '<div class="gsearch-item-t">' + escapeHtml(m.HG_NM || '') + '</div>'
+          + '<div class="gsearch-item-meta">' + escapeHtml(meta) + '</div>'
+          + '</div>'
+          + '<div class="gsearch-item-kind">' + (m._group === 'legislative' ? '국회의원' : (m._typeLabel || '인물')) + '</div>'
+          + '</a>';
+      }
+    }
+    if (out.nec.length) {
+      html += '<div class="gsearch-section">🗳 9회 지선 후보 (' + out.nec.length + ')</div>';
+      for (const c of out.nec) {
+        const link = '#/election2026';
+        results.push({ link });
+        html += '<a class="gsearch-item" href="' + link + '">'
+          + '<div class="gsearch-item-icon">🗳</div>'
+          + '<div class="gsearch-item-body">'
+          + '<div class="gsearch-item-t">' + escapeHtml(c.name) + '</div>'
+          + '<div class="gsearch-item-meta">' + escapeHtml([c.region, c.party, c.kindFull].filter(Boolean).join(' · ')) + '</div>'
+          + '</div>'
+          + '<div class="gsearch-item-kind">' + escapeHtml(c.kindFull) + '</div>'
+          + '</a>';
+      }
+    }
+    if (out.bills.length) {
+      html += '<div class="gsearch-section">📜 법안 (' + out.bills.length + ')</div>';
+      for (const b of out.bills) {
+        const link = '#/bill/' + encodeURIComponent(b.BILL_ID);
+        const meta = [b.PROPOSER, b.PROC_DT, b.PROC_RESULT_CD].filter(Boolean).join(' · ');
+        results.push({ link });
+        html += '<a class="gsearch-item" href="' + link + '">'
+          + '<div class="gsearch-item-icon">📜</div>'
+          + '<div class="gsearch-item-body">'
+          + '<div class="gsearch-item-t">' + escapeHtml(b.BILL_NAME || '') + '</div>'
+          + '<div class="gsearch-item-meta">' + escapeHtml(meta) + '</div>'
+          + '</div>'
+          + '<div class="gsearch-item-kind">법안</div>'
+          + '</a>';
+      }
+    }
+    if (out.glossary.length) {
+      html += '<div class="gsearch-section">📖 정치 용어 (' + out.glossary.length + ')</div>';
+      for (const t of out.glossary) {
+        const link = '#/glossary';
+        results.push({ link });
+        html += '<a class="gsearch-item" href="' + link + '">'
+          + '<div class="gsearch-item-icon">📖</div>'
+          + '<div class="gsearch-item-body">'
+          + '<div class="gsearch-item-t">' + escapeHtml(t.term) + '</div>'
+          + '<div class="gsearch-item-meta">' + escapeHtml((t.short || '').slice(0, 80)) + '</div>'
+          + '</div>'
+          + '<div class="gsearch-item-kind">용어</div>'
+          + '</a>';
+      }
+    }
+    dd.innerHTML = html;
+    dd.classList.add('show');
+    activeIdx = -1;
+  }
+
+  let timer = null;
+  input.addEventListener('input', (e) => {
+    const v = e.target.value;
+    clear.style.display = v ? 'block' : 'none';
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => runSearch(v), 80);
+  });
+  input.addEventListener('keydown', (e) => {
+    const items = dd.querySelectorAll('.gsearch-item');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+      if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+      if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIdx >= 0 && items[activeIdx]) {
+        items[activeIdx].click();
+      } else if (items[0]) {
+        items[0].click();
+      }
+    } else if (e.key === 'Escape') {
+      input.blur();
+      dd.classList.remove('show');
+    }
+  });
+  clear.addEventListener('click', () => {
+    input.value = '';
+    clear.style.display = 'none';
+    dd.classList.remove('show');
+    input.focus();
+  });
+  // 외부 클릭 시 닫기
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('gsearch-wrap');
+    if (wrap && !wrap.contains(e.target)) dd.classList.remove('show');
+  });
+  // 글로벌 ctrl+k / cmd+k 단축키로 포커스
+  document.addEventListener('keydown', function gskey(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      const stillThere = document.getElementById('gsearch-input');
+      if (stillThere) {
+        stillThere.focus();
+        stillThere.select();
+      } else {
+        document.removeEventListener('keydown', gskey);
+      }
+    }
+  });
 }
 
 window.addEventListener('hashchange', () => {
