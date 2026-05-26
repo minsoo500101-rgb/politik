@@ -2126,7 +2126,11 @@
     letter-spacing: 0.5px;
     z-index: 2;
   }
-  .dex-grade-badge {
+  .dex-grade-badge,
+  .dex-era-badge,
+  .dex-judicial-badge,
+  .dex-exec-badge,
+  .dex-local-badge {
     position: absolute;
     top: 8px; right: 8px;
     width: 24px; height: 24px;
@@ -2135,6 +2139,26 @@
     font-size: 12px; font-weight: 800;
     display: grid; place-items: center;
     z-index: 2;
+  }
+  .dex-era-badge { background: #78350f; font-size: 13px; }
+  .dex-judicial-badge { background: #0891b2; }
+  .dex-exec-badge { background: #9333ea; }
+  .dex-local-badge { background: #16a34a; }
+  .dex-newbie-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--bg-elev);
+    color: var(--text-2);
+    font-size: 9px; font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    z-index: 2;
+  }
+  .dex-foot-info {
+    font-size: 10px;
+    color: var(--text-2);
+    font-weight: 600;
   }
   .dex-card-avatar {
     width: 72px; height: 72px;
@@ -8026,6 +8050,12 @@ async function loadBillWiki(billName) {
 // ============================================================
 function computeMpScore(memberName) {
   if (!memberName || !state.bills?.length) return null;
+  // 입법부 의원만 점수 적용 (사법·행정·역사 인물은 평가 부적절)
+  const m = state.members?.find(x => x.HG_NM === memberName);
+  if (m) {
+    const isMp = m._group === 'legislative' || (m.UNITS && m._group !== 'historical');
+    if (!isMp) return null;
+  }
   const bills = state.bills;
   const proposers = state.billProposers || {};
 
@@ -8039,6 +8069,8 @@ function computeMpScore(memberName) {
     if (/가결/.test(b.PROC_RESULT_CD || '')) passed++;
     topicSet.add(getBillTopic(b).id);
   }
+  // 발의 활동이 0이면 점수 계산 무의미
+  if (leadCount === 0) return null;
 
   // 2. 발의 활동도 (40점) — 평균 대비
   // 모든 의원의 평균 발의 건수 계산
@@ -8300,7 +8332,8 @@ function renderDexPage() {
       <div class="dex-hero">
         <h1>📕 정치인 도감</h1>
         <p>삼권 (입법·행정·사법) + 지방정부 + 역사 인물 통합 컬렉션.<br>
-        활동 점수·정당색·등급으로 시각화. 카드 클릭 → 상세.</p>
+        그룹별 적절한 배지로 시각화. 카드 클릭 → 상세.<br>
+        <span style="color:var(--dim);font-size:12px">⚖ 활동 점수 등급(A~E)은 22대 의원의 발의 활동 한정 — 행정·사법·역사 인물 평가에는 부적절하므로 적용하지 않음</span></p>
       </div>
       <div id="dex-body">
         <div class="loading"><span class="loading-spinner"></span>도감 준비 중…</div>
@@ -8344,7 +8377,7 @@ function renderDexBody() {
   if (f.grade) {
     filtered = filtered.filter(m => {
       const s = computeMpScore(m.HG_NM);
-      if (!s) return f.grade === '?';
+      if (!s) return false; // 비의원은 등급 필터에서 제외
       const g = s.total >= 80 ? 'A' : s.total >= 65 ? 'B' : s.total >= 50 ? 'C' : s.total >= 35 ? 'D' : 'E';
       return g === f.grade;
     });
@@ -8433,13 +8466,13 @@ function renderDexBody() {
           <option value="">— 전체 정당 —</option>
           ${partyOptions.map(p => `<option value="${escapeHtml(p)}" ${f.party === p ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('')}
         </select>
-        <select id="dex-grade">
-          <option value="">— 전체 등급 —</option>
-          <option value="A" ${f.grade === 'A' ? 'selected' : ''}>A 등급 (80+)</option>
-          <option value="B" ${f.grade === 'B' ? 'selected' : ''}>B 등급 (65-79)</option>
-          <option value="C" ${f.grade === 'C' ? 'selected' : ''}>C 등급 (50-64)</option>
-          <option value="D" ${f.grade === 'D' ? 'selected' : ''}>D 등급 (35-49)</option>
-          <option value="E" ${f.grade === 'E' ? 'selected' : ''}>E 등급 (35미만)</option>
+        <select id="dex-grade" title="활동 점수 등급은 입법부 의원만 적용됩니다">
+          <option value="">— 활동 점수 (의원 한정) —</option>
+          <option value="A" ${f.grade === 'A' ? 'selected' : ''}>A · 매우 활발 (80+)</option>
+          <option value="B" ${f.grade === 'B' ? 'selected' : ''}>B · 활발 (65-79)</option>
+          <option value="C" ${f.grade === 'C' ? 'selected' : ''}>C · 평균 (50-64)</option>
+          <option value="D" ${f.grade === 'D' ? 'selected' : ''}>D · 다소 적음 (35-49)</option>
+          <option value="E" ${f.grade === 'E' ? 'selected' : ''}>E · 적음 (35미만)</option>
         </select>
         <select id="dex-sort">
           <option value="num" ${f.sort === 'num' ? 'selected' : ''}>도감 번호순</option>
@@ -8500,14 +8533,46 @@ function renderDexCard(m, group) {
     ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(m.HG_NM)}">`
     : `<span class="dex-initial">${escapeHtml(initial)}</span>`;
   const hasCareer = m.MEM_TITLE && m.MEM_TITLE.length > 30;
-  const score = computeMpScore(m.HG_NM);
-  const grade = score ? (score.total >= 80 ? 'A' : score.total >= 65 ? 'B' : score.total >= 50 ? 'C' : score.total >= 35 ? 'D' : 'E') : null;
-  const gradeColor = score ? (score.total >= 80 ? '#fbbf24' : score.total >= 65 ? '#10b981' : score.total >= 50 ? '#0ea5e9' : score.total >= 35 ? '#f97316' : '#dc2626') : null;
+  const score = computeMpScore(m.HG_NM); // null if not MP or no activity
   const groupIcon = { legislative: '🏛', executive: '🏢', judicial: '⚖', local: '🌏', historical: '📜' }[group];
+
+  // 그룹별 우상단 배지
+  let topBadge = '';
+  if (score) {
+    // 입법부 의원: 활동 점수 등급 (가치판단 색깔 빼고 활동량 의미로 명확화)
+    const grade = score.total >= 80 ? 'A' : score.total >= 65 ? 'B' : score.total >= 50 ? 'C' : score.total >= 35 ? 'D' : 'E';
+    const gradeColor = score.total >= 80 ? '#fbbf24' : score.total >= 65 ? '#10b981' : score.total >= 50 ? '#0ea5e9' : score.total >= 35 ? '#f97316' : '#94a3b8';
+    const gradeTitle = `활동 점수 ${score.total}/100 — 발의 ${score.raw.leadCount}건, 통과율 ${(score.raw.passRate*100).toFixed(0)}%`;
+    topBadge = `<div class="dex-grade-badge" style="background:${gradeColor}" title="${gradeTitle}">${grade}</div>`;
+  } else if (group === 'historical') {
+    topBadge = `<div class="dex-era-badge" title="역사 인물">📜</div>`;
+  } else if (group === 'judicial') {
+    topBadge = `<div class="dex-judicial-badge" title="사법부">⚖</div>`;
+  } else if (m._type === 'president' || m._type === 'prime_minister' || m._type === 'minister') {
+    topBadge = `<div class="dex-exec-badge" title="현직 행정부">🏢</div>`;
+  } else if (m._type === 'local_gov_head') {
+    topBadge = `<div class="dex-local-badge" title="광역단체장">🌏</div>`;
+  } else if (m._group === 'legislative' && m.UNITS) {
+    // 22대 의원인데 발의 0 — 신인 가능성
+    topBadge = `<div class="dex-newbie-badge" title="22대 의원 (대표발의 미집계 또는 0건)">신인</div>`;
+  }
+
+  // 그룹별 하단 정보
+  let footInfo = '';
+  if (group === 'historical') {
+    const range = (m.MEM_TITLE || '').match(/(\d{4})\s*[~\-]\s*(\d{4})?/);
+    if (range) footInfo = `<span class="dex-foot-info">${range[1]}~${range[2] || ''}</span>`;
+  } else if (group === 'judicial' || group === 'executive' || group === 'local') {
+    // term_start 정보 표시
+    const memTitle = m.MEM_TITLE || '';
+    const tsMatch = memTitle.match(/임기[:：]\s*(\d{4}-\d{2}-\d{2})/);
+    if (tsMatch) footInfo = `<span class="dex-foot-info">취임 ${tsMatch[1].slice(0,7)}</span>`;
+  }
+
   return `
     <div class="dex-card ${hasCareer ? 'collected' : 'uncollected'}" data-mid="${escapeHtml(m.MONA_CD)}" style="--party-color:${color}">
       <div class="dex-num">#${String(m._dexNum).padStart(3, '0')}</div>
-      ${grade ? `<div class="dex-grade-badge" style="background:${gradeColor}">${grade}</div>` : ''}
+      ${topBadge}
       <div class="dex-card-avatar">${avatar}</div>
       <div class="dex-card-body">
         <div class="dex-card-name">${escapeHtml(m.HG_NM)}</div>
@@ -8516,7 +8581,7 @@ function renderDexCard(m, group) {
       </div>
       <div class="dex-card-foot">
         <span class="dex-group-tag">${groupIcon} ${{ legislative:'입법', executive:'행정', judicial:'사법', local:'지방', historical:'역사' }[group]}</span>
-        ${hasCareer ? `<span class="dex-check" title="career 등록 완료">✓</span>` : `<span class="dex-question" title="career 미등록">?</span>`}
+        ${footInfo || (hasCareer ? `<span class="dex-check" title="career 등록 완료">✓</span>` : `<span class="dex-question" title="career 미등록">?</span>`)}
       </div>
     </div>
   `;
