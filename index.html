@@ -2116,6 +2116,47 @@
     font-size: 12px; font-weight: 600;
     text-decoration: none !important;
   }
+  /* 단독 BMC 카드 (donate 페이지) */
+  .about-donate-single {
+    max-width: 600px;
+    margin: 30px auto;
+  }
+  .about-donate-big {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--bg-elev);
+    border: 2px solid #f4b942;
+    border-radius: 14px;
+    padding: 22px 24px;
+    flex-wrap: wrap;
+  }
+  .about-donate-big-icon {
+    font-size: 44px;
+    flex-shrink: 0;
+  }
+  .about-donate-big-info { flex: 1; min-width: 200px; }
+  .about-donate-big-title {
+    font-size: 18px; font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .about-donate-big-desc {
+    font-size: 13px; color: var(--text-2);
+    line-height: 1.5;
+  }
+  .about-donate-big-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 11px 22px;
+    background: #f4b942;
+    color: #0a0e14 !important;
+    border-radius: 8px;
+    font-weight: 800; font-size: 15px;
+    text-decoration: none !important;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  .about-donate-big-btn:hover {
+    transform: translateY(-2px);
+  }
 
   /* 네이버 뉴스 리스트 */
   .bd-news-list {
@@ -7091,21 +7132,14 @@ function renderDonatePage() {
         </ul>
       </div>
 
-      <div class="about-section">
-        <h2>후원 방법</h2>
-        <div class="about-donate-grid">
-          <div class="about-donate-card">
-            <div class="about-donate-icon">☕</div>
-            <div class="about-donate-title">Buy Me a Coffee</div>
-            <div class="about-donate-desc">신용카드 · Apple Pay · Google Pay<br>국내·해외 모두 가능</div>
-            <div class="about-donate-link"><a href="https://buymeacoffee.com/HYTech" target="_blank" rel="noopener">☕ Support</a></div>
+      <div class="about-section about-donate-single">
+        <div class="about-donate-big">
+          <div class="about-donate-big-icon">☕</div>
+          <div class="about-donate-big-info">
+            <div class="about-donate-big-title">Buy Me a Coffee</div>
+            <div class="about-donate-big-desc">신용카드 · Apple Pay · Google Pay — 국내·해외 모두 가능</div>
           </div>
-          <div class="about-donate-card">
-            <div class="about-donate-icon">⭐</div>
-            <div class="about-donate-title">GitHub Star</div>
-            <div class="about-donate-desc">무료 후원 — 저장소 별표 하나로 큰 응원</div>
-            <div class="about-donate-link"><a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">⭐ Star on GitHub</a></div>
-          </div>
+          <a href="https://buymeacoffee.com/HYTech" target="_blank" rel="noopener" class="about-donate-big-btn">☕ Support</a>
         </div>
       </div>
 
