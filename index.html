@@ -139,6 +139,9 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <link rel="preload" as="fetch" href="data/politicians.json?v=8" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
+<!-- Google AdSense (승인 심사용) -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
+     crossorigin="anonymous"></script>
 <style>
   :root {
     --bg: #fafafa;
@@ -1961,6 +1964,24 @@
     letter-spacing: 0.3px;
     margin-bottom: 8px;
   }
+
+  /* AdSense 광고 슬롯 — 광고 미게재 시 자리 비움 */
+  .ad-slot {
+    margin: 14px 0;
+    min-height: 90px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-elev);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--dim);
+    font-size: 11px;
+  }
+  .ad-slot:empty::after {
+    content: 'AD';
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+  .ad-slot ins { width: 100%; }
 
   /* BMC footer button — 노란 강조 */
   .bmc-foot-btn {
@@ -4247,6 +4268,7 @@
       <a href="#/about">소개 · 사이트 정보</a>
       <a href="#/business">광고 · 데이터 문의</a>
       <a href="#/donate">☕ 후원하기</a>
+      <a href="#/privacy">개인정보 처리방침</a>
       <a href="https://buymeacoffee.com/HYTech" target="_blank" rel="noopener" class="bmc-foot-btn">☕ Buy me a coffee</a>
     </div>
   </div>
@@ -7156,6 +7178,96 @@ function renderDonatePage() {
   `;
 }
 
+function renderPrivacyPage() {
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="about-page">
+      <h1 class="about-h1">개인정보 처리방침</h1>
+      <p class="about-lead">대한민국 패치 노트 (patchkr.com, 이하 "사이트")는 사용자의 개인정보를 중요하게 생각하며 다음 원칙에 따라 처리합니다.</p>
+
+      <div class="about-section">
+        <h2>1. 수집하는 정보</h2>
+        <p>사이트는 회원가입·로그인 기능이 없으며, 개인을 식별할 수 있는 정보를 직접 수집하지 않습니다.</p>
+        <ul class="about-ul">
+          <li><b>자동 수집 정보 (분석용)</b> — 방문 페이지·접속 시간·브라우저 종류·OS·기기 종류 (익명)</li>
+          <li><b>localStorage 캐시</b> — 사이트 데이터 빠른 재로드를 위해 브라우저에 저장 (서버 전송 X)</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <h2>2. 광고 (Google AdSense)</h2>
+        <p>사이트는 Google AdSense를 통해 광고를 게재합니다. Google은 다음 정보를 처리할 수 있습니다:</p>
+        <ul class="about-ul">
+          <li><b>쿠키</b> — Google·제3자 광고 파트너가 사용자의 이전 방문 정보를 기반으로 광고 게재</li>
+          <li><b>DoubleClick DART 쿠키</b> — Google이 사용자의 사이트 방문 기록을 기반으로 광고 게재</li>
+          <li>사용자는 <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">Google 광고 설정</a>에서 개인 맞춤 광고를 비활성화할 수 있습니다.</li>
+          <li>사용자는 <a href="https://www.aboutads.info/" target="_blank" rel="noopener">aboutads.info</a>에서 제3자 광고 제공업체 쿠키를 비활성화할 수 있습니다.</li>
+        </ul>
+        <p>사이트는 정치·종교·선거 광고를 차단합니다.</p>
+      </div>
+
+      <div class="about-section">
+        <h2>3. 제3자 서비스</h2>
+        <p>사이트는 다음 외부 서비스의 API를 호출하여 데이터를 표시합니다. 이 과정에서 사용자의 IP 주소가 해당 서비스에 노출될 수 있습니다:</p>
+        <ul class="about-ul">
+          <li>대한민국 국회 OPEN API (open.assembly.go.kr)</li>
+          <li>중앙선거관리위원회 (data.go.kr) — Vercel Serverless 프록시 경유 (사용자 IP 미노출)</li>
+          <li>국가법령정보센터 (open.law.go.kr) — Vercel Serverless 프록시 경유</li>
+          <li>한국어 위키백과 (ko.wikipedia.org) — 브라우저 직접 요청</li>
+          <li>Wikimedia 페이지뷰 API (wikimedia.org) — 브라우저 직접 요청</li>
+          <li>네이버 검색 API (openapi.naver.com) — Vercel Serverless 프록시 경유</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <h2>4. 정보 보유 기간</h2>
+        <ul class="about-ul">
+          <li>사이트 서버는 사용자 식별 정보를 저장하지 않습니다.</li>
+          <li>브라우저 localStorage 캐시는 24시간 후 자동 갱신됩니다.</li>
+          <li>Google AdSense 쿠키는 Google 정책에 따릅니다 (보통 13개월).</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <h2>5. 사용자 권리</h2>
+        <ul class="about-ul">
+          <li>브라우저 설정에서 쿠키 차단 가능 (광고 일부 기능 제한될 수 있음)</li>
+          <li>브라우저 설정에서 localStorage 삭제 가능</li>
+          <li>Google 광고 설정에서 맞춤 광고 비활성화 가능</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <h2>6. 변경 사항</h2>
+        <p>본 방침은 법령·서비스 변경에 따라 수정될 수 있으며, 변경 시 본 페이지에 공지합니다.</p>
+        <p class="about-note">최종 업데이트: 2026년 5월 26일</p>
+      </div>
+
+      <div class="about-section">
+        <h2>7. 문의</h2>
+        <p>개인정보 관련 문의는 <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener">GitHub 이슈</a>로 남겨주세요.</p>
+      </div>
+    </div>
+  `;
+}
+
+// AdSense 광고 슬롯 HTML 생성 헬퍼 (승인 후 ENABLE_ADS = true 로 활성화)
+const ADSENSE_CLIENT = 'ca-pub-1352114558631968';
+const ENABLE_ADS = false; // AdSense 승인 후 true로 변경
+function adSlot(slotId, format = 'auto') {
+  if (!ENABLE_ADS) return ''; // 승인 전엔 빈 슬롯
+  return `
+    <div class="ad-slot">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="${ADSENSE_CLIENT}"
+           data-ad-slot="${slotId}"
+           data-ad-format="${format}"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>`;
+}
+
 function renderRankingsPage() {
   if (!state.bills?.length) {
     return `
@@ -8864,6 +8976,14 @@ function route() {
   // 비즈니스 / 광고·데이터 문의 (/business)
   if (hash === '#/business') {
     view.innerHTML = renderBusinessPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 개인정보 처리방침 (/privacy)
+  if (hash === '#/privacy') {
+    view.innerHTML = renderPrivacyPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
