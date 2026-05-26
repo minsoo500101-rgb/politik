@@ -4687,13 +4687,179 @@
   }
   .e26-foot b { color: var(--text); font-weight: 700; }
 
+  /* ============ 공약 분석 (실험적) ============ */
+  .e26-pa-section {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+  .e26-pa-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; gap: 12px; flex-wrap: wrap;
+  }
+  .e26-pa-head h2 {
+    font-size: 16px; font-weight: 800; color: var(--text);
+    margin: 0;
+  }
+  .e26-pa-btn {
+    padding: 8px 16px;
+    background: var(--accent);
+    color: #fff;
+    border: 0; border-radius: 8px;
+    font-size: 12.5px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .e26-pa-btn:hover { opacity: 0.9; }
+  .e26-pa-btn:active { transform: scale(0.98); }
+  .e26-pa-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .e26-pa-progress {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    font-size: 12px; color: var(--text);
+  }
+  .e26-pa-progress-bar-wrap {
+    flex: 1;
+    height: 6px; background: var(--border);
+    border-radius: 3px; overflow: hidden;
+  }
+  .e26-pa-progress-bar {
+    height: 100%; background: var(--accent);
+    width: 0%; transition: width 0.3s;
+  }
+  .e26-pa-realms {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 14px;
+  }
+  .e26-pa-realm-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 50px;
+    align-items: center; gap: 10px;
+    padding: 6px 0;
+    font-size: 12.5px;
+  }
+  .e26-pa-realm-name {
+    color: var(--text); font-weight: 700;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .e26-pa-realm-bar-wrap {
+    background: var(--bg-elev);
+    border-radius: 4px; overflow: hidden;
+    height: 14px;
+  }
+  .e26-pa-realm-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent) 0%, #6366f1 100%);
+    border-radius: 4px;
+    transition: width 0.6s ease-out;
+  }
+  .e26-pa-realm-count {
+    text-align: right;
+    color: var(--text-2); font-variant-numeric: tabular-nums;
+    font-weight: 700; font-size: 12px;
+  }
+  .e26-pa-cloud {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+  .e26-pa-kw {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    color: var(--text);
+    font-weight: 600;
+    transition: all 0.12s;
+    cursor: default;
+  }
+  .e26-pa-kw:hover {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+  .e26-pa-kw.sz-1 { font-size: 11px; opacity: 0.7; }
+  .e26-pa-kw.sz-2 { font-size: 12px; opacity: 0.85; }
+  .e26-pa-kw.sz-3 { font-size: 13.5px; }
+  .e26-pa-kw.sz-4 { font-size: 15px; font-weight: 700; }
+  .e26-pa-kw.sz-5 { font-size: 17px; font-weight: 800; color: var(--accent); }
+  .e26-pa-subhead {
+    font-size: 12.5px; font-weight: 700; color: var(--text);
+    margin: 16px 0 4px;
+  }
+  .e26-pa-meta {
+    font-size: 11px; color: var(--dim);
+    margin-top: 10px; text-align: right;
+  }
+  .e26-pa-party-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .e26-pa-party {
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent);
+  }
+  .e26-pa-party-name {
+    font-size: 13px; font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .e26-pa-party-top {
+    font-size: 11.5px; color: var(--text-2);
+    line-height: 1.7;
+  }
+  .e26-pa-party-top b { color: var(--text); }
+
   @media (max-width: 700px) {
+    .e26-page { padding: 8px 14px 60px; }
     .e26-hero { grid-template-columns: 1fr; padding: 22px 20px; }
     .e26-hero-l h1 { font-size: 22px; }
     .e26-dday { font-size: 40px; }
     .e26-tl-row { grid-template-columns: 75px 20px 1fr; }
     .e26-tl-date { font-size: 10px; }
     .e26-tl-label { font-size: 11.5px; }
+    .e26-section { padding: 16px 14px; }
+    .e26-section h2 { font-size: 15px; }
+    .e26-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .e26-stat-mini { padding: 10px 8px; }
+    .e26-stat-num { font-size: 19px; }
+    .e26-stat-lbl { font-size: 10px; }
+    .e26-pos-grid { grid-template-columns: repeat(2, 1fr); }
+    .e26-pos-card { padding: 10px; gap: 8px; }
+    .e26-pos-icon { font-size: 18px; }
+    .e26-pos-count { font-size: 15px; }
+    .e26-pos-label { font-size: 11px; }
+    .e26-pos-meta { font-size: 10px; }
+    .e26-region-grid { grid-template-columns: 1fr; }
+    .e26-region-card { padding: 12px 14px; }
+    .e26-region-name { font-size: 13px; }
+    .e26-region-links { gap: 4px; }
+    .e26-link { font-size: 10px; padding: 5px 4px; }
+    .e26-cand-row { font-size: 11px; }
+    .e26-search-input { font-size: 14px; padding: 10px 14px; }
+    .e26-search-results { max-height: 60vh; }
+    /* 터치 친화: 검색 결과 항목 패딩 늘림 */
+    .e26-search-results > a, .e26-search-results > div { min-height: 44px; }
+    .e26-notice { padding: 12px 14px; font-size: 12px; }
+  }
+  @media (max-width: 420px) {
+    .e26-hero-l h1 { font-size: 19px; }
+    .e26-hero-l p { font-size: 12px; }
+    .e26-dday { font-size: 36px; }
+    .e26-stats-grid { gap: 6px; }
+    .e26-stat-mini { padding: 8px 6px; }
+    .e26-stat-num { font-size: 17px; }
+    .e26-section h2 { font-size: 14px; }
+    .e26-section { padding: 14px 12px; }
   }
 
   /* Detail page — election card */
@@ -7496,6 +7662,151 @@ async function necFetch(endpoint, params = {}) {
   }
   return r.json();
 }
+// ============================================================
+// 광역단체장 공약 분석 — 분야 분포 + 키워드 클라우드
+// ============================================================
+const PLEDGE_ANALYSIS = {
+  cache: null,        // { realms: Map<name, count>, keywords: Map<word, count>, byParty: Map<party, [titles]>, total }
+  inProgress: false
+};
+
+// 간단 한국어 불용어 (분야명·접속사·일반어 제외)
+const KOREAN_STOPWORDS = new Set([
+  '및', '등', '의', '를', '을', '에', '에서', '으로', '로', '와', '과',
+  '이', '가', '은', '는', '있는', '있도록', '하는', '한다', '한', '할', '될',
+  '대한', '위한', '통한', '및', '또는', '있는', '있도록',
+  '시민', '구민', '도민', '주민', '국민', '시민들', '구민들', '도민들',
+  '추진', '확대', '구축', '강화', '지원', '운영', '운영하는',
+  '시스템', '센터', '사업', '정책', '확보', '실시', '제공', '확립', '실현',
+  '서울', '경기', '부산', '대구', '인천', '광주', '대전', '울산', '세종',
+  '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'
+]);
+
+async function analyzePledges(progressCb) {
+  if (PLEDGE_ANALYSIS.cache) return PLEDGE_ANALYSIS.cache;
+  if (PLEDGE_ANALYSIS.inProgress) return null;
+  PLEDGE_ANALYSIS.inProgress = true;
+  const nec = state.nec2026Governors;
+  if (!nec || !(nec.governors || []).length) {
+    PLEDGE_ANALYSIS.inProgress = false;
+    throw new Error('광역단체장 데이터가 없습니다');
+  }
+  const governors = nec.governors.filter(c => c.huboid);
+  const total = governors.length;
+  let done = 0;
+  const realms = new Map();
+  const keywords = new Map();
+  const byParty = new Map();
+  // 동시 6개 제한 (API rate limit 보호)
+  const CONC = 6;
+  async function fetchOne(c) {
+    try {
+      const j = await necFetch('policies', { sgId: '20260603', sgTypecode: '3', cnddtId: c.huboid });
+      let items = j?.response?.body?.items?.item || j?.body?.items?.item || [];
+      if (!Array.isArray(items)) items = items ? [items] : [];
+      if (!items.length) return;
+      const data = items[0];
+      const party = c.jdName || '무소속';
+      for (let i = 1; i <= 10; i++) {
+        const realm = data['prmsRealmName' + i] || '';
+        const title = data['prmsTitle' + i] || '';
+        if (realm) realms.set(realm, (realms.get(realm) || 0) + 1);
+        if (title) {
+          // 공백 분리 후 토큰화 + 불용어 제거
+          const tokens = title.split(/[\s,·\-()\[\]{}!?<>"'`「」『』、，;：:]+/);
+          for (let t of tokens) {
+            t = t.trim();
+            if (t.length < 2) continue;
+            if (KOREAN_STOPWORDS.has(t)) continue;
+            // 숫자만은 제외
+            if (/^[0-9]+$/.test(t)) continue;
+            keywords.set(t, (keywords.get(t) || 0) + 1);
+          }
+          if (!byParty.has(party)) byParty.set(party, { titles: [], realms: new Map() });
+          byParty.get(party).titles.push(title);
+          if (realm) {
+            const pr = byParty.get(party).realms;
+            pr.set(realm, (pr.get(realm) || 0) + 1);
+          }
+        }
+      }
+    } catch (e) {
+      // 개별 실패는 무시
+    } finally {
+      done++;
+      if (progressCb) progressCb(done, total);
+    }
+  }
+  const queue = governors.slice();
+  const workers = [];
+  for (let i = 0; i < CONC; i++) {
+    workers.push((async () => {
+      while (queue.length) {
+        const c = queue.shift();
+        if (c) await fetchOne(c);
+      }
+    })());
+  }
+  await Promise.all(workers);
+  PLEDGE_ANALYSIS.cache = { realms, keywords, byParty, total: done };
+  PLEDGE_ANALYSIS.inProgress = false;
+  return PLEDGE_ANALYSIS.cache;
+}
+
+function renderPledgeAnalysis(analysis) {
+  if (!analysis) return '<div style="text-align:center;color:var(--dim);padding:14px">분석 결과 없음</div>';
+  const realms = [...analysis.realms.entries()].sort((a,b) => b[1] - a[1]);
+  const realmMax = realms[0]?.[1] || 1;
+  const keywords = [...analysis.keywords.entries()].sort((a,b) => b[1] - a[1]).slice(0, 60);
+  const kwMax = keywords[0]?.[1] || 1;
+  const byParty = [...analysis.byParty.entries()].sort((a,b) => b[1].titles.length - a[1].titles.length);
+  function sizeClass(count) {
+    const r = count / kwMax;
+    if (r > 0.7) return 'sz-5';
+    if (r > 0.5) return 'sz-4';
+    if (r > 0.3) return 'sz-3';
+    if (r > 0.15) return 'sz-2';
+    return 'sz-1';
+  }
+  let html = `
+    <div class="e26-pa-subhead">📊 공약 분야 분포 (상위 ${Math.min(realms.length, 12)})</div>
+    <div class="e26-pa-realms">
+      ${realms.slice(0, 12).map(([name, count]) => `
+        <div class="e26-pa-realm-row">
+          <div class="e26-pa-realm-name">${escapeHtml(name)}</div>
+          <div class="e26-pa-realm-bar-wrap"><div class="e26-pa-realm-bar" style="width:${(count/realmMax*100).toFixed(1)}%"></div></div>
+          <div class="e26-pa-realm-count">${count}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="e26-pa-subhead">☁ 공약 키워드 (상위 ${keywords.length})</div>
+    <div class="e26-pa-cloud">
+      ${keywords.map(([w, c]) => `<span class="e26-pa-kw ${sizeClass(c)}" title="${c}회 등장">${escapeHtml(w)}</span>`).join('')}
+    </div>
+  `;
+  if (byParty.length > 1) {
+    html += `
+      <div class="e26-pa-subhead">🎨 정당별 공약 핵심 분야</div>
+      <div class="e26-pa-party-grid">
+        ${byParty.slice(0, 6).map(([party, info]) => {
+          const topRealms = [...info.realms.entries()].sort((a,b) => b[1] - a[1]).slice(0, 3);
+          const pc = partyColor(party);
+          return `
+            <div class="e26-pa-party" style="border-left-color:${pc}">
+              <div class="e26-pa-party-name" style="color:${pc}">${escapeHtml(party)} <span style="font-size:11px;color:var(--dim);font-weight:600">· ${info.titles.length}개 공약</span></div>
+              <div class="e26-pa-party-top">
+                ${topRealms.length ? topRealms.map(([r, c]) => `<b>${escapeHtml(r)}</b> ${c}`).join(' · ') : '<span style="color:var(--dim)">분야 정보 없음</span>'}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+  html += `<div class="e26-pa-meta">분석 대상: 광역단체장 후보 ${analysis.total}명 · 5대 공약 fetch 기준 · 데이터: 중앙선관위</div>`;
+  return html;
+}
+
 // 후보자 5대 공약 모달
 async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
   // state에서 후보자 풀 정보 찾기
@@ -8028,6 +8339,21 @@ function renderElection2026Page() {
               <div class="e26-stat-mini e26-stat-click" data-cl-kind="광역의원 비례"><div class="e26-stat-num">${(nec.totalLocalAssemblyProp||0).toLocaleString()}</div><div class="e26-stat-lbl">광역의원 (비례)</div></div>
               <div class="e26-stat-mini e26-stat-click" data-cl-kind="교육감"><div class="e26-stat-num">${(nec.totalEdu||0).toLocaleString()}</div><div class="e26-stat-lbl">교육감 (무지명)</div></div>
               <div class="e26-stat-mini"><div class="e26-stat-num">${sortedAll.length}</div><div class="e26-stat-lbl">정당·무소속</div></div>
+            </div>
+          </div>
+
+          <!-- 공약 분석 (실험적) -->
+          <div class="e26-pa-section">
+            <div class="e26-pa-head">
+              <h2>🔬 공약 키워드 분석 <span style="font-size:11px;color:var(--dim);font-weight:400">· 광역단체장 ${(nec.governors||[]).length}명 5대 공약 종합</span></h2>
+              <button class="e26-pa-btn" id="e26-pa-trigger">▶ 분석 시작 (1-3초)</button>
+            </div>
+            <div id="e26-pa-out">
+              <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">
+                광역단체장 ${(nec.governors||[]).length}명의 공식 등록 공약 (NEC 정책공약마당)을 분석합니다:<br>
+                <b>공약 분야 분포</b> · <b>핵심 키워드 클라우드</b> · <b>정당별 핵심 분야 비교</b><br>
+                <span style="font-size:11px;color:var(--dim)">최초 1회 약 1-3초 (이후 캐시 적용 즉시)</span>
+              </div>
             </div>
           </div>
 
@@ -9519,6 +9845,12 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V14.1', date: '2026-05-26', title: 'election2026 모바일 + 공약 키워드 분석', items: [
+    '9회 지선 페이지 모바일 반응형 보강 — 700px·420px 미디어쿼리, 터치 친화 (44px 최소 hit)',
+    '공약 키워드 분석 섹션 — 광역단체장 54명 5대 공약 lazy fetch + 분야 분포 차트',
+    '핵심 키워드 클라우드 — 5단계 크기 (불용어 필터)',
+    '정당별 핵심 공약 분야 비교'
+  ]},
   { v: 'V14.0', date: '2026-05-26', title: '통합 검색 + 스켈레톤 UI', items: [
     '홈 상단 통합 검색바 — 정치인·법안·9회 지선 후보·정치 용어 즉시 검색 (Ctrl+K 단축키)',
     '초기 로딩 스켈레톤 UI로 교체 — 깜빡임·빈 화면 제거',
@@ -11487,7 +11819,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.0 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.1 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -12983,6 +13315,41 @@ function route() {
           });
         });
       });
+      // 공약 분석 트리거
+      const paTrigger = document.getElementById('e26-pa-trigger');
+      const paOut = document.getElementById('e26-pa-out');
+      if (paTrigger && paOut) {
+        // 캐시가 있으면 바로 렌더
+        if (PLEDGE_ANALYSIS.cache) {
+          paOut.innerHTML = renderPledgeAnalysis(PLEDGE_ANALYSIS.cache);
+          paTrigger.style.display = 'none';
+        }
+        paTrigger.addEventListener('click', async () => {
+          paTrigger.disabled = true;
+          paTrigger.textContent = '⏳ 분석 중…';
+          paOut.innerHTML = `
+            <div class="e26-pa-progress">
+              <span class="loading-spinner"></span>
+              <span id="e26-pa-progress-text">공약 fetch 시작…</span>
+              <div class="e26-pa-progress-bar-wrap"><div class="e26-pa-progress-bar" id="e26-pa-progress-bar"></div></div>
+            </div>
+          `;
+          try {
+            const result = await analyzePledges((done, total) => {
+              const txt = document.getElementById('e26-pa-progress-text');
+              const bar = document.getElementById('e26-pa-progress-bar');
+              if (txt) txt.textContent = `공약 fetch ${done}/${total}…`;
+              if (bar) bar.style.width = (done/total*100).toFixed(1) + '%';
+            });
+            paOut.innerHTML = renderPledgeAnalysis(result);
+            paTrigger.style.display = 'none';
+          } catch (e) {
+            paOut.innerHTML = `<div style="color:#dc2626;padding:14px;font-size:12.5px">분석 실패: ${escapeHtml(e.message)}<br><span style="color:var(--dim);font-size:11px">잠시 후 다시 시도해 주세요.</span></div>`;
+            paTrigger.disabled = false;
+            paTrigger.textContent = '▶ 다시 시도';
+          }
+        });
+      }
     };
     renderE26();
     if (filterBar) filterBar.style.display = 'none';
