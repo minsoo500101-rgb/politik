@@ -2651,87 +2651,25 @@
   }
   .play-note a { color: var(--link); font-weight: 700; }
 
-  /* ============ 커뮤니티 페이지 ============ */
-  .community-page {
+  /* ============ Info Page (changelog 등 정적 안내) ============ */
+  .info-page {
     max-width: 1080px; margin: 0 auto;
     padding: 24px 20px 60px;
   }
-  .community-hero {
+  .info-hero {
     text-align: center;
     padding: 24px 0 30px;
   }
-  .community-hero h1 {
+  .info-hero h1 {
     font-size: 30px; font-weight: 800;
     margin-bottom: 10px;
   }
-  .community-hero p {
+  .info-hero p {
     font-size: 14px; color: var(--text-2);
     max-width: 560px; margin: 0 auto;
     line-height: 1.6;
   }
-  .community-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-  .community-card {
-    display: block;
-    padding: 22px 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    text-decoration: none !important;
-    color: var(--text);
-    transition: all 0.18s;
-    position: relative;
-    overflow: hidden;
-  }
-  .community-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  }
-  [data-theme="dark"] .community-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
-  .community-card-soft {
-    cursor: default;
-  }
-  .community-card-soft:hover {
-    transform: none;
-    border-color: var(--border);
-    box-shadow: none;
-  }
-  .community-icon {
-    font-size: 32px;
-    margin-bottom: 8px;
-  }
-  .community-h {
-    font-size: 17px; font-weight: 800;
-    margin-bottom: 4px;
-  }
-  .community-meta {
-    font-size: 11px; color: var(--dim);
-    margin-bottom: 12px;
-  }
-  .community-desc {
-    font-size: 12.5px; color: var(--text-2);
-    line-height: 1.6;
-    margin-bottom: 12px;
-  }
-  .community-desc b { color: var(--text); font-weight: 700; }
-  .community-tag-row {
-    display: flex; flex-wrap: wrap; gap: 6px;
-  }
-  .community-tag {
-    display: inline-block;
-    padding: 3px 9px;
-    background: var(--bg-elev);
-    border-radius: 9px;
-    font-size: 10.5px; font-weight: 700;
-    color: var(--dim);
-    letter-spacing: 0.3px;
-  }
-  .community-note {
+  .info-note {
     padding: 22px 24px;
     background: var(--bg-elev);
     border: 1px solid var(--border);
@@ -2740,19 +2678,19 @@
     color: var(--text-2);
     line-height: 1.6;
   }
-  .community-note h3 {
+  .info-note h3 {
     font-size: 16px; font-weight: 800;
     margin: 0 0 10px;
     color: var(--text);
   }
-  .community-note ul {
+  .info-note ul {
     margin: 8px 0 10px;
     padding-left: 20px;
   }
-  .community-note li {
+  .info-note li {
     margin-bottom: 5px;
   }
-  .community-note b { color: var(--text); font-weight: 700; }
+  .info-note b { color: var(--text); font-weight: 700; }
 
   /* ============ Changelog ============ */
   .changelog-list {
@@ -6084,7 +6022,6 @@
       <a href="#/map">🗺 정치 분포 지도</a>
       <a href="#/bookmarks">⭐ 관심 의원</a>
       <a href="#/stances">🗳 내 정치 입장</a>
-      <a href="#/community">💬 커뮤니티 안내</a>
       <a href="#/play">🧪 실험실</a>
     </div>
     <div class="foot-col">
@@ -9974,12 +9911,14 @@ function renderDexCard(m, group) {
 }
 
 // ============================================================
-// 커뮤니티 안내 (/community)
-// ============================================================
-// ============================================================
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V14.3', date: '2026-05-26', title: '커뮤니티 안내 페이지 제거', items: [
+    '/community 라우트·UI·sitemap·CSS 정리',
+    '홈 탐색 그리드 11개 도구로 축소',
+    'changelog CSS info-* 네임스페이스로 재명명'
+  ]},
   { v: 'V14.2', date: '2026-05-26', title: '한국 시계열 추이 + bills 무한 스크롤', items: [
     '국제 비교 페이지에 한국 시계열 추이 sparkline 5종 — 민주주의·언론자유·청렴도·투표율·여성의원 (2015~2024)',
     '직전 측정 대비 ▲/▼ 변화 표시 (방향성 자동 판단)',
@@ -9996,10 +9935,6 @@ const CHANGELOG = [
     '초기 로딩 스켈레톤 UI로 교체 — 깜빡임·빈 화면 제거',
     '변경 이력 페이지 신설 — 모든 업데이트 공개 기록',
     '데이터 최신성 배지 — 실시간 갱신일 표시'
-  ]},
-  { v: 'V13.7', date: '2026-05-26', title: '커뮤니티 안전 안내 페이지', items: [
-    '/community 신설 — 자체 게시판 미운영 사유·외부 토론 채널 안내',
-    'GitHub Discussions·카카오 오픈채팅·이슈 템플릿 4개 채널'
   ]},
   { v: 'V13.6', date: '2026-05-25', title: 'stance 시스템 (스톡트윗 스타일)', items: [
     '인물별 지지·반대 익명 태그 (localStorage)',
@@ -10065,8 +10000,8 @@ function renderChangelogPage() {
   const total = CHANGELOG.length;
   return `
     <div class="group-back" id="back-home">← 홈</div>
-    <div class="community-page">
-      <div class="community-hero">
+    <div class="info-page">
+      <div class="info-hero">
         <h1>📋 변경 이력 · Changelog</h1>
         <p>${total}개 업데이트 · 모든 기능 변화 투명 공개 · 시간순.<br>
         <span style="color:var(--dim);font-size:12px">최신 버전: <b style="color:var(--text)">${CHANGELOG[0].v}</b> (${CHANGELOG[0].date})</span></p>
@@ -10086,105 +10021,10 @@ function renderChangelogPage() {
           </div>
         `).join('')}
       </div>
-      <div class="community-note" style="margin-top:18px">
+      <div class="info-note" style="margin-top:18px">
         <h3>업데이트 주기</h3>
         <p>주요 기능은 GitHub에 즉시 푸시되어 1~3분 내 배포됩니다. 데이터는 매일 자동 갱신 (국회 OPEN API · 중앙선관위 · 위키미디어).</p>
         <p style="color:var(--dim);font-size:11.5px;margin-top:10px">전체 커밋 히스토리: <a href="https://github.com/minsoo500101-rgb/politik/commits/main" target="_blank" rel="noopener" style="color:var(--link)">GitHub commits →</a></p>
-      </div>
-    </div>
-  `;
-}
-
-function renderCommunityPage() {
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="community-page">
-      <div class="community-hero">
-        <h1>💬 패치 노트 토론 공간</h1>
-        <p>다른 사용자와 의견을 나누고 싶다면 외부 플랫폼을 활용하세요.<br>
-        <span style="color:var(--dim);font-size:12px">자체 게시판은 한국 정치 콘텐츠 법적 부담으로 미운영합니다. 더 자세한 사정은 페이지 하단 참고.</span></p>
-      </div>
-
-      <div class="community-grid">
-        <a class="community-card" href="https://github.com/minsoo500101-rgb/politik/discussions" target="_blank" rel="noopener">
-          <div class="community-icon">💬</div>
-          <div class="community-h">GitHub Discussions</div>
-          <div class="community-meta">전세계·영문 위주</div>
-          <div class="community-desc">
-            데이터 정정 신청·기능 제안·기술 토론.<br>
-            <b>장점</b>: GitHub 계정으로 즉시 시작 · 운영 책임 GitHub.<br>
-            <b>적합</b>: 개발자·연구자·사이트 피드백.
-          </div>
-          <div class="community-tag-row">
-            <span class="community-tag" style="background:rgba(16,185,129,0.15);color:var(--ok)">법적 안전</span>
-            <span class="community-tag">무료</span>
-            <span class="community-tag">즉시 가능</span>
-          </div>
-        </a>
-
-        <div class="community-card community-card-soft" id="kakao-community-card">
-          <div class="community-icon">💛</div>
-          <div class="community-h">카카오톡 오픈채팅</div>
-          <div class="community-meta">실시간·한국 사용자 친숙</div>
-          <div class="community-desc">
-            한국 정치 데이터 관심 사용자 모임.<br>
-            <b>장점</b>: 실시간 토론 · 한국인 친숙 · 모더레이션 카카오 책임.<br>
-            <b>적합</b>: 빠른 의견 교환·뉴스 공유.
-          </div>
-          <div class="community-tag-row">
-            <span class="community-tag" style="background:rgba(16,185,129,0.15);color:var(--ok)">법적 안전</span>
-            <span class="community-tag">실시간</span>
-            <span class="community-tag" style="background:var(--bg-card);color:var(--dim)">준비 중</span>
-          </div>
-          <p style="font-size:11px;color:var(--dim);margin-top:8px">오픈채팅방 개설 후 링크 추가 예정</p>
-        </div>
-
-        <a class="community-card" href="https://github.com/minsoo500101-rgb/politik/issues/new?template=data-correction.md" target="_blank" rel="noopener">
-          <div class="community-icon">📊</div>
-          <div class="community-h">데이터 오류 신고</div>
-          <div class="community-meta">GitHub Issues 자동 연결</div>
-          <div class="community-desc">
-            정치인 약력·법안·선거 데이터 오류 발견 시 즉시 신고.<br>
-            <b>처리</b>: 1~2일 내 검토·반영.<br>
-            <b>이력</b>: 모든 정정 내역 GitHub에 영구 기록.
-          </div>
-          <div class="community-tag-row">
-            <span class="community-tag" style="background:rgba(16,185,129,0.15);color:var(--ok)">법적 안전</span>
-            <span class="community-tag">무료</span>
-          </div>
-        </a>
-
-        <a class="community-card" href="https://github.com/minsoo500101-rgb/politik/issues/new?template=feature-request.md" target="_blank" rel="noopener">
-          <div class="community-icon">💡</div>
-          <div class="community-h">기능 제안</div>
-          <div class="community-meta">GitHub Issues</div>
-          <div class="community-desc">
-            새 페이지·시각화·데이터 카테고리 제안.<br>
-            <b>채택</b>: 우선순위·구현 가능성 검토 후 반영.<br>
-            <b>역사</b>: 사용자 제안으로 추가된 기능 다수.
-          </div>
-          <div class="community-tag-row">
-            <span class="community-tag" style="background:rgba(16,185,129,0.15);color:var(--ok)">법적 안전</span>
-            <span class="community-tag">무료</span>
-          </div>
-        </a>
-      </div>
-
-      <div class="community-note">
-        <h3>왜 자체 게시판/채팅이 없나요?</h3>
-        <p>한국에서 정치 콘텐츠 자체 운영 시 발생 가능한 위험:</p>
-        <ul>
-          <li><b>명예훼손</b> (형법 307조) — 사용자 게시글이라도 운영자 24시간 미조치 시 책임</li>
-          <li><b>공직선거법</b> (250·251조) — 선거 30일 전 후보자 비방·허위사실 게재 시 7년 이하 징역</li>
-          <li><b>정보통신망법</b> — 24시간 이내 신고 처리 의무</li>
-          <li><b>개인정보보호법</b> — 회원 데이터 유출 시 1인당 30~100만원 위자료</li>
-        </ul>
-        <p><b>1인 운영자가 24/7 모더레이션 + 변호사 자문 + 모더레이션 인력 + 본인인증 시스템</b>을 감당하는 것은 현실적으로 불가능합니다.</p>
-        <p>대신 <b>GitHub·카카오 같은 책임 있는 외부 플랫폼</b>을 활용하면 법적 위험 없이 자유로운 토론이 가능합니다.</p>
-        <p style="color:var(--dim);font-size:11.5px;margin-top:14px">
-          이 사이트는 <b>객관 수치 표시</b>에 집중하고, 토론은 외부 플랫폼에 맡기는 구조로 운영합니다.<br>
-          더 자세한 운영 원칙: <a href="#/about" style="color:var(--link)">사이트 소개</a>
-        </p>
       </div>
     </div>
   `;
@@ -11959,7 +11799,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.2 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.3 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -12196,7 +12036,7 @@ function renderHome() {
       <div class="explore-section">
         <div class="explore-h-row">
           <h2 class="explore-h">🧭 탐색 도구</h2>
-          <span class="explore-sub">12개 도구 · 모두 무료</span>
+          <span class="explore-sub">11개 도구 · 모두 무료</span>
         </div>
         <div class="explore-grid explore-grid-compact">
           <a class="tool-card" href="#/dex"><span>📕</span><div><b>정치인 도감</b><em>삼권+지방+역사 컬렉션</em></div></a>
@@ -12205,7 +12045,6 @@ function renderHome() {
           <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>95개 용어 8 카테고리</em></div></a>
           <a class="tool-card" href="#/bookmarks"><span>⭐</span><div><b>관심 의원</b><em>북마크 모아보기</em></div></a>
           <a class="tool-card" href="#/stances"><span>🗳</span><div><b>내 정치 입장</b><em>지지·반대 익명 기록</em></div></a>
-          <a class="tool-card" href="#/community"><span>💬</span><div><b>커뮤니티 안내</b><em>안전한 외부 토론 채널</em></div></a>
           <a class="tool-card" href="#/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
           <a class="tool-card" href="#/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
           <a class="tool-card" href="#/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
@@ -12960,14 +12799,6 @@ function route() {
     view.innerHTML = renderDexPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     setupDexEvents();
-    if (filterBar) filterBar.style.display = 'none';
-    window.scrollTo(0, 0);
-    return;
-  }
-  // 커뮤니티 안내 (/community)
-  if (hash === '#/community') {
-    view.innerHTML = renderCommunityPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
