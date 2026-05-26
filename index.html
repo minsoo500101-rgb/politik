@@ -1965,6 +1965,86 @@
     margin-bottom: 8px;
   }
 
+  /* ============ 실험실 (/play) ============ */
+  .play-page {
+    max-width: 1080px; margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+  .play-hero {
+    text-align: center;
+    padding: 24px 0 30px;
+  }
+  .play-hero h1 {
+    font-size: 32px; font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .play-hero p {
+    font-size: 14px; color: var(--text-2);
+    max-width: 540px; margin: 0 auto;
+    line-height: 1.55;
+  }
+  .play-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .play-card {
+    display: block;
+    padding: 22px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-decoration: none !important;
+    color: var(--text);
+    transition: all 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .play-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  [data-theme="dark"] .play-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .play-icon {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  .play-h {
+    font-size: 17px; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .play-meta {
+    font-size: 11px; color: var(--dim);
+    margin-bottom: 10px;
+  }
+  .play-desc {
+    font-size: 12.5px; color: var(--text-2);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .play-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    font-size: 10.5px; font-weight: 700;
+    color: var(--dim);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .play-note {
+    margin-top: 30px;
+    padding: 18px 22px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    text-align: center;
+  }
+  .play-note a { color: var(--link); font-weight: 700; }
+
   /* ============ 탐색 도구 그리드 (홈) ============ */
   .explore-section {
     margin-top: 28px;
@@ -2032,6 +2112,14 @@
     color: var(--dim);
     font-style: normal;
     margin-top: 2px;
+  }
+  .explore-grid .tool-card.play-link {
+    background: linear-gradient(135deg, var(--bg-elev), var(--bg-card));
+    border-style: dashed;
+  }
+  .explore-grid .tool-card.play-link:hover {
+    border-color: var(--warn);
+    border-style: solid;
   }
 
   /* ============ 정치 용어 사전 (/glossary) ============ */
@@ -4903,9 +4991,9 @@
     <div class="foot-col">
       <div class="foot-h">탐색</div>
       <a href="#/glossary">📖 정치 용어 사전</a>
-      <a href="#/insights">🔬 출신 분석</a>
       <a href="#/rankings">📊 활동 랭킹</a>
-      <a href="#/compare">⚖ 의원 비교</a>
+      <a href="#/map">🗺 정치 분포 지도</a>
+      <a href="#/play">🧪 실험실</a>
     </div>
     <div class="foot-col">
       <div class="foot-h">서비스</div>
@@ -7861,6 +7949,60 @@ function renderDonatePage() {
 }
 
 // ============================================================
+// 실험실 (/play) — 부가·재미 기능 모음
+// ============================================================
+function renderPlayPage() {
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="play-page">
+      <div class="play-hero">
+        <h1>🧪 실험실 (Play)</h1>
+        <p>핵심 데이터 외 부가적·실험적 기능 모음. 재미로 둘러보거나, 깊이 있게 분석하고 싶을 때.</p>
+      </div>
+
+      <div class="play-grid">
+        <a class="play-card" href="#/insights">
+          <div class="play-icon">🔬</div>
+          <div class="play-h">출신 분석</div>
+          <div class="play-meta">정치인 ${(state.members||[]).filter(p=>p.MEM_TITLE&&p.MEM_TITLE.length>30).length}명 데이터 기반</div>
+          <div class="play-desc">학교·직업·세대·지역 통계.<br>"어느 대학이 정치인을 가장 많이 배출했나?" 같은 흥미로운 패턴 찾기.</div>
+          <div class="play-tag">통계</div>
+        </a>
+
+        <a class="play-card" href="#/compare">
+          <div class="play-icon">⚖</div>
+          <div class="play-h">의원 vs 의원</div>
+          <div class="play-meta">두 의원 나란히</div>
+          <div class="play-desc">학력·경력·발의량·통과율 동시 비교.<br>URL로 공유 가능 (예: ?a=ID1&b=ID2).</div>
+          <div class="play-tag">비교</div>
+        </a>
+
+        <a class="play-card" href="#/relations">
+          <div class="play-icon">🔗</div>
+          <div class="play-h">발의 관계도</div>
+          <div class="play-meta">법안-의원 연결</div>
+          <div class="play-desc">의원이 발의한 법안과 정당색 분포를 그래프로.<br>※ 시각화가 다소 복잡할 수 있음.</div>
+          <div class="play-tag">시각화</div>
+        </a>
+
+        <a class="play-card" href="#/admin">
+          <div class="play-icon">🔧</div>
+          <div class="play-h">데이터 관리 콘솔</div>
+          <div class="play-meta">JSON 편집기</div>
+          <div class="play-desc">politicians.json 브라우저 편집.<br>오류 발견 시 GitHub PR 보내실 분 대환영.</div>
+          <div class="play-tag">고급</div>
+        </a>
+      </div>
+
+      <div class="play-note">
+        💡 여기 있는 기능은 <b>실험적</b>이거나 일부 사용자에게만 유용한 것들입니다.<br>
+        핵심 데이터는 <a href="#/">홈</a>·<a href="#/bills">법안</a>·<a href="#/election2026">9회 지선</a>·<a href="#/glossary">용어 사전</a>에서 확인하세요.
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
 // 정치 용어 사전 (/glossary)
 // ============================================================
 const glossaryState = { data: null, filter: { q: '', category: '' } };
@@ -9852,34 +9994,26 @@ function renderHome() {
       <!-- 탐색 도구 -->
       <div class="explore-section">
         <h2 class="explore-h">🧭 탐색 도구</h2>
-        <p class="explore-lead">데이터를 다양한 각도에서 살펴보는 분석·시각화 도구 모음.</p>
+        <p class="explore-lead">데이터를 다양한 각도에서 살펴보는 분석·정보 도구.</p>
 
         <div class="explore-row">
-          <div class="explore-cat">데이터 시각화</div>
+          <div class="explore-cat">핵심 도구</div>
           <div class="explore-grid">
             <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구 정당색</em></div></a>
-            <a class="tool-card" href="#/relations"><span>🔗</span><div><b>발의 관계도</b><em>법안-의원 연결 시각화</em></div></a>
-            <a class="tool-card" href="#/insights"><span>🔬</span><div><b>출신 분석</b><em>학교·직업·세대·지역</em></div></a>
-          </div>
-        </div>
-
-        <div class="explore-row">
-          <div class="explore-cat">랭킹 · 비교</div>
-          <div class="explore-grid">
             <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>발의자·정당·위원회 효율성</em></div></a>
-            <a class="tool-card" href="#/compare"><span>⚖</span><div><b>의원 비교</b><em>두 의원 나란히 비교</em></div></a>
-            <a class="tool-card" href="#/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
-            <a class="tool-card" href="#/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
+            <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>67개 용어 8 카테고리</em></div></a>
           </div>
         </div>
 
         <div class="explore-row">
           <div class="explore-cat">참고 자료</div>
           <div class="explore-grid">
-            <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>67개 용어 8 카테고리</em></div></a>
             <a class="tool-card" href="#/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
+            <a class="tool-card" href="#/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
+            <a class="tool-card" href="#/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
             <a class="tool-card" href="#/history/parties"><span>📚</span><div><b>정당사 1948~</b><em>45개 정당 타임라인</em></div></a>
             <a class="tool-card" href="#/about"><span>ℹ️</span><div><b>사이트 소개</b><em>운영 원칙 · 데이터 출처</em></div></a>
+            <a class="tool-card play-link" href="#/play"><span>🧪</span><div><b>실험실</b><em>출신 분석·의원 비교·관계도 등</em></div></a>
           </div>
         </div>
       </div>
@@ -10552,6 +10686,14 @@ function route() {
   // 비즈니스 / 광고·데이터 문의 (/business)
   if (hash === '#/business') {
     view.innerHTML = renderBusinessPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 실험실 (/play) — 부가·재미 기능 모음
+  if (hash === '#/play') {
+    view.innerHTML = renderPlayPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
