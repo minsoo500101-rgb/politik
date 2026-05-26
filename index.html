@@ -137,7 +137,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<link rel="preload" as="fetch" href="data/politicians.json?v=12" crossorigin>
+<link rel="preload" as="fetch" href="data/politicians.json?v=23" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
@@ -5301,6 +5301,25 @@
 
   /* ============ World compare ============ */
   .world-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  @media (max-width: 700px) {
+    .world-page { padding: 8px 14px 60px; }
+    .world-hero h1 { font-size: 20px !important; }
+    .world-hero p { font-size: 12px !important; }
+    .world-table { font-size: 11px; }
+    .world-table thead th { padding: 6px 4px; font-size: 9.5px; }
+    .world-table tbody td { padding: 7px 4px; }
+    .world-table .wt-sys { font-size: 10px; }
+    .world-bar-row { grid-template-columns: 20px 70px 1fr 50px !important; gap: 5px; padding: 2px 3px; }
+    .wb-flag { font-size: 13px; }
+    .wb-name { font-size: 11px; }
+    .wb-val { font-size: 11px; }
+    .kr-trend-grid { grid-template-columns: 1fr 1fr !important; }
+    .kr-trend { padding: 10px 12px; }
+    .kr-trend-now-v { font-size: 16px; }
+  }
+  @media (max-width: 420px) {
+    .kr-trend-grid { grid-template-columns: 1fr !important; }
+  }
   .world-hero {
     background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
     border: 1px solid var(--border);
@@ -5752,6 +5771,12 @@
     .bm-col { min-width: 6px; }
     .bills-hero h1 { font-size: 22px; }
     .bills-page, .ph-page { padding: 8px 14px 40px; }
+  }
+  @media (max-width: 420px) {
+    .bills-hero h1 { font-size: 18px; }
+    .bills-hero p { font-size: 12px; }
+    .patch-row { padding: 9px 10px !important; font-size: 12px; }
+    .pf-more { font-size: 12px; padding: 9px; }
   }
 
   /* ============ Party history timeline ============ */
@@ -6456,7 +6481,7 @@ async function loadWikiOverrides() {
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 // 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
-const POLITICIANS_VER = 12;
+const POLITICIANS_VER = 23;
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
@@ -7745,18 +7770,6 @@ const PLEDGE_ANALYSIS = {
   cache: null,        // { realms: Map<name, count>, keywords: Map<word, count>, byParty: Map<party, [titles]>, total }
   inProgress: false
 };
-
-// 간단 한국어 불용어 (분야명·접속사·일반어 제외)
-const KOREAN_STOPWORDS = new Set([
-  '및', '등', '의', '를', '을', '에', '에서', '으로', '로', '와', '과',
-  '이', '가', '은', '는', '있는', '있도록', '하는', '한다', '한', '할', '될',
-  '대한', '위한', '통한', '및', '또는', '있는', '있도록',
-  '시민', '구민', '도민', '주민', '국민', '시민들', '구민들', '도민들',
-  '추진', '확대', '구축', '강화', '지원', '운영', '운영하는',
-  '시스템', '센터', '사업', '정책', '확보', '실시', '제공', '확립', '실현',
-  '서울', '경기', '부산', '대구', '인천', '광주', '대전', '울산', '세종',
-  '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'
-]);
 
 async function analyzePledges(progressCb) {
   if (PLEDGE_ANALYSIS.cache) return PLEDGE_ANALYSIS.cache;
@@ -10056,6 +10069,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V15.2', date: '2026-05-27', title: '대규모 자동화 + career 184명 보충', items: [
+    '🤖 위키백과 자동 career 보충 스크립트 — career 38.6% → 72.9% (+184명)',
+    '⏰ GitHub Actions 일일 동기화 cron (09:00 KST) — 자동 위키 fetch + 커밋',
+    '🧹 미사용 KOREAN_STOPWORDS 제거 (키워드 클라우드 폐기 잔재)',
+    '📱 /world·/bills 모바일 반응형 보강 — 700px·420px 미디어쿼리',
+    '📋 README 운영자 가이드 — UptimeRobot·Sentry·Plausible·GSC 단계별 안내',
+    '🔧 .gitignore 강화 (env·log·tmp·IDE 등 종합)'
+  ]},
   { v: 'V15.1', date: '2026-05-27', title: 'AI 분류 제거 (운영비 0원 유지)', items: [
     '/api/ai-classify endpoint 제거 — 외부 LLM API 비용 부담 방지',
     '운영비 무료 원칙 유지 (NEC·국회·위키·법령 API만 사용)'
@@ -12189,7 +12210,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V15.1 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V15.2 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">

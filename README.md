@@ -168,10 +168,45 @@ npm run validate
 - **Promise rejection 핸들러** — API 실패해도 UI 손상 X
 - **이미지·외부 리소스 로드 실패는 무시** — 비핵심 자원이 메인 페이지를 깨지 못함
 
-### 모니터링 권장
-- **[UptimeRobot](https://uptimerobot.com)** — 무료 5분 간격 다운타임 알림
-- **[Vercel Analytics](https://vercel.com/analytics)** — 빌트인 (이미 활성)
-- **Sentry 무료 티어** — 클라이언트 에러 자동 수집 (선택)
+### 모니터링 권장 (운영자 단계별 설치 가이드)
+
+#### 1) UptimeRobot — 다운타임 알림 (5분, 무료)
+1. [uptimerobot.com](https://uptimerobot.com) 가입
+2. New Monitor → Type: HTTPS → URL: `https://patchkr.com` → Interval 5분
+3. Alert Contact에 이메일 등록 → 사이트 다운 시 메일 알림
+
+#### 2) Sentry — 클라이언트 에러 자동 수집 (무료 5K/월)
+1. [sentry.io](https://sentry.io) 가입 → 새 프로젝트 (Platform: Browser JavaScript)
+2. DSN 받아서 `index.html` `<head>`에 추가:
+   ```html
+   <script src="https://browser.sentry-cdn.com/7/bundle.min.js"></script>
+   <script>Sentry.init({ dsn: 'YOUR_DSN', tracesSampleRate: 0.1 });</script>
+   ```
+
+#### 3) Plausible — 사이트 분석 (개인정보 친화, $9/월 or 셀프호스팅)
+```html
+<script defer data-domain="patchkr.com" src="https://plausible.io/js/script.js"></script>
+```
+GA4 대비 가벼움(1KB) + 쿠키 없음 + GDPR 친화.
+
+#### 4) Google Search Console — 색인 가속 (무료)
+1. [search.google.com/search-console](https://search.google.com/search-console) 가입
+2. URL 접두어 → `https://patchkr.com` 입력
+3. HTML 파일 업로드 또는 `<meta name="google-site-verification">` 태그 방식 선택
+4. 사이트맵 제출 → `sitemap.xml`
+5. URL 검사 도구로 주요 페이지 색인 요청
+
+#### 5) Bing Webmaster Tools — Bing/Duck 색인
+1. [bing.com/webmasters](https://www.bing.com/webmasters) 가입
+2. Google Search Console에서 임포트 (한 클릭)
+
+### 자동 데이터 동기화 (GitHub Actions)
+`.github/workflows/daily-sync.yml`이 매일 09:00 KST에:
+1. 위키백과 자동 career fetch (career 미보유 인사 30명/타입)
+2. 변경 있으면 자동 검증 + 커밋 + push
+3. POLITICIANS_VER 자동 bump
+
+수동 트리거: Actions 탭 → Daily data sync → Run workflow
 
 ## 📜 라이선스
 
