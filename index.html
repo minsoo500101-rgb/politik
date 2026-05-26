@@ -137,7 +137,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<link rel="preload" as="fetch" href="data/politicians.json?v=11" crossorigin>
+<link rel="preload" as="fetch" href="data/politicians.json?v=12" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
@@ -213,19 +213,47 @@
     font-weight: 500; letter-spacing: 0.5px;
   }
   .search-wrap {
-    position: relative; max-width: 480px;
-    width: 100%;
+    position: relative; max-width: 560px;
+    width: 100%; flex: 1;
   }
   .search {
-    width: 100%; padding: 9px 14px 9px 36px;
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
-    font: inherit; font-size: 13px;
+    width: 100%; padding: 11px 14px 11px 38px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 10px;
+    font: inherit; font-size: 13.5px;
     background: var(--bg-card);
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(17,24,39,0.08); }
+  .search:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+  }
+  .search::placeholder { color: var(--dim); }
+  .search-icon { left: 12px !important; font-size: 15px !important; }
+  /* 데이터 최신성 배지 (홈 헤로용 유지) */
+  .freshness-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px;
+    background: rgba(16,185,129,0.12);
+    color: var(--ok);
+    border-radius: 8px;
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .freshness-badge::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--ok);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @media (max-width: 720px) {
+    .search { padding: 10px 12px 10px 34px; font-size: 13px; }
+    .search-icon { left: 10px !important; font-size: 14px !important; }
+  }
 
   /* Autocomplete dropdown */
   .ac-dropdown {
@@ -5737,134 +5765,6 @@
     margin: 16px 0;
   }
 
-  /* ============ 통합 검색 (홈) ============ */
-  .gsearch-wrap {
-    position: relative;
-    max-width: 760px;
-    margin: 0 auto 24px;
-  }
-  .gsearch-input-row {
-    display: flex; align-items: center;
-    background: var(--bg-card);
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 16px;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-  .gsearch-input-row:focus-within {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
-  }
-  .gsearch-icon {
-    font-size: 18px; margin-right: 10px; color: var(--dim);
-  }
-  .gsearch-input {
-    flex: 1;
-    border: 0; outline: 0; background: transparent;
-    font-size: 15px; color: var(--text);
-    font-family: inherit;
-  }
-  .gsearch-input::placeholder { color: var(--dim); }
-  .gsearch-clear {
-    cursor: pointer; color: var(--dim);
-    padding: 4px 8px; border-radius: 6px;
-    font-size: 16px; line-height: 1;
-  }
-  .gsearch-clear:hover { background: var(--bg-elev); color: var(--text); }
-  .gsearch-hint {
-    text-align: center; font-size: 11px; color: var(--dim);
-    margin-top: 6px;
-  }
-  .gsearch-dd {
-    position: absolute; top: 100%; left: 0; right: 0;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-top: 6px;
-    max-height: 70vh; overflow-y: auto;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-    z-index: 50;
-    display: none;
-  }
-  [data-theme="dark"] .gsearch-dd { box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-  .gsearch-dd.show { display: block; }
-  .gsearch-section {
-    padding: 8px 14px 4px;
-    font-size: 11px; font-weight: 700;
-    color: var(--dim);
-    letter-spacing: 0.5px; text-transform: uppercase;
-    background: var(--bg-elev);
-    border-bottom: 1px solid var(--border);
-  }
-  .gsearch-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.12s;
-    text-decoration: none !important;
-    color: var(--text);
-  }
-  .gsearch-item:last-child { border-bottom: 0; }
-  .gsearch-item:hover, .gsearch-item.active {
-    background: var(--bg-elev);
-  }
-  .gsearch-item-icon {
-    width: 28px; height: 28px;
-    background: var(--bg-elev);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; flex-shrink: 0;
-    overflow: hidden;
-  }
-  .gsearch-item-icon img { width: 100%; height: 100%; object-fit: cover; }
-  .gsearch-item-body { flex: 1; min-width: 0; }
-  .gsearch-item-t {
-    font-size: 13px; font-weight: 700;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .gsearch-item-meta {
-    font-size: 11px; color: var(--dim);
-    margin-top: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .gsearch-item-kind {
-    font-size: 10px; font-weight: 700;
-    padding: 2px 7px; border-radius: 8px;
-    background: var(--bg-elev);
-    color: var(--dim);
-    flex-shrink: 0;
-  }
-  .gsearch-empty {
-    padding: 20px; text-align: center;
-    color: var(--dim); font-size: 12.5px;
-  }
-  /* 데이터 최신성 배지 */
-  .freshness-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 9px;
-    background: rgba(16,185,129,0.12);
-    color: var(--ok);
-    border-radius: 8px;
-    font-size: 10.5px; font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-  .freshness-badge::before {
-    content: ''; width: 6px; height: 6px;
-    border-radius: 50%; background: var(--ok);
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  @media (max-width: 560px) {
-    .gsearch-wrap { margin-bottom: 16px; }
-    .gsearch-input-row { padding: 10px 12px; }
-    .gsearch-input { font-size: 14px; }
-    .gsearch-icon { font-size: 16px; margin-right: 8px; }
-  }
-
   /* Footer */
   footer {
     border-top: 1px solid var(--border);
@@ -5983,7 +5883,7 @@
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input class="search" id="search" placeholder="이름·지역구·정당으로 검색..." autocomplete="off">
+      <input class="search" id="search" placeholder="정치인·법안·9회 지선 후보·용어 통합 검색 (Ctrl+K)" autocomplete="off">
       <div class="ac-dropdown" id="ac-dropdown" role="listbox" aria-label="검색 자동완성"></div>
     </div>
     <div class="nav-stats">
@@ -6362,7 +6262,7 @@ async function loadWikiOverrides() {
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 // 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
-const POLITICIANS_VER = 11;
+const POLITICIANS_VER = 12;
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
@@ -9914,6 +9814,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V14.4', date: '2026-05-27', title: '검색 통합 + career 보충 27명', items: [
+    '검색바 하나로 일원화 — 헤더 검색이 4영역(정치인·법안·9회 후보·용어) 통합 검색',
+    '홈 중간 검색바 제거 — 헷갈림 해소',
+    '헤더 검색 디자인 강화 — 더 크고 눈에 띄게 + 모바일 적응',
+    'Ctrl+K 단축키 헤더 검색에 연결',
+    '9회 후보 검색 결과 클릭 → 5대 공약 모달 즉시',
+    'career 27명 보충 — 이재명 정부 장관 7·22대 위원장 4·역대 총리 9·신규 대법관 5·역대 정당대표 2'
+  ]},
   { v: 'V14.3', date: '2026-05-26', title: '커뮤니티 안내 페이지 제거', items: [
     '/community 라우트·UI·sitemap·CSS 정리',
     '홈 탐색 그리드 11개 도구로 축소',
@@ -11799,7 +11707,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.3 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.4 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -11816,26 +11724,6 @@ function renderHome() {
           <a class="hero-btn" href="#/bills">📜  법안</a>
           <a class="hero-btn" href="#/map">🗺  지도</a>
         </div>
-      </div>
-
-      <!-- 통합 검색 -->
-      <div class="gsearch-wrap" id="gsearch-wrap">
-        <div class="gsearch-input-row">
-          <span class="gsearch-icon">🔍</span>
-          <input class="gsearch-input" id="gsearch-input" type="search"
-            placeholder="정치인·법안·9회 지선 후보·정치 용어 통합 검색…" autocomplete="off">
-          <span class="gsearch-clear" id="gsearch-clear" style="display:none">✕</span>
-        </div>
-        <div class="gsearch-hint">
-          한 번에 검색 — 의원·후보·법안·용어 ${(state.members?.length || 0).toLocaleString()}+ 항목
-          · <span class="freshness-badge">실시간 · ${(() => {
-            const d = new Date();
-            const mm = String(d.getMonth()+1).padStart(2,'0');
-            const dd = String(d.getDate()).padStart(2,'0');
-            return d.getFullYear()+'-'+mm+'-'+dd;
-          })()}</span>
-        </div>
-        <div class="gsearch-dd" id="gsearch-dd"></div>
       </div>
 
       ${(() => {
@@ -13763,261 +13651,9 @@ function route() {
         for (const m of arr) if (!state.photos.has(m.MONA_CD)) prefetch.push(m);
       }
       prefetchPhotos(prefetch, 3);
-      // 통합 검색 (홈)
-      setupGlobalSearch();
       if (filterBar) filterBar.style.display = 'none';
     }
   }
-}
-
-// ============================================================
-// 통합 검색 (정치인 + 법안 + 9회 지선 후보 + 용어)
-// ============================================================
-function setupGlobalSearch() {
-  const input = document.getElementById('gsearch-input');
-  const dd = document.getElementById('gsearch-dd');
-  const clear = document.getElementById('gsearch-clear');
-  if (!input || !dd) return;
-  // glossary 비동기 로드
-  loadGlossary().catch(() => {});
-  // 9회 지선 후보 통합 풀 (NEC API 정확한 키 사용)
-  function getNec2026Pool() {
-    const nec = state.nec2026Governors;
-    if (!nec) return [];
-    const pool = [];
-    const sources = [
-      { arr: nec.governors, kind: '광역단체장' },
-      { arr: nec.munis, kind: '기초단체장' },
-      { arr: nec.eduSupers, kind: '교육감' },
-      { arr: nec.localAssembly, kind: '광역의원' },
-      { arr: nec.localAssemblyProp, kind: '비례 광역의원' }
-    ];
-    for (const s of sources) {
-      if (!Array.isArray(s.arr)) continue;
-      for (const c of s.arr) {
-        // NEC 후보자 필드 — name·jdName·sdName·sggName·huboid·giho 등
-        const region = [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ');
-        pool.push({
-          kind: '9회 후보',
-          kindFull: s.kind,
-          name: c.name || c.HUBO_NM || '',
-          party: c.jdName || c.JD_NM || '무소속',
-          region: region || c.SGG_NAME || c.region || '',
-          huboid: c.huboid || '',
-          giho: c.giho || '',
-          raw: c
-        });
-      }
-    }
-    return pool;
-  }
-  let activeIdx = -1;
-  let results = [];
-
-  function runSearch(q) {
-    q = (q || '').trim().toLowerCase();
-    if (!q || q.length < 1) { dd.classList.remove('show'); return; }
-    const out = { people: [], bills: [], nec: [], glossary: [] };
-    // 정치인 (이름 부분일치)
-    const members = state.members || [];
-    for (const m of members) {
-      const name = (m.HG_NM || '').toLowerCase();
-      const party = (m.POLY_NM || '').toLowerCase();
-      const region = (m.ORIG_NM || '').toLowerCase();
-      if (name.includes(q) || party.includes(q) || region.includes(q)) {
-        out.people.push(m);
-        if (out.people.length >= 6) break;
-      }
-    }
-    // 법안 (제목 부분일치)
-    const bills = state.bills || [];
-    for (const b of bills) {
-      const name = (b.BILL_NAME || b.BILL_NM || '').toLowerCase();
-      const proposer = (b.PROPOSER || '').toLowerCase();
-      if (name.includes(q) || proposer.includes(q)) {
-        out.bills.push(b);
-        if (out.bills.length >= 6) break;
-      }
-    }
-    // 9회 지선 후보
-    const necPool = getNec2026Pool();
-    for (const c of necPool) {
-      const n = (c.name || '').toLowerCase();
-      const p = (c.party || '').toLowerCase();
-      const r = (c.region || '').toLowerCase();
-      if (n.includes(q) || p.includes(q) || r.includes(q)) {
-        out.nec.push(c);
-        if (out.nec.length >= 6) break;
-      }
-    }
-    // 용어 사전
-    const gloss = glossaryState.data;
-    if (gloss?.terms) {
-      for (const t of gloss.terms) {
-        const term = (t.term || '').toLowerCase();
-        const desc = (t.short || '').toLowerCase();
-        if (term.includes(q) || desc.includes(q)) {
-          out.glossary.push(t);
-          if (out.glossary.length >= 6) break;
-        }
-      }
-    }
-    // 결과 렌더
-    const total = out.people.length + out.bills.length + out.nec.length + out.glossary.length;
-    if (total === 0) {
-      dd.innerHTML = '<div class="gsearch-empty">검색 결과가 없습니다. 다른 키워드를 시도해 보세요.</div>';
-      dd.classList.add('show');
-      results = [];
-      activeIdx = -1;
-      return;
-    }
-    results = [];
-    let html = '';
-    if (out.people.length) {
-      html += '<div class="gsearch-section">👥 정치인 (' + out.people.length + ')</div>';
-      for (const m of out.people) {
-        const photo = state.photos?.get(m.MONA_CD);
-        const link = '#/m/' + encodeURIComponent(m.MONA_CD || m.HG_NM);
-        const meta = [m.POLY_NM, m.ORIG_NM, (m._typeLabel || '')].filter(Boolean).join(' · ');
-        results.push({ link });
-        html += '<a class="gsearch-item" href="' + link + '">'
-          + '<div class="gsearch-item-icon">' + (photo?.thumb ? '<img src="' + escapeHtml(photo.thumb) + '" alt="" onerror="this.replaceWith(document.createTextNode(\'' + escapeHtml((m.HG_NM||'?').charAt(0)) + '\'))">' : escapeHtml((m.HG_NM||'?').charAt(0))) + '</div>'
-          + '<div class="gsearch-item-body">'
-          + '<div class="gsearch-item-t">' + escapeHtml(m.HG_NM || '') + '</div>'
-          + '<div class="gsearch-item-meta">' + escapeHtml(meta) + '</div>'
-          + '</div>'
-          + '<div class="gsearch-item-kind">' + (m._group === 'legislative' ? '국회의원' : (m._typeLabel || '인물')) + '</div>'
-          + '</a>';
-      }
-    }
-    if (out.nec.length) {
-      html += '<div class="gsearch-section">🗳 9회 지선 후보 (' + out.nec.length + ')</div>';
-      for (const c of out.nec) {
-        // 광역=3, 기초=4, 광역의원=8, 교육감=11
-        const sgMap = { '광역단체장': '3', '기초단체장': '4', '광역의원': '8', '비례 광역의원': '8', '교육감': '11' };
-        const sg = sgMap[c.kindFull] || '3';
-        const link = '#/election2026';
-        const dataAttrs = c.huboid ? ` data-cand-huboid="${escapeHtml(c.huboid)}" data-cand-sg="${sg}" data-cand-name="${escapeHtml(c.name)}" data-cand-party="${escapeHtml(c.party)}" data-cand-region="${escapeHtml(c.region)}"` : '';
-        results.push({ link });
-        html += '<a class="gsearch-item gsearch-cand-item" href="' + link + '"' + dataAttrs + '>'
-          + '<div class="gsearch-item-icon">' + (c.giho ? `<span style="font-weight:800;font-size:13px">${escapeHtml(c.giho)}</span>` : '🗳') + '</div>'
-          + '<div class="gsearch-item-body">'
-          + '<div class="gsearch-item-t">' + escapeHtml(c.name) + '</div>'
-          + '<div class="gsearch-item-meta">' + escapeHtml([c.region, c.party, c.kindFull].filter(Boolean).join(' · ')) + '</div>'
-          + '</div>'
-          + '<div class="gsearch-item-kind">' + escapeHtml(c.kindFull) + '</div>'
-          + '</a>';
-      }
-    }
-    if (out.bills.length) {
-      html += '<div class="gsearch-section">📜 법안 (' + out.bills.length + ')</div>';
-      for (const b of out.bills) {
-        const link = '#/bill/' + encodeURIComponent(b.BILL_ID);
-        const meta = [b.PROPOSER, b.PROC_DT, b.PROC_RESULT_CD].filter(Boolean).join(' · ');
-        results.push({ link });
-        html += '<a class="gsearch-item" href="' + link + '">'
-          + '<div class="gsearch-item-icon">📜</div>'
-          + '<div class="gsearch-item-body">'
-          + '<div class="gsearch-item-t">' + escapeHtml(b.BILL_NAME || '') + '</div>'
-          + '<div class="gsearch-item-meta">' + escapeHtml(meta) + '</div>'
-          + '</div>'
-          + '<div class="gsearch-item-kind">법안</div>'
-          + '</a>';
-      }
-    }
-    if (out.glossary.length) {
-      html += '<div class="gsearch-section">📖 정치 용어 (' + out.glossary.length + ')</div>';
-      for (const t of out.glossary) {
-        const link = '#/glossary';
-        results.push({ link });
-        html += '<a class="gsearch-item" href="' + link + '">'
-          + '<div class="gsearch-item-icon">📖</div>'
-          + '<div class="gsearch-item-body">'
-          + '<div class="gsearch-item-t">' + escapeHtml(t.term) + '</div>'
-          + '<div class="gsearch-item-meta">' + escapeHtml((t.short || '').slice(0, 80)) + '</div>'
-          + '</div>'
-          + '<div class="gsearch-item-kind">용어</div>'
-          + '</a>';
-      }
-    }
-    dd.innerHTML = html;
-    dd.classList.add('show');
-    activeIdx = -1;
-  }
-
-  // 9회 후보 검색 결과 클릭 → 5대 공약 모달 직접 열기 (이동 안 함)
-  dd.addEventListener('click', (e) => {
-    const item = e.target.closest('.gsearch-cand-item');
-    if (item && item.dataset.candHuboid) {
-      e.preventDefault();
-      openPromiseModal({
-        cnddtId: item.dataset.candHuboid,
-        sgTypecode: item.dataset.candSg,
-        name: item.dataset.candName,
-        party: item.dataset.candParty,
-        region: item.dataset.candRegion,
-      });
-      dd.classList.remove('show');
-      input.blur();
-    }
-  });
-  let timer = null;
-  input.addEventListener('input', (e) => {
-    const v = e.target.value;
-    if (clear) clear.style.display = v ? 'block' : 'none';
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => runSearch(v), 80);
-  });
-  input.addEventListener('keydown', (e) => {
-    const items = dd.querySelectorAll('.gsearch-item');
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      activeIdx = Math.min(activeIdx + 1, items.length - 1);
-      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
-      if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: 'nearest' });
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      activeIdx = Math.max(activeIdx - 1, 0);
-      items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
-      if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: 'nearest' });
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (activeIdx >= 0 && items[activeIdx]) {
-        items[activeIdx].click();
-      } else if (items[0]) {
-        items[0].click();
-      }
-    } else if (e.key === 'Escape') {
-      input.blur();
-      dd.classList.remove('show');
-    }
-  });
-  if (clear) {
-    clear.addEventListener('click', () => {
-      input.value = '';
-      clear.style.display = 'none';
-      dd.classList.remove('show');
-      input.focus();
-    });
-  }
-  // 외부 클릭 시 닫기
-  document.addEventListener('click', (e) => {
-    const wrap = document.getElementById('gsearch-wrap');
-    if (wrap && !wrap.contains(e.target)) dd.classList.remove('show');
-  });
-  // 글로벌 ctrl+k / cmd+k 단축키로 포커스
-  document.addEventListener('keydown', function gskey(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      const stillThere = document.getElementById('gsearch-input');
-      if (stillThere) {
-        stillThere.focus();
-        stillThere.select();
-      } else {
-        document.removeEventListener('keydown', gskey);
-      }
-    }
-  });
 }
 
 window.addEventListener('hashchange', () => {
@@ -14059,8 +13695,8 @@ const AC = (() => {
 
   function search(q) {
     q = q.trim().toLowerCase();
-    if (!q) return { members: [], parties: [], groups: [], bills: [] };
-    // Members (top 8)
+    if (!q) return { members: [], parties: [], groups: [], bills: [], candidates: [], glossary: [] };
+    // Members (top 6)
     const scored = state.members.map(m => ({ m, s: score(m, q) })).filter(x => x.s > 0);
     scored.sort((a, b) => b.s - a.s || (a.m.HG_NM||'').localeCompare(b.m.HG_NM||'', 'ko'));
     const members = scored.slice(0, 6).map(x => x.m);
@@ -14086,7 +13722,45 @@ const AC = (() => {
       matched.sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
       bills.push(...matched.slice(0, 4));
     }
-    return { members, parties, groups, bills };
+    // 9회 지선 후보 (max 5) — 이름·정당·지역 부분일치
+    const candidates = [];
+    const nec = state.nec2026Governors;
+    if (nec) {
+      const sources = [
+        { arr: nec.governors, kind: '광역단체장', sg: '3' },
+        { arr: nec.munis, kind: '기초단체장', sg: '4' },
+        { arr: nec.eduSupers, kind: '교육감', sg: '11' },
+        { arr: nec.localAssembly, kind: '광역의원', sg: '8' },
+        { arr: nec.localAssemblyProp, kind: '비례 광역의원', sg: '8' }
+      ];
+      for (const s of sources) {
+        if (!Array.isArray(s.arr)) continue;
+        for (const c of s.arr) {
+          const name = (c.name || '').toLowerCase();
+          const party = (c.jdName || '').toLowerCase();
+          const sd = (c.sdName || '').toLowerCase();
+          const sgg = (c.sggName || '').toLowerCase();
+          if (name.includes(q) || party.includes(q) || sd.includes(q) || sgg.includes(q)) {
+            candidates.push({ ...c, _kindFull: s.kind, _sg: s.sg });
+            if (candidates.length >= 5) break;
+          }
+        }
+        if (candidates.length >= 5) break;
+      }
+    }
+    // 용어 사전 (max 3)
+    const glossary = [];
+    if (glossaryState?.data?.terms && q.length >= 1) {
+      for (const t of glossaryState.data.terms) {
+        const term = (t.term || '').toLowerCase();
+        const desc = (t.short || '').toLowerCase();
+        if (term.includes(q) || desc.includes(q)) {
+          glossary.push(t);
+          if (glossary.length >= 3) break;
+        }
+      }
+    }
+    return { members, parties, groups, bills, candidates, glossary };
   }
 
   function memberRow(m, q) {
@@ -14140,7 +13814,7 @@ const AC = (() => {
     const tagColor = b.PROC_RESULT_CD === '원안가결' || b.PROC_RESULT_CD === '수정가결' ? 'var(--ok)' :
                      b.PROC_RESULT_CD === '부결' ? '#c0392b' : 'var(--text-2)';
     return `
-      <div class="ac-row" role="option" data-action="bill" data-link="${escapeHtml(link)}">
+      <div class="ac-row" role="option" data-action="bill" data-bill-id="${escapeHtml(b.BILL_ID || '')}" data-link="${escapeHtml(link)}">
         <div class="ac-avatar" style="background:${partyC}; color:#fff">📋</div>
         <div class="ac-info">
           <div class="ac-name">${hl(b.BILL_NAME || b.BILL_NM || '—', q)}</div>
@@ -14149,9 +13823,34 @@ const AC = (() => {
         <span class="ac-badge" style="background:${tagColor}">${escapeHtml(b.PROC_RESULT_CD || '의안')}</span>
       </div>`;
   }
+  function candRow(c, q) {
+    const color = partyColor(c.jdName || '무소속');
+    const region = [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ');
+    const giho = c.giho ? `<b style="font-size:14px">${escapeHtml(c.giho)}</b>` : '🗳';
+    return `
+      <div class="ac-row" role="option" data-action="cand" data-huboid="${escapeHtml(c.huboid || '')}" data-sg="${escapeHtml(c._sg)}" data-name="${escapeHtml(c.name || '')}" data-party="${escapeHtml(c.jdName || '무소속')}" data-region="${escapeHtml(region)}">
+        <div class="ac-avatar" style="background:${color}; color:#fff">${giho}</div>
+        <div class="ac-info">
+          <div class="ac-name">${hl(c.name || '', q)}</div>
+          <div class="ac-sub">${hl(region + ' · ' + (c.jdName || '무소속') + ' · ' + c._kindFull, q)}</div>
+        </div>
+        <span class="ac-badge" style="background:${color}">9회 후보</span>
+      </div>`;
+  }
+  function glossRow(t, q) {
+    return `
+      <div class="ac-row" role="option" data-action="gloss" data-term="${escapeHtml(t.term || '')}">
+        <div class="ac-avatar" style="background:#6366f1; color:#fff">📖</div>
+        <div class="ac-info">
+          <div class="ac-name">${hl(t.term || '', q)}</div>
+          <div class="ac-sub">${hl((t.short || '').slice(0, 70), q)}</div>
+        </div>
+        <span class="ac-badge" style="background:#6366f1">용어</span>
+      </div>`;
+  }
 
   function render(q) {
-    const { members, parties, groups, bills } = search(q);
+    const { members, parties, groups, bills, candidates, glossary } = search(q);
     items = [];
     let html = '';
     if (groups.length) {
@@ -14163,15 +13862,29 @@ const AC = (() => {
       for (const p of parties) { items.push({ action: 'party', party: p }); html += partyRow(p, q); }
     }
     if (members.length) {
-      html += `<div class="ac-section-h">인물 · ${members.length}건${members.length >= 6 ? ' (상위 6)' : ''}</div>`;
+      html += `<div class="ac-section-h">👥 인물 · ${members.length}건${members.length >= 6 ? ' (상위 6)' : ''}</div>`;
       for (const m of members) { items.push({ action: 'member', id: m.MONA_CD }); html += memberRow(m, q); }
     }
+    if (candidates.length) {
+      html += `<div class="ac-section-h">🗳 9회 지선 후보 · ${candidates.length}건${candidates.length >= 5 ? ' (상위 5)' : ''}</div>`;
+      for (const c of candidates) {
+        items.push({ action: 'cand', huboid: c.huboid, sg: c._sg, name: c.name, party: c.jdName || '무소속', region: [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ') });
+        html += candRow(c, q);
+      }
+    }
     if (bills.length) {
-      html += `<div class="ac-section-h">법안 · ${bills.length}건${bills.length >= 4 ? ' (상위 4)' : ''}</div>`;
-      for (const b of bills) { items.push({ action: 'bill', link: b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '') }); html += billRow(b, q); }
+      html += `<div class="ac-section-h">📜 법안 · ${bills.length}건${bills.length >= 4 ? ' (상위 4)' : ''}</div>`;
+      for (const b of bills) {
+        items.push({ action: 'bill', billId: b.BILL_ID, link: b.LINK_URL || (b.BILL_ID ? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${b.BILL_ID}` : '') });
+        html += billRow(b, q);
+      }
+    }
+    if (glossary.length) {
+      html += `<div class="ac-section-h">📖 정치 용어 · ${glossary.length}건</div>`;
+      for (const t of glossary) { items.push({ action: 'gloss', term: t.term }); html += glossRow(t, q); }
     }
     if (!items.length) {
-      html = '<div class="ac-empty">결과 없음</div>';
+      html = '<div class="ac-empty">결과 없음 — 다른 키워드를 시도해 보세요</div>';
     } else {
       html += `<div class="ac-foot"><span class="ac-kbd">↑↓</span> 이동 · <span class="ac-kbd">Enter</span> 선택 · <span class="ac-kbd">Esc</span> 닫기</div>`;
     }
@@ -14198,7 +13911,20 @@ const AC = (() => {
     if (item.action === 'member') location.hash = `#/m/${encodeURIComponent(item.id)}`;
     else if (item.action === 'party') location.hash = `#/party/${encodeURIComponent(item.party)}`;
     else if (item.action === 'group') location.hash = `#/group/${item.gid}`;
-    else if (item.action === 'bill' && item.link) window.open(item.link, '_blank', 'noopener');
+    else if (item.action === 'bill') {
+      if (item.billId) location.hash = `#/bill/${encodeURIComponent(item.billId)}`;
+      else if (item.link) window.open(item.link, '_blank', 'noopener');
+    }
+    else if (item.action === 'cand') {
+      if (item.huboid && typeof openPromiseModal === 'function') {
+        openPromiseModal({ cnddtId: item.huboid, sgTypecode: item.sg, name: item.name, party: item.party, region: item.region });
+      } else {
+        location.hash = '#/election2026';
+      }
+    }
+    else if (item.action === 'gloss') {
+      location.hash = '#/glossary';
+    }
   }
 
   $input.addEventListener('input', e => {
@@ -14233,6 +13959,16 @@ const AC = (() => {
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-wrap')) close();
   });
+  // Ctrl+K / Cmd+K — 헤더 검색에 즉시 포커스
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      $input.focus();
+      $input.select();
+    }
+  });
+  // 글로서리 미리 로드 (검색 결과에 즉시 반영)
+  if (typeof loadGlossary === 'function') loadGlossary().catch(() => {});
   return { close };
 })();
 
