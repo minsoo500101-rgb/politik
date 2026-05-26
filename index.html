@@ -13949,27 +13949,31 @@ function setupGlobalSearch() {
   if (!input || !dd) return;
   // glossary 비동기 로드
   loadGlossary().catch(() => {});
-  // 9회 지선 후보 통합 풀
+  // 9회 지선 후보 통합 풀 (NEC API 정확한 키 사용)
   function getNec2026Pool() {
     const nec = state.nec2026Governors;
     if (!nec) return [];
     const pool = [];
     const sources = [
       { arr: nec.governors, kind: '광역단체장' },
-      { arr: nec.muni, kind: '기초단체장' },
-      { arr: nec.edu, kind: '교육감' },
+      { arr: nec.munis, kind: '기초단체장' },
+      { arr: nec.eduSupers, kind: '교육감' },
       { arr: nec.localAssembly, kind: '광역의원' },
       { arr: nec.localAssemblyProp, kind: '비례 광역의원' }
     ];
     for (const s of sources) {
       if (!Array.isArray(s.arr)) continue;
       for (const c of s.arr) {
+        // NEC 후보자 필드 — name·jdName·sdName·sggName·huboid·giho 등
+        const region = [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ');
         pool.push({
           kind: '9회 후보',
           kindFull: s.kind,
-          name: c.HUBO_NM || c.name || '',
-          party: c.JD_NM || c.party || '',
-          region: c.SGG_NAME || c.region || '',
+          name: c.name || c.HUBO_NM || '',
+          party: c.jdName || c.JD_NM || '무소속',
+          region: region || c.SGG_NAME || c.region || '',
+          huboid: c.huboid || '',
+          giho: c.giho || '',
           raw: c
         });
       }
@@ -14058,10 +14062,14 @@ function setupGlobalSearch() {
     if (out.nec.length) {
       html += '<div class="gsearch-section">🗳 9회 지선 후보 (' + out.nec.length + ')</div>';
       for (const c of out.nec) {
+        // 광역=3, 기초=4, 광역의원=8, 교육감=11
+        const sgMap = { '광역단체장': '3', '기초단체장': '4', '광역의원': '8', '비례 광역의원': '8', '교육감': '11' };
+        const sg = sgMap[c.kindFull] || '3';
         const link = '#/election2026';
+        const dataAttrs = c.huboid ? ` data-cand-huboid="${escapeHtml(c.huboid)}" data-cand-sg="${sg}" data-cand-name="${escapeHtml(c.name)}" data-cand-party="${escapeHtml(c.party)}" data-cand-region="${escapeHtml(c.region)}"` : '';
         results.push({ link });
-        html += '<a class="gsearch-item" href="' + link + '">'
-          + '<div class="gsearch-item-icon">🗳</div>'
+        html += '<a class="gsearch-item gsearch-cand-item" href="' + link + '"' + dataAttrs + '>'
+          + '<div class="gsearch-item-icon">' + (c.giho ? `<span style="font-weight:800;font-size:13px">${escapeHtml(c.giho)}</span>` : '🗳') + '</div>'
           + '<div class="gsearch-item-body">'
           + '<div class="gsearch-item-t">' + escapeHtml(c.name) + '</div>'
           + '<div class="gsearch-item-meta">' + escapeHtml([c.region, c.party, c.kindFull].filter(Boolean).join(' · ')) + '</div>'
@@ -14106,10 +14114,26 @@ function setupGlobalSearch() {
     activeIdx = -1;
   }
 
+  // 9회 후보 검색 결과 클릭 → 5대 공약 모달 직접 열기 (이동 안 함)
+  dd.addEventListener('click', (e) => {
+    const item = e.target.closest('.gsearch-cand-item');
+    if (item && item.dataset.candHuboid) {
+      e.preventDefault();
+      openPromiseModal({
+        cnddtId: item.dataset.candHuboid,
+        sgTypecode: item.dataset.candSg,
+        name: item.dataset.candName,
+        party: item.dataset.candParty,
+        region: item.dataset.candRegion,
+      });
+      dd.classList.remove('show');
+      input.blur();
+    }
+  });
   let timer = null;
   input.addEventListener('input', (e) => {
     const v = e.target.value;
-    clear.style.display = v ? 'block' : 'none';
+    if (clear) clear.style.display = v ? 'block' : 'none';
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => runSearch(v), 80);
   });
@@ -14137,12 +14161,14 @@ function setupGlobalSearch() {
       dd.classList.remove('show');
     }
   });
-  clear.addEventListener('click', () => {
-    input.value = '';
-    clear.style.display = 'none';
-    dd.classList.remove('show');
-    input.focus();
-  });
+  if (clear) {
+    clear.addEventListener('click', () => {
+      input.value = '';
+      clear.style.display = 'none';
+      dd.classList.remove('show');
+      input.focus();
+    });
+  }
   // 외부 클릭 시 닫기
   document.addEventListener('click', (e) => {
     const wrap = document.getElementById('gsearch-wrap');
