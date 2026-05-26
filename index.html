@@ -10056,12 +10056,15 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
-  { v: 'V15.0', date: '2026-05-27', title: '대규모 — 공약 비교 + 후보 비교 + REST API + AI 분류 (Grok 잔여 전부)', items: [
+  { v: 'V15.1', date: '2026-05-27', title: 'AI 분류 제거 (운영비 0원 유지)', items: [
+    '/api/ai-classify endpoint 제거 — 외부 LLM API 비용 부담 방지',
+    '운영비 무료 원칙 유지 (NEC·국회·위키·법령 API만 사용)'
+  ]},
+  { v: 'V15.0', date: '2026-05-27', title: '대규모 — 공약 비교 + 후보 비교 + REST API (Grok 잔여)', items: [
     '🔬 공약 키워드 클라우드 제거 — 의미 적은 빈도 분석 폐기',
     '🗺 시도별 후보 공약 비교 그리드 — 같은 지역 후보들 5대 공약 분야 옆에 옆에 (카드 클릭 → 본문 모달)',
     '🆚 9회 후보자 비교 페이지 (/compare-cand?a=&b=&c=) — 최대 3명 동시 비교 + 자동 추천 (같은 지역 묶음)',
     '📡 REST API 공개 — /api/data?type=politicians/glossary/parties/info (CORS·24h 캐시·공공누리)',
-    '🤖 AI 공약 분류 API — /api/ai-classify (Claude Haiku · 선거 30일~+7일 자동 비활성 · 평가 금지 시스템 프롬프트)',
     '✨ 헤더 freshness 배지 부활 — "실시간 YYYY.MM.DD"',
     '홈 탐색 그리드 12개 도구 — 9회 후보 비교 추가'
   ]},
@@ -12186,7 +12189,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V15.0 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V15.1 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
