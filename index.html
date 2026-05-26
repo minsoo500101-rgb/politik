@@ -7252,20 +7252,30 @@ function renderPrivacyPage() {
 }
 
 // AdSense 광고 슬롯 HTML 생성 헬퍼 (승인 후 ENABLE_ADS = true 로 활성화)
+// 주의: 템플릿 문자열 안에 닫는 스크립트 태그 직접 쓰지 말 것 (HTML 파서가 인라인 script 블록을 일찍 종료)
 const ADSENSE_CLIENT = 'ca-pub-1352114558631968';
 const ENABLE_ADS = false; // AdSense 승인 후 true로 변경
 function adSlot(slotId, format = 'auto') {
   if (!ENABLE_ADS) return ''; // 승인 전엔 빈 슬롯
-  return `
-    <div class="ad-slot">
+  // ins만 반환, push() 호출은 mountAdSlots()에서 별도 처리 (innerHTML로는 script 실행 X)
+  return `<div class="ad-slot" data-ad-slot="${slotId}">
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="${ADSENSE_CLIENT}"
            data-ad-slot="${slotId}"
            data-ad-format="${format}"
            data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>`;
+}
+// 페이지 렌더 후 호출 — 모든 .ad-slot에 adsbygoogle.push() 실행
+function mountAdSlots() {
+  if (!ENABLE_ADS || !window.adsbygoogle) return;
+  document.querySelectorAll('.ad-slot ins.adsbygoogle:not([data-mounted])').forEach(el => {
+    try {
+      window.adsbygoogle.push({});
+      el.setAttribute('data-mounted', '1');
+    } catch (e) { /* ignore */ }
+  });
 }
 
 function renderRankingsPage() {
