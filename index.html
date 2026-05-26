@@ -1962,6 +1962,26 @@
     margin-bottom: 8px;
   }
 
+  /* BMC footer button — 노란 강조 */
+  .bmc-foot-btn {
+    display: inline-block !important;
+    margin-top: 4px;
+    padding: 6px 12px;
+    background: #f4b942 !important;
+    color: #0a0e14 !important;
+    border-radius: 6px;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-decoration: none !important;
+    transition: transform 0.15s;
+    text-align: center;
+    width: fit-content;
+  }
+  .bmc-foot-btn:hover {
+    transform: translateY(-1px);
+    text-decoration: none !important;
+  }
+
   /* About / Business / Donate 페이지 */
   .about-page {
     max-width: 800px; margin: 0 auto;
@@ -4186,6 +4206,7 @@
       <a href="#/about">소개 · 사이트 정보</a>
       <a href="#/business">광고 · 데이터 문의</a>
       <a href="#/donate">☕ 후원하기</a>
+      <a href="https://buymeacoffee.com/HYTech" target="_blank" rel="noopener" class="bmc-foot-btn">☕ Buy me a coffee</a>
     </div>
   </div>
   <div class="foot-bottom">
@@ -7076,8 +7097,8 @@ function renderDonatePage() {
           <div class="about-donate-card">
             <div class="about-donate-icon">☕</div>
             <div class="about-donate-title">Buy Me a Coffee</div>
-            <div class="about-donate-desc">해외 카드 / Apple Pay / Google Pay</div>
-            <div class="about-donate-link"><span style="color:var(--dim);font-size:12px">준비 중</span></div>
+            <div class="about-donate-desc">신용카드 · Apple Pay · Google Pay</div>
+            <div class="about-donate-link"><a href="https://buymeacoffee.com/HYTech" target="_blank" rel="noopener">☕ Support</a></div>
           </div>
           <div class="about-donate-card">
             <div class="about-donate-icon">💛</div>
