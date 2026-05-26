@@ -8974,7 +8974,99 @@ function renderRankingsPage() {
               </div>`).join('')}
           </div>
         </div>
+
+        ${renderCommitteeEfficiency()}
+        ${renderPartyCohesion()}
       </div>
+    </div>
+  `;
+}
+
+// 위원회 효율성 — 통과율 + 평균 통과 속도
+function renderCommitteeEfficiency() {
+  if (!state.bills?.length) return '';
+  const stats = new Map(); // cmt → { total, passed, days[] }
+  for (const b of state.bills) {
+    const c = b.CURR_COMMITTEE || '미상';
+    if (!stats.has(c)) stats.set(c, { total: 0, passed: 0, days: [] });
+    const s = stats.get(c);
+    s.total++;
+    if (/가결/.test(b.PROC_RESULT_CD || '')) s.passed++;
+    // 발의일·처리일 차이
+    if (b.PROPOSE_DT && b.PROC_DT) {
+      const diff = (new Date(b.PROC_DT) - new Date(b.PROPOSE_DT)) / (1000 * 86400);
+      if (diff >= 0 && diff < 1000) s.days.push(diff);
+    }
+  }
+  const rows = [...stats.entries()]
+    .filter(([_, s]) => s.total >= 20)
+    .map(([c, s]) => ({
+      name: c,
+      total: s.total,
+      passRate: s.passed / s.total * 100,
+      avgDays: s.days.length ? s.days.reduce((a, b) => a + b, 0) / s.days.length : null,
+    }))
+    .sort((a, b) => b.passRate - a.passRate)
+    .slice(0, 10);
+  return `
+    <div class="dash-card col-6 chart-card">
+      <div class="chart-head"><h3>⚡ 위원회 효율성 (통과율 · 평균 통과 속도)</h3></div>
+      <table class="rank-matrix" style="font-size:11.5px">
+        <thead><tr><th>위원회</th><th style="text-align:right">처리</th><th style="text-align:right">통과율</th><th style="text-align:right">평균 일수</th></tr></thead>
+        <tbody>
+          ${rows.map(r => {
+            const col = r.passRate >= 90 ? 'var(--ok)' : r.passRate >= 70 ? 'var(--warn)' : '#c0392b';
+            return `<tr>
+              <td>${escapeHtml(r.name)}</td>
+              <td style="text-align:right;font-variant-numeric:tabular-nums">${r.total}</td>
+              <td style="text-align:right;font-variant-numeric:tabular-nums"><b style="color:${col}">${r.passRate.toFixed(0)}%</b></td>
+              <td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--text-2)">${r.avgDays != null ? r.avgDays.toFixed(0) + '일' : '—'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--dim);margin-top:8px">처리 의안 20건 이상 위원회만 · 통과율 = (원안+수정가결) / 전체</p>
+    </div>
+  `;
+}
+
+// 정당 결속도 — 표결 데이터 활용
+function renderPartyCohesion() {
+  if (!state.bills?.length) return '';
+  // 표결 결과가 있는 의안만 (VOTE_TCNT 있는 것)
+  const votedBills = state.bills.filter(b => parseInt(b.VOTE_TCNT, 10) > 0);
+  if (!votedBills.length) return '';
+  // 정당별 (YES+NO) / TOTAL 비율로 결속도 근사 — 본회의 표결은 정당별 데이터가 별도 API 필요
+  // 여기서는 단순화: 본회의 통과율을 정당별 발의자 기준으로
+  const partyStats = new Map();
+  for (const b of state.bills) {
+    const info = getBillProposerInfo(b);
+    if (info.kind !== 'mp' || !info.party) continue;
+    if (!partyStats.has(info.party)) partyStats.set(info.party, { total: 0, passed: 0 });
+    const s = partyStats.get(info.party);
+    s.total++;
+    if (/가결/.test(b.PROC_RESULT_CD || '')) s.passed++;
+  }
+  const rows = [...partyStats.entries()]
+    .filter(([_, s]) => s.total >= 10)
+    .map(([p, s]) => ({ party: p, total: s.total, passRate: s.passed / s.total * 100 }))
+    .sort((a, b) => b.passRate - a.passRate);
+  return `
+    <div class="dash-card col-6 chart-card">
+      <div class="chart-head"><h3>🎯 정당별 본회의 통과율 (발의 기준)</h3></div>
+      <div class="party-bars">
+        ${rows.map(r => {
+          const col = partyColor(r.party);
+          return `
+            <div class="party-bar-row">
+              <div class="pb-name" style="color:${col}">${escapeHtml(r.party)}</div>
+              <div class="pb-bar-wrap"><div class="pb-bar" style="width:${r.passRate.toFixed(1)}%; background:${col}"></div></div>
+              <div class="pb-count">${r.total}건</div>
+              <div class="pb-pct">${r.passRate.toFixed(1)}%</div>
+            </div>`;
+        }).join('')}
+      </div>
+      <p style="font-size:11px;color:var(--dim);margin-top:8px">대표발의 의원의 정당 기준 · 10건 이상 발의 정당만 표시</p>
     </div>
   `;
 }
