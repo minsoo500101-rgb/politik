@@ -1962,6 +1962,58 @@
     margin-bottom: 8px;
   }
 
+  /* 정당별 표결 카드 */
+  .bd-vote-parties {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .bd-vote-party {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .bd-vote-party-h {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .bd-vote-party-name {
+    font-size: 13px; font-weight: 800;
+  }
+  .bd-vote-party-count {
+    font-size: 11px; color: var(--dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .bd-vote-party-bar {
+    display: flex;
+    height: 6px; background: var(--bg-card);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .bd-vote-party-y { background: #10b981; }
+  .bd-vote-party-n { background: #ef4444; }
+  .bd-vote-party-stat {
+    display: flex; gap: 12px;
+    font-size: 11px; color: var(--text-2);
+  }
+  .bd-vote-party-stat b {
+    color: var(--text); font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-left: 2px;
+  }
+  .bd-vote-rebel {
+    margin-top: 8px;
+    padding: 6px 8px;
+    background: rgba(217,119,6,0.08);
+    border-left: 2px solid var(--warn);
+    border-radius: 4px;
+    font-size: 11px; color: var(--text-2);
+    line-height: 1.4;
+  }
+  [data-theme="dark"] .bd-vote-rebel { background: rgba(217,119,6,0.15); }
+
   /* 판례·헌재 결정 리스트 */
   .bd-prec-list {
     display: flex; flex-direction: column;
@@ -3934,6 +3986,7 @@ const SVC = {
   committees:     'nktulghcadyhmiqxi', // 위원회 명단
   bills:          'nzmimeepazxkubdpn', // 의안 정보 (AGE 필수)
   bills_processed:'ncocpgfiaoituanbr', // 본회의 처리 의안 (AGE 필수)
+  member_votes:   'nojepdqqaweusdfbi', // 본회의 표결정보 (의원별 찬반)
 };
 const ASSEMBLY_AGE = 22;
 const CACHE_KEY_MEMBERS = 'politik:members:v2';
@@ -6523,6 +6576,18 @@ async function loadLawByName(billName) {
   }
 }
 
+// 의원별 표결 결과 (BILL_ID 기준)
+async function loadBillMemberVotes(billId) {
+  if (!billId) return [];
+  try {
+    const { rows } = await fetchService(SVC.member_votes, { AGE: ASSEMBLY_AGE, BILL_ID: billId, pIndex: 1, pSize: 300 });
+    return rows || [];
+  } catch (e) {
+    console.warn('member votes load failed:', e.message);
+    return [];
+  }
+}
+
 // 관련 판례/헌재 결정 검색 (target=prec or detc)
 async function loadLawRelated(billName, target = 'prec') {
   const cleaned = billName
@@ -6806,6 +6871,14 @@ function renderBillDetailPage(billId) {
         <h3>📜 법안 내용 (제안이유·주요 내용)</h3>
         <div id="bd-content-body">
           <div class="loading-inline"><span class="loading-spinner"></span>국회 API에서 법안 본문 fetch 중…</div>
+        </div>
+      </div>
+
+      <!-- 의원별 표결 (정당별 찬반) -->
+      <div class="bd-card" id="bd-votes-card">
+        <h3>🗳 의원별 표결 (정당별 찬반)</h3>
+        <div id="bd-votes-body">
+          <div class="loading-inline"><span class="loading-spinner"></span>표결 기록 fetch 중…</div>
         </div>
       </div>
 
@@ -8331,6 +8404,63 @@ function route() {
         } else {
           body.innerHTML = `<div class="bd-content-empty">국회 OPEN API <code style="background:var(--bg-elev);padding:1px 5px;border-radius:3px">nzmimeepazxkubdpn</code> 서비스는 발의자·일자·결과만 제공하며 본문 SUMMARY는 미포함입니다.<br><br>법안 원문은 아래 <b>국회 의안정보시스템</b> 링크의 PDF에서 확인할 수 있습니다.</div>`;
         }
+      });
+      // 의원별 표결 기록 fetch (정당별 집계 + 반란표 강조)
+      loadBillMemberVotes(billId).then(votes => {
+        const body = document.getElementById('bd-votes-body');
+        if (!body || location.hash !== hash) return;
+        if (!votes.length) {
+          body.innerHTML = `<div class="bd-content-empty">의원별 표결 기록 없음 — 무기명 표결이거나 기록 미공개</div>`;
+          return;
+        }
+        // 정당별 집계
+        const byParty = new Map();
+        for (const v of votes) {
+          const party = v.POLY_NM || '무소속';
+          if (!byParty.has(party)) byParty.set(party, { yes: [], no: [], abstain: [], absent: [] });
+          const r = (v.RESULT_VOTE_MOD || '').trim();
+          const item = { name: v.HG_NM || v.HG_NAME || '', region: v.ORIG_NM || '' };
+          if (r === '찬성') byParty.get(party).yes.push(item);
+          else if (r === '반대') byParty.get(party).no.push(item);
+          else if (r === '기권') byParty.get(party).abstain.push(item);
+          else byParty.get(party).absent.push(item);
+        }
+        // 정당 순서 (총원 많은 순)
+        const partyOrder = [...byParty.entries()].sort((a, b) => {
+          const ta = a[1].yes.length + a[1].no.length + a[1].abstain.length;
+          const tb = b[1].yes.length + b[1].no.length + b[1].abstain.length;
+          return tb - ta;
+        });
+        let html = `<div class="bd-vote-parties">`;
+        for (const [party, v] of partyOrder) {
+          const total = v.yes.length + v.no.length + v.abstain.length;
+          if (!total) continue;
+          const color = partyColor(party);
+          const yPct = (v.yes.length / total * 100).toFixed(0);
+          const nPct = (v.no.length / total * 100).toFixed(0);
+          const dominant = v.yes.length >= v.no.length ? 'yes' : 'no';
+          // 반란표 — 다수와 다른 의원
+          const rebels = dominant === 'yes' ? v.no : v.yes;
+          html += `
+            <div class="bd-vote-party">
+              <div class="bd-vote-party-h">
+                <span class="bd-vote-party-name" style="color:${color}">${escapeHtml(party)}</span>
+                <span class="bd-vote-party-count">${total}명</span>
+              </div>
+              <div class="bd-vote-party-bar">
+                <div class="bd-vote-party-y" style="width:${yPct}%"></div>
+                <div class="bd-vote-party-n" style="width:${nPct}%"></div>
+              </div>
+              <div class="bd-vote-party-stat">
+                <span>찬 <b>${v.yes.length}</b></span>
+                <span>반 <b>${v.no.length}</b></span>
+                ${v.abstain.length ? `<span>기 <b>${v.abstain.length}</b></span>` : ''}
+              </div>
+              ${rebels.length ? `<div class="bd-vote-rebel">반란표 (${dominant==='yes'?'반대':'찬성'}): ${rebels.slice(0,5).map(r=>escapeHtml(r.name)).join('·')}${rebels.length>5?` 외 ${rebels.length-5}명`:''}</div>` : ''}
+            </div>`;
+        }
+        html += `</div>`;
+        body.innerHTML = html;
       });
       // 법령 본문 fetch (open.law.go.kr) — 개정문·제개정이유·조문 모두 표시
       loadLawByName(bill.BILL_NAME || '').then(law => {
