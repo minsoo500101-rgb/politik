@@ -1965,6 +1965,90 @@
     margin-bottom: 8px;
   }
 
+  /* ============ 의원 활동 종합 점수 ============ */
+  .mp-score-section h2 {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .mp-score-info {
+    font-size: 14px; color: var(--dim);
+    cursor: help;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .mp-score-card {
+    background: linear-gradient(135deg, var(--bg-elev), var(--bg-card));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 10px;
+  }
+  .mp-score-main {
+    display: flex; align-items: center; gap: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .mp-score-grade {
+    font-size: 64px; font-weight: 900;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+  .mp-score-num { display: flex; align-items: baseline; gap: 4px; }
+  .mp-score-big {
+    font-size: 42px; font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .mp-score-tot {
+    font-size: 18px; color: var(--dim); font-weight: 600;
+  }
+  .mp-score-bars {
+    display: flex; flex-direction: column;
+    gap: 8px;
+  }
+  .mp-score-bar {
+    display: grid;
+    grid-template-columns: 110px 1fr 70px;
+    gap: 12px;
+    align-items: center;
+    font-size: 12px;
+  }
+  .mp-score-bar-l { color: var(--text-2); font-weight: 600; }
+  .mp-score-bar-track {
+    background: var(--bg-card);
+    border-radius: 4px;
+    height: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .mp-score-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--text-2));
+    border-radius: 3px;
+    transition: width 0.6s;
+  }
+  .mp-score-bar-n {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .mp-score-bar-n span {
+    font-size: 10px; color: var(--dim);
+    font-weight: 500;
+    margin-left: 2px;
+  }
+  .mp-score-meta {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 11.5px; color: var(--text-2);
+    line-height: 1.6;
+  }
+  .mp-score-meta b { color: var(--text); font-weight: 700; }
+
   /* ============ 실험실 (/play) ============ */
   .play-page {
     max-width: 1080px; margin: 0 auto;
@@ -7533,6 +7617,67 @@ async function loadBillWiki(billName) {
 }
 
 // 인물별 활동 랭킹 + 분야 분포 분석
+// ============================================================
+// 의원 활동 종합 점수 — 객관 공식 (100점 만점)
+// 발의 활동(40) + 통과율(30) + 분야 다양성(15) + 위원회 직책(15)
+// ============================================================
+function computeMpScore(memberName) {
+  if (!memberName || !state.bills?.length) return null;
+  const bills = state.bills;
+  const proposers = state.billProposers || {};
+
+  // 1. 본인 대표발의 건수
+  let leadCount = 0, passed = 0;
+  const topicSet = new Set();
+  for (const b of bills) {
+    const info = getBillProposerInfo(b);
+    if (info.kind !== 'mp' || info.name !== memberName) continue;
+    leadCount++;
+    if (/가결/.test(b.PROC_RESULT_CD || '')) passed++;
+    topicSet.add(getBillTopic(b).id);
+  }
+
+  // 2. 발의 활동도 (40점) — 평균 대비
+  // 모든 의원의 평균 발의 건수 계산
+  const allLeadCounts = new Map();
+  for (const b of bills) {
+    const info = getBillProposerInfo(b);
+    if (info.kind !== 'mp' || !info.name) continue;
+    allLeadCounts.set(info.name, (allLeadCounts.get(info.name) || 0) + 1);
+  }
+  const counts = [...allLeadCounts.values()];
+  const avgLead = counts.length ? counts.reduce((s, n) => s + n, 0) / counts.length : 1;
+  const activityRatio = leadCount / Math.max(avgLead, 1);
+  // 평균 = 20점, 평균 2배 = 40점 (캡)
+  const activityScore = Math.min(40, activityRatio * 20);
+
+  // 3. 통과율 (30점)
+  const passRate = leadCount > 0 ? (passed / leadCount) : 0;
+  const passScore = passRate * 30;
+
+  // 4. 분야 다양성 (15점) — 다룬 분야 수 / 15개 분야
+  const diversityScore = Math.min(15, topicSet.size);
+
+  // 5. 위원회 직책 (15점)
+  const member = state.members.find(m => m.HG_NM === memberName);
+  let committeeScore = 0;
+  const cmt = member?.CMIT_NM || '';
+  const memTitle = member?.MEM_TITLE || '';
+  if (memTitle.includes('위원장') || cmt.includes('위원장') || member?._chairRole) committeeScore = 15;
+  else if (memTitle.includes('간사') || member?._secretaryRole) committeeScore = 10;
+  else if (cmt) committeeScore = 5;
+
+  const total = activityScore + passScore + diversityScore + committeeScore;
+  return {
+    total: Math.round(total),
+    activity: Math.round(activityScore),
+    pass: Math.round(passScore),
+    diversity: Math.round(diversityScore),
+    committee: committeeScore,
+    raw: { leadCount, passed, passRate, avgLead, topics: topicSet.size },
+  };
+}
+
 function getRankingsData() {
   const bills = state.bills || [];
   const proposers = state.billProposers || {};
@@ -10079,6 +10224,61 @@ function renderDetail(id) {
             <div class="loading-inline" style="font-size:12px;color:var(--dim);padding:14px 0"><span class="loading-spinner"></span>뉴스 불러오는 중…</div>
           </div>
         </div>
+        ${(() => {
+          // 의원만 활동 점수 표시
+          if (m._group !== 'legislative' && !m.UNITS) return '';
+          const score = computeMpScore(m.HG_NM);
+          if (!score) return '';
+          const grade = score.total >= 80 ? 'A' : score.total >= 65 ? 'B' : score.total >= 50 ? 'C' : score.total >= 35 ? 'D' : 'E';
+          const gradeColor = score.total >= 80 ? 'var(--ok)' : score.total >= 65 ? '#10b981' : score.total >= 50 ? 'var(--warn)' : score.total >= 35 ? '#f97316' : '#dc2626';
+          return `
+            <div class="d-section mp-score-section">
+              <h2>🏆 의원 활동 종합 점수
+                <span class="mp-score-info" title="발의 활동(40) + 통과율(30) + 분야 다양성(15) + 위원회 직책(15) = 100점. 객관 공식 자동 산출.">ⓘ</span>
+              </h2>
+              <div class="mp-score-card">
+                <div class="mp-score-main">
+                  <div class="mp-score-grade" style="color:${gradeColor}">${grade}</div>
+                  <div class="mp-score-num">
+                    <span class="mp-score-big">${score.total}</span>
+                    <span class="mp-score-tot">/ 100</span>
+                  </div>
+                </div>
+                <div class="mp-score-bars">
+                  <div class="mp-score-bar">
+                    <div class="mp-score-bar-l">발의 활동도</div>
+                    <div class="mp-score-bar-track"><div class="mp-score-bar-fill" style="width:${score.activity/40*100}%"></div></div>
+                    <div class="mp-score-bar-n">${score.activity}<span>/40</span></div>
+                  </div>
+                  <div class="mp-score-bar">
+                    <div class="mp-score-bar-l">통과율</div>
+                    <div class="mp-score-bar-track"><div class="mp-score-bar-fill" style="width:${score.pass/30*100}%"></div></div>
+                    <div class="mp-score-bar-n">${score.pass}<span>/30</span></div>
+                  </div>
+                  <div class="mp-score-bar">
+                    <div class="mp-score-bar-l">분야 다양성</div>
+                    <div class="mp-score-bar-track"><div class="mp-score-bar-fill" style="width:${score.diversity/15*100}%"></div></div>
+                    <div class="mp-score-bar-n">${score.diversity}<span>/15</span></div>
+                  </div>
+                  <div class="mp-score-bar">
+                    <div class="mp-score-bar-l">위원회 직책</div>
+                    <div class="mp-score-bar-track"><div class="mp-score-bar-fill" style="width:${score.committee/15*100}%"></div></div>
+                    <div class="mp-score-bar-n">${score.committee}<span>/15</span></div>
+                  </div>
+                </div>
+                <div class="mp-score-meta">
+                  대표발의 <b>${score.raw.leadCount}건</b> · 가결 <b>${score.raw.passed}건</b> ·
+                  통과율 <b>${(score.raw.passRate*100).toFixed(0)}%</b> ·
+                  다룬 분야 <b>${score.raw.topics}</b>개 ·
+                  의원 평균 ${score.raw.avgLead.toFixed(1)}건 대비 <b>${(score.raw.leadCount/score.raw.avgLead).toFixed(1)}배</b>
+                </div>
+              </div>
+              <p style="font-size:11px;color:var(--dim);margin-top:10px">
+                💡 객관 공식 자동 산출 · 평가 X · 22대 처리 의안 ${(state.bills||[]).length.toLocaleString()}건 기준
+              </p>
+            </div>
+          `;
+        })()}
         ${electionHtml}
         ${mineHtml}
         ${billsHtml}
