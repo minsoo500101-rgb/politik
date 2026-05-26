@@ -5929,6 +5929,7 @@
       <a href="#/about">소개 · 사이트 정보</a>
       <a href="#/changelog">📋 변경 이력</a>
       <a href="#/business">광고 · 데이터 문의</a>
+      <a href="mailto:minsoo500101@gmail.com?subject=%5B%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%20%ED%8C%A8%EC%B9%98%20%EB%85%B8%ED%8A%B8%5D%20">📧 minsoo500101@gmail.com</a>
       <a href="#/donate">☕ 후원하기</a>
       <a href="#/privacy">개인정보 처리방침</a>
       <a href="https://buymeacoffee.com/HYTech" target="_blank" rel="noopener" class="bmc-foot-btn">☕ Buy me a coffee</a>
@@ -9490,11 +9491,12 @@ function renderBusinessPage() {
 
       <div class="about-section about-contact">
         <h2>📬 연락</h2>
-        <p>광고·데이터·컨설팅 문의는 GitHub Discussions 또는 이슈로 남겨주세요. 빠른 시일 내 답변드립니다.</p>
+        <p>광고·데이터·컨설팅 문의는 아래 이메일 또는 GitHub로 부탁드립니다. 영업일 기준 1~2일 내 답변드립니다.</p>
         <div class="about-cta">
-          <a href="https://github.com/minsoo500101-rgb/politik/issues/new?labels=business&title=%5B%EB%AC%B8%EC%9D%98%5D+" target="_blank" rel="noopener" class="about-cta-btn">📧 문의하기 (GitHub)</a>
+          <a href="mailto:minsoo500101@gmail.com?subject=%5B%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%20%ED%8C%A8%EC%B9%98%20%EB%85%B8%ED%8A%B8%5D%20%EB%AC%B8%EC%9D%98" class="about-cta-btn">📧 minsoo500101@gmail.com</a>
+          <a href="https://github.com/minsoo500101-rgb/politik/issues/new?labels=business&title=%5B%EB%AC%B8%EC%9D%98%5D+" target="_blank" rel="noopener" class="about-cta-btn" style="background:var(--bg-elev);color:var(--text);border:1px solid var(--border)">GitHub Issue</a>
         </div>
-        <p class="about-note">이메일 채널은 준비 중입니다.</p>
+        <p class="about-note">사전에 회사·매체명, 협업 형태, 예상 일정을 메일에 포함해 주시면 더 빠르게 답변 드릴 수 있어요.</p>
       </div>
     </div>
   `;
@@ -9814,6 +9816,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V14.5', date: '2026-05-27', title: '비즈니스 메일 + 용어 사전 기초 41개', items: [
+    '비즈니스 메일 통일 — minsoo500101@gmail.com (/business · /privacy · 푸터 · README · 이슈 템플릿)',
+    '용어 사전 95 → 136개 (+41) — 여당·야당·여야·집권당·제1당·진보·보수·중도·좌파·우파',
+    '국회·국회의원·대통령·정부·국가·헌법·민주주의·공화국·국민·주민 등 기초 30+',
+    '선거·투표·공약·후보·당선·낙선·사전투표·본투표·출구조사 + 초선·재선·다선·현직',
+    '용어 사전 ?q=용어 URL 파라미터 지원 — 검색에서 클릭 시 자동 필터링',
+    '검색 결과 용어 def 표시 버그 fix (.short 잘못된 필드 → .def 정확한 필드)'
+  ]},
   { v: 'V14.4', date: '2026-05-27', title: '검색 통합 + career 보충 27명', items: [
     '검색바 하나로 일원화 — 헤더 검색이 4영역(정치인·법안·9회 후보·용어) 통합 검색',
     '홈 중간 검색바 제거 — 헷갈림 해소',
@@ -10680,12 +10690,16 @@ function renderPrivacyPage() {
       <div class="about-section">
         <h2>6. 변경 사항</h2>
         <p>본 방침은 법령·서비스 변경에 따라 수정될 수 있으며, 변경 시 본 페이지에 공지합니다.</p>
-        <p class="about-note">최종 업데이트: 2026년 5월 26일</p>
+        <p class="about-note">최종 업데이트: 2026년 5월 27일</p>
       </div>
 
       <div class="about-section">
         <h2>7. 문의</h2>
-        <p>개인정보 관련 문의는 <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener">GitHub 이슈</a>로 남겨주세요.</p>
+        <p>개인정보 관련 문의는 아래 채널 중 편하신 곳으로 남겨주세요.</p>
+        <ul class="about-ul">
+          <li>📧 이메일: <a href="mailto:minsoo500101@gmail.com?subject=%5B%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%5D">minsoo500101@gmail.com</a></li>
+          <li>🐙 GitHub 이슈: <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener">github.com/minsoo500101-rgb/politik/issues</a></li>
+        </ul>
       </div>
     </div>
   `;
@@ -11707,7 +11721,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.4 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.5 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -12752,7 +12766,13 @@ function route() {
     return;
   }
   // 정치 용어 사전 (/glossary)
-  if (hash === '#/glossary') {
+  if (hash === '#/glossary' || hash.startsWith('#/glossary?')) {
+    // ?q=용어 또는 ?cat=카테고리 자동 적용
+    const params = new URLSearchParams(hash.split('?')[1] || '');
+    const qParam = params.get('q');
+    const catParam = params.get('cat');
+    if (qParam) glossaryState.filter.q = qParam;
+    if (catParam) glossaryState.filter.category = catParam;
     view.innerHTML = renderGlossaryPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     setupGlossaryEvents();
@@ -13753,7 +13773,7 @@ const AC = (() => {
     if (glossaryState?.data?.terms && q.length >= 1) {
       for (const t of glossaryState.data.terms) {
         const term = (t.term || '').toLowerCase();
-        const desc = (t.short || '').toLowerCase();
+        const desc = (t.def || t.short || '').toLowerCase();
         if (term.includes(q) || desc.includes(q)) {
           glossary.push(t);
           if (glossary.length >= 3) break;
@@ -13843,7 +13863,7 @@ const AC = (() => {
         <div class="ac-avatar" style="background:#6366f1; color:#fff">📖</div>
         <div class="ac-info">
           <div class="ac-name">${hl(t.term || '', q)}</div>
-          <div class="ac-sub">${hl((t.short || '').slice(0, 70), q)}</div>
+          <div class="ac-sub">${hl((t.def || t.short || '').slice(0, 70), q)}</div>
         </div>
         <span class="ac-badge" style="background:#6366f1">용어</span>
       </div>`;
@@ -13923,7 +13943,8 @@ const AC = (() => {
       }
     }
     else if (item.action === 'gloss') {
-      location.hash = '#/glossary';
+      if (item.term) location.hash = '#/glossary?q=' + encodeURIComponent(item.term);
+      else location.hash = '#/glossary';
     }
   }
 
