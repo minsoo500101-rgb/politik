@@ -2234,61 +2234,6 @@
   .cmp-diff-row span { color: var(--dim); }
   .cmp-diff-row b { color: var(--text); font-weight: 700; }
 
-  /* ============ 공동발의 네트워크 (/network) ============ */
-  .net-page {
-    max-width: 1280px; margin: 0 auto;
-    padding: 24px 20px 60px;
-  }
-  .net-h1 {
-    font-size: 28px; font-weight: 800;
-    margin-bottom: 8px;
-  }
-  .net-lead {
-    font-size: 14px; color: var(--text-2);
-    margin-bottom: 16px;
-    line-height: 1.6;
-  }
-  .net-controls {
-    display: flex; gap: 20px; align-items: center;
-    padding: 14px;
-    background: var(--bg-elev);
-    border-radius: 8px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-  }
-  .net-control {
-    display: flex; gap: 8px; align-items: center;
-    font-size: 12px; color: var(--text-2);
-  }
-  .net-control input[type="range"] { width: 200px; }
-  .net-control output { font-weight: 700; color: var(--text); }
-  .net-control select {
-    padding: 6px 10px;
-    border: 1px solid var(--border-strong);
-    border-radius: 6px;
-    background: var(--bg-card);
-    color: var(--text);
-    font: inherit; font-size: 12px;
-  }
-  #net-svg {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: grab;
-  }
-  #net-svg:active { cursor: grabbing; }
-  .net-tooltip {
-    position: fixed; z-index: 100;
-    background: rgba(0,0,0,0.92);
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    pointer-events: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    line-height: 1.5;
-  }
-
   /* ============ 출신 분석 (/insights) ============ */
   .ins-page {
     max-width: 1280px; margin: 0 auto;
@@ -4960,7 +4905,6 @@
       <a href="#/glossary">📖 정치 용어 사전</a>
       <a href="#/insights">🔬 출신 분석</a>
       <a href="#/rankings">📊 활동 랭킹</a>
-      <a href="#/network">🕸 공동발의 네트워크</a>
       <a href="#/compare">⚖ 의원 비교</a>
     </div>
     <div class="foot-col">
@@ -8179,175 +8123,6 @@ function setupCompareEvents() {
 }
 
 // ============================================================
-// 공동발의 네트워크 (/network) — d3 force graph
-// ============================================================
-function renderNetworkPage() {
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="net-page">
-      <h1 class="net-h1">🕸 공동발의 네트워크</h1>
-      <p class="net-lead">의원-의원 간 공동발의 관계 시각화. 노드(원)는 의원, 선의 두께는 공동발의 횟수. 정치적 친소 관계가 그래프로 드러납니다.<br>
-        <span style="color:var(--dim);font-size:12px">⚠ 22대 국회 처리 의안 1,595건 기준 · 공동발의 5회 이상 페어만 표시</span></p>
-      <div class="net-controls">
-        <label class="net-control">
-          <span>최소 공동발의 횟수</span>
-          <input type="range" id="net-min" min="3" max="30" value="5">
-          <output id="net-min-out">5</output>
-        </label>
-        <label class="net-control">
-          <span>정당 필터</span>
-          <select id="net-party"><option value="">전체</option></select>
-        </label>
-      </div>
-      <svg id="net-svg" width="100%" height="700"></svg>
-      <div id="net-tooltip" class="net-tooltip" style="display:none"></div>
-    </div>
-  `;
-}
-
-function setupNetworkGraph() {
-  // 데이터 로드 대기 (state.bills 등)
-  const tryStart = () => {
-    if (!state.bills?.length || !state.billProposers || Object.keys(state.billProposers).length < 100) {
-      setTimeout(tryStart, 500);
-      return;
-    }
-    drawNetwork();
-  };
-  tryStart();
-}
-
-function drawNetwork() {
-  // 1. 공동발의 페어 카운트 빌드
-  const pairCounts = new Map(); // "name1|name2" (sorted) → count
-  const memberCount = new Map(); // name → total bills
-  const memberParty = new Map();
-
-  for (const bill of state.bills || []) {
-    const info = state.billProposers?.[bill.BILL_ID];
-    if (!info || !info.MEMBER_LIST) continue;
-    // 이름 파싱: "이재명, 정청래, ..." 등
-    const names = info.MEMBER_LIST.split(/[,，·]/).map(s => s.trim()).filter(Boolean);
-    if (names.length < 2 || names.length > 50) continue; // 너무 많으면 노이즈
-    names.forEach(n => {
-      memberCount.set(n, (memberCount.get(n) || 0) + 1);
-      if (!memberParty.has(n)) {
-        const m = state.members.find(x => x.HG_NM === n);
-        if (m) memberParty.set(n, m.POLY_NM);
-      }
-    });
-    for (let i = 0; i < names.length; i++) {
-      for (let j = i + 1; j < names.length; j++) {
-        const key = [names[i], names[j]].sort().join('|');
-        pairCounts.set(key, (pairCounts.get(key) || 0) + 1);
-      }
-    }
-  }
-
-  const min = parseInt(document.getElementById('net-min').value || '5');
-  const partyFilter = document.getElementById('net-party')?.value || '';
-
-  // 정당 드롭다운 채우기 (한 번만)
-  const partySel = document.getElementById('net-party');
-  if (partySel && partySel.children.length <= 1) {
-    const parties = [...new Set([...memberParty.values()])].filter(Boolean).sort();
-    parties.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p; opt.textContent = p;
-      partySel.appendChild(opt);
-    });
-  }
-
-  // 노드·링크 빌드
-  const linkPairs = [...pairCounts.entries()].filter(([_, c]) => c >= min);
-  const nodeNames = new Set();
-  linkPairs.forEach(([key]) => key.split('|').forEach(n => nodeNames.add(n)));
-  let nodes = [...nodeNames].map(n => ({
-    id: n,
-    party: memberParty.get(n) || '무소속',
-    total: memberCount.get(n) || 0,
-  }));
-  let links = linkPairs.map(([key, count]) => {
-    const [s, t] = key.split('|');
-    return { source: s, target: t, value: count };
-  });
-  if (partyFilter) {
-    const keep = new Set(nodes.filter(n => n.party === partyFilter).map(n => n.id));
-    nodes = nodes.filter(n => keep.has(n.id));
-    links = links.filter(l => keep.has(l.source.id || l.source) && keep.has(l.target.id || l.target));
-  }
-
-  // d3 force simulation
-  const svg = d3.select('#net-svg');
-  svg.selectAll('*').remove();
-  const w = svg.node().clientWidth;
-  const h = 700;
-  const g = svg.append('g');
-
-  // Zoom
-  const zoom = d3.zoom().scaleExtent([0.2, 4]).on('zoom', e => g.attr('transform', e.transform));
-  svg.call(zoom);
-
-  const sim = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(80).strength(0.4))
-    .force('charge', d3.forceManyBody().strength(-100))
-    .force('center', d3.forceCenter(w / 2, h / 2))
-    .force('collide', d3.forceCollide().radius(d => 6 + Math.sqrt(d.total) * 0.6));
-
-  const link = g.append('g').attr('class', 'net-links')
-    .selectAll('line').data(links).enter().append('line')
-    .attr('stroke', '#999').attr('stroke-opacity', 0.3)
-    .attr('stroke-width', d => Math.min(4, Math.sqrt(d.value) * 0.5));
-
-  const node = g.append('g').attr('class', 'net-nodes')
-    .selectAll('circle').data(nodes).enter().append('circle')
-    .attr('r', d => 5 + Math.sqrt(d.total) * 0.5)
-    .attr('fill', d => partyColor(d.party))
-    .attr('stroke', '#fff').attr('stroke-width', 1.5)
-    .style('cursor', 'pointer')
-    .call(d3.drag()
-      .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-      .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
-      .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }))
-    .on('mouseover', (e, d) => {
-      const tip = document.getElementById('net-tooltip');
-      tip.innerHTML = `<b>${escapeHtml(d.id)}</b><br><span style="color:${partyColor(d.party)}">${escapeHtml(d.party)}</span><br>참여 발의: ${d.total}건`;
-      tip.style.display = 'block';
-      tip.style.left = (e.clientX + 12) + 'px';
-      tip.style.top = (e.clientY + 12) + 'px';
-    })
-    .on('mouseout', () => { document.getElementById('net-tooltip').style.display = 'none'; })
-    .on('click', (e, d) => {
-      const m = state.members.find(x => x.HG_NM === d.id);
-      if (m) location.hash = `#/m/${encodeURIComponent(m.MONA_CD)}`;
-    });
-
-  const label = g.append('g').attr('class', 'net-labels')
-    .selectAll('text').data(nodes.filter(n => n.total > 10)).enter().append('text')
-    .attr('font-size', '10px').attr('fill', 'var(--text)').attr('text-anchor', 'middle')
-    .attr('dy', d => -(5 + Math.sqrt(d.total) * 0.5 + 4))
-    .text(d => d.id);
-
-  sim.on('tick', () => {
-    link
-      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-    node.attr('cx', d => d.x).attr('cy', d => d.y);
-    label.attr('x', d => d.x).attr('y', d => d.y);
-  });
-
-  // 상태 표시
-  const minOut = document.getElementById('net-min-out');
-  if (minOut) minOut.textContent = `${min} (노드 ${nodes.length}명, 연결 ${links.length}개)`;
-
-  // 컨트롤 이벤트
-  document.getElementById('net-min')?.addEventListener('input', e => {
-    drawNetwork();
-  });
-  document.getElementById('net-party')?.addEventListener('change', () => drawNetwork());
-}
-
-// ============================================================
 // 출신 분석 페이지 (/insights) — career·position 텍스트에서 인사이트 추출
 // ============================================================
 
@@ -10083,7 +9858,6 @@ function renderHome() {
           <div class="explore-cat">데이터 시각화</div>
           <div class="explore-grid">
             <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구 정당색</em></div></a>
-            <a class="tool-card" href="#/network"><span>🕸</span><div><b>공동발의 네트워크</b><em>의원 간 협업 관계 그래프</em></div></a>
             <a class="tool-card" href="#/relations"><span>🔗</span><div><b>발의 관계도</b><em>법안-의원 연결 시각화</em></div></a>
             <a class="tool-card" href="#/insights"><span>🔬</span><div><b>출신 분석</b><em>학교·직업·세대·지역</em></div></a>
           </div>
@@ -10797,15 +10571,6 @@ function route() {
     view.innerHTML = renderComparePage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     setupCompareEvents();
-    if (filterBar) filterBar.style.display = 'none';
-    window.scrollTo(0, 0);
-    return;
-  }
-  // 공동발의 네트워크 (/network)
-  if (hash === '#/network') {
-    view.innerHTML = renderNetworkPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
-    setupNetworkGraph();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
