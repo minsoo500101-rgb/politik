@@ -343,10 +343,13 @@
     color: var(--dim); pointer-events: none;
   }
   .nav-stats {
-    display: flex; gap: 16px; font-size: 11px; color: var(--dim);
+    display: flex; gap: 10px; font-size: 11px; color: var(--dim);
     align-items: center;
   }
   .nav-stats b { color: var(--text); font-weight: 600; font-size: 13px; }
+  @media (max-width: 720px) {
+    #h-fresh { display: none; }
+  }
   .theme-toggle {
     background: var(--bg-elev);
     border: 1px solid var(--border);
@@ -2987,7 +2990,127 @@
     gap: 16px;
   }
   @media (max-width: 700px) {
-    .cmp-grid { grid-template-columns: 1fr; }
+    .cmp-grid { grid-template-columns: 1fr !important; }
+  }
+  /* 9회 후보 비교 전용 */
+  .cmp-slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  @media (max-width: 700px) { .cmp-slots { grid-template-columns: 1fr; } }
+  .cmp-slot-wrap { display: flex; flex-direction: column; }
+  .cmp-slot-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--dim);
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .cmp-slot-input {
+    padding: 10px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text);
+    font: inherit; font-size: 13px;
+  }
+  .cmp-slot-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+  }
+  .cmp-recos {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+  }
+  .cmp-reco-h {
+    font-size: 12px; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .cmp-reco-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cmp-reco-pill {
+    display: inline-block;
+    padding: 5px 11px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 11.5px; color: var(--text);
+    text-decoration: none;
+    transition: all 0.12s;
+  }
+  .cmp-reco-pill:hover {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+    text-decoration: none;
+  }
+  .cmp-cand-head {
+    display: flex; gap: 12px; align-items: center;
+    margin-bottom: 14px;
+  }
+  .cmp-cand-giho {
+    font-size: 24px; font-weight: 900;
+    color: var(--text);
+    min-width: 36px; height: 36px;
+    line-height: 36px; text-align: center;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .cmp-pledge-block {
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+  }
+  .cmp-pledge-h {
+    font-size: 12px; font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .cmp-pledge-item {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .cmp-pledge-item:last-child { border-bottom: 0; }
+  .cmp-pledge-realm {
+    font-size: 10px; font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .cmp-pledge-title {
+    font-size: 12.5px; font-weight: 700;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .cmp-pledge-cont {
+    font-size: 11px; color: var(--text-2);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .cmp-detail-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    padding: 8px;
+    background: var(--bg-elev);
+    border-radius: 6px;
+    color: var(--accent);
+    font-size: 12px; font-weight: 700;
+    text-decoration: none;
+  }
+  .cmp-detail-link:hover { background: var(--accent); color: #fff; text-decoration: none; }
+  .cmp-foot {
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    font-size: 11.5px; color: var(--text-2);
+    line-height: 1.6;
   }
   .cmp-col {
     background: var(--bg-card);
@@ -4728,33 +4851,102 @@
     color: var(--text-2); font-variant-numeric: tabular-nums;
     font-weight: 700; font-size: 12px;
   }
-  .e26-pa-cloud {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    padding: 14px;
-    background: var(--bg-elev);
-    border-radius: 10px;
+  /* ===== 시도별 후보 비교 그리드 ===== */
+  .e26-pa-sd-list {
+    display: flex; flex-direction: column; gap: 16px;
     margin-top: 14px;
-    line-height: 1.6;
   }
-  .e26-pa-kw {
-    display: inline-block;
-    padding: 3px 10px;
-    background: var(--bg-card);
+  .e26-pa-sd-block {
+    background: var(--bg-elev);
+    border-radius: 12px;
+    padding: 14px;
     border: 1px solid var(--border);
-    border-radius: 16px;
+  }
+  .e26-pa-sd-h {
+    font-size: 13px; font-weight: 800; color: var(--text);
+    margin-bottom: 10px;
+  }
+  .e26-pa-cand-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .e26-pa-cand-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .e26-pa-cand-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    border-color: var(--accent);
+  }
+  [data-theme="dark"] .e26-pa-cand-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+  .e26-pa-cand-head {
+    display: flex; gap: 10px; align-items: center;
+    margin-bottom: 10px;
+  }
+  .e26-pa-cand-giho {
+    font-size: 18px; font-weight: 900;
     color: var(--text);
+    min-width: 28px; height: 28px;
+    line-height: 28px; text-align: center;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .e26-pa-cand-name {
+    font-size: 14px; font-weight: 800;
+    color: var(--text);
+  }
+  .e26-pa-cand-party {
+    font-size: 11px; font-weight: 700;
+    margin-top: 1px;
+  }
+  .e26-pa-cand-realms {
+    display: flex; flex-direction: column; gap: 4px;
+    margin-bottom: 8px;
+  }
+  .e26-pa-cand-realm {
+    display: grid;
+    grid-template-columns: 60px 1fr 18px;
+    align-items: center; gap: 6px;
+    font-size: 11px;
+  }
+  .e26-pa-cand-realm-name {
+    color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     font-weight: 600;
-    transition: all 0.12s;
-    cursor: default;
   }
-  .e26-pa-kw:hover {
-    background: var(--accent); color: #fff; border-color: var(--accent);
+  .e26-pa-cand-realm-bar {
+    background: var(--bg-elev);
+    border-radius: 3px; overflow: hidden;
+    height: 8px;
   }
-  .e26-pa-kw.sz-1 { font-size: 11px; opacity: 0.7; }
-  .e26-pa-kw.sz-2 { font-size: 12px; opacity: 0.85; }
-  .e26-pa-kw.sz-3 { font-size: 13.5px; }
-  .e26-pa-kw.sz-4 { font-size: 15px; font-weight: 700; }
-  .e26-pa-kw.sz-5 { font-size: 17px; font-weight: 800; color: var(--accent); }
+  .e26-pa-cand-realm-bar > div {
+    height: 100%; border-radius: 3px;
+    transition: width 0.5s ease-out;
+  }
+  .e26-pa-cand-realm-c {
+    text-align: right; color: var(--text-2);
+    font-variant-numeric: tabular-nums; font-weight: 700;
+  }
+  .e26-pa-cand-foot {
+    font-size: 10.5px; color: var(--dim);
+    text-align: center;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+  }
+  @media (max-width: 700px) {
+    .e26-pa-cand-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 420px) {
+    .e26-pa-cand-grid { grid-template-columns: 1fr !important; }
+  }
+
   .e26-pa-subhead {
     font-size: 12.5px; font-weight: 700; color: var(--text);
     margin: 16px 0 4px;
@@ -5887,6 +6079,7 @@
       <div class="ac-dropdown" id="ac-dropdown" role="listbox" aria-label="검색 자동완성"></div>
     </div>
     <div class="nav-stats">
+      <span class="freshness-badge" id="h-fresh" title="데이터 실시간 갱신 (국회 OPEN API · 중앙선관위)"></span>
       <button class="theme-toggle" id="theme-toggle" title="다크 모드 전환">🌙</button>
     </div>
   </div>
@@ -7577,9 +7770,10 @@ async function analyzePledges(progressCb) {
   const governors = nec.governors.filter(c => c.huboid);
   const total = governors.length;
   let done = 0;
-  const realms = new Map();
-  const keywords = new Map();
-  const byParty = new Map();
+  const realms = new Map();          // 전체 분야 분포
+  const byParty = new Map();          // 정당별 분야
+  const bySd = new Map();             // 시도별 후보 pledge 데이터 (비교 그리드용)
+  const candidates = [];              // 후보별 분야 리스트
   // 동시 6개 제한 (API rate limit 보호)
   const CONC = 6;
   async function fetchOne(c) {
@@ -7590,21 +7784,20 @@ async function analyzePledges(progressCb) {
       if (!items.length) return;
       const data = items[0];
       const party = c.jdName || '무소속';
+      const sd = c.sdName || '기타';
+      const pledges = [];
+      const candRealms = new Map();
       for (let i = 1; i <= 10; i++) {
         const realm = data['prmsRealmName' + i] || '';
         const title = data['prmsTitle' + i] || '';
-        if (realm) realms.set(realm, (realms.get(realm) || 0) + 1);
-        if (title) {
-          // 공백 분리 후 토큰화 + 불용어 제거
-          const tokens = title.split(/[\s,·\-()\[\]{}!?<>"'`「」『』、，;：:]+/);
-          for (let t of tokens) {
-            t = t.trim();
-            if (t.length < 2) continue;
-            if (KOREAN_STOPWORDS.has(t)) continue;
-            // 숫자만은 제외
-            if (/^[0-9]+$/.test(t)) continue;
-            keywords.set(t, (keywords.get(t) || 0) + 1);
-          }
+        const cont = data['prmsCont' + i] || '';
+        if (!realm && !title) continue;
+        if (realm) {
+          realms.set(realm, (realms.get(realm) || 0) + 1);
+          candRealms.set(realm, (candRealms.get(realm) || 0) + 1);
+        }
+        if (title || realm) {
+          pledges.push({ ord: i, realm, title, cont });
           if (!byParty.has(party)) byParty.set(party, { titles: [], realms: new Map() });
           byParty.get(party).titles.push(title);
           if (realm) {
@@ -7613,6 +7806,21 @@ async function analyzePledges(progressCb) {
           }
         }
       }
+      // 후보 정보 저장
+      const candInfo = {
+        huboid: c.huboid,
+        name: c.name,
+        party,
+        giho: c.giho,
+        sd,
+        sgg: c.sggName,
+        pledges,
+        realms: candRealms
+      };
+      candidates.push(candInfo);
+      // 시도별 그룹
+      if (!bySd.has(sd)) bySd.set(sd, []);
+      bySd.get(sd).push(candInfo);
     } catch (e) {
       // 개별 실패는 무시
     } finally {
@@ -7631,7 +7839,7 @@ async function analyzePledges(progressCb) {
     })());
   }
   await Promise.all(workers);
-  PLEDGE_ANALYSIS.cache = { realms, keywords, byParty, total: done };
+  PLEDGE_ANALYSIS.cache = { realms, byParty, bySd, candidates, total: done };
   PLEDGE_ANALYSIS.inProgress = false;
   return PLEDGE_ANALYSIS.cache;
 }
@@ -7640,19 +7848,10 @@ function renderPledgeAnalysis(analysis) {
   if (!analysis) return '<div style="text-align:center;color:var(--dim);padding:14px">분석 결과 없음</div>';
   const realms = [...analysis.realms.entries()].sort((a,b) => b[1] - a[1]);
   const realmMax = realms[0]?.[1] || 1;
-  const keywords = [...analysis.keywords.entries()].sort((a,b) => b[1] - a[1]).slice(0, 60);
-  const kwMax = keywords[0]?.[1] || 1;
   const byParty = [...analysis.byParty.entries()].sort((a,b) => b[1].titles.length - a[1].titles.length);
-  function sizeClass(count) {
-    const r = count / kwMax;
-    if (r > 0.7) return 'sz-5';
-    if (r > 0.5) return 'sz-4';
-    if (r > 0.3) return 'sz-3';
-    if (r > 0.15) return 'sz-2';
-    return 'sz-1';
-  }
+  const bySd = [...(analysis.bySd?.entries() || [])].sort((a,b) => b[1].length - a[1].length);
   let html = `
-    <div class="e26-pa-subhead">📊 공약 분야 분포 (상위 ${Math.min(realms.length, 12)})</div>
+    <div class="e26-pa-subhead">📊 전체 공약 분야 분포 (상위 ${Math.min(realms.length, 12)}) <span style="font-size:11px;color:var(--dim);font-weight:600">· NEC 공식 분류</span></div>
     <div class="e26-pa-realms">
       ${realms.slice(0, 12).map(([name, count]) => `
         <div class="e26-pa-realm-row">
@@ -7661,10 +7860,6 @@ function renderPledgeAnalysis(analysis) {
           <div class="e26-pa-realm-count">${count}</div>
         </div>
       `).join('')}
-    </div>
-    <div class="e26-pa-subhead">☁ 공약 키워드 (상위 ${keywords.length})</div>
-    <div class="e26-pa-cloud">
-      ${keywords.map(([w, c]) => `<span class="e26-pa-kw ${sizeClass(c)}" title="${c}회 등장">${escapeHtml(w)}</span>`).join('')}
     </div>
   `;
   if (byParty.length > 1) {
@@ -7686,7 +7881,52 @@ function renderPledgeAnalysis(analysis) {
       </div>
     `;
   }
-  html += `<div class="e26-pa-meta">분석 대상: 광역단체장 후보 ${analysis.total}명 · 5대 공약 fetch 기준 · 데이터: 중앙선관위</div>`;
+  // 시도별 후보 비교 (같은 지역끼리 옆에 옆에)
+  if (bySd.length) {
+    html += `
+      <div class="e26-pa-subhead">🗺 시도별 후보 공약 비교 <span style="font-size:11px;color:var(--dim);font-weight:600">· 같은 지역 후보들 5대 공약 분야 분포</span></div>
+      <div class="e26-pa-sd-list">
+        ${bySd.map(([sd, cands]) => {
+          if (cands.length < 2) return '';
+          return `
+            <div class="e26-pa-sd-block">
+              <div class="e26-pa-sd-h">📍 ${escapeHtml(sd)} <span style="font-size:11px;color:var(--dim);font-weight:500">· ${cands.length}명 비교</span></div>
+              <div class="e26-pa-cand-grid" style="grid-template-columns:repeat(${Math.min(cands.length, 4)}, 1fr)">
+                ${cands.slice(0, 4).map(cand => {
+                  const pc = partyColor(cand.party);
+                  const realmArr = [...cand.realms.entries()].sort((a,b)=>b[1]-a[1]);
+                  const candMax = realmArr[0]?.[1] || 1;
+                  return `
+                    <div class="e26-pa-cand-card" style="border-top:3px solid ${pc}" data-huboid="${escapeHtml(cand.huboid)}" data-name="${escapeHtml(cand.name)}" data-party="${escapeHtml(cand.party)}" data-region="${escapeHtml(sd + (cand.sgg && cand.sgg !== sd ? ' ' + cand.sgg : ''))}">
+                      <div class="e26-pa-cand-head">
+                        ${cand.giho ? `<span class="e26-pa-cand-giho">${escapeHtml(cand.giho)}</span>` : ''}
+                        <div>
+                          <div class="e26-pa-cand-name">${escapeHtml(cand.name)}</div>
+                          <div class="e26-pa-cand-party" style="color:${pc}">${escapeHtml(cand.party)}</div>
+                        </div>
+                      </div>
+                      <div class="e26-pa-cand-realms">
+                        ${realmArr.slice(0, 5).map(([r, c]) => `
+                          <div class="e26-pa-cand-realm">
+                            <span class="e26-pa-cand-realm-name">${escapeHtml(r)}</span>
+                            <div class="e26-pa-cand-realm-bar"><div style="width:${(c/candMax*100).toFixed(0)}%; background:${pc}"></div></div>
+                            <span class="e26-pa-cand-realm-c">${c}</span>
+                          </div>
+                        `).join('')}
+                      </div>
+                      <div class="e26-pa-cand-foot">클릭 → 5대 공약 보기</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+  html += `<div class="e26-pa-meta">분석 대상: 광역단체장 후보 ${analysis.total}명 · 5대 공약 fetch 기준 · 데이터: 중앙선관위 정책공약마당<br>
+    <span style="color:var(--text-2)">⚠ 평가·해석 없음 — 후보가 등록한 분야 카운트만 표시. 비교는 카드 클릭으로 공약 본문 직접 확인.</span></div>`;
   return html;
 }
 
@@ -9816,6 +10056,15 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V15.0', date: '2026-05-27', title: '대규모 — 공약 비교 + 후보 비교 + REST API + AI 분류 (Grok 잔여 전부)', items: [
+    '🔬 공약 키워드 클라우드 제거 — 의미 적은 빈도 분석 폐기',
+    '🗺 시도별 후보 공약 비교 그리드 — 같은 지역 후보들 5대 공약 분야 옆에 옆에 (카드 클릭 → 본문 모달)',
+    '🆚 9회 후보자 비교 페이지 (/compare-cand?a=&b=&c=) — 최대 3명 동시 비교 + 자동 추천 (같은 지역 묶음)',
+    '📡 REST API 공개 — /api/data?type=politicians/glossary/parties/info (CORS·24h 캐시·공공누리)',
+    '🤖 AI 공약 분류 API — /api/ai-classify (Claude Haiku · 선거 30일~+7일 자동 비활성 · 평가 금지 시스템 프롬프트)',
+    '✨ 헤더 freshness 배지 부활 — "실시간 YYYY.MM.DD"',
+    '홈 탐색 그리드 12개 도구 — 9회 후보 비교 추가'
+  ]},
   { v: 'V14.5', date: '2026-05-27', title: '비즈니스 메일 + 용어 사전 기초 41개', items: [
     '비즈니스 메일 통일 — minsoo500101@gmail.com (/business · /privacy · 푸터 · README · 이슈 템플릿)',
     '용어 사전 95 → 136개 (+41) — 여당·야당·여야·집권당·제1당·진보·보수·중도·좌파·우파',
@@ -10308,6 +10557,222 @@ function attachGlossaryHandlers() {
       document.getElementById('gloss-body').innerHTML = renderGlossaryBody();
       attachGlossaryHandlers();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+// ============================================================
+// 9회 지선 후보자 비교 (/compare-cand?a=huboid&b=huboid&c=huboid)
+// ============================================================
+const CAND_PLEDGE_CACHE = new Map(); // huboid → pledges array
+
+async function fetchCandPledges(huboid, sg) {
+  if (CAND_PLEDGE_CACHE.has(huboid)) return CAND_PLEDGE_CACHE.get(huboid);
+  try {
+    const j = await necFetch('policies', { sgId: '20260603', sgTypecode: sg, cnddtId: huboid });
+    let items = j?.response?.body?.items?.item || j?.body?.items?.item || [];
+    if (!Array.isArray(items)) items = items ? [items] : [];
+    if (!items.length) {
+      CAND_PLEDGE_CACHE.set(huboid, []);
+      return [];
+    }
+    const data = items[0];
+    const pledges = [];
+    for (let i = 1; i <= 10; i++) {
+      const realm = data['prmsRealmName' + i] || '';
+      const title = data['prmsTitle' + i] || '';
+      const cont = data['prmsCont' + i] || '';
+      if (realm || title) pledges.push({ ord: i, realm, title, cont });
+    }
+    CAND_PLEDGE_CACHE.set(huboid, pledges);
+    return pledges;
+  } catch (e) {
+    CAND_PLEDGE_CACHE.set(huboid, []);
+    return [];
+  }
+}
+
+function getAllNecCandidates() {
+  const nec = state.nec2026Governors;
+  if (!nec) return [];
+  const out = [];
+  const sources = [
+    { arr: nec.governors, kind: '광역단체장', sg: '3' },
+    { arr: nec.munis, kind: '기초단체장', sg: '4' },
+    { arr: nec.eduSupers, kind: '교육감', sg: '11' },
+    { arr: nec.localAssembly, kind: '광역의원', sg: '8' },
+    { arr: nec.localAssemblyProp, kind: '비례 광역의원', sg: '8' }
+  ];
+  for (const s of sources) {
+    if (!Array.isArray(s.arr)) continue;
+    for (const c of s.arr) {
+      if (!c.huboid) continue;
+      out.push({ ...c, _kind: s.kind, _sg: s.sg });
+    }
+  }
+  return out;
+}
+
+function renderCandComparePage() {
+  const params = new URLSearchParams(location.hash.split('?')[1] || '');
+  const ids = [params.get('a'), params.get('b'), params.get('c')].filter(Boolean);
+  const allCands = getAllNecCandidates();
+  if (!allCands.length) {
+    return `
+      <div class="group-back" id="back-home">← 홈</div>
+      <div class="cmp-page">
+        <h1 class="cmp-h1">🆚 9회 지선 후보자 비교</h1>
+        <div class="loading"><span class="loading-spinner"></span>9회 지선 후보자 데이터 불러오는 중…</div>
+      </div>
+    `;
+  }
+  const picked = ids.map(id => allCands.find(c => c.huboid === id)).filter(Boolean);
+  // 같은 지역(같은 sdName + 같은 sggName) 자동 그룹화
+  // 후보자 선택 옵션 — 같은 지역 후보들 자동 묶음
+  const byRegion = new Map();
+  for (const c of allCands) {
+    const key = (c.sdName || '') + '|' + (c.sggName || c.sdName || '') + '|' + c._kind;
+    if (!byRegion.has(key)) byRegion.set(key, []);
+    byRegion.get(key).push(c);
+  }
+  // 추천 (같은 지역 후보들 묶음)
+  const recommendations = [];
+  for (const [key, cands] of byRegion.entries()) {
+    if (cands.length >= 2) recommendations.push({ key, cands });
+  }
+  recommendations.sort((a, b) => {
+    const aOrder = a.cands[0]._kind === '광역단체장' ? 0 : a.cands[0]._kind === '교육감' ? 1 : 2;
+    const bOrder = b.cands[0]._kind === '광역단체장' ? 0 : b.cands[0]._kind === '교육감' ? 1 : 2;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return (b.cands.length - a.cands.length);
+  });
+
+  // 선택 UI (datalist 사용)
+  const candOptions = allCands.map(c => {
+    const region = [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ');
+    return `<option value="${escapeHtml(c.huboid)}">${escapeHtml(c.name)} (${escapeHtml(c.jdName || '무소속')}, ${escapeHtml(region)}, ${escapeHtml(c._kind)})</option>`;
+  }).join('');
+
+  const slotIds = ['a', 'b', 'c'];
+
+  function candCard(c) {
+    if (!c) return '<div class="cmp-col cmp-empty"><span>후보 선택</span><span style="font-size:11px;color:var(--dim);display:block;margin-top:8px">← 위 입력에서 선택</span></div>';
+    const pc = partyColor(c.jdName || '무소속');
+    const region = [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ');
+    return `
+      <div class="cmp-col" style="border-top-color:${pc}">
+        <div class="cmp-cand-head">
+          ${c.giho ? `<div class="cmp-cand-giho">${escapeHtml(c.giho)}</div>` : ''}
+          <div>
+            <div class="cmp-name" style="color:${pc}">${escapeHtml(c.name)}</div>
+            <div class="cmp-party">${escapeHtml(c.jdName || '무소속')}</div>
+          </div>
+        </div>
+        <div class="cmp-rows">
+          <div class="cmp-row"><span class="cmp-k">지역</span><span class="cmp-v">${escapeHtml(region)}</span></div>
+          <div class="cmp-row"><span class="cmp-k">직책</span><span class="cmp-v">${escapeHtml(c._kind)}</span></div>
+          ${c.gender ? `<div class="cmp-row"><span class="cmp-k">성별</span><span class="cmp-v">${escapeHtml(c.gender)}</span></div>` : ''}
+          ${c.age ? `<div class="cmp-row"><span class="cmp-k">연령</span><span class="cmp-v">${escapeHtml(c.age)}세</span></div>` : ''}
+          ${c.job ? `<div class="cmp-row"><span class="cmp-k">직업</span><span class="cmp-v" style="font-size:12px">${escapeHtml(c.job)}</span></div>` : ''}
+          ${c.edu ? `<div class="cmp-row"><span class="cmp-k">학력</span><span class="cmp-v" style="font-size:11.5px;line-height:1.4">${escapeHtml(c.edu)}</span></div>` : ''}
+        </div>
+        <div class="cmp-pledge-block" id="cmp-pledges-${escapeHtml(c.huboid)}">
+          <div class="cmp-pledge-h">📋 5대 공약</div>
+          <div class="cmp-pledge-body"><span class="loading-spinner"></span> 공약 불러오는 중…</div>
+        </div>
+        <a href="#/election2026" class="cmp-detail-link" data-huboid="${escapeHtml(c.huboid)}" data-sg="${escapeHtml(c._sg)}" data-name="${escapeHtml(c.name)}" data-party="${escapeHtml(c.jdName || '무소속')}" data-region="${escapeHtml(region)}">👤 상세 보기 →</a>
+      </div>
+    `;
+  }
+
+  const slots = [picked[0] || null, picked[1] || null, picked[2] || null];
+
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="cmp-page">
+      <h1 class="cmp-h1">🆚 9회 지선 후보자 비교</h1>
+      <p class="cmp-lead">최대 3명 동시 비교 — 학력·직업·5대 공약 옆에 옆에. 같은 지역 후보 자동 묶음 추천. <span style="color:var(--dim)">평가·해석 없음 (객관 데이터만).</span></p>
+
+      <div class="cmp-slots">
+        ${slotIds.map((sid, i) => `
+          <div class="cmp-slot-wrap">
+            <label class="cmp-slot-label">후보 ${String.fromCharCode(65 + i)} ${slots[i] ? '✓' : ''}</label>
+            <input type="text" class="cmp-slot-input" id="cmp-input-${sid}" list="cand-list-${sid}" placeholder="이름 검색…" value="${slots[i] ? escapeHtml(slots[i].name) : ''}" data-slot="${sid}">
+            <datalist id="cand-list-${sid}">${candOptions}</datalist>
+          </div>
+        `).join('')}
+      </div>
+
+      ${recommendations.length ? `
+        <div class="cmp-recos">
+          <div class="cmp-reco-h">⚡ 같은 지역 추천 (자동 묶음)</div>
+          <div class="cmp-reco-list">
+            ${recommendations.slice(0, 8).map(r => {
+              const [sd, sgg, kind] = r.key.split('|');
+              const label = [sd, sgg !== sd ? sgg : '', kind].filter(Boolean).join(' · ');
+              const url = '#/compare-cand?' + r.cands.slice(0, 3).map((c, i) => 'abc'[i] + '=' + encodeURIComponent(c.huboid)).join('&');
+              return `<a class="cmp-reco-pill" href="${url}">${escapeHtml(label)} <b>(${r.cands.length}명)</b></a>`;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="cmp-grid" style="grid-template-columns:repeat(${Math.max(slots.filter(Boolean).length, 2)}, 1fr)">
+        ${slots.slice(0, Math.max(slots.filter(Boolean).length, 2)).map(candCard).join('')}
+      </div>
+
+      <div class="cmp-foot">
+        후보자 정보·공약은 <a href="https://policy.nec.go.kr" target="_blank" rel="noopener" style="color:var(--link)">중앙선관위 정책공약마당</a> 공식 데이터.
+        본 사이트는 객관 표시만 — 비교·판단·선택은 유권자 본인의 몫입니다.
+      </div>
+    </div>
+  `;
+}
+
+function setupCandCompareEvents() {
+  // 입력 변경 → URL 갱신
+  document.querySelectorAll('.cmp-slot-input').forEach(el => {
+    el.addEventListener('change', () => {
+      const slot = el.dataset.slot;
+      const params = new URLSearchParams(location.hash.split('?')[1] || '');
+      if (el.value) params.set(slot, el.value);
+      else params.delete(slot);
+      const qs = params.toString();
+      location.hash = '#/compare-cand' + (qs ? '?' + qs : '');
+    });
+  });
+  // 공약 lazy fetch
+  document.querySelectorAll('[id^="cmp-pledges-"]').forEach(block => {
+    const huboid = block.id.replace('cmp-pledges-', '');
+    const cand = getAllNecCandidates().find(c => c.huboid === huboid);
+    if (!cand) return;
+    const body = block.querySelector('.cmp-pledge-body');
+    fetchCandPledges(huboid, cand._sg).then(pledges => {
+      if (!body) return;
+      if (!pledges.length) {
+        body.innerHTML = '<span style="color:var(--dim);font-size:12px">5대 공약 등록 안 됨 또는 NEC 미반영</span>';
+        return;
+      }
+      body.innerHTML = pledges.slice(0, 5).map(p => `
+        <div class="cmp-pledge-item">
+          <div class="cmp-pledge-realm">${escapeHtml(p.realm || '미분류')}</div>
+          <div class="cmp-pledge-title">${escapeHtml(p.title || '—')}</div>
+          ${p.cont ? `<div class="cmp-pledge-cont">${escapeHtml(p.cont.slice(0, 200))}${p.cont.length > 200 ? '…' : ''}</div>` : ''}
+        </div>
+      `).join('');
+    });
+  });
+  // 상세 링크 클릭 → 공약 모달
+  document.querySelectorAll('.cmp-detail-link').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      openPromiseModal({
+        cnddtId: el.dataset.huboid,
+        sgTypecode: el.dataset.sg,
+        name: el.dataset.name,
+        party: el.dataset.party,
+        region: el.dataset.region,
+      });
     });
   });
 }
@@ -11721,7 +12186,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.5 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V15.0 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -11938,13 +12403,14 @@ function renderHome() {
       <div class="explore-section">
         <div class="explore-h-row">
           <h2 class="explore-h">🧭 탐색 도구</h2>
-          <span class="explore-sub">11개 도구 · 모두 무료</span>
+          <span class="explore-sub">12개 도구 · 모두 무료</span>
         </div>
         <div class="explore-grid explore-grid-compact">
+          <a class="tool-card" href="#/compare-cand"><span>🆚</span><div><b>9회 후보 비교</b><em>최대 3명 옆에 옆에</em></div></a>
           <a class="tool-card" href="#/dex"><span>📕</span><div><b>정치인 도감</b><em>삼권+지방+역사 컬렉션</em></div></a>
           <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구</em></div></a>
           <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>점수·발의·통과율</em></div></a>
-          <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>95개 용어 8 카테고리</em></div></a>
+          <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>136개 용어 8 카테고리</em></div></a>
           <a class="tool-card" href="#/bookmarks"><span>⭐</span><div><b>관심 의원</b><em>북마크 모아보기</em></div></a>
           <a class="tool-card" href="#/stances"><span>🗳</span><div><b>내 정치 입장</b><em>지지·반대 익명 기록</em></div></a>
           <a class="tool-card" href="#/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
@@ -12780,6 +13246,21 @@ function route() {
     window.scrollTo(0, 0);
     return;
   }
+  // 9회 후보자 비교 (/compare-cand?a=&b=&c=)
+  if (hash.startsWith('#/compare-cand')) {
+    view.innerHTML = renderCandComparePage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    setupCandCompareEvents();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // 데이터 로드 안 됐으면 자동 재렌더
+    if (!state.nec2026Governors) {
+      loadNec2026Governors().then(() => {
+        if (location.hash.startsWith('#/compare-cand')) route();
+      });
+    }
+    return;
+  }
   // 의원 비교 (/compare?a=...&b=...)
   if (hash.startsWith('#/compare')) {
     view.innerHTML = renderComparePage();
@@ -13197,10 +13678,24 @@ function route() {
       // 공약 분석 트리거
       const paTrigger = document.getElementById('e26-pa-trigger');
       const paOut = document.getElementById('e26-pa-out');
+      function bindPaCandClicks() {
+        paOut.querySelectorAll('.e26-pa-cand-card').forEach(el => {
+          el.addEventListener('click', () => {
+            openPromiseModal({
+              cnddtId: el.dataset.huboid,
+              sgTypecode: '3',
+              name: el.dataset.name,
+              party: el.dataset.party,
+              region: el.dataset.region,
+            });
+          });
+        });
+      }
       if (paTrigger && paOut) {
         // 캐시가 있으면 바로 렌더
         if (PLEDGE_ANALYSIS.cache) {
           paOut.innerHTML = renderPledgeAnalysis(PLEDGE_ANALYSIS.cache);
+          bindPaCandClicks();
           paTrigger.style.display = 'none';
         }
         paTrigger.addEventListener('click', async () => {
@@ -13221,6 +13716,18 @@ function route() {
               if (bar) bar.style.width = (done/total*100).toFixed(1) + '%';
             });
             paOut.innerHTML = renderPledgeAnalysis(result);
+            // 후보 카드 클릭 → 5대 공약 모달
+            paOut.querySelectorAll('.e26-pa-cand-card').forEach(el => {
+              el.addEventListener('click', () => {
+                openPromiseModal({
+                  cnddtId: el.dataset.huboid,
+                  sgTypecode: '3',
+                  name: el.dataset.name,
+                  party: el.dataset.party,
+                  region: el.dataset.region,
+                });
+              });
+            });
             paTrigger.style.display = 'none';
           } catch (e) {
             paOut.innerHTML = `<div style="color:#dc2626;padding:14px;font-size:12.5px">분석 실패: ${escapeHtml(e.message)}<br><span style="color:var(--dim);font-size:11px">잠시 후 다시 시도해 주세요.</span></div>`;
@@ -14042,6 +14549,14 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     if (_statTotal) _statTotal.textContent = data.length;
     const _lastSync = document.getElementById('last-sync');
     if (_lastSync) _lastSync.textContent = new Date(syncedAt).toLocaleDateString('ko-KR');
+    // 헤더 freshness 배지 — 최신 데이터 날짜
+    const _hFresh = document.getElementById('h-fresh');
+    if (_hFresh) {
+      const d = new Date(syncedAt);
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      _hFresh.textContent = '실시간 ' + d.getFullYear() + '.' + mm + '.' + dd;
+    }
     const fy = document.getElementById('foot-year');
     if (fy) fy.textContent = `v2.1 · ${new Date().getFullYear()}`;
     renderFilters();

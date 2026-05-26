@@ -91,6 +91,33 @@ vercel dev             # http://localhost:3000
 - 객관 사실만 (평가·해석·의견 X)
 - 출생년도·학력·주요 경력·임명년도 등 검증 가능한 정보
 
+## 🔌 공개 데이터 API (REST)
+
+개발자·시민테크 프로젝트용 무료 REST API. CORS 열림, 24시간 CDN 캐시.
+
+```bash
+# Endpoint 목록
+curl https://patchkr.com/api/data
+
+# 정치인 전체 (학력·경력 포함)
+curl https://patchkr.com/api/data?type=politicians
+
+# 그룹별 (legislative/executive/judicial/local/historical)
+curl https://patchkr.com/api/data?type=politicians&group=legislative
+
+# 단일 정치인
+curl https://patchkr.com/api/data?type=politicians&id=kr.min.보훈
+
+# 정치 용어 사전 (136개)
+curl https://patchkr.com/api/data?type=glossary
+
+# 사이트 통계·요약
+curl https://patchkr.com/api/data?type=info
+```
+
+라이선스: 공공누리 1유형 · CC BY-SA 4.0 (위키 인용분)
+출처 표기 권장: `Data: patchkr.com · https://github.com/minsoo500101-rgb/politik`
+
 ## 💼 비즈니스 문의
 
 광고·데이터 라이선싱·컨설팅:
