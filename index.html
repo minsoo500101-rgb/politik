@@ -1965,6 +1965,75 @@
     margin-bottom: 8px;
   }
 
+  /* ============ 탐색 도구 그리드 (홈) ============ */
+  .explore-section {
+    margin-top: 28px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .explore-h {
+    font-size: 18px; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .explore-lead {
+    font-size: 12px; color: var(--text-2);
+    margin-bottom: 16px;
+  }
+  .explore-row {
+    margin-bottom: 16px;
+  }
+  .explore-row:last-child { margin-bottom: 0; }
+  .explore-cat {
+    font-size: 11px; font-weight: 700;
+    color: var(--dim);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .explore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+  }
+  .explore-grid .tool-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none !important;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .explore-grid .tool-card:hover {
+    background: var(--bg-card);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .explore-grid .tool-card span {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .explore-grid .tool-card div {
+    flex: 1;
+    display: flex; flex-direction: column;
+  }
+  .explore-grid .tool-card b {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .explore-grid .tool-card em {
+    font-size: 11px;
+    color: var(--dim);
+    font-style: normal;
+    margin-top: 2px;
+  }
+
   /* ============ 정치 용어 사전 (/glossary) ============ */
   .gloss-page {
     max-width: 1080px; margin: 0 auto;
@@ -10005,14 +10074,40 @@ function renderHome() {
         </div>
       </div>
 
-      <!-- 보조 도구 -->
-      <div class="tool-grid">
-        <a class="tool-card" href="#/map"><span>🗺</span> 정치 분포 지도</a>
-        <a class="tool-card" href="#/rankings"><span>📊</span> 발의자 랭킹</a>
-        <a class="tool-card" href="#/committees"><span>🏢</span> 위원회 25개</a>
-        <a class="tool-card" href="#/world"><span>🌐</span> 국제 비교</a>
-        <a class="tool-card" href="#/elections"><span>🗳</span> 역대 지방선거</a>
-        <a class="tool-card" href="#/relations"><span>🕸</span> 발의 네트워크</a>
+      <!-- 탐색 도구 -->
+      <div class="explore-section">
+        <h2 class="explore-h">🧭 탐색 도구</h2>
+        <p class="explore-lead">데이터를 다양한 각도에서 살펴보는 분석·시각화 도구 모음.</p>
+
+        <div class="explore-row">
+          <div class="explore-cat">데이터 시각화</div>
+          <div class="explore-grid">
+            <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구 정당색</em></div></a>
+            <a class="tool-card" href="#/network"><span>🕸</span><div><b>공동발의 네트워크</b><em>의원 간 협업 관계 그래프</em></div></a>
+            <a class="tool-card" href="#/relations"><span>🔗</span><div><b>발의 관계도</b><em>법안-의원 연결 시각화</em></div></a>
+            <a class="tool-card" href="#/insights"><span>🔬</span><div><b>출신 분석</b><em>학교·직업·세대·지역</em></div></a>
+          </div>
+        </div>
+
+        <div class="explore-row">
+          <div class="explore-cat">랭킹 · 비교</div>
+          <div class="explore-grid">
+            <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>발의자·정당·위원회 효율성</em></div></a>
+            <a class="tool-card" href="#/compare"><span>⚖</span><div><b>의원 비교</b><em>두 의원 나란히 비교</em></div></a>
+            <a class="tool-card" href="#/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
+            <a class="tool-card" href="#/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
+          </div>
+        </div>
+
+        <div class="explore-row">
+          <div class="explore-cat">참고 자료</div>
+          <div class="explore-grid">
+            <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>67개 용어 8 카테고리</em></div></a>
+            <a class="tool-card" href="#/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
+            <a class="tool-card" href="#/history/parties"><span>📚</span><div><b>정당사 1948~</b><em>45개 정당 타임라인</em></div></a>
+            <a class="tool-card" href="#/about"><span>ℹ️</span><div><b>사이트 소개</b><em>운영 원칙 · 데이터 출처</em></div></a>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -10033,7 +10128,12 @@ function renderGroupPage(gid) {
       if (!byParty.has(p)) byParty.set(p, []);
       byParty.get(p).push(m);
     }
-    const sorted = [...byParty.entries()].sort((a,b) => b[1].length - a[1].length);
+    // 가나다순 정렬 (정치 중립) — 무소속은 맨 뒤
+    const sorted = [...byParty.entries()].sort((a, b) => {
+      if (a[0] === '무소속') return 1;
+      if (b[0] === '무소속') return -1;
+      return a[0].localeCompare(b[0], 'ko');
+    });
     body = sorted.map(([party, arr]) => `
       <div class="sub-section">
         <h2><span style="color:${partyColor(party)}">●</span> ${escapeHtml(party)} <span class="cnt">${arr.length}명</span></h2>
@@ -10622,8 +10722,13 @@ function renderFilters() {
     const p = m.POLY_NM || '무소속';
     state.partyCounts.set(p, (state.partyCounts.get(p) || 0) + 1);
   }
-  // sort by count desc
-  const parties = [...state.partyCounts.entries()].sort((a,b) => b[1] - a[1]);
+  // 정치 중립성을 위해 가나다순 정렬 — 의석수 기준 정렬은 특정 정당이 우선 노출되는 인상을 줌
+  // 단, '무소속'은 항상 맨 뒤
+  const parties = [...state.partyCounts.entries()].sort((a, b) => {
+    if (a[0] === '무소속') return 1;
+    if (b[0] === '무소속') return -1;
+    return a[0].localeCompare(b[0], 'ko');
+  });
   const total = state.members.length;
   const html = [
     `<span class="filter-label">정당</span>`,
