@@ -5586,7 +5586,7 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
       ${infoHtml}
       <div class="cand-section-divider"><span>📋 5대 공약</span></div>
       <div id="promise-modal-body">
-        <div class="promise-loading"><span class="loading-spinner"></span>공약 fetch 중…</div>
+        <div class="promise-loading"><span class="loading-spinner"></span>공약 불러오는 중…</div>
       </div>
     </div>
   `;
@@ -5811,7 +5811,7 @@ function renderElection2026Page() {
             <div class="e26-notice">
               <div class="e26-notice-icon">⏳</div>
               <div class="e26-notice-body">
-                실시간 후보자 데이터 로드 중… (중앙선관위 API)
+                실시간 후보자 정보 불러오는 중…
               </div>
             </div>
           `;
@@ -6984,7 +6984,7 @@ function renderBillDetailPage(billId) {
       <div class="bd-card" id="bd-content-card">
         <h3>📜 법안 내용 (제안이유·주요 내용)</h3>
         <div id="bd-content-body">
-          <div class="loading-inline"><span class="loading-spinner"></span>국회 API에서 법안 본문 fetch 중…</div>
+          <div class="loading-inline"><span class="loading-spinner"></span>법안 본문 불러오는 중…</div>
         </div>
       </div>
 
@@ -6992,7 +6992,7 @@ function renderBillDetailPage(billId) {
       <div class="bd-card" id="bd-votes-card">
         <h3>🗳 의원별 표결 (정당별 찬반)</h3>
         <div id="bd-votes-body">
-          <div class="loading-inline"><span class="loading-spinner"></span>표결 기록 fetch 중…</div>
+          <div class="loading-inline"><span class="loading-spinner"></span>표결 기록 불러오는 중…</div>
         </div>
       </div>
 
@@ -7055,7 +7055,7 @@ function renderBillsPage() {
   if (!bills.length) {
     return `
       <div class="group-back" id="back-home">← 조직도</div>
-      <div class="loading"><span class="loading-spinner"></span>22대 처리 의안 데이터 불러오는 중…<br><br>국회 OPEN API에서 ~1.6K 건 로드 중입니다.</div>
+      <div class="loading"><span class="loading-spinner"></span>22대 본회의 통과 법안 1,595건 불러오는 중…<br><br>처음 접속 시 10~20초 정도 걸립니다.</div>
     `;
   }
 
@@ -7745,7 +7745,7 @@ function renderHome() {
         ` : `
           <div class="patch-loading">
             <span class="loading-spinner"></span>
-            국회 OPEN API에서 의안 데이터 로드 중…
+            최신 통과 법안 불러오는 중…
           </div>
         `}
       </div>
@@ -8435,7 +8435,7 @@ function renderDetail(id) {
         <div class="d-section" id="m-news-section">
           <h2>📰 최신 뉴스 (네이버)</h2>
           <div id="m-news-body">
-            <div class="loading-inline" style="font-size:12px;color:var(--dim);padding:14px 0"><span class="loading-spinner"></span>뉴스 fetch 중…</div>
+            <div class="loading-inline" style="font-size:12px;color:var(--dim);padding:14px 0"><span class="loading-spinner"></span>뉴스 불러오는 중…</div>
           </div>
         </div>
         ${electionHtml}
@@ -8445,9 +8445,8 @@ function renderDetail(id) {
         <div class="d-section">
           <h2>출처</h2>
           <div class="d-list">
-            <div class="d-row"><span class="k">기본 정보</span><span class="v"><a href="https://open.assembly.go.kr" target="_blank">국회 OPEN API · 국회의원 인적사항</a></span></div>
-            <div class="d-row"><span class="k">위키</span><span class="v"><a href="https://ko.wikipedia.org/wiki/${encodeURIComponent(m.HG_NM)}" target="_blank">한국어 위키 검색 →</a></span></div>
-            <div class="d-row"><span class="k">의원 코드</span><span class="v" style="font-family:monospace;font-size:11px;color:var(--dim)">${escapeHtml(m.MONA_CD)}</span></div>
+            <div class="d-row"><span class="k">기본 정보</span><span class="v"><a href="https://open.assembly.go.kr" target="_blank" rel="noopener">대한민국 국회</a></span></div>
+            <div class="d-row"><span class="k">위키백과</span><span class="v"><a href="https://ko.wikipedia.org/wiki/${encodeURIComponent(m.HG_NM)}" target="_blank" rel="noopener">한국어 위키백과에서 더 보기 →</a></span></div>
           </div>
         </div>
       </div>
@@ -8536,7 +8535,7 @@ function route() {
         if (summary) {
           body.innerHTML = `<div class="bd-content-summary">${escapeHtml(summary)}</div>`;
         } else {
-          body.innerHTML = `<div class="bd-content-empty">국회 OPEN API <code style="background:var(--bg-elev);padding:1px 5px;border-radius:3px">nzmimeepazxkubdpn</code> 서비스는 발의자·일자·결과만 제공하며 본문 SUMMARY는 미포함입니다.<br><br>법안 원문은 아래 <b>국회 의안정보시스템</b> 링크의 PDF에서 확인할 수 있습니다.</div>`;
+          body.innerHTML = `<div class="bd-content-empty">법안 본문 요약은 아래 <b>국회 의안정보시스템</b> 링크의 PDF 원문에서 확인하실 수 있습니다.<br>아래 "💡 제·개정이유" 카드에 사회적 영향이 정리되어 있어요.</div>`;
         }
       });
       // 의원별 표결 기록 fetch (정당별 집계 + 반란표 강조)
@@ -8693,7 +8692,7 @@ function route() {
         }
 
         if (!reasonText && !amendText && !articles.length) {
-          html += `<div class="bd-content-empty">법령 본문 데이터가 비어있음 — 외부 링크 확인.</div>`;
+          html += `<div class="bd-content-empty">현재 등록된 법령 본문이 비어있습니다. 아래 외부 링크에서 확인하세요.</div>`;
         }
 
         html += `<a class="bd-wiki-link" href="https://www.law.go.kr/lsSc.do?menuId=1&query=${encodeURIComponent(lawName)}" target="_blank" rel="noopener">국가법령정보센터 전체 →</a>`;
@@ -8777,7 +8776,7 @@ function route() {
         if (!news || !news.items || !news.items.length) {
           body.innerHTML = `
             <div class="bd-content-empty">
-              관련 뉴스 미발견 — 또는 NAVER_CLIENT_ID/SECRET 환경변수 미설정.
+              이 법안과 관련된 최신 뉴스가 검색되지 않습니다.
               <br><br>
               <a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(cleaned)}" target="_blank" rel="noopener" style="color:var(--link)">네이버 뉴스 직접 검색 →</a>
             </div>`;
@@ -9117,7 +9116,7 @@ function route() {
             </div>
             <div class="bd-views-bars">${bars}</div>
           </div>
-          <div style="font-size:11px;color:var(--dim);margin-top:8px">데이터: Wikimedia REST API · ko.wikipedia 페이지뷰</div>`;
+          <div style="font-size:11px;color:var(--dim);margin-top:8px">데이터: 한국어 위키백과 페이지 조회수</div>`;
       })();
       // 네이버 뉴스 — 의원 이름으로 최신 5건
       (async () => {
@@ -9127,7 +9126,7 @@ function route() {
         if (!news || !news.items || !news.items.length) {
           body.innerHTML = `
             <div style="font-size:12px;color:var(--dim);padding:8px 0">
-              관련 뉴스 미발견 또는 NAVER_CLIENT_ID/SECRET env 미설정.
+              최근 뉴스가 검색되지 않습니다.
               <br><a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(member.HG_NM)}" target="_blank" rel="noopener" style="color:var(--link)">네이버 뉴스 직접 검색 →</a>
             </div>`;
           return;
@@ -9540,7 +9539,8 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       if (!location.hash || location.hash === '#/election2026') route();
     }).catch(e => console.warn('nec2026 load failed:', e.message));
   } catch (e) {
-    document.getElementById('view').innerHTML = `<div class="empty">데이터 로드 실패: ${escapeHtml(e.message)}<br><br>국회 OPEN API가 일시적으로 응답하지 않거나, 브라우저 네트워크 문제일 수 있습니다.</div>`;
+    console.warn('데이터 로드 실패:', e.message);
+    document.getElementById('view').innerHTML = `<div class="empty">일시적으로 데이터를 불러올 수 없습니다.<br><br>잠시 후 새로고침해 주세요.</div>`;
   }
 })();
 </script>
