@@ -6463,32 +6463,39 @@ async function loadNec2026Governors() {
     const raw = localStorage.getItem(CACHE_KEY_NEC_2026);
     if (raw) {
       const c = JSON.parse(raw);
-      if (Date.now() - c.t < NEC_CACHE_TTL) {
+      if (Date.now() - c.t < NEC_CACHE_TTL && c.data && c.data.localAssembly !== undefined) {
         state.nec2026Governors = c.data;
         return c.data;
       }
     }
   } catch {}
   try {
-    // 광역단체장(3) + 기초단체장(4) + 교육감(11) 병렬 fetch
-    const [g, m, e] = await Promise.all([
+    // 5개 카테고리 병렬 fetch:
+    // 3=광역단체장, 4=기초단체장, 5=시·도의원(지역), 8=시·도의원(비례), 11=교육감
+    const [g, m, la, lap, e] = await Promise.all([
       fetchAllPages('3').catch(() => ({items:[], total:0})),
       fetchAllPages('4').catch(() => ({items:[], total:0})),
+      fetchAllPages('5').catch(() => ({items:[], total:0})),
+      fetchAllPages('8').catch(() => ({items:[], total:0})),
       fetchAllPages('11').catch(() => ({items:[], total:0})),
     ]);
     state.nec2026Governors = {
       items: g.items,           // 광역단체장 (legacy 키 호환)
       governors: g.items,
       munis: m.items,
+      localAssembly: la.items,   // 광역의원 (지역구)
+      localAssemblyProp: lap.items, // 광역의원 (비례)
       eduSupers: e.items,
       totalGov: g.total,
       totalMuni: m.total,
+      totalLocalAssembly: la.total,
+      totalLocalAssemblyProp: lap.total,
       totalEdu: e.total,
       fetchedAt: Date.now(),
     };
     try { localStorage.setItem(CACHE_KEY_NEC_2026, JSON.stringify({ t: Date.now(), data: state.nec2026Governors })); } catch {}
   } catch (e) {
-    state.nec2026Governors = { _error: e.message, items: [], governors: [], munis: [], eduSupers: [] };
+    state.nec2026Governors = { _error: e.message, items: [], governors: [], munis: [], localAssembly: [], localAssemblyProp: [], eduSupers: [] };
   }
   return state.nec2026Governors;
 }
@@ -6625,18 +6632,27 @@ function renderElection2026Page() {
           byParty[p] = (byParty[p] || 0) + 1;
         }
         const sorted = Object.entries(byParty).sort((a,b)=>b[1]-a[1]);
-        const totalReg = nec.totalGov + nec.totalMuni + nec.totalEdu;
+        const totalReg = (nec.totalGov||0) + (nec.totalMuni||0) + (nec.totalLocalAssembly||0) + (nec.totalLocalAssemblyProp||0) + (nec.totalEdu||0);
+        // 광역의원 추가 집계 (지역+비례)
+        const localAssemblyAll = [...(nec.localAssembly||[]), ...(nec.localAssemblyProp||[])];
+        for (const c of localAssemblyAll) {
+          const p = c.jdName || '무소속';
+          byParty[p] = (byParty[p] || 0) + 1;
+        }
+        const sortedAll = Object.entries(byParty).sort((a,b)=>b[1]-a[1]);
         return `
           <div class="e26-section">
             <h2>📊 9회 지선 등록 후보자 ${totalReg.toLocaleString()}명 — 정당별 분포</h2>
             <div class="e26-stats-grid">
-              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalGov||0).toLocaleString()}</div><div class="e26-stat-lbl">광역단체장 후보</div></div>
-              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalMuni||0).toLocaleString()}</div><div class="e26-stat-lbl">기초단체장 후보</div></div>
-              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalEdu||0).toLocaleString()}</div><div class="e26-stat-lbl">교육감 후보 (무지명)</div></div>
-              <div class="e26-stat-mini"><div class="e26-stat-num">${sorted.length}</div><div class="e26-stat-lbl">정당·무소속 종류</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalGov||0).toLocaleString()}</div><div class="e26-stat-lbl">광역단체장</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalMuni||0).toLocaleString()}</div><div class="e26-stat-lbl">기초단체장</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalLocalAssembly||0).toLocaleString()}</div><div class="e26-stat-lbl">광역의원 (지역)</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalLocalAssemblyProp||0).toLocaleString()}</div><div class="e26-stat-lbl">광역의원 (비례)</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalEdu||0).toLocaleString()}</div><div class="e26-stat-lbl">교육감 (무지명)</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${sortedAll.length}</div><div class="e26-stat-lbl">정당·무소속 종류</div></div>
             </div>
             <div class="party-bars" style="margin-top:14px">
-              ${sorted.slice(0, 10).map(([p, n]) => `
+              ${sortedAll.slice(0, 12).map(([p, n]) => `
                 <div class="party-bar-row party-link" data-party="${escapeHtml(p)}">
                   <div class="pb-name"><span class="pb-dot" style="background:${partyColor(p)}"></span>${escapeHtml(p)}</div>
                   <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(n/totalReg*100).toFixed(1)}%; background:${partyColor(p)}"></div></div>
@@ -6645,7 +6661,7 @@ function renderElection2026Page() {
                 </div>
               `).join('')}
             </div>
-            <div style="margin-top:10px;font-size:11px;color:var(--dim);text-align:center">출처: 중앙선거관리위원회 OpenAPI (data.go.kr) · 카드 후보 클릭 → 5대 공약</div>
+            <div style="margin-top:10px;font-size:11px;color:var(--dim);text-align:center">출처: 중앙선거관리위원회 OpenAPI (data.go.kr) · 카드 후보 클릭 → 5대 공약 · 실시간 데이터</div>
           </div>
         `;
       })()}
@@ -9383,10 +9399,10 @@ function renderHome() {
           <div class="domain-icon">🗳</div>
           <div class="domain-body">
             <div class="domain-h">선거 (Elections)</div>
-            <div class="domain-meta">9회 지방선거 · 697명 후보자 실시간 · 역대 결과</div>
+            <div class="domain-meta">9회 지방선거 · 광역+기초단체장+광역의원+교육감 실시간 · 역대 결과</div>
             <div class="domain-stats">
-              <span><b>${state.nec2026Governors ? ((state.nec2026Governors.totalGov||0)+(state.nec2026Governors.totalMuni||0)+(state.nec2026Governors.totalEdu||0)).toLocaleString() : '697'}</b>명</span>
-              <span>광역 · 기초 · 교육감 + 5대 공약</span>
+              <span><b>${state.nec2026Governors ? ((state.nec2026Governors.totalGov||0)+(state.nec2026Governors.totalMuni||0)+(state.nec2026Governors.totalLocalAssembly||0)+(state.nec2026Governors.totalLocalAssemblyProp||0)+(state.nec2026Governors.totalEdu||0)).toLocaleString() : '1,500+'}</b>명</span>
+              <span>광역단체장 · 기초단체장 · 광역의원 · 비례 광역의원 · 교육감</span>
             </div>
           </div>
         </div>
