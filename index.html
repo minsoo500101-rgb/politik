@@ -5208,6 +5208,51 @@
     text-align: right; font-variant-numeric: tabular-nums;
   }
 
+  /* ============ 한국 시계열 추이 (sparkline) ============ */
+  .kr-trend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .kr-trend {
+    background: var(--bg-elev);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--accent);
+  }
+  .kr-trend-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .kr-trend-label {
+    font-size: 12px; font-weight: 800;
+    color: var(--text);
+  }
+  .kr-trend-meta {
+    font-size: 10px; color: var(--dim);
+    margin-top: 1px;
+  }
+  .kr-trend-now {
+    text-align: right;
+  }
+  .kr-trend-now-v {
+    font-size: 18px; font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .kr-trend-delta {
+    font-size: 10.5px; font-weight: 700;
+    margin-top: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kr-trend-axis {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--dim);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
   .world-table-wrap {
     overflow-x: auto;
     margin: 0 -4px;
@@ -8897,6 +8942,96 @@ function renderWorldComparePage() {
           </div>
         </div>
 
+        <!-- 한국 순위 변화 추이 (시계열) -->
+        <div class="dash-card col-12 chart-card">
+          <div class="chart-head">
+            <h3>📈 대한민국 시계열 추이 (2015~2024)</h3>
+            <span class="chart-link">EIU · RSF · TI · NEC · 국회 직접 집계</span>
+          </div>
+          ${(() => {
+            const trends = [
+              { id: 'demo', label: '민주주의 지수', unit: '/10', source: 'EIU', higher: 'good',
+                data: [
+                  { y: '2015', v: 7.97 }, { y: '2018', v: 8.00 }, { y: '2019', v: 8.00 },
+                  { y: '2020', v: 8.01 }, { y: '2021', v: 8.16 }, { y: '2022', v: 8.03 },
+                  { y: '2023', v: 8.09 }, { y: '2024', v: 8.01 }
+                ] },
+              { id: 'press', label: '언론자유 순위', unit: '위', source: 'RSF', higher: 'low',
+                data: [
+                  { y: '2015', v: 60 }, { y: '2018', v: 43 }, { y: '2019', v: 41 },
+                  { y: '2020', v: 42 }, { y: '2021', v: 42 }, { y: '2022', v: 43 },
+                  { y: '2023', v: 47 }, { y: '2024', v: 62 }
+                ] },
+              { id: 'cpi', label: '부패인식 (청렴도)', unit: '/100', source: 'TI', higher: 'good',
+                data: [
+                  { y: '2015', v: 56 }, { y: '2018', v: 57 }, { y: '2019', v: 59 },
+                  { y: '2020', v: 61 }, { y: '2021', v: 62 }, { y: '2022', v: 63 },
+                  { y: '2023', v: 63 }, { y: '2024', v: 64 }
+                ] },
+              { id: 'turnout', label: '총선 투표율', unit: '%', source: '중앙선관위', higher: 'good',
+                data: [
+                  { y: '2016 (20대)', v: 58.0 },
+                  { y: '2020 (21대)', v: 66.2 },
+                  { y: '2024 (22대)', v: 67.0 }
+                ] },
+              { id: 'female', label: '여성 의원 비율', unit: '%', source: '국회', higher: 'good',
+                data: [
+                  { y: '2016 (20대)', v: 17.0 },
+                  { y: '2020 (21대)', v: 19.0 },
+                  { y: '2024 (22대)', v: 19.7 }
+                ] }
+            ];
+            function sparkSVG(t) {
+              const w = 200, h = 60, pad = 6;
+              const vals = t.data.map(d => d.v);
+              const mn = Math.min(...vals), mx = Math.max(...vals);
+              const range = mx - mn || 1;
+              const xs = t.data.map((_, i) => pad + (i / (t.data.length - 1)) * (w - pad*2));
+              const ys = t.data.map(d => {
+                const norm = t.higher === 'low'
+                  ? (d.v - mn) / range  // lower is better → invert
+                  : 1 - (d.v - mn) / range;
+                return pad + norm * (h - pad*2);
+              });
+              const path = xs.map((x, i) => (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + ys[i].toFixed(1)).join(' ');
+              const last = t.data[t.data.length - 1];
+              const prev = t.data[t.data.length - 2];
+              const delta = last && prev ? last.v - prev.v : 0;
+              const isUp = (t.higher === 'good' ? delta > 0 : delta < 0);
+              const isDown = (t.higher === 'good' ? delta < 0 : delta > 0);
+              const arrow = isUp ? '▲' : isDown ? '▼' : '=';
+              const color = isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--text-2)';
+              return `
+                <div class="kr-trend">
+                  <div class="kr-trend-head">
+                    <div>
+                      <div class="kr-trend-label">${escapeHtml(t.label)}</div>
+                      <div class="kr-trend-meta">${escapeHtml(t.source)}</div>
+                    </div>
+                    <div class="kr-trend-now">
+                      <div class="kr-trend-now-v">${last.v}<span style="font-size:11px;color:var(--dim);font-weight:600">${escapeHtml(t.unit)}</span></div>
+                      <div class="kr-trend-delta" style="color:${color}">${arrow} ${Math.abs(delta).toFixed(t.id === 'turnout' || t.id === 'female' ? 1 : 2)}</div>
+                    </div>
+                  </div>
+                  <svg viewBox="0 0 ${w} ${h}" width="100%" height="60" preserveAspectRatio="none" style="display:block">
+                    <path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    ${xs.map((x, i) => `<circle cx="${x.toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${i === xs.length - 1 ? 3.5 : 2}" fill="${i === xs.length - 1 ? color : 'var(--bg-card)'}" stroke="${color}" stroke-width="1.5"/>`).join('')}
+                  </svg>
+                  <div class="kr-trend-axis">
+                    <span>${escapeHtml(t.data[0].y)}</span>
+                    <span>${escapeHtml(t.data[t.data.length-1].y)}</span>
+                  </div>
+                </div>
+              `;
+            }
+            return '<div class="kr-trend-grid">' + trends.map(sparkSVG).join('') + '</div>';
+          })()}
+          <div style="font-size:11px;color:var(--dim);margin-top:10px;line-height:1.6">
+            ▲/▼ 화살표 = 직전 측정 대비 변화. 언론자유 순위는 <b>숫자 낮을수록 좋음</b> (역방향).
+            언론자유 2024년 62위는 2015년 60위 수준으로 회귀 — 9년간 진폭 큼.
+          </div>
+        </div>
+
         <!-- 출처 -->
         <div class="dash-card col-12">
           <div class="world-sources">
@@ -9845,6 +9980,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V14.2', date: '2026-05-26', title: '한국 시계열 추이 + bills 무한 스크롤', items: [
+    '국제 비교 페이지에 한국 시계열 추이 sparkline 5종 — 민주주의·언론자유·청렴도·투표율·여성의원 (2015~2024)',
+    '직전 측정 대비 ▲/▼ 변화 표시 (방향성 자동 판단)',
+    'bills 페이지 무한 스크롤 — IntersectionObserver로 "더 보기" 자동 트리거 (300px 미리)'
+  ]},
   { v: 'V14.1', date: '2026-05-26', title: 'election2026 모바일 + 공약 키워드 분석', items: [
     '9회 지선 페이지 모바일 반응형 보강 — 700px·420px 미디어쿼리, 터치 친화 (44px 최소 hit)',
     '공약 키워드 분석 섹션 — 광역단체장 54명 5대 공약 lazy fetch + 분야 분포 차트',
@@ -11819,7 +11959,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.1 · 22대 ${state.bills?.length || 0}건</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V14.2 · 22대 ${state.bills?.length || 0}건</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -13459,11 +13599,29 @@ function route() {
         state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, q: '', limit: 30 };
         renderBills();
       });
-      // 더 보기
-      view.querySelector('#pf-more')?.addEventListener('click', () => {
-        state.billsFilter.limit += 50;
-        renderBills();
-      });
+      // 더 보기 (수동 클릭)
+      const moreBtn = view.querySelector('#pf-more');
+      if (moreBtn) {
+        moreBtn.addEventListener('click', () => {
+          state.billsFilter.limit += 50;
+          renderBills();
+        });
+        // 무한 스크롤 — 버튼이 뷰포트에 들어오면 자동 로드
+        try {
+          const io = new IntersectionObserver((entries) => {
+            for (const en of entries) {
+              if (en.isIntersecting && !moreBtn.disabled) {
+                moreBtn.disabled = true;
+                state.billsFilter.limit += 50;
+                renderBills();
+                io.disconnect();
+                break;
+              }
+            }
+          }, { rootMargin: '300px' });
+          io.observe(moreBtn);
+        } catch (e) { /* 구형 브라우저 — 버튼만 작동 */ }
+      }
       // 발의자 클릭 → 상세
       view.querySelectorAll('.patch-by-mp[data-mid]').forEach(el => {
         el.addEventListener('click', (e) => {
