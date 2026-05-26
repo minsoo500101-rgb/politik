@@ -2240,6 +2240,116 @@
     font-size: 12px;
   }
 
+  /* ============ Stance (지지/반대) ============ */
+  .stance-bar {
+    display: flex; gap: 8px; align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .stance-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--bg-card);
+    color: var(--text-2);
+    border-radius: 8px;
+    font-size: 12.5px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .stance-btn:hover {
+    transform: translateY(-1px);
+    background: var(--bg-elev);
+  }
+  .stance-support.active {
+    background: rgba(16,185,129,0.12);
+    border-color: var(--ok);
+    color: var(--ok);
+  }
+  .stance-oppose.active {
+    background: rgba(220,38,38,0.12);
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+  .stance-ico { font-size: 14px; }
+  .stance-hint {
+    font-size: 10.5px; color: var(--dim);
+    margin-left: 6px;
+  }
+
+  /* 정치성향 라벨 (/stances 페이지) */
+  .lean-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .lean-section h2 {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .lean-sub {
+    font-size: 11.5px; color: var(--text-2);
+    margin-bottom: 14px;
+  }
+  .lean-options {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 600px) { .lean-options { grid-template-columns: repeat(3, 1fr); } }
+  .lean-opt {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 12px 8px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--bg-elev);
+    color: var(--text-2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .lean-opt:hover {
+    transform: translateY(-1px);
+    border-color: var(--lean-color);
+  }
+  .lean-opt.active {
+    background: color-mix(in srgb, var(--lean-color) 12%, transparent);
+    border-color: var(--lean-color);
+    color: var(--lean-color);
+  }
+  .lean-icon { font-size: 18px; font-weight: 800; color: var(--lean-color); }
+  .lean-label { font-size: 12px; font-weight: 700; }
+
+  .stance-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stance-stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .stance-stat-big {
+    font-size: 28px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .stance-stat-l {
+    font-size: 12px; color: var(--text-2);
+    margin-top: 4px;
+  }
+  .stance-distro { text-align: left; }
+  .lean-distro-row {
+    display: flex; justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .lean-distro-row:last-child { border-bottom: none; }
+
   /* ============ 북마크 (/bookmarks + 버튼) ============ */
   .bookmark-btn {
     background: none;
@@ -5442,6 +5552,7 @@
       <a href="#/rankings">📊 활동 랭킹</a>
       <a href="#/map">🗺 정치 분포 지도</a>
       <a href="#/bookmarks">⭐ 관심 의원</a>
+      <a href="#/stances">🗳 내 정치 입장</a>
       <a href="#/play">🧪 실험실</a>
     </div>
     <div class="foot-col">
@@ -5534,6 +5645,8 @@ const CACHE_KEY_BILLS   = 'politik:bills:v2';
 const CACHE_KEY_PHOTOS  = 'politik:photos:v3';
 const CACHE_KEY_WIKIMAP = 'politik:wikimap:v1';
 const BOOKMARKS_KEY     = 'patchkr:bookmarks:v1';
+const STANCES_KEY       = 'patchkr:stances:v1';
+const USER_LEAN_KEY     = 'patchkr:user-lean:v1';
 
 // ============================================================
 // 북마크 시스템 — localStorage 기반 개인화
@@ -5555,6 +5668,48 @@ function toggleBookmark(mid, memberName) {
 }
 function bookmarkCount() {
   return Object.keys(getBookmarks()).length;
+}
+
+// ============================================================
+// Stance 시스템 — 지지/반대 (StockTwits 스타일, localStorage)
+// ⚠️ 본인 기록만 — 서버 집계는 추후 Phase 2에서
+// ============================================================
+function getStances() {
+  try { return JSON.parse(localStorage.getItem(STANCES_KEY) || '{}'); } catch { return {}; }
+}
+function getStance(mid) {
+  return getStances()[mid]?.s || null; // 'support' | 'oppose' | null
+}
+function setStance(mid, name, stance) {
+  const all = getStances();
+  if (!stance || stance === all[mid]?.s) {
+    // 같은 stance 다시 누르면 해제
+    delete all[mid];
+  } else {
+    all[mid] = { s: stance, t: Date.now(), name };
+  }
+  try { localStorage.setItem(STANCES_KEY, JSON.stringify(all)); } catch {}
+  return all[mid]?.s || null;
+}
+function stanceCounts() {
+  const s = getStances();
+  let sup = 0, opp = 0;
+  Object.values(s).forEach(v => {
+    if (v.s === 'support') sup++;
+    else if (v.s === 'oppose') opp++;
+  });
+  return { support: sup, oppose: opp, total: sup + opp };
+}
+
+// 사용자 정치성향 자기 라벨 (선택사항, localStorage)
+function getUserLean() {
+  try { return localStorage.getItem(USER_LEAN_KEY) || null; } catch { return null; }
+}
+function setUserLean(lean) {
+  try {
+    if (lean) localStorage.setItem(USER_LEAN_KEY, lean);
+    else localStorage.removeItem(USER_LEAN_KEY);
+  } catch {}
 }
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
 
@@ -9036,6 +9191,126 @@ function renderDexCard(m, group) {
 }
 
 // ============================================================
+// 내 stance 페이지 (/stances) — 지지/반대 + 정치성향 자기 라벨
+// ============================================================
+function renderStancesPage() {
+  const stances = getStances();
+  const entries = Object.entries(stances).sort((a, b) => b[1].t - a[1].t);
+  const supports = entries.filter(([_, v]) => v.s === 'support');
+  const opposes = entries.filter(([_, v]) => v.s === 'oppose');
+  const counts = stanceCounts();
+  const currentLean = getUserLean();
+
+  // 지지 의원들의 정당 분포 (사용자 자가 분류 보조 데이터)
+  const partyDistro = {};
+  supports.forEach(([mid, v]) => {
+    const m = state.members?.find(x => x.MONA_CD === mid);
+    const p = m?.POLY_NM || '무소속';
+    partyDistro[p] = (partyDistro[p] || 0) + 1;
+  });
+  const sortedParties = Object.entries(partyDistro).sort((a, b) => b[1] - a[1]);
+
+  const leanOptions = [
+    { id: 'left', label: '좌파', icon: '◀', color: 'var(--party-민주)' },
+    { id: 'center-left', label: '중도좌파', icon: '◁', color: '#3b82f6' },
+    { id: 'center', label: '중도', icon: '⬚', color: 'var(--text-2)' },
+    { id: 'center-right', label: '중도우파', icon: '▷', color: '#f97316' },
+    { id: 'right', label: '우파', icon: '▶', color: 'var(--party-국힘)' },
+  ];
+
+  function stanceCardGrid(list, kind) {
+    if (!list.length) return `<div class="empty" style="padding:20px;font-size:13px;color:var(--dim)">${kind === 'support' ? '아직 지지한 의원이 없습니다' : '아직 반대 표시한 의원이 없습니다'}</div>`;
+    return `<div class="bm-grid">${list.map(([mid, info]) => {
+      const m = state.members?.find(x => x.MONA_CD === mid);
+      const party = m?.POLY_NM || '—';
+      const color = partyColor(party);
+      const initial = (info.name || '?').charAt(0);
+      const photo = m ? state.photos.get(mid) : null;
+      const avatar = (photo?.thumb)
+        ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(info.name)}">`
+        : `<span>${escapeHtml(initial)}</span>`;
+      const ago = Math.round((Date.now() - info.t) / 86400000);
+      return `
+        <div class="bm-card" data-mid="${escapeHtml(mid)}">
+          <div class="bm-card-bar" style="background:${color}"></div>
+          <div class="bm-card-body">
+            <div class="bm-avatar">${avatar}</div>
+            <div class="bm-info">
+              <div class="bm-name">${escapeHtml(info.name)}</div>
+              <div class="bm-meta" style="color:${color}">${escapeHtml(party)}${m?.ORIG_NM ? ' · ' + escapeHtml(m.ORIG_NM) : ''}</div>
+              <div class="bm-added">${ago === 0 ? '오늘' : ago + '일 전'}</div>
+            </div>
+          </div>
+          <button class="bm-remove" data-mid="${escapeHtml(mid)}" data-name="${escapeHtml(info.name)}" title="해제">✕</button>
+        </div>
+      `;
+    }).join('')}</div>`;
+  }
+
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="bm-page">
+      <h1 class="bm-h1">🗳 내 정치 입장</h1>
+      <p class="bm-lead">로컬 저장 · 서버 X · 익명. 누구도 볼 수 없는 본인만의 기록입니다.</p>
+
+      <!-- 사용자 정치성향 자가 라벨 -->
+      <div class="lean-section">
+        <h2>🧭 정치성향 자가 라벨 (선택)</h2>
+        <p class="lean-sub">현재 본인 성향이 어디라고 생각하시나요? (변경 가능 · 본인만 보임)</p>
+        <div class="lean-options">
+          ${leanOptions.map(o => `
+            <button class="lean-opt ${currentLean === o.id ? 'active' : ''}" data-lean="${o.id}" style="--lean-color:${o.color}">
+              <span class="lean-icon">${o.icon}</span>
+              <span class="lean-label">${o.label}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- 통계 -->
+      <div class="stance-stats">
+        <div class="stance-stat-card">
+          <div class="stance-stat-big" style="color:var(--ok)">👍 ${counts.support}</div>
+          <div class="stance-stat-l">지지 표시한 의원</div>
+        </div>
+        <div class="stance-stat-card">
+          <div class="stance-stat-big" style="color:#dc2626">👎 ${counts.oppose}</div>
+          <div class="stance-stat-l">반대 표시한 의원</div>
+        </div>
+        ${sortedParties.length ? `
+        <div class="stance-stat-card stance-distro">
+          <div class="stance-stat-l" style="margin-bottom:8px">지지한 의원 정당 분포</div>
+          ${sortedParties.slice(0, 4).map(([p, n]) => `
+            <div class="lean-distro-row">
+              <span style="color:${partyColor(p)};font-weight:700;font-size:11px">${escapeHtml(p)}</span>
+              <span style="font-variant-numeric:tabular-nums;font-size:11px;color:var(--text-2)">${n}명</span>
+            </div>
+          `).join('')}
+        </div>` : ''}
+      </div>
+
+      <!-- 지지 의원 -->
+      <div class="d-section">
+        <h2 style="color:var(--ok)">👍 지지하는 의원 (${supports.length}명)</h2>
+        ${stanceCardGrid(supports, 'support')}
+      </div>
+
+      <!-- 반대 의원 -->
+      <div class="d-section">
+        <h2 style="color:#dc2626">👎 반대하는 의원 (${opposes.length}명)</h2>
+        ${stanceCardGrid(opposes, 'oppose')}
+      </div>
+
+      <p style="text-align:center;color:var(--dim);font-size:11.5px;margin-top:30px;line-height:1.6">
+        ⚠ 모든 기록은 본인 브라우저에만 저장됩니다 (localStorage).<br>
+        서버 전송 X · 다른 사용자에게 보이지 X · 익명.<br>
+        브라우저 데이터 삭제 시 함께 사라집니다.
+      </p>
+    </div>
+  `;
+}
+
+// ============================================================
 // 북마크 페이지 (/bookmarks)
 // ============================================================
 function renderBookmarksPage() {
@@ -10909,6 +11184,7 @@ function renderHome() {
           <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>점수·발의·통과율</em></div></a>
           <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>95개 용어 8 카테고리</em></div></a>
           <a class="tool-card" href="#/bookmarks"><span>⭐</span><div><b>관심 의원</b><em>북마크 모아보기</em></div></a>
+          <a class="tool-card" href="#/stances"><span>🗳</span><div><b>내 정치 입장</b><em>지지·반대 익명 기록</em></div></a>
           <a class="tool-card" href="#/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
           <a class="tool-card" href="#/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
           <a class="tool-card" href="#/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
@@ -11448,6 +11724,17 @@ function renderDetail(id) {
             <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span>
               <button class="bookmark-btn ${isBookmarked(m.MONA_CD) ? 'bookmarked' : ''}" id="bookmark-btn" data-mid="${escapeHtml(m.MONA_CD)}" data-name="${escapeHtml(m.HG_NM)}" title="${isBookmarked(m.MONA_CD) ? '북마크 해제' : '북마크 — 관심 의원으로 저장'}">${isBookmarked(m.MONA_CD) ? '⭐' : '☆'}</button>
             </h1>
+            <div class="stance-bar">
+              <button class="stance-btn stance-support ${getStance(m.MONA_CD) === 'support' ? 'active' : ''}" id="stance-support" data-mid="${escapeHtml(m.MONA_CD)}" data-name="${escapeHtml(m.HG_NM)}" title="개인 기록 — 익명">
+                <span class="stance-ico">👍</span>
+                <span class="stance-lbl">지지</span>
+              </button>
+              <button class="stance-btn stance-oppose ${getStance(m.MONA_CD) === 'oppose' ? 'active' : ''}" id="stance-oppose" data-mid="${escapeHtml(m.MONA_CD)}" data-name="${escapeHtml(m.HG_NM)}" title="개인 기록 — 익명">
+                <span class="stance-ico">👎</span>
+                <span class="stance-lbl">반대</span>
+              </button>
+              <span class="stance-hint">로컬 저장 · 서버 X · 익명</span>
+            </div>
             <div class="d-party" style="color:${color}">
               ${escapeHtml(m.POLY_NM || '—')}
               ${partyRolesForThis.map(r => `<span class="role-badge" style="border-color:${color};color:${color}">${escapeHtml(r.role)}</span>`).join('')}
@@ -11652,6 +11939,32 @@ function route() {
     view.innerHTML = renderDexPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     setupDexEvents();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 내 stance — 지지/반대 모아보기 (/stances)
+  if (hash === '#/stances') {
+    view.innerHTML = renderStancesPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.querySelectorAll('.bm-card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`; });
+    });
+    document.querySelectorAll('.bm-remove').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        setStance(el.dataset.mid, el.dataset.name, null);
+        route();
+      });
+    });
+    // 사용자 정치성향 라벨 변경
+    document.querySelectorAll('.lean-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        const lean = el.dataset.lean;
+        setUserLean(lean === getUserLean() ? null : lean);
+        route();
+      });
+    });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -12349,6 +12662,19 @@ function route() {
       btn.textContent = nowBm ? '⭐' : '☆';
       btn.classList.toggle('bookmarked', nowBm);
       btn.title = nowBm ? '북마크 해제' : '북마크 — 관심 의원으로 저장';
+    });
+    // 지지/반대 stance 버튼
+    ['support', 'oppose'].forEach(s => {
+      document.getElementById(`stance-${s}`)?.addEventListener('click', e => {
+        e.stopPropagation();
+        const btn = e.currentTarget;
+        const mid = btn.dataset.mid;
+        const name = btn.dataset.name;
+        const newStance = setStance(mid, name, s);
+        // 두 버튼 상태 동기화
+        document.getElementById('stance-support').classList.toggle('active', newStance === 'support');
+        document.getElementById('stance-oppose').classList.toggle('active', newStance === 'oppose');
+      });
     });
     document.querySelectorAll('.col-card').forEach(el => {
       el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
