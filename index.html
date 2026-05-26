@@ -1974,6 +1974,143 @@
     margin-bottom: 8px;
   }
 
+  /* ============ 북마크 (/bookmarks + 버튼) ============ */
+  .bookmark-btn {
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0 4px;
+    margin-left: 4px;
+    color: var(--dim);
+    transition: transform 0.15s, color 0.15s;
+    vertical-align: middle;
+  }
+  .bookmark-btn:hover { transform: scale(1.2); color: #fbbf24; }
+  .bookmark-btn.bookmarked { color: #fbbf24; }
+  .bm-page {
+    max-width: 1080px; margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+  .bm-h1 {
+    font-size: 28px; font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .bm-lead {
+    font-size: 13px; color: var(--text-2);
+    margin-bottom: 20px;
+  }
+  .bm-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .bm-empty-icon {
+    font-size: 64px;
+    color: var(--dim);
+    margin-bottom: 16px;
+  }
+  .bm-empty h2 {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .bm-empty p {
+    font-size: 14px; color: var(--text-2);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .bm-cta {
+    display: inline-block;
+    padding: 11px 22px;
+    background: var(--accent);
+    color: #fff !important;
+    border-radius: 8px;
+    font-weight: 700; text-decoration: none !important;
+  }
+  .bm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .bm-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .bm-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .bm-card-bar {
+    height: 4px;
+  }
+  .bm-card-body {
+    display: flex; gap: 14px;
+    padding: 14px;
+  }
+  .bm-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-elev);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    font-size: 22px; font-weight: 700;
+    color: var(--text-2);
+  }
+  .bm-avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .bm-info { flex: 1; min-width: 0; }
+  .bm-name {
+    font-size: 16px; font-weight: 800;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .bm-meta {
+    font-size: 12px;
+    margin-bottom: 6px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .bm-score {
+    font-size: 11px; color: var(--text-2);
+    margin-bottom: 4px;
+  }
+  .bm-score b {
+    color: var(--text); font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .bm-added {
+    font-size: 10.5px; color: var(--dim);
+  }
+  .bm-remove {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--text-2);
+    display: grid; place-items: center;
+    transition: all 0.15s;
+  }
+  .bm-remove:hover {
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
+  }
+
   /* ============ 의원 활동 종합 점수 ============ */
   .mp-score-section h2 {
     display: flex; align-items: center; gap: 6px;
@@ -4858,6 +4995,7 @@
       <a href="#/glossary">📖 정치 용어 사전</a>
       <a href="#/rankings">📊 활동 랭킹</a>
       <a href="#/map">🗺 정치 분포 지도</a>
+      <a href="#/bookmarks">⭐ 관심 의원</a>
       <a href="#/play">🧪 실험실</a>
     </div>
     <div class="foot-col">
@@ -4934,6 +5072,29 @@ const CACHE_KEY_MEMBERS = 'politik:members:v2';
 const CACHE_KEY_BILLS   = 'politik:bills:v2';
 const CACHE_KEY_PHOTOS  = 'politik:photos:v3';
 const CACHE_KEY_WIKIMAP = 'politik:wikimap:v1';
+const BOOKMARKS_KEY     = 'patchkr:bookmarks:v1';
+
+// ============================================================
+// 북마크 시스템 — localStorage 기반 개인화
+// ============================================================
+function getBookmarks() {
+  try {
+    return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '{}');
+  } catch { return {}; }
+}
+function isBookmarked(mid) {
+  return !!getBookmarks()[mid];
+}
+function toggleBookmark(mid, memberName) {
+  const bm = getBookmarks();
+  if (bm[mid]) delete bm[mid];
+  else bm[mid] = { t: Date.now(), name: memberName };
+  try { localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bm)); } catch {}
+  return !!bm[mid];
+}
+function bookmarkCount() {
+  return Object.keys(getBookmarks()).length;
+}
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
 
 // 통합 schema 변환
@@ -7893,6 +8054,71 @@ function renderDonatePage() {
 }
 
 // ============================================================
+// 북마크 페이지 (/bookmarks)
+// ============================================================
+function renderBookmarksPage() {
+  const bm = getBookmarks();
+  const entries = Object.entries(bm).sort((a, b) => b[1].t - a[1].t);
+  if (!entries.length) {
+    return `
+      <div class="group-back" id="back-home">← 홈</div>
+      <div class="bm-page">
+        <h1 class="bm-h1">⭐ 내 관심 의원</h1>
+        <div class="bm-empty">
+          <div class="bm-empty-icon">☆</div>
+          <h2>아직 북마크한 의원이 없습니다</h2>
+          <p>의원 페이지에 들어가서 이름 옆 <b>☆</b> 버튼을 클릭하면 여기에 추가됩니다.<br>
+          관심 의원을 모아두면 활동·뉴스·통과 법안을 빠르게 확인할 수 있어요.</p>
+          <a href="#/bills" class="bm-cta">법안 보러 가기 →</a>
+        </div>
+      </div>
+    `;
+  }
+  // 의원 데이터 매칭
+  const items = entries.map(([mid, info]) => {
+    const m = state.members?.find(x => x.MONA_CD === mid);
+    return { mid, name: info.name, t: info.t, member: m };
+  });
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="bm-page">
+      <h1 class="bm-h1">⭐ 내 관심 의원 <span style="color:var(--dim);font-size:18px;font-weight:600">${entries.length}명</span></h1>
+      <p class="bm-lead">북마크한 의원의 활동을 한 곳에서 확인. 브라우저 로컬에 저장 (서버 X · 개인정보 안전).</p>
+
+      <div class="bm-grid">
+        ${items.map(item => {
+          const m = item.member;
+          const party = m?.POLY_NM || '—';
+          const color = partyColor(party);
+          const score = m ? computeMpScore(item.name) : null;
+          const photo = m ? state.photos.get(item.mid) : null;
+          const initial = (item.name || '?').charAt(0);
+          const avatar = (photo?.thumb)
+            ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(item.name)}">`
+            : `<span>${escapeHtml(initial)}</span>`;
+          const ago = Math.round((Date.now() - item.t) / 86400000);
+          return `
+            <div class="bm-card" data-mid="${escapeHtml(item.mid)}">
+              <div class="bm-card-bar" style="background:${color}"></div>
+              <div class="bm-card-body">
+                <div class="bm-avatar">${avatar}</div>
+                <div class="bm-info">
+                  <div class="bm-name">${escapeHtml(item.name)}</div>
+                  <div class="bm-meta" style="color:${color}">${escapeHtml(party)}${m?.ORIG_NM ? ' · ' + escapeHtml(m.ORIG_NM) : ''}</div>
+                  ${score ? `<div class="bm-score">활동 점수 <b>${score.total}</b>/100 · 발의 ${score.raw.leadCount}건</div>` : ''}
+                  <div class="bm-added">${ago === 0 ? '오늘' : ago + '일 전'} 추가</div>
+                </div>
+              </div>
+              <button class="bm-remove" data-mid="${escapeHtml(item.mid)}" data-name="${escapeHtml(item.name)}" title="북마크 해제">✕</button>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
 // 실험실 (/play) — 부가·재미 기능 모음
 // ============================================================
 function renderPlayPage() {
@@ -9698,8 +9924,9 @@ function renderHome() {
           <div class="explore-cat">핵심 도구</div>
           <div class="explore-grid">
             <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구 정당색</em></div></a>
-            <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>발의자·정당·위원회 효율성</em></div></a>
-            <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>67개 용어 8 카테고리</em></div></a>
+            <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>점수·발의·통과율</em></div></a>
+            <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>95개 용어 8 카테고리</em></div></a>
+            <a class="tool-card" href="#/bookmarks"><span>⭐</span><div><b>관심 의원</b><em>북마크한 의원 모아보기</em></div></a>
           </div>
         </div>
 
@@ -10244,7 +10471,9 @@ function renderDetail(id) {
         <div class="d-hero-content">
           <div class="d-avatar">${dAvatarInner}</div>
           <div class="d-info">
-            <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span></h1>
+            <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span>
+              <button class="bookmark-btn ${isBookmarked(m.MONA_CD) ? 'bookmarked' : ''}" id="bookmark-btn" data-mid="${escapeHtml(m.MONA_CD)}" data-name="${escapeHtml(m.HG_NM)}" title="${isBookmarked(m.MONA_CD) ? '북마크 해제' : '북마크 — 관심 의원으로 저장'}">${isBookmarked(m.MONA_CD) ? '⭐' : '☆'}</button>
+            </h1>
             <div class="d-party" style="color:${color}">
               ${escapeHtml(m.POLY_NM || '—')}
               ${partyRolesForThis.map(r => `<span class="role-badge" style="border-color:${color};color:${color}">${escapeHtml(r.role)}</span>`).join('')}
@@ -10440,6 +10669,24 @@ function route() {
   if (hash === '#/business') {
     view.innerHTML = renderBusinessPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 북마크 (/bookmarks)
+  if (hash === '#/bookmarks') {
+    view.innerHTML = renderBookmarksPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.querySelectorAll('.bm-card').forEach(el => {
+      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`; });
+    });
+    document.querySelectorAll('.bm-remove').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleBookmark(el.dataset.mid, el.dataset.name);
+        route(); // re-render
+      });
+    });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -11062,6 +11309,16 @@ function route() {
     const memberId = decodeURIComponent(m[1]);
     view.innerHTML = renderDetail(memberId);
     document.getElementById('back-btn')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('bookmark-btn')?.addEventListener('click', e => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const mid = btn.dataset.mid;
+      const name = btn.dataset.name;
+      const nowBm = toggleBookmark(mid, name);
+      btn.textContent = nowBm ? '⭐' : '☆';
+      btn.classList.toggle('bookmarked', nowBm);
+      btn.title = nowBm ? '북마크 해제' : '북마크 — 관심 의원으로 저장';
+    });
     document.querySelectorAll('.col-card').forEach(el => {
       el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
     });
