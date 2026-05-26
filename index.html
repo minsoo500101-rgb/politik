@@ -1974,6 +1974,238 @@
     margin-bottom: 8px;
   }
 
+  /* ============ 정치인 도감 (/dex) ============ */
+  .dex-page {
+    max-width: 1400px; margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+  .dex-hero {
+    text-align: center;
+    padding: 24px 0 30px;
+  }
+  .dex-hero h1 {
+    font-size: 36px; font-weight: 900;
+    margin-bottom: 8px;
+    letter-spacing: -1px;
+  }
+  .dex-hero p {
+    font-size: 14px; color: var(--text-2);
+    line-height: 1.55;
+    max-width: 540px; margin: 0 auto;
+  }
+  .dex-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 700px) {
+    .dex-stats { grid-template-columns: 1fr; }
+  }
+  .dex-stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .dex-stat-big {
+    font-size: 32px; font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .dex-stat-l {
+    font-size: 11px; color: var(--text-2);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .dex-stat-mini {
+    display: flex; justify-content: space-around;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .dex-stat-mini b {
+    color: var(--text); font-weight: 800;
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+  }
+  .dex-filters {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 20px;
+  }
+  .dex-filter-group {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .dex-chip {
+    padding: 7px 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    font-size: 12.5px; font-weight: 600;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .dex-chip:hover { background: var(--bg-card); }
+  .dex-chip.on {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .dex-filter-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .dex-search {
+    flex: 1; min-width: 180px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--bg-elev);
+    color: var(--text);
+    font: inherit; font-size: 13px;
+  }
+  .dex-filter-row select {
+    padding: 8px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--bg-elev);
+    color: var(--text);
+    font: inherit; font-size: 13px;
+  }
+  .dex-result-n {
+    margin-left: auto;
+    font-size: 12px; color: var(--text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .dex-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .dex-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex; flex-direction: column;
+  }
+  .dex-card.collected {
+    border-color: var(--party-color);
+  }
+  .dex-card.uncollected {
+    opacity: 0.85;
+  }
+  .dex-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--party-color);
+  }
+  .dex-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border-color: var(--party-color);
+  }
+  [data-theme="dark"] .dex-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+  .dex-num {
+    position: absolute;
+    top: 8px; left: 8px;
+    font-size: 10px; font-weight: 800;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+    z-index: 2;
+  }
+  .dex-grade-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 12px; font-weight: 800;
+    display: grid; place-items: center;
+    z-index: 2;
+  }
+  .dex-card-avatar {
+    width: 72px; height: 72px;
+    margin: 14px auto 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-elev);
+    border: 2px solid var(--party-color);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .dex-card-avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .dex-initial {
+    font-size: 30px; font-weight: 700;
+    color: var(--text-2);
+  }
+  .dex-card-body {
+    padding: 8px 10px;
+    flex: 1;
+    text-align: center;
+  }
+  .dex-card-name {
+    font-size: 15px; font-weight: 800;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .dex-card-meta {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .dex-card-role {
+    font-size: 10px;
+    color: var(--text-2);
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 28px;
+  }
+  .dex-card-foot {
+    padding: 6px 10px;
+    background: var(--bg-elev);
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--border);
+    font-size: 10.5px;
+  }
+  .dex-group-tag {
+    color: var(--text-2);
+    font-weight: 600;
+  }
+  .dex-check {
+    color: var(--ok);
+    font-weight: 800;
+  }
+  .dex-question {
+    color: var(--dim);
+    font-weight: 800;
+  }
+  .dex-more {
+    text-align: center;
+    padding: 20px;
+    color: var(--dim);
+    font-size: 12px;
+  }
+
   /* ============ 북마크 (/bookmarks + 버튼) ============ */
   .bookmark-btn {
     background: none;
@@ -4992,6 +5224,7 @@
     </div>
     <div class="foot-col">
       <div class="foot-h">탐색</div>
+      <a href="#/dex">📕 정치인 도감</a>
       <a href="#/glossary">📖 정치 용어 사전</a>
       <a href="#/rankings">📊 활동 랭킹</a>
       <a href="#/map">🗺 정치 분포 지도</a>
@@ -8054,6 +8287,242 @@ function renderDonatePage() {
 }
 
 // ============================================================
+// 정치인 도감 (/dex) — Pokedex 스타일
+// ============================================================
+const dexState = {
+  filter: { group: '', party: '', sort: 'num', q: '', grade: '' },
+};
+
+function renderDexPage() {
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="dex-page">
+      <div class="dex-hero">
+        <h1>📕 정치인 도감</h1>
+        <p>삼권 (입법·행정·사법) + 지방정부 + 역사 인물 통합 컬렉션.<br>
+        활동 점수·정당색·등급으로 시각화. 카드 클릭 → 상세.</p>
+      </div>
+      <div id="dex-body">
+        <div class="loading"><span class="loading-spinner"></span>도감 준비 중…</div>
+      </div>
+    </div>
+  `;
+}
+
+function setupDexEvents() {
+  const tryStart = () => {
+    if (!state.members?.length) { setTimeout(tryStart, 300); return; }
+    renderDexBody();
+  };
+  tryStart();
+}
+
+function renderDexBody() {
+  const all = state.members || [];
+  // 그룹별 분류
+  const groupOf = m => {
+    if (m._group === 'historical') return 'historical';
+    if (m._group === 'local') return 'local';
+    if (m._group === 'judicial') return 'judicial';
+    if (m._group === 'executive') return 'executive';
+    return 'legislative';
+  };
+  // 도감 번호 부여 (이름 가나다 + 그룹 정렬)
+  const sorted = all.slice().sort((a, b) => {
+    const ga = groupOf(a), gb = groupOf(b);
+    const order = { legislative: 1, executive: 2, judicial: 3, local: 4, historical: 5 };
+    if (order[ga] !== order[gb]) return order[ga] - order[gb];
+    return (a.HG_NM || '').localeCompare(b.HG_NM || '', 'ko');
+  });
+  sorted.forEach((m, i) => m._dexNum = i + 1);
+
+  // 필터 적용
+  const f = dexState.filter;
+  let filtered = sorted.slice();
+  if (f.group) filtered = filtered.filter(m => groupOf(m) === f.group);
+  if (f.party) filtered = filtered.filter(m => (m.POLY_NM || '무소속') === f.party);
+  if (f.grade) {
+    filtered = filtered.filter(m => {
+      const s = computeMpScore(m.HG_NM);
+      if (!s) return f.grade === '?';
+      const g = s.total >= 80 ? 'A' : s.total >= 65 ? 'B' : s.total >= 50 ? 'C' : s.total >= 35 ? 'D' : 'E';
+      return g === f.grade;
+    });
+  }
+  if (f.q) {
+    const q = f.q.toLowerCase();
+    filtered = filtered.filter(m =>
+      (m.HG_NM || '').toLowerCase().includes(q) ||
+      (m.POLY_NM || '').toLowerCase().includes(q) ||
+      (m.CMIT_NM || '').toLowerCase().includes(q) ||
+      (m.ORIG_NM || '').toLowerCase().includes(q)
+    );
+  }
+  // 정렬
+  if (f.sort === 'name') filtered.sort((a, b) => (a.HG_NM || '').localeCompare(b.HG_NM || '', 'ko'));
+  else if (f.sort === 'party') filtered.sort((a, b) => {
+    if (a.POLY_NM === '무소속') return 1;
+    if (b.POLY_NM === '무소속') return -1;
+    return (a.POLY_NM || '').localeCompare(b.POLY_NM || '', 'ko');
+  });
+  else if (f.sort === 'score') {
+    filtered.sort((a, b) => {
+      const sa = computeMpScore(a.HG_NM)?.total || 0;
+      const sb = computeMpScore(b.HG_NM)?.total || 0;
+      return sb - sa;
+    });
+  }
+  // f.sort === 'num' → 이미 정렬됨
+
+  // 통계
+  const total = sorted.length;
+  const withCareer = sorted.filter(m => m.MEM_TITLE && m.MEM_TITLE.length > 30).length;
+  const collected = (withCareer / total * 100).toFixed(1);
+  const groupCounts = sorted.reduce((acc, m) => {
+    const g = groupOf(m);
+    acc[g] = (acc[g] || 0) + 1;
+    return acc;
+  }, {});
+
+  // 정당 옵션
+  const partySet = new Set();
+  sorted.forEach(m => { if (m.POLY_NM) partySet.add(m.POLY_NM); else partySet.add('무소속'); });
+  const partyOptions = [...partySet].sort((a, b) => {
+    if (a === '무소속') return 1;
+    if (b === '무소속') return -1;
+    return a.localeCompare(b, 'ko');
+  });
+
+  const body = document.getElementById('dex-body');
+  if (!body) return;
+
+  body.innerHTML = `
+    <div class="dex-stats">
+      <div class="dex-stat-card">
+        <div class="dex-stat-big">${total.toLocaleString()}</div>
+        <div class="dex-stat-l">전체 인물</div>
+      </div>
+      <div class="dex-stat-card">
+        <div class="dex-stat-big" style="color:var(--ok)">${collected}<span style="font-size:18px;color:var(--dim)">%</span></div>
+        <div class="dex-stat-l">도감 등록률<br><span style="color:var(--dim);font-size:11px">career 보유 ${withCareer}명</span></div>
+      </div>
+      <div class="dex-stat-card">
+        <div class="dex-stat-mini">
+          <div><b>${(groupCounts.legislative||0)}</b> 입법</div>
+          <div><b>${(groupCounts.executive||0)}</b> 행정</div>
+          <div><b>${(groupCounts.judicial||0)}</b> 사법</div>
+          <div><b>${(groupCounts.local||0)}</b> 지방</div>
+          <div><b>${(groupCounts.historical||0)}</b> 역사</div>
+        </div>
+        <div class="dex-stat-l">5개 카테고리</div>
+      </div>
+    </div>
+
+    <div class="dex-filters">
+      <div class="dex-filter-group">
+        <button class="dex-chip ${!f.group ? 'on' : ''}" data-group="">전체</button>
+        <button class="dex-chip ${f.group === 'legislative' ? 'on' : ''}" data-group="legislative">🏛 입법</button>
+        <button class="dex-chip ${f.group === 'executive' ? 'on' : ''}" data-group="executive">🏢 행정</button>
+        <button class="dex-chip ${f.group === 'judicial' ? 'on' : ''}" data-group="judicial">⚖ 사법</button>
+        <button class="dex-chip ${f.group === 'local' ? 'on' : ''}" data-group="local">🌏 지방</button>
+        <button class="dex-chip ${f.group === 'historical' ? 'on' : ''}" data-group="historical">📜 역사</button>
+      </div>
+      <div class="dex-filter-row">
+        <input type="text" class="dex-search" id="dex-q" placeholder="이름·정당·지역구·위원회 검색" value="${escapeHtml(f.q)}">
+        <select id="dex-party">
+          <option value="">— 전체 정당 —</option>
+          ${partyOptions.map(p => `<option value="${escapeHtml(p)}" ${f.party === p ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('')}
+        </select>
+        <select id="dex-grade">
+          <option value="">— 전체 등급 —</option>
+          <option value="A" ${f.grade === 'A' ? 'selected' : ''}>A 등급 (80+)</option>
+          <option value="B" ${f.grade === 'B' ? 'selected' : ''}>B 등급 (65-79)</option>
+          <option value="C" ${f.grade === 'C' ? 'selected' : ''}>C 등급 (50-64)</option>
+          <option value="D" ${f.grade === 'D' ? 'selected' : ''}>D 등급 (35-49)</option>
+          <option value="E" ${f.grade === 'E' ? 'selected' : ''}>E 등급 (35미만)</option>
+        </select>
+        <select id="dex-sort">
+          <option value="num" ${f.sort === 'num' ? 'selected' : ''}>도감 번호순</option>
+          <option value="name" ${f.sort === 'name' ? 'selected' : ''}>이름 가나다</option>
+          <option value="party" ${f.sort === 'party' ? 'selected' : ''}>정당순</option>
+          <option value="score" ${f.sort === 'score' ? 'selected' : ''}>활동 점수 순</option>
+        </select>
+        <span class="dex-result-n">${filtered.length.toLocaleString()}명</span>
+      </div>
+    </div>
+
+    <div class="dex-grid">
+      ${filtered.slice(0, 240).map(m => renderDexCard(m, groupOf(m))).join('')}
+    </div>
+    ${filtered.length > 240 ? `<div class="dex-more">상위 240명만 표시 — 검색·필터로 좁히세요 (${filtered.length - 240}명 더 있음)</div>` : ''}
+  `;
+
+  // 이벤트
+  document.querySelectorAll('.dex-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      dexState.filter.group = el.dataset.group;
+      renderDexBody();
+    });
+  });
+  document.getElementById('dex-q')?.addEventListener('input', e => {
+    dexState.filter.q = e.target.value;
+    clearTimeout(window._dexQTimer);
+    window._dexQTimer = setTimeout(() => {
+      renderDexBody();
+      const q = document.getElementById('dex-q');
+      if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+    }, 180);
+  });
+  document.getElementById('dex-party')?.addEventListener('change', e => {
+    dexState.filter.party = e.target.value;
+    renderDexBody();
+  });
+  document.getElementById('dex-grade')?.addEventListener('change', e => {
+    dexState.filter.grade = e.target.value;
+    renderDexBody();
+  });
+  document.getElementById('dex-sort')?.addEventListener('change', e => {
+    dexState.filter.sort = e.target.value;
+    renderDexBody();
+  });
+  document.querySelectorAll('.dex-card').forEach(el => {
+    el.addEventListener('click', () => {
+      location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
+    });
+  });
+}
+
+function renderDexCard(m, group) {
+  const color = partyColor(m.POLY_NM);
+  const initial = (m.HG_NM || '?').charAt(0);
+  const photo = state.photos.get(m.MONA_CD);
+  const avatar = (photo?.thumb)
+    ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(m.HG_NM)}">`
+    : `<span class="dex-initial">${escapeHtml(initial)}</span>`;
+  const hasCareer = m.MEM_TITLE && m.MEM_TITLE.length > 30;
+  const score = computeMpScore(m.HG_NM);
+  const grade = score ? (score.total >= 80 ? 'A' : score.total >= 65 ? 'B' : score.total >= 50 ? 'C' : score.total >= 35 ? 'D' : 'E') : null;
+  const gradeColor = score ? (score.total >= 80 ? '#fbbf24' : score.total >= 65 ? '#10b981' : score.total >= 50 ? '#0ea5e9' : score.total >= 35 ? '#f97316' : '#dc2626') : null;
+  const groupIcon = { legislative: '🏛', executive: '🏢', judicial: '⚖', local: '🌏', historical: '📜' }[group];
+  return `
+    <div class="dex-card ${hasCareer ? 'collected' : 'uncollected'}" data-mid="${escapeHtml(m.MONA_CD)}" style="--party-color:${color}">
+      <div class="dex-num">#${String(m._dexNum).padStart(3, '0')}</div>
+      ${grade ? `<div class="dex-grade-badge" style="background:${gradeColor}">${grade}</div>` : ''}
+      <div class="dex-card-avatar">${avatar}</div>
+      <div class="dex-card-body">
+        <div class="dex-card-name">${escapeHtml(m.HG_NM)}</div>
+        <div class="dex-card-meta" style="color:${color}">${escapeHtml(m.POLY_NM || m._type_label || '—')}</div>
+        <div class="dex-card-role">${escapeHtml(m.CMIT_NM || m.ELECT_GBN_NM || m._type_label || m.ORIG_NM || '')}</div>
+      </div>
+      <div class="dex-card-foot">
+        <span class="dex-group-tag">${groupIcon} ${{ legislative:'입법', executive:'행정', judicial:'사법', local:'지방', historical:'역사' }[group]}</span>
+        ${hasCareer ? `<span class="dex-check" title="career 등록 완료">✓</span>` : `<span class="dex-question" title="career 미등록">?</span>`}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
 // 북마크 페이지 (/bookmarks)
 // ============================================================
 function renderBookmarksPage() {
@@ -9923,6 +10392,7 @@ function renderHome() {
         <div class="explore-row">
           <div class="explore-cat">핵심 도구</div>
           <div class="explore-grid">
+            <a class="tool-card" href="#/dex"><span>📕</span><div><b>정치인 도감</b><em>삼권+지방+역사 인물 컬렉션</em></div></a>
             <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구 정당색</em></div></a>
             <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>점수·발의·통과율</em></div></a>
             <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>95개 용어 8 카테고리</em></div></a>
@@ -10669,6 +11139,15 @@ function route() {
   if (hash === '#/business') {
     view.innerHTML = renderBusinessPage();
     document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 정치인 도감 (/dex)
+  if (hash.startsWith('#/dex')) {
+    view.innerHTML = renderDexPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    setupDexEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
