@@ -1695,12 +1695,21 @@
   .rank-list { display: flex; flex-direction: column; gap: 5px; }
   .rank-row {
     display: grid;
-    grid-template-columns: 40px 200px 1fr 60px 80px;
+    grid-template-columns: 40px 200px 1fr 60px 80px auto;
     gap: 10px; align-items: center;
     padding: 7px 8px;
     border-radius: 6px;
     transition: background 0.12s;
     font-size: 12.5px;
+  }
+  .rank-score-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px; font-weight: 800;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    min-width: 32px; text-align: center;
   }
   .rank-row:nth-child(odd) { background: var(--bg-elev); }
   .rank-click:hover { background: var(--bg-card); cursor: pointer; }
@@ -8478,6 +8487,68 @@ function mountAdSlots() {
   });
 }
 
+// 정당별 평균 활동 점수 + 활동 점수 TOP 10
+function renderActivityScoreTop() {
+  if (!state.bills?.length) return '';
+  // 모든 의원 점수 계산
+  const allScores = [];
+  for (const m of state.members || []) {
+    if (m._group !== 'legislative' && !m.UNITS) continue;
+    const s = computeMpScore(m.HG_NM);
+    if (s && s.raw.leadCount > 0) {
+      allScores.push({ name: m.HG_NM, mid: m.MONA_CD, party: m.POLY_NM || '무소속', ...s });
+    }
+  }
+  // 정당별 평균
+  const partyMap = new Map();
+  allScores.forEach(s => {
+    if (!partyMap.has(s.party)) partyMap.set(s.party, { total: 0, count: 0, members: [] });
+    const p = partyMap.get(s.party);
+    p.total += s.total;
+    p.count++;
+    p.members.push(s);
+  });
+  const partyAvg = [...partyMap.entries()]
+    .map(([party, d]) => ({ party, avg: d.total/d.count, count: d.count, members: d.members }))
+    .filter(p => p.count >= 5)
+    .sort((a, b) => b.avg - a.avg);
+  // 점수 TOP 10
+  const top10 = allScores.sort((a, b) => b.total - a.total).slice(0, 10);
+
+  const maxAvg = partyAvg[0]?.avg || 1;
+  return `
+    <!-- 활동 점수 TOP 10 + 정당별 평균 -->
+    <div class="dash-card col-6 chart-card">
+      <div class="chart-head"><h3>🏆 활동 점수 TOP 10</h3></div>
+      <div class="rank-list">
+        ${top10.map((s, i) => `
+          <div class="rank-row rank-click" data-mid="${escapeHtml(s.mid)}">
+            <div class="rank-num">${i+1}</div>
+            <div class="rank-name"><b>${escapeHtml(s.name)}</b> <em style="color:${partyColor(s.party)}">${escapeHtml(s.party)}</em></div>
+            <div class="rank-bar-wrap"><div class="rank-bar" style="width:${s.total}%;background:${partyColor(s.party)}"></div></div>
+            <div class="rank-count">${s.total}점</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="dash-card col-6 chart-card">
+      <div class="chart-head"><h3>🎯 정당별 평균 활동 점수</h3></div>
+      <div class="party-bars">
+        ${partyAvg.map(p => `
+          <div class="party-bar-row party-link" data-party="${escapeHtml(p.party)}">
+            <div class="pb-name" style="color:${partyColor(p.party)}">${escapeHtml(p.party)}</div>
+            <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(p.avg/100*100).toFixed(1)}%;background:${partyColor(p.party)}"></div></div>
+            <div class="pb-count">${p.avg.toFixed(1)}</div>
+            <div class="pb-pct">${p.count}명</div>
+          </div>
+        `).join('')}
+      </div>
+      <p style="font-size:11px;color:var(--dim);margin-top:8px">5명 이상 발의자 보유 정당만 · 100점 만점</p>
+    </div>
+  `;
+}
+
 function renderRankingsPage() {
   if (!state.bills?.length) {
     return `
@@ -8500,20 +8571,28 @@ function renderRankingsPage() {
       </div>
 
       <div class="dash-grid">
+        ${renderActivityScoreTop()}
+
         <!-- 발의 Top 30 -->
         <div class="dash-card col-12 chart-card">
-          <div class="chart-head"><h3>🏆 대표발의 Top 30 (가결률 포함)</h3></div>
+          <div class="chart-head"><h3>🏆 대표발의 Top 30 (가결률 + 활동 점수)</h3></div>
           <div class="rank-list">
-            ${topProposers.map((p, i) => `
-              <div class="rank-row ${p.mid ? 'rank-click' : ''}" ${p.mid ? `data-mid="${escapeHtml(p.mid)}"` : ''}>
-                <div class="rank-num">${i + 1}</div>
-                <div class="rank-name"><b>${escapeHtml(p.name)}</b> <em style="color:${partyColor(p.party)}">${escapeHtml(p.party || '무소속')}</em></div>
-                <div class="rank-bar-wrap"><div class="rank-bar" style="width:${(p.count/maxLead*100).toFixed(1)}%; background:${partyColor(p.party)}"></div></div>
-                <div class="rank-count">${p.count}건</div>
-                <div class="rank-pass">${p.passRate.toFixed(0)}% 통과</div>
-              </div>
-            `).join('')}
+            ${topProposers.map((p, i) => {
+              const score = computeMpScore(p.name);
+              const scoreBadge = score ? `<span class="rank-score-badge" title="활동 종합 점수 ${score.total}/100" style="background:${score.total>=80?'var(--ok)':score.total>=65?'#10b981':score.total>=50?'var(--warn)':score.total>=35?'#f97316':'#dc2626'}">${score.total}</span>` : '';
+              return `
+                <div class="rank-row ${p.mid ? 'rank-click' : ''}" ${p.mid ? `data-mid="${escapeHtml(p.mid)}"` : ''}>
+                  <div class="rank-num">${i + 1}</div>
+                  <div class="rank-name"><b>${escapeHtml(p.name)}</b> <em style="color:${partyColor(p.party)}">${escapeHtml(p.party || '무소속')}</em></div>
+                  <div class="rank-bar-wrap"><div class="rank-bar" style="width:${(p.count/maxLead*100).toFixed(1)}%; background:${partyColor(p.party)}"></div></div>
+                  <div class="rank-count">${p.count}건</div>
+                  <div class="rank-pass">${p.passRate.toFixed(0)}% 통과</div>
+                  <div class="rank-score">${scoreBadge}</div>
+                </div>
+              `;
+            }).join('')}
           </div>
+          <p style="font-size:11px;color:var(--dim);margin-top:8px">🏆 점수 = 발의활동도(40) + 통과율(30) + 분야다양성(15) + 위원회직책(15) — 객관 공식</p>
         </div>
 
         <!-- 정당 × 분야 매트릭스 (top 6 정당, top 8 분야) -->
