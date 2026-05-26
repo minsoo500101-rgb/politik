@@ -4147,6 +4147,93 @@
   }
 
   /* 9회 지선 정당 통계 */
+  /* 후보자 검색 */
+  .e26-search-wrap {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .e26-search-input {
+    flex: 1;
+    padding: 11px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text);
+    font: inherit; font-size: 14px;
+  }
+  .e26-search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(17,24,39,0.08);
+  }
+  .e26-search-hint {
+    font-size: 11px; color: var(--dim);
+    white-space: nowrap;
+  }
+  .e26-search-results {
+    display: flex; flex-direction: column; gap: 5px;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  .e26-cand-result {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    border-left: 3px solid var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .e26-cand-result:hover {
+    background: var(--bg-card);
+    transform: translateX(2px);
+  }
+  .e26-cand-l { display: flex; align-items: center; gap: 12px; }
+  .e26-cand-icon { font-size: 22px; }
+  .e26-cand-name {
+    font-size: 14px; font-weight: 700;
+    color: var(--text);
+  }
+  .e26-cand-meta {
+    font-size: 11.5px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .e26-cand-r {
+    font-size: 11.5px; color: var(--text-2);
+    text-align: right;
+  }
+
+  /* 시도별 분포 표 */
+  .e26-sd-table-wrap {
+    overflow-x: auto;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .e26-sd-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  .e26-sd-table th, .e26-sd-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .e26-sd-table th {
+    color: var(--dim);
+    font-weight: 700; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    background: var(--bg-card);
+  }
+  .e26-sd-table tr:hover td { background: var(--bg-card); }
+  .e26-sd-table tr:last-child td { border-bottom: none; }
+  .e26-sd-table td.num, .e26-sd-table th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
   .e26-stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -7016,6 +7103,77 @@ async function loadNec2026Governors() {
   return state.nec2026Governors;
 }
 
+// 후보자 검색 (election2026 페이지)
+function runE26Search(q) {
+  const nec = state.nec2026Governors;
+  const out = document.getElementById('e26-search-results');
+  const hint = document.getElementById('e26-search-hint');
+  if (!out) return;
+  if (!nec || !(nec.governors||[]).length) {
+    out.innerHTML = '<div style="font-size:12px;color:var(--dim);text-align:center;padding:20px">데이터 로드 중…</div>';
+    return;
+  }
+  const all = [
+    ...(nec.governors||[]).map(c => ({...c, kind:'광역단체장', kindIcon:'🏛', sg:'3'})),
+    ...(nec.munis||[]).map(c => ({...c, kind:'기초단체장', kindIcon:'🏢', sg:'4'})),
+    ...(nec.localAssembly||[]).map(c => ({...c, kind:'광역의원', kindIcon:'⚖', sg:'5'})),
+    ...(nec.localAssemblyProp||[]).map(c => ({...c, kind:'광역의원 비례', kindIcon:'⚖', sg:'8'})),
+    ...(nec.eduSupers||[]).map(c => ({...c, kind:'교육감', kindIcon:'📚', sg:'11'})),
+  ];
+  const qLower = (q || '').trim().toLowerCase();
+  if (!qLower) {
+    out.innerHTML = '<div style="font-size:12px;color:var(--dim);text-align:center;padding:20px">이름·정당·시도명을 입력해 후보자를 찾으세요</div>';
+    if (hint) hint.textContent = `전체 ${all.length.toLocaleString()}명 중 검색`;
+    return;
+  }
+  const matched = all.filter(c => {
+    return (c.name || '').toLowerCase().includes(qLower) ||
+           (c.jdName || '').toLowerCase().includes(qLower) ||
+           (c.sdName || '').toLowerCase().includes(qLower) ||
+           (c.sggName || '').toLowerCase().includes(qLower) ||
+           (c.gugun || '').toLowerCase().includes(qLower);
+  }).slice(0, 100);
+  if (hint) hint.textContent = `${matched.length}명 검색됨 (전체 ${all.length.toLocaleString()}명 중)`;
+  if (!matched.length) {
+    out.innerHTML = '<div style="font-size:12px;color:var(--dim);text-align:center;padding:20px">검색 결과 없음</div>';
+    return;
+  }
+  out.innerHTML = matched.map(c => {
+    const color = partyColor(c.jdName || '무소속');
+    const region = [c.sdName, c.sggName, c.gugun].filter(Boolean).join(' · ');
+    return `
+      <div class="e26-cand-result e26-cand-click"
+           data-cnddt="${escapeHtml(c.cnddtId || c.huboid || '')}"
+           data-sgtype="${escapeHtml(c.sg)}"
+           data-name="${escapeHtml(c.name || '')}"
+           data-party="${escapeHtml(c.jdName || '무소속')}"
+           data-region="${escapeHtml(region)}"
+           style="border-left-color:${color}">
+        <div class="e26-cand-l">
+          <div class="e26-cand-icon">${c.kindIcon}</div>
+          <div>
+            <div class="e26-cand-name">${escapeHtml(c.name || '?')}</div>
+            <div class="e26-cand-meta" style="color:${color}">${escapeHtml(c.jdName || '무소속')} · ${escapeHtml(c.kind)}</div>
+          </div>
+        </div>
+        <div class="e26-cand-r">${escapeHtml(region)}</div>
+      </div>
+    `;
+  }).join('');
+  // 결과 카드에 클릭 이벤트 바인딩
+  out.querySelectorAll('.e26-cand-click').forEach(el => {
+    el.addEventListener('click', () => {
+      openPromiseModal({
+        cnddtId: el.dataset.cnddt,
+        sgTypecode: el.dataset.sgtype,
+        name: el.dataset.name,
+        party: el.dataset.party,
+        region: el.dataset.region,
+      });
+    });
+  });
+}
+
 function renderElection2026Page() {
   const d = state.election2026;
   if (!d) return `
@@ -7134,40 +7292,101 @@ function renderElection2026Page() {
       </div>
 
       ${(() => {
-        // 정당별 후보자 분포 (실시간 NEC 데이터)
         const nec = state.nec2026Governors;
         if (!nec || nec._error || !(nec.governors||[]).length) return '';
-        const all = [
-          ...(nec.governors||[]).map(c => ({...c, kind:'광역단체장'})),
-          ...(nec.munis||[]).map(c => ({...c, kind:'기초단체장'})),
-          ...(nec.eduSupers||[]).map(c => ({...c, kind:'교육감'})),
+
+        // 전체 후보자 통합
+        const allCandidates = [
+          ...(nec.governors||[]).map(c => ({...c, kind:'광역단체장', kindIcon:'🏛'})),
+          ...(nec.munis||[]).map(c => ({...c, kind:'기초단체장', kindIcon:'🏢'})),
+          ...(nec.localAssembly||[]).map(c => ({...c, kind:'광역의원', kindIcon:'⚖'})),
+          ...(nec.localAssemblyProp||[]).map(c => ({...c, kind:'광역의원 비례', kindIcon:'⚖'})),
+          ...(nec.eduSupers||[]).map(c => ({...c, kind:'교육감', kindIcon:'📚'})),
         ];
+
+        // 정당별 합산
         const byParty = {};
-        for (const c of all) {
-          const p = c.jdName || '무소속';
-          byParty[p] = (byParty[p] || 0) + 1;
-        }
-        const sorted = Object.entries(byParty).sort((a,b)=>b[1]-a[1]);
-        const totalReg = (nec.totalGov||0) + (nec.totalMuni||0) + (nec.totalLocalAssembly||0) + (nec.totalLocalAssemblyProp||0) + (nec.totalEdu||0);
-        // 광역의원 추가 집계 (지역+비례)
-        const localAssemblyAll = [...(nec.localAssembly||[]), ...(nec.localAssemblyProp||[])];
-        for (const c of localAssemblyAll) {
+        for (const c of allCandidates) {
           const p = c.jdName || '무소속';
           byParty[p] = (byParty[p] || 0) + 1;
         }
         const sortedAll = Object.entries(byParty).sort((a,b)=>b[1]-a[1]);
+        const totalReg = allCandidates.length;
+
+        // 시도별 분포
+        const bySd = {};
+        for (const c of allCandidates) {
+          const sd = c.sdName || '기타';
+          if (!bySd[sd]) bySd[sd] = { gov: 0, muni: 0, la: 0, lap: 0, edu: 0, total: 0 };
+          bySd[sd].total++;
+          if (c.kind === '광역단체장') bySd[sd].gov++;
+          else if (c.kind === '기초단체장') bySd[sd].muni++;
+          else if (c.kind === '광역의원') bySd[sd].la++;
+          else if (c.kind === '광역의원 비례') bySd[sd].lap++;
+          else if (c.kind === '교육감') bySd[sd].edu++;
+        }
+        const sortedSd = Object.entries(bySd).sort((a,b)=>b[1].total - a[1].total);
+
         return `
           <div class="e26-section">
-            <h2>📊 9회 지선 등록 후보자 ${totalReg.toLocaleString()}명 — 정당별 분포</h2>
+            <h2>📊 9회 지선 등록 후보자 ${totalReg.toLocaleString()}명 — 통계</h2>
             <div class="e26-stats-grid">
               <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalGov||0).toLocaleString()}</div><div class="e26-stat-lbl">광역단체장</div></div>
               <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalMuni||0).toLocaleString()}</div><div class="e26-stat-lbl">기초단체장</div></div>
               <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalLocalAssembly||0).toLocaleString()}</div><div class="e26-stat-lbl">광역의원 (지역)</div></div>
               <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalLocalAssemblyProp||0).toLocaleString()}</div><div class="e26-stat-lbl">광역의원 (비례)</div></div>
               <div class="e26-stat-mini"><div class="e26-stat-num">${(nec.totalEdu||0).toLocaleString()}</div><div class="e26-stat-lbl">교육감 (무지명)</div></div>
-              <div class="e26-stat-mini"><div class="e26-stat-num">${sortedAll.length}</div><div class="e26-stat-lbl">정당·무소속 종류</div></div>
+              <div class="e26-stat-mini"><div class="e26-stat-num">${sortedAll.length}</div><div class="e26-stat-lbl">정당·무소속</div></div>
             </div>
-            <div class="party-bars" style="margin-top:14px">
+          </div>
+
+          <!-- 후보자 검색 -->
+          <div class="e26-section">
+            <h2>🔍 후보자 검색 (이름·정당·시도)</h2>
+            <div class="e26-search-wrap">
+              <input type="text" id="e26-search" class="e26-search-input" placeholder="예: 김민석, 더불어민주당, 서울, 부산" autocomplete="off">
+              <span class="e26-search-hint" id="e26-search-hint">전체 ${totalReg.toLocaleString()}명 중 검색</span>
+            </div>
+            <div id="e26-search-results" class="e26-search-results">
+              <div style="font-size:12px;color:var(--dim);text-align:center;padding:20px">이름·정당·시도명을 입력해 후보자를 찾으세요</div>
+            </div>
+          </div>
+
+          <!-- 시도별 분포 -->
+          <div class="e26-section">
+            <h2>🗺 17 시도별 후보자 분포</h2>
+            <div class="e26-sd-table-wrap">
+              <table class="e26-sd-table">
+                <thead>
+                  <tr>
+                    <th>시·도</th>
+                    <th class="num">광역단체장</th>
+                    <th class="num">기초단체장</th>
+                    <th class="num">광역의원<br><span style="font-weight:400;font-size:10px;color:var(--dim)">지역+비례</span></th>
+                    <th class="num">교육감</th>
+                    <th class="num">합계</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${sortedSd.map(([sd, c]) => `
+                    <tr>
+                      <td><b>${escapeHtml(sd)}</b></td>
+                      <td class="num">${c.gov || '—'}</td>
+                      <td class="num">${c.muni || '—'}</td>
+                      <td class="num">${(c.la + c.lap) || '—'}</td>
+                      <td class="num">${c.edu || '—'}</td>
+                      <td class="num"><b style="color:var(--text)">${c.total}</b></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 정당별 분포 -->
+          <div class="e26-section">
+            <h2>🎯 정당별 후보자 분포</h2>
+            <div class="party-bars">
               ${sortedAll.slice(0, 12).map(([p, n]) => `
                 <div class="party-bar-row party-link" data-party="${escapeHtml(p)}">
                   <div class="pb-name"><span class="pb-dot" style="background:${partyColor(p)}"></span>${escapeHtml(p)}</div>
@@ -7177,7 +7396,7 @@ function renderElection2026Page() {
                 </div>
               `).join('')}
             </div>
-            <div style="margin-top:10px;font-size:11px;color:var(--dim);text-align:center">출처: 중앙선거관리위원회 OpenAPI (data.go.kr) · 카드 후보 클릭 → 5대 공약 · 실시간 데이터</div>
+            <div style="margin-top:10px;font-size:11px;color:var(--dim);text-align:center">출처: 중앙선거관리위원회 OpenAPI · 실시간 데이터</div>
           </div>
         `;
       })()}
@@ -11614,6 +11833,14 @@ function route() {
           });
         });
       });
+      // 후보자 검색
+      const searchInput = document.getElementById('e26-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', e => {
+          clearTimeout(window._e26SearchTimer);
+          window._e26SearchTimer = setTimeout(() => runE26Search(e.target.value), 180);
+        });
+      }
     };
     renderE26();
     if (filterBar) filterBar.style.display = 'none';
