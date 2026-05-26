@@ -1,0 +1,47 @@
+name: validate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 데이터 무결성 검증
+        run: node scripts/validate.js
+
+      - name: index.html JavaScript 신택스 검증
+        run: |
+          # 인라인 JS 추출 후 node --check
+          node -e "
+            const fs = require('fs');
+            const html = fs.readFileSync('index.html', 'utf8');
+            const m = html.match(/<script>\s*'use strict';([\s\S]+?)<\/script>\s*<\/body>/);
+            if (!m) { console.error('메인 script 블록 못 찾음'); process.exit(1); }
+            fs.writeFileSync('/tmp/_main.js', m[1]);
+          "
+          node --check /tmp/_main.js
+
+      - name: sitemap.xml XML 검증
+        run: |
+          # 간단한 XML well-formed 검사
+          node -e "
+            const fs = require('fs');
+            const xml = fs.readFileSync('sitemap.xml', 'utf8');
+            const openLocs = (xml.match(/<loc>/g) || []).length;
+            const closeLocs = (xml.match(/<\/loc>/g) || []).length;
+            if (openLocs !== closeLocs) { console.error('loc 태그 불일치'); process.exit(1); }
+            console.log('sitemap.xml OK:', openLocs, 'URLs');
+          "
+
+      - name: vercel.json JSON 검증
+        run: node -e "JSON.parse(require('fs').readFileSync('vercel.json', 'utf8')); console.log('vercel.json OK')"

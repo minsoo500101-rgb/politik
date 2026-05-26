@@ -4522,6 +4522,44 @@
 'use strict';
 
 // ============================================================
+// 전역 에러 핸들러 — 빈 화면 방지
+// ============================================================
+let __errorShown = false;
+function showCriticalError(msg) {
+  if (__errorShown) return;
+  __errorShown = true;
+  const view = document.getElementById('view');
+  if (view && (!view.innerHTML.trim() || view.querySelector('.loading'))) {
+    view.innerHTML = `
+      <div class="empty" style="padding:40px 20px;text-align:center;max-width:600px;margin:0 auto">
+        <div style="font-size:48px;margin-bottom:14px">⚠️</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">일시적으로 페이지를 표시할 수 없습니다</div>
+        <div style="font-size:13px;color:#666;line-height:1.6;margin-bottom:20px">
+          잠시 후 다시 시도해 주세요.<br>
+          문제가 계속되면 새로고침 (Ctrl/Cmd + Shift + R) 해주세요.
+        </div>
+        <button onclick="location.reload()" style="padding:10px 20px;border:1px solid #999;background:#fff;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600">새로고침</button>
+        <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener" style="display:inline-block;margin-left:8px;padding:10px 20px;border:1px solid #999;background:#fff;border-radius:6px;font-size:14px;font-weight:600;color:#333;text-decoration:none">버그 신고</a>
+      </div>
+    `;
+  }
+  // 콘솔에 자세히 (개발자용)
+  console.error('[patchkr critical]', msg);
+}
+
+window.addEventListener('error', e => {
+  console.error('[patchkr error]', e.message, e.filename, e.lineno);
+  // 스크립트 로드 실패는 무시 (광고·외부 리소스 등)
+  if (e.target && (e.target.tagName === 'IMG' || e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) return;
+  showCriticalError(e.message);
+});
+
+window.addEventListener('unhandledrejection', e => {
+  console.warn('[patchkr unhandled promise]', e.reason);
+  // promise rejection은 보통 fetch 실패 — UI 망가뜨리지 않음
+});
+
+// ============================================================
 // 국회 OPEN API — Service IDs (모두 KEY 필요)
 // ============================================================
 const API_KEY = '3aac055cce1641f2b5f1b9b359ec5957';

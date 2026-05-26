@@ -116,6 +116,35 @@ vercel dev             # http://localhost:3000
 | 통합 API | 11개 |
 | 시군구 매핑 | 250 (100%) |
 
+## 🛡 안정성 (Site Reliability)
+
+### 자동 검증 (배포 전)
+모든 `git push`에서 GitHub Actions가 자동 검증:
+- ✅ politicians.json JSON 파싱
+- ✅ 필수 필드 (id·name·type) + 중복 id 검사
+- ✅ POLITICIANS_VER ↔ data version 일치
+- ✅ sitemap.xml URL 유효성
+- ✅ index.html 인라인 JS 신택스 (node --check)
+- ✅ `</script>` 리터럴 검사 (HTML 파서 조기 종료 방지)
+- ✅ API 파일에 하드코딩된 시크릿 검사
+
+로컬 검증:
+```bash
+node scripts/validate.js
+# 또는
+npm run validate
+```
+
+### 런타임 에러 방지
+- **전역 에러 핸들러** — JS 오류 시 빈 화면 대신 안내 카드 + 새로고침 버튼
+- **Promise rejection 핸들러** — API 실패해도 UI 손상 X
+- **이미지·외부 리소스 로드 실패는 무시** — 비핵심 자원이 메인 페이지를 깨지 못함
+
+### 모니터링 권장
+- **[UptimeRobot](https://uptimerobot.com)** — 무료 5분 간격 다운타임 알림
+- **[Vercel Analytics](https://vercel.com/analytics)** — 빌트인 (이미 활성)
+- **Sentry 무료 티어** — 클라이언트 에러 자동 수집 (선택)
+
 ## 📜 라이선스
 
 - **코드**: [MIT](LICENSE)
