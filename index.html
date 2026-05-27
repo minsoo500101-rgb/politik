@@ -1410,6 +1410,42 @@
     70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
     100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
   }
+  /* 선거 모드 (D-30~D-Day) — 헤어 강조 */
+  .dash-hero-election::before {
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(239,68,68,0.09) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,78,162,0.07) 0%, transparent 50%) !important;
+  }
+  .dash-hero-eye-election {
+    color: #dc2626 !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.8px !important;
+  }
+  [data-theme="dark"] .dash-hero-eye-election { color: #f87171 !important; }
+  .hero-btn-live b {
+    background: rgba(255,255,255,0.22);
+    padding: 1px 7px; border-radius: 5px;
+    margin-left: 4px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-btn-cmp {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #fff !important; border-color: #2563eb !important;
+  }
+  .hero-btn-cmp:hover {
+    background: #1e40af !important; color: #fff !important;
+    border-color: #1e40af !important;
+    transform: translateY(-2px);
+  }
+  .hero-btn-econ {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: #fff !important; border-color: #0ea5e9 !important;
+  }
+  .hero-btn-econ:hover {
+    background: #0369a1 !important; color: #fff !important;
+    border-color: #0369a1 !important;
+    transform: translateY(-2px);
+  }
 
   .dash-grid {
     display: grid;
@@ -10397,6 +10433,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.2', date: '2026-05-27', title: '🗳 선거 narrative 홈 모드 — D-30~D-Day 자동 적용', items: [
+    '헤어 버튼 3종 시즌별 자동 전환',
+    '선거 모드 (D-30~D-Day): 🔴 9회 지선 D-X · 🆚 후보 5대 공약 비교 · 💰 경제로 정부 평가',
+    '평시 모드 (D+1~): 📜 22대 법안 LIVE · 💰 경제 LIVE · 📕 정치인 도감 772명',
+    '헤어 eyebrow·서브카피·배경 그라데이션도 시즌별 다르게',
+    '"법안·지도"처럼 시의성 약한 항목 헤어에서 제외 — 5대 영역 카드로 이동',
+    'V20.0/V20.1 SEO 인프라 위에서 narrative 마케팅 최적화'
+  ]},
   { v: 'V20.1', date: '2026-05-27', title: '📑 페이지별 동적 메타 태그 (SEO·SNS 공유)', items: [
     '각 페이지마다 title·canonical·og:url·description 별도 설정',
     '카카오톡·트위터 공유 시 페이지별 정확한 제목·설명 표시',
@@ -12589,14 +12633,38 @@ function renderHome() {
     }
   }
 
+  // 헤어 모드 결정 — 선거 직전(D-30~D+0) = 선거 narrative / 그 외 = 평시 narrative
+  const _today = new Date();
+  const _eday = new Date('2026-06-03T06:00:00+09:00');
+  const _ddiff = Math.ceil((_eday - _today) / 86400000);
+  const _isElectionSeason = _ddiff >= 0 && _ddiff <= 30; // D-30 ~ D-Day
+  const _isElectionDay = _ddiff === 0;
+  const _heroEye = _isElectionSeason
+    ? `🔴 ELECTION SEASON · D-${_ddiff === 0 ? 'Day' : _ddiff} · 9회 전국동시지방선거`
+    : 'REPUBLIC OF KOREA · COMPREHENSIVE DATA';
+  const _heroSub = _isElectionSeason
+    ? `<b>선거 ${_isElectionDay ? '당일' : 'D-' + _ddiff}</b> — 697명 후보·공약 비교·정부 평가까지. 한국 정치·경제 데이터 한 곳에서.<br>
+       22대 통과 법안 <b>${(state.bills?.length || 0).toLocaleString()}건</b> · 정치인 <b>${totalCount.toLocaleString()}명</b> · 경제 지표 9종 LIVE.`
+    : `<b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
+       22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.`;
+  // 시즌별 3개 헤어 버튼
+  const _heroButtons = _isElectionSeason
+    ? `
+          <a class="hero-btn hero-btn-live" href="/election2026">🔴 9회 지선 <b>D-${_ddiff === 0 ? 'Day' : _ddiff}</b></a>
+          <a class="hero-btn hero-btn-cmp" href="/compare-cand">🆚 후보 5대 공약 비교</a>
+          <a class="hero-btn hero-btn-econ" href="/economy">💰 경제로 정부 평가</a>`
+    : `
+          <a class="hero-btn hero-btn-live" href="/bills">📜 22대 법안 LIVE</a>
+          <a class="hero-btn hero-btn-econ" href="/economy">💰 경제 LIVE</a>
+          <a class="hero-btn" href="/dex">📕 정치인 도감 772명</a>`;
+
   return `
     <div class="dash">
-      <div class="dash-hero">
+      <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
-          <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.1 · 페이지별 메타</a></h1>
-          <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
-          22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
+          <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.2 · 선거 모드</a></h1>
+          <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
             <a class="share-btn share-kakao" id="share-kakao" title="카카오톡에 공유">💬 카카오</a>
@@ -12606,10 +12674,7 @@ function renderHome() {
             <a class="share-btn share-copy" id="share-copy" title="URL 복사">🔗 URL 복사</a>
           </div>
         </div>
-        <div class="dash-hero-r">
-          <a class="hero-btn hero-btn-live" href="/election2026">🔴  9회 지선 LIVE</a>
-          <a class="hero-btn" href="/bills">📜  법안</a>
-          <a class="hero-btn" href="/map">🗺  지도</a>
+        <div class="dash-hero-r">${_heroButtons}
         </div>
       </div>
 
