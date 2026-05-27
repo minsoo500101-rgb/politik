@@ -8660,30 +8660,10 @@ async function loadEconomy() {
   }
 }
 
-// ECOS 시간 형식 정규화 — "202401" → 2024.1, "2024" → 2024, "20240101" → 2024.01.01
+// ECOS 시간 형식 → 연도 추출 (단순화)
 function ecosTimeToYear(time) {
   const t = String(time);
-  if (t.length === 4) return parseInt(t, 10);
-  if (t.length === 6) {
-    const y = parseInt(t.slice(0, 4), 10);
-    const m = parseInt(t.slice(4, 6), 10);
-    // 월말 12월 데이터만 연간 값으로 채택 (간소화)
-    return m === 12 ? y : null;
-  }
-  if (t.length === 8) return parseInt(t.slice(0, 4), 10);
-  return null;
-}
-
-// 분기별 데이터: Q4만 연간 대표값으로
-function ecosQuarterToYear(time) {
-  const t = String(time);
-  // ECOS Q 형식은 YYYYQ1·YYYYQ2 같은 게 아니라 YYYY12·YYYY09 등 월 형식
-  // 분기 데이터는 보통 3·6·9·12 월말로 발표
-  if (t.length === 6) {
-    const y = parseInt(t.slice(0, 4), 10);
-    const m = parseInt(t.slice(4, 6), 10);
-    return m === 12 ? y : null; // 4분기만 연간 대표
-  }
+  if (t.length >= 4) return parseInt(t.slice(0, 4), 10);
   return null;
 }
 
@@ -8707,15 +8687,16 @@ async function fetchEcosForIndicator(ind, startYear, endYear) {
     if (!r.ok) return null;
     const j = await r.json();
     if (j.ecos_error || j.error || !j.data || !j.data.length) return null;
-    // 응답을 연도별 값으로 정규화
+    // 시간순 정렬 후 연도별 최신 값 채택 (그해 가장 최근 월/분기 데이터)
+    const sorted = j.data
+      .filter(r => !isNaN(r.value) && r.time)
+      .map(r => ({ time: String(r.time), value: r.value }))
+      .sort((a, b) => a.time.localeCompare(b.time));
     const byYear = new Map();
-    for (const row of j.data) {
-      const y = period === 'A' ? parseInt(row.time, 10) :
-                period === 'Q' ? ecosQuarterToYear(row.time) :
-                ecosTimeToYear(row.time);
+    for (const row of sorted) {
+      const y = ecosTimeToYear(row.time);
       if (!y) continue;
-      // 같은 연도에 여러 값 있으면 마지막(연말)이 덮어씀
-      if (!isNaN(row.value)) byYear.set(y, row.value);
+      byYear.set(y, row.value); // 정렬되어 있으므로 마지막 = 그 해 가장 최근
     }
     if (!byYear.size) return null;
     return [...byYear.entries()]
