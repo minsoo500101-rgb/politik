@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const { stat, item = '', period = 'A', start = '2015', end = '2025', count = '200' } = req.query;
+  const { stat, item = '', period = 'A', start = '2015', end = '2025', count = '500' } = req.query;
   if (!stat) {
     return res.status(400).json({ error: 'stat 파라미터 필요 (예: 722Y001 = 기준금리)' });
   }
