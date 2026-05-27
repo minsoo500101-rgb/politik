@@ -8729,23 +8729,26 @@ const economyState = {
   liveError: null,
 };
 
-// 정적 데이터 로드 (먼저 호출됨, 항상 동작)
+// 정적 데이터 로드 — Promise 캐싱으로 중복 호출 시 같은 결과 보장
+let _econLoadPromise = null;
 async function loadEconomy() {
   if (economyState.data) return economyState.data;
-  if (economyState.loading) return null;
-  economyState.loading = true;
-  try {
-    // 캐시 버스터 — 시간당 1회 변경 (브라우저·CDN 캐시 무효화)
-    const cb = Math.floor(Date.now() / 3600000);
-    const r = await fetch('data/economy.json?v=' + cb);
-    economyState.data = await r.json();
-    economyState.liveStatus = 'fallback';
-    return economyState.data;
-  } catch (e) {
-    return null;
-  } finally {
-    economyState.loading = false;
-  }
+  if (_econLoadPromise) return _econLoadPromise;  // 진행 중이면 같은 Promise 반환
+  _econLoadPromise = (async () => {
+    try {
+      // 캐시 버스터 — 시간당 1회 변경 (브라우저·CDN 캐시 무효화)
+      const cb = Math.floor(Date.now() / 3600000);
+      const r = await fetch('data/economy.json?v=' + cb);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      economyState.data = await r.json();
+      economyState.liveStatus = 'fallback';
+      return economyState.data;
+    } catch (e) {
+      _econLoadPromise = null;  // 실패 시 다음 호출에서 재시도 가능
+      return null;
+    }
+  })();
+  return _econLoadPromise;
 }
 
 // ECOS 시간 형식 → 연도 추출 (단순화)
