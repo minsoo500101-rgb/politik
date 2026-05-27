@@ -8762,14 +8762,20 @@ async function fetchEcosForIndicator(ind, startYear, endYear) {
   const transform = ind.ecos.transform || null; // null, 'yoy' (전년동월비), 'sum_year' (연간 합계)
   let start, end;
   if (period === 'A') {
-    start = String(startYear);
+    start = String(startYear);          // YYYY
     end = String(endYear);
+  } else if (period === 'D') {
+    start = startYear + '0101';         // YYYYMMDD (daily)
+    end = endYear + '1231';
   } else {
-    start = startYear + '01';
+    // M, Q
+    start = startYear + '01';           // YYYYMM
     end = endYear + '12';
   }
   // yoy 변환은 전년 데이터가 필요해서 1년 더 fetch
-  const fetchStart = transform === 'yoy' ? (startYear - 1) + '01' : start;
+  const fetchStart = transform === 'yoy'
+    ? (period === 'D' ? (startYear - 1) + '0101' : (startYear - 1) + '01')
+    : start;
   const itemParam = ind.ecos.item ? '&item=' + encodeURIComponent(ind.ecos.item) : '';
   const countParam = ind.ecos.count ? '&count=' + encodeURIComponent(ind.ecos.count) : '';
   const url = `/api/ecos?stat=${ind.ecos.stat}&period=${period}&start=${fetchStart}&end=${end}${itemParam}${countParam}`;
