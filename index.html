@@ -12099,6 +12099,20 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V21.3', date: '2026-05-27', title: '🚨 vercel.json critical fix — 클린 URL 진짜 작동', items: [
+    'V20에서 도입한 클린 URL (/about /today /economy 등)이 실제로는 404였음',
+    '원인 1: 옛 GH Pages 시절 정적 HTML 8개 (bills.html 등)가 #/path로 리다이렉트',
+    '원인 2: vercel.json의 cleanUrls=true가 rewrite 실행 전 404 반환',
+    '원인 3: rewrite regex 모호함 (\\.\\..\\* 패턴이 querystring까지 매칭)',
+    '✅ stale HTML 8개 삭제 + cleanUrls 제거 + regex 명확화로 모든 라우트 200 OK',
+    '검증: / /about /bills /today /pledge-tracker /economy /m/X 등 11개 라우트 전부 ✅',
+    '그록 외부 검토 덕분에 발견 — V20.0 마이그레이션 실효성 진짜 회복'
+  ]},
+  { v: 'V21.2', date: '2026-05-27', title: '🚨 stale HTML 8개 삭제 (그록 외부 검토 대응)', items: [
+    '404.html bills.html committees.html election2026.html elections.html map.html relations.html world.html',
+    '모두 옛 GH Pages SPA fallback 스텁 — Vercel rewrite 가로채고 #/path로 강제 리다이렉트',
+    '그록이 \"/economy 404\" \"클린 URL 안 됨\" 정확히 짚어줌'
+  ]},
   { v: 'V21.1', date: '2026-05-27', title: '🔥 /today 위키 폐기 → 네이버 뉴스 전환 + 홈 트렌드 위젯', items: [
     '🗑 위키 페이지뷰 (24h 지연) 완전 폐기 — "실시간"이 아니라서',
     '✅ 네이버 뉴스 본문 기반 키워드·인물 빈도 분석 (분 단위 신선도)',
@@ -14414,7 +14428,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.1 · 🔥 실시간 트렌드</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.3 · 🚨 클린 URL fix</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
