@@ -2879,6 +2879,100 @@
     border-style: solid;
   }
 
+  /* ============ V20.5 — 8회 공약 이행 추적 (/pledge-tracker) ============ */
+  .pt-page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+  .pt-head { margin-bottom: 22px; }
+  .pt-h1 { font-size: 28px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .pt-lead { font-size: 14px; color: var(--text-2); line-height: 1.7; margin-bottom: 14px; }
+  .pt-lead b { color: var(--text); font-weight: 700; }
+  .pt-warn {
+    padding: 12px 14px;
+    background: rgba(220,38,38,0.06);
+    border: 1px solid rgba(220,38,38,0.25);
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+    font-size: 12.5px; color: var(--text);
+    line-height: 1.6;
+  }
+  [data-theme="dark"] .pt-warn { background: rgba(248,113,113,0.10); border-color: rgba(248,113,113,0.35); }
+  .pt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .pt-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pt-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  }
+  [data-theme="dark"] .pt-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+  .pt-card-h {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .pt-card-region {
+    font-size: 11px; color: var(--dim);
+    letter-spacing: 1.2px; text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .pt-card-name {
+    font-size: 18px; font-weight: 800; color: var(--text);
+  }
+  .pt-card-party {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .pt-card-meta {
+    font-size: 11.5px; color: var(--text-2);
+    margin-bottom: 8px;
+  }
+  .pt-card-cta {
+    font-size: 12px; color: var(--accent);
+    font-weight: 600;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .pt-card-body { display: none; margin-top: 10px; }
+  .pt-pledge {
+    padding: 10px 12px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid var(--text-2);
+  }
+  .pt-pledge-h { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+  .pt-pledge-title { font-size: 13.5px; font-weight: 700; margin: 4px 0; color: var(--text); }
+  .pt-pledge-cont { font-size: 12px; color: var(--text-2); line-height: 1.6; white-space: pre-wrap; }
+  .pt-loading, .pt-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 13px;
+  }
+  .pt-foot {
+    margin-top: 24px;
+    padding: 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-2);
+    text-align: center;
+  }
+
   /* ============ 정치 용어 사전 (/glossary) ============ */
   .gloss-page {
     max-width: 1080px; margin: 0 auto;
@@ -6343,6 +6437,7 @@
       <a href="/stances">🗳 내 정치 입장</a>
       <a href="/economy">💰 경제 지표</a>
       <a href="/play">🧪 실험실</a>
+      <a href="/pledge-tracker">🔥 공약 이행 추적</a>
     </div>
     <div class="foot-col">
       <div class="foot-h">서비스</div>
@@ -8209,6 +8304,193 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
   } catch (e) {
     document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">공약 fetch 실패: ${escapeHtml(e.message)}</div>`;
   }
+}
+
+// ============================================================
+// V20.5 — 8회 지선(2022) 당선자 공약 이행 추적 (/pledge-tracker)
+// ============================================================
+let _historical8WinnersCache = null;
+async function loadHistorical8Candidates() {
+  if (_historical8WinnersCache) return _historical8WinnersCache;
+  // 8회 광역단체장 전체 후보 fetch — 우리는 시도 17개 × 평균 3.2명 = ~55명
+  const all = [];
+  for (let page = 1; page <= 2; page++) {
+    try {
+      const j = await necFetch('candidates', { sgId: '20220601', sgTypecode: '3', numOfRows: '100', pageNo: String(page) });
+      const items = j?.response?.body?.items?.item || [];
+      const arr = Array.isArray(items) ? items : (items ? [items] : []);
+      all.push(...arr);
+      if (arr.length < 100) break;
+    } catch { break; }
+  }
+  // 이름+시도 기준 매핑 (당선자 lookup용)
+  const byNameSido = new Map();
+  for (const c of all) {
+    byNameSido.set(`${c.name}|${c.sdName}`, c);
+  }
+  _historical8WinnersCache = { all, byNameSido };
+  return _historical8WinnersCache;
+}
+
+async function loadHistorical8Pledges(huboid) {
+  try {
+    const j = await necFetch('policies', { sgId: '20220601', sgTypecode: '3', cnddtId: huboid });
+    const items = j?.response?.body?.items?.item || [];
+    const polData = Array.isArray(items) ? items[0] : items;
+    if (!polData) return [];
+    const promises = [];
+    for (let i = 1; i <= 10; i++) {
+      const cont = polData['prmmCont' + i] || polData['prmsCont' + i] || '';
+      const title = polData['prmsTitle' + i] || '';
+      if (title || cont) {
+        promises.push({
+          ord: polData['prmsOrd' + i] || i,
+          realm: polData['prmsRealmName' + i] || '',
+          title, cont,
+        });
+      }
+    }
+    return promises;
+  } catch { return []; }
+}
+
+// 짧은 시도명 → 풀 시도명 매핑 (NEC sdName과 매칭)
+const REGION_SHORT_TO_FULL = {
+  '서울': '서울특별시', '부산': '부산광역시', '대구': '대구광역시',
+  '인천': '인천광역시', '광주': '광주광역시', '대전': '대전광역시',
+  '울산': '울산광역시', '세종': '세종특별자치시',
+  '경기': '경기도', '강원': '강원특별자치도',
+  '충북': '충청북도', '충남': '충청남도',
+  '전북': '전북특별자치도', '전남': '전라남도',
+  '경북': '경상북도', '경남': '경상남도',
+  '제주': '제주특별자치도',
+};
+
+function renderPledgeTrackerPage() {
+  const le = state.localElections;
+  // elections[0] = 8회 (2022) 데이터
+  const e8 = le?.elections?.find(e => e.id?.includes('2022')) || le?.elections?.[0];
+  if (!e8 || !e8.governors?.length) {
+    return `
+      <div class="group-back" id="back-home">← 홈</div>
+      <div class="pt-page">
+        <h1 class="pt-h1">📋 8회 지선 당선자 공약 이행 추적</h1>
+        <div class="loading"><span class="loading-spinner"></span>당선자 데이터 불러오는 중…</div>
+      </div>`;
+  }
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="pt-page">
+      <div class="pt-head">
+        <h1 class="pt-h1">📋 8회 지선(2022) 당선자 공약 이행 추적</h1>
+        <p class="pt-lead">
+          4년 전 약속, 지금까지 얼마나 지켰을까? <b>17개 광역단체장 당선자</b>가 2022년 선거에 등록한 5대 공약을 그대로 옆에 두고 평가하세요.<br>
+          <b>임기:</b> 2022.07 ~ 2026.06 (만 4년) · <b>출처:</b> 중앙선거관리위원회 OpenAPI (정책공약마당)
+        </p>
+        <div class="pt-warn">
+          ⚠ <b>패치 노트는 이행 여부를 평가하지 않습니다.</b> 각 공약마다 "{이름} {공약} 이행" 자동 뉴스 검색을 제공 — 객관 자료를 보고 본인 기준으로 판단하세요.
+        </div>
+      </div>
+      <div class="pt-grid">
+        ${e8.governors.map(g => `
+          <div class="pt-card" data-name="${escapeHtml(g.winner)}" data-region="${escapeHtml(g.region)}" data-party="${escapeHtml(g.winner_party)}">
+            <div class="pt-card-h">
+              <div>
+                <div class="pt-card-region">${escapeHtml(g.region)}</div>
+                <div class="pt-card-name">${escapeHtml(g.winner)}</div>
+              </div>
+              <span class="pt-card-party" style="background:${partyColor(g.winner_party)}">${escapeHtml(g.winner_party)}</span>
+            </div>
+            <div class="pt-card-meta">${g.winner_pct}% 득표 · 격차 ${g.gap}%p</div>
+            <div class="pt-card-cta">📋 2022 공약 5개 펼치기 ▼</div>
+            <div class="pt-card-body" data-loaded="0"></div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="pt-foot">
+        💡 추후 확장: 기초단체장 226명 + 교육감 17명 · 9회 당선자 자동 추가 (2026.6.4~)
+      </div>
+    </div>
+  `;
+}
+
+async function setupPledgeTrackerEvents() {
+  // localElections 로드 필요시
+  if (!state.localElections) await loadLocalElections();
+  if (!state.localElections?.elections?.length) {
+    const view = document.getElementById('view');
+    if (view) view.innerHTML = renderPledgeTrackerPage();
+  }
+  document.querySelectorAll('.pt-card').forEach(card => {
+    card.addEventListener('click', async (e) => {
+      // 내부 링크·버튼 클릭은 카드 토글 막음
+      if (e.target.closest('a, button')) return;
+      const body = card.querySelector('.pt-card-body');
+      const cta = card.querySelector('.pt-card-cta');
+      if (!body) return;
+      if (body.dataset.loaded === '1') {
+        const isOpen = body.style.display !== 'none' && body.style.display !== '';
+        body.style.display = isOpen ? 'none' : 'block';
+        if (cta) cta.textContent = isOpen ? '📋 2022 공약 5개 펼치기 ▼' : '📋 공약 접기 ▲';
+        return;
+      }
+      body.style.display = 'block';
+      body.innerHTML = '<div class="pt-loading"><span class="loading-spinner"></span> 2022 공약 fetch 중…</div>';
+      try {
+        const name = card.dataset.name;
+        const region = card.dataset.region;
+        const party = card.dataset.party;
+        const winners = await loadHistorical8Candidates();
+        const sidoFull = REGION_SHORT_TO_FULL[region] || region;
+        // 매칭: 이름+시도 (NEC가 2022 당시 시도명 사용)
+        let cand = winners.byNameSido.get(`${name}|${sidoFull}`);
+        // 폴백: 이름만으로 매칭 (당선자 이름은 유일)
+        if (!cand) {
+          cand = winners.all.find(c => c.name === name);
+        }
+        if (!cand) {
+          body.innerHTML = `<div class="pt-empty">⚠ NEC 후보 DB에서 매칭 실패. <a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="color:var(--link)">정책공약마당 직접 확인 →</a></div>`;
+          return;
+        }
+        const pledges = await loadHistorical8Pledges(cand.huboid);
+        if (!pledges.length) {
+          body.innerHTML = `<div class="pt-empty">8회 공약 데이터 없음 (NEC 미등록)</div>`;
+          body.dataset.loaded = '1';
+          return;
+        }
+        const pc = partyColor(party);
+        body.innerHTML = pledges.map((p, i) => {
+          const pid = `pt-${cand.huboid}-${i}`;
+          const titleClean = (p.title || '').replace(/[()<>]/g, '').slice(0, 30);
+          const newsQ = `${name} ${titleClean} 이행`;
+          return `
+            <div class="pt-pledge" style="border-left-color:${pc}">
+              <div class="pt-pledge-h">
+                <span class="promise-num">${escapeHtml(p.ord)}</span>
+                ${p.realm ? `<span class="promise-realm">${escapeHtml(p.realm)}</span>` : ''}
+              </div>
+              <div class="pt-pledge-title">${escapeHtml(p.title)}</div>
+              ${p.cont ? `<div class="pt-pledge-cont">${escapeHtml(p.cont)}</div>` : ''}
+              <div class="pledge-tools">
+                <button class="pledge-tool-btn" onclick="event.stopPropagation();loadPledgeNews('${pid}', '${escapeHtml(newsQ).replace(/'/g, "\\'")}')">📰 "${escapeHtml(name)} 공약 이행" 뉴스</button>
+                <a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(newsQ)}" target="_blank" rel="noopener" class="pledge-tool-btn" onclick="event.stopPropagation()">🔗 네이버 직접 →</a>
+              </div>
+              <div class="pledge-news" id="pledge-news-${pid}" data-loaded="0"></div>
+            </div>
+          `;
+        }).join('') + `
+          <div style="margin-top:12px;padding:10px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.2);border-radius:8px;font-size:11.5px;color:var(--text-2);text-align:center;line-height:1.5">
+            ⚠ <b>이행 여부는 패치 노트가 평가하지 않습니다.</b><br>
+            위 뉴스 검색으로 객관 자료를 보고 본인 기준으로 판단하세요.
+          </div>
+        `;
+        body.dataset.loaded = '1';
+        if (cta) cta.textContent = '📋 공약 접기 ▲';
+      } catch (err) {
+        body.innerHTML = `<div class="pt-empty">로드 실패: ${escapeHtml(err.message)}</div>`;
+      }
+    });
+  });
 }
 
 // (legacy 호환 — localStorage 설정이 있으면 외부 URL 사용)
@@ -10662,6 +10944,16 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.5', date: '2026-05-27', title: '🔥 8회 지선 당선자 공약 이행 추적 (/pledge-tracker)', items: [
+    '4년 전 약속, 지금까지 얼마나 지켰나? — 17개 광역단체장 8회(2022) 당선자 5대 공약 본문',
+    'NEC OpenAPI에서 후보 lookup → 매칭 → 2022 공약 자동 fetch',
+    '카드 클릭 → 펼치기 → 5대 공약 본문 전부 표시',
+    '각 공약마다 "이름 + 공약 + 이행" 자동 뉴스 검색 (네이버 API)',
+    '네이버 검색 직접 이동 옵션 (브라우저로 더 자세히)',
+    '⚠ 명시: 패치 노트는 이행 여부를 평가하지 않음 (객관 자료만 제공)',
+    '추후: 기초단체장 226명 + 교육감 17명 확장 가능 / 9회 당선자 자동 추가 (2026.6.4~)',
+    '5대 영역 카드 + 네비 메뉴에서 진입 가능'
+  ]},
   { v: 'V20.4', date: '2026-05-27', title: '🐛 공약 본문 누락 fix + 원본 자료 진입로', items: [
     '🔥 critical bug: NEC API 본문 필드가 `prmsCont`가 아닌 `prmmCont` (m 두 개) — 모든 후보 공약 본문이 그동안 비어있게 나오던 문제',
     '두 곳 모두 수정: openPromiseModal · loadCandidatePledges (compare-cand에서 사용)',
@@ -12908,7 +13200,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.4 · 공약 본문 fix</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.5 · 공약 이행 추적</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -13160,6 +13452,7 @@ function renderHome() {
           <a class="tool-card" href="/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
           <a class="tool-card" href="/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
           <a class="tool-card" href="/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
+          <a class="tool-card" href="/pledge-tracker"><span>🔥</span><div><b>8회 공약 이행 추적</b><em>4년 약속, 진짜 했나?</em></div></a>
           <a class="tool-card" href="/history/parties"><span>📚</span><div><b>정당사 1948~</b><em>45개 정당 타임라인</em></div></a>
           <a class="tool-card play-link" href="/play"><span>🧪</span><div><b>실험실</b><em>출신 분석·의원 비교·관리</em></div></a>
         </div>
@@ -13948,6 +14241,7 @@ const ROUTE_META = {
   '/about': { title: '소개 · 사이트 정보', desc: '대한민국 패치 노트 사이트 소개. 한국 정치·경제 데이터 종합 플랫폼 미션과 출처.' },
   '/business': { title: '광고·데이터 라이선싱 문의', desc: '광고·데이터 라이선싱·컨설팅 문의. 비즈니스 협업 및 기업용 데이터 API 안내.' },
   '/changelog': { title: '변경 이력 — 사이트 업데이트 패치 노트', desc: '대한민국 패치 노트 사이트 자체의 변경 이력. 새 기능·데이터 보충·개선 사항.' },
+  '/pledge-tracker': { title: '🔥 8회 지선 당선자 공약 이행 추적 (4년 약속, 진짜 했나?)', desc: '제8회(2022) 지방선거 광역단체장 17명 당선자의 5대 공약 본문과 자동 뉴스 검색. 임기 4년 약속을 객관 자료로 검증.' },
   '/donate': { title: '후원하기 — Ko-fi 응원', desc: '대한민국 패치 노트 서버 운영비·API 사용료 후원. Ko-fi·GitHub Star로 응원하기.' },
   '/privacy': { title: '개인정보 처리방침', desc: '대한민국 패치 노트 개인정보 처리방침. 쿠키·로컬스토리지·외부 API 호출 안내.' },
   '/dex': { title: '정치인 도감 — 772명 컬렉션', desc: '대한민국 정치인 772명 Pokedex 스타일 도감. 입법부·행정부·사법부·지방·역사 5영역.' },
@@ -14093,6 +14387,25 @@ function route() {
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
+    return;
+  }
+  // V20.5 — 8회 당선자 공약 이행 추적 (/pledge-tracker)
+  if (hash === '#/pledge-tracker') {
+    view.innerHTML = renderPledgeTrackerPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    setupPledgeTrackerEvents();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // localElections 비동기 로드 후 재렌더
+    if (!state.localElections?.elections?.length) {
+      loadLocalElections().then(() => {
+        if (currentRoute() === '#/pledge-tracker') {
+          view.innerHTML = renderPledgeTrackerPage();
+          document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+          setupPledgeTrackerEvents();
+        }
+      });
+    }
     return;
   }
   // 내 stance — 지지/반대 모아보기 (/stances)
