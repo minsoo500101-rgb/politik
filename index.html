@@ -5144,6 +5144,13 @@
     margin-bottom: 14px;
   }
   .econ-card-label { font-size: 14px; font-weight: 800; color: var(--text); }
+  .econ-live-dot {
+    color: var(--ok);
+    font-size: 9px;
+    margin-left: 4px;
+    animation: pulse 2s ease-in-out infinite;
+    vertical-align: middle;
+  }
   .econ-card-meta { font-size: 10.5px; color: var(--dim); margin-top: 2px; }
   .econ-card-now { text-align: right; }
   .econ-card-now-v {
@@ -8629,8 +8636,14 @@ async function loadWorldCompare() {
 // ============================================================
 // 경제 데이터 (/economy) — 한국 핵심 지표 시계열 + 정부 임기 마커
 // ============================================================
-const economyState = { data: null, loading: false };
+const economyState = {
+  data: null,
+  loading: false,
+  liveStatus: null,   // 'pending' | 'live' | 'fallback' | null
+  liveError: null,
+};
 
+// 정적 데이터 로드 (먼저 호출됨, 항상 동작)
 async function loadEconomy() {
   if (economyState.data) return economyState.data;
   if (economyState.loading) return null;
@@ -8638,6 +8651,7 @@ async function loadEconomy() {
   try {
     const r = await fetch('data/economy.json');
     economyState.data = await r.json();
+    economyState.liveStatus = 'fallback'; // 일단 정적, 라이브 시도 별도
     return economyState.data;
   } catch (e) {
     return null;
@@ -8646,11 +8660,107 @@ async function loadEconomy() {
   }
 }
 
+// ECOS 시간 형식 정규화 — "202401" → 2024.1, "2024" → 2024, "20240101" → 2024.01.01
+function ecosTimeToYear(time) {
+  const t = String(time);
+  if (t.length === 4) return parseInt(t, 10);
+  if (t.length === 6) {
+    const y = parseInt(t.slice(0, 4), 10);
+    const m = parseInt(t.slice(4, 6), 10);
+    // 월말 12월 데이터만 연간 값으로 채택 (간소화)
+    return m === 12 ? y : null;
+  }
+  if (t.length === 8) return parseInt(t.slice(0, 4), 10);
+  return null;
+}
+
+// 분기별 데이터: Q4만 연간 대표값으로
+function ecosQuarterToYear(time) {
+  const t = String(time);
+  // ECOS Q 형식은 YYYYQ1·YYYYQ2 같은 게 아니라 YYYY12·YYYY09 등 월 형식
+  // 분기 데이터는 보통 3·6·9·12 월말로 발표
+  if (t.length === 6) {
+    const y = parseInt(t.slice(0, 4), 10);
+    const m = parseInt(t.slice(4, 6), 10);
+    return m === 12 ? y : null; // 4분기만 연간 대표
+  }
+  return null;
+}
+
+// 한 지표 라이브 fetch — 실패해도 throw 안 함, null 반환
+async function fetchEcosForIndicator(ind, startYear, endYear) {
+  if (!ind.ecos || !ind.ecos.stat) return null;
+  const period = ind.ecos.period || 'M';
+  let start, end;
+  if (period === 'A') {
+    start = String(startYear);
+    end = String(endYear);
+  } else {
+    // M, Q
+    start = startYear + '01';
+    end = endYear + '12';
+  }
+  const itemParam = ind.ecos.item ? '&item=' + encodeURIComponent(ind.ecos.item) : '';
+  const url = `/api/ecos?stat=${ind.ecos.stat}&period=${period}&start=${start}&end=${end}${itemParam}`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (j.ecos_error || j.error || !j.data || !j.data.length) return null;
+    // 응답을 연도별 값으로 정규화
+    const byYear = new Map();
+    for (const row of j.data) {
+      const y = period === 'A' ? parseInt(row.time, 10) :
+                period === 'Q' ? ecosQuarterToYear(row.time) :
+                ecosTimeToYear(row.time);
+      if (!y) continue;
+      // 같은 연도에 여러 값 있으면 마지막(연말)이 덮어씀
+      if (!isNaN(row.value)) byYear.set(y, row.value);
+    }
+    if (!byYear.size) return null;
+    return [...byYear.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([year, value]) => ({ year, value }));
+  } catch {
+    return null;
+  }
+}
+
+// 라이브 데이터 시도 — 성공한 지표만 정적 데이터를 덮어쓰기
+async function tryLoadLiveEconomy() {
+  if (!economyState.data) await loadEconomy();
+  if (!economyState.data) return;
+  economyState.liveStatus = 'pending';
+
+  const indicators = economyState.data.indicators || [];
+  const startYear = 2015, endYear = new Date().getFullYear();
+  const results = await Promise.all(
+    indicators.map(ind => fetchEcosForIndicator(ind, startYear, endYear))
+  );
+  let liveCount = 0;
+  for (let i = 0; i < indicators.length; i++) {
+    if (results[i] && results[i].length >= 3) {
+      indicators[i]._live = true;
+      indicators[i].data = results[i];
+      liveCount++;
+    }
+  }
+  economyState.liveStatus = liveCount > 0 ? 'live' : 'fallback';
+  economyState.liveCount = liveCount;
+  // 페이지에 머물러 있으면 다시 렌더링
+  if (location.hash.startsWith('#/economy')) {
+    const body = document.getElementById('econ-body');
+    if (body) body.innerHTML = renderEconomyBody();
+  }
+}
+
 function renderEconomyPage() {
   loadEconomy().then(() => {
     if (location.hash.startsWith('#/economy')) {
       const body = document.getElementById('econ-body');
       if (body) body.innerHTML = renderEconomyBody();
+      // 정적 표시 완료 후 라이브 fetch 시도 (background)
+      tryLoadLiveEconomy().catch(() => {});
     }
   });
   return `
@@ -8723,7 +8833,7 @@ function renderEconomyBody() {
       <div class="econ-card" data-ind="${escapeHtml(ind.id)}">
         <div class="econ-card-head">
           <div>
-            <div class="econ-card-label">${escapeHtml(ind.label)}</div>
+            <div class="econ-card-label">${escapeHtml(ind.label)}${ind._live ? ' <span class="econ-live-dot" title="ECOS 라이브 데이터">●</span>' : ''}</div>
             <div class="econ-card-meta">${escapeHtml(ind.source)}</div>
           </div>
           <div class="econ-card-now">
@@ -8810,7 +8920,11 @@ function renderEconomyBody() {
     ${presidentAvgTable()}
     <div class="econ-foot">
       📚 <b>출처</b>: 한국은행 ECOS · 통계청 KOSIS · 관세청 · 한국거래소 공식 공개 데이터.<br>
-      ↻ 데이터 수동 갱신 (${escapeHtml(d.updatedAt)}). 한국은행 ECOS API 키 등록 시 자동 실시간 (운영자 안내).<br>
+      ${economyState.liveStatus === 'live'
+        ? `🟢 <b style="color:var(--ok)">라이브 데이터</b> — 한국은행 ECOS API 실시간 연결 (${economyState.liveCount || 0}개 지표). 페이지 카드 우측 상단 <span class="econ-live-dot">●</span> 표시.`
+        : economyState.liveStatus === 'pending'
+        ? `⏳ <b>ECOS 라이브 데이터 fetch 중…</b> 1-2초 후 자동 갱신`
+        : `📦 정적 데이터 (${escapeHtml(d.updatedAt)}) — ECOS API 키가 활성화되면 자동 라이브 전환`}<br>
       ⚠ 본 사이트는 <b>객관 수치 표시</b>만 합니다. 투자 자문·종목 추천 X. 자본시장법 회피.
     </div>
   `;
