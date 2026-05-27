@@ -5247,7 +5247,39 @@
     font-size: 11px; font-weight: 700; margin-top: 2px;
     font-variant-numeric: tabular-nums;
   }
-  .econ-svg-wrap { margin: 8px -4px; }
+  .econ-svg-wrap { margin: 8px -4px; position: relative; }
+  /* 차트 hover 인터랙션 */
+  .econ-chart-interactive svg { cursor: crosshair; }
+  .econ-chart-cursor { transition: opacity 0.1s; }
+  .econ-chart-cursor-dot { transition: opacity 0.1s, cx 0.05s, cy 0.05s; pointer-events: none; }
+  .econ-chart-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 6px 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none;
+    z-index: 5;
+    margin-bottom: 6px;
+    min-width: 70px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  [data-theme="dark"] .econ-chart-tooltip { box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  .econ-chart-tt-year {
+    font-size: 10.5px; color: var(--dim);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .econ-chart-tt-value {
+    font-size: 15px; font-weight: 800;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
   .econ-axis {
     display: flex; justify-content: space-between;
     font-size: 10px; color: var(--dim);
@@ -8736,9 +8768,9 @@ async function loadEconomy() {
   if (_econLoadPromise) return _econLoadPromise;  // 진행 중이면 같은 Promise 반환
   _econLoadPromise = (async () => {
     try {
-      // 캐시 버스터 — 시간당 1회 변경 (브라우저·CDN 캐시 무효화)
-      const cb = Math.floor(Date.now() / 3600000);
-      const r = await fetch('data/economy.json?v=' + cb);
+      // 캐시 버스터 — 10분 단위 변경 (CDN·브라우저 캐시 빠르게 무효화)
+      const cb = Math.floor(Date.now() / 600000);
+      const r = await fetch('data/economy.json?v=' + cb, { cache: 'no-cache' });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       economyState.data = await r.json();
       economyState.liveStatus = 'fallback';
@@ -8749,6 +8781,73 @@ async function loadEconomy() {
     }
   })();
   return _econLoadPromise;
+}
+
+// 경제 차트 hover 인터랙션 — SVG 위에 마우스 따라 세로선·강조점·툴팁 표시
+function setupEconChartHover() {
+  document.querySelectorAll('.econ-chart-interactive').forEach(wrap => {
+    let points;
+    try { points = JSON.parse(wrap.dataset.points); } catch { return; }
+    if (!points || !points.length) return;
+    const unit = wrap.dataset.unit || '';
+    const label = wrap.dataset.label || '';
+    const lineColor = wrap.dataset.lineColor || 'var(--accent)';
+    const w = parseFloat(wrap.dataset.w) || 560;
+    const padX = parseFloat(wrap.dataset.padx) || 32;
+    const svg = wrap.querySelector('svg');
+    const cursor = wrap.querySelector('.econ-chart-cursor');
+    const dot = wrap.querySelector('.econ-chart-cursor-dot');
+    const tooltip = wrap.querySelector('.econ-chart-tooltip');
+    if (!svg || !cursor || !dot || !tooltip) return;
+
+    function move(clientX) {
+      const rect = svg.getBoundingClientRect();
+      const relX = (clientX - rect.left) / rect.width * w;
+      // 가장 가까운 데이터 포인트 찾기
+      let nearest = points[0]; let minDist = Math.abs(relX - points[0].x);
+      for (const p of points) {
+        const d = Math.abs(relX - p.x);
+        if (d < minDist) { minDist = d; nearest = p; }
+      }
+      if (!nearest) return;
+      // SVG 커서·점 위치 갱신
+      cursor.setAttribute('x1', nearest.x);
+      cursor.setAttribute('x2', nearest.x);
+      cursor.setAttribute('opacity', '0.6');
+      dot.setAttribute('cx', nearest.x);
+      dot.setAttribute('cy', nearest.y);
+      dot.setAttribute('opacity', '1');
+      // 툴팁 (data 좌표 → DOM 좌표 변환)
+      const xRatio = nearest.x / w;
+      const left = rect.left + rect.width * xRatio - wrap.getBoundingClientRect().left;
+      tooltip.style.left = left + 'px';
+      tooltip.style.display = 'block';
+      tooltip.innerHTML = `
+        <div class="econ-chart-tt-year">${nearest.year}년</div>
+        <div class="econ-chart-tt-value" style="color:${lineColor}">${nearest.value.toLocaleString('ko-KR',{maximumFractionDigits:2})}<span style="font-size:10px;color:var(--dim);margin-left:2px">${escapeHtml(unit)}</span></div>
+      `;
+      // 툴팁 오른쪽 끝 안 넘게 위치 조정
+      const ttRect = tooltip.getBoundingClientRect();
+      const wrapRect = wrap.getBoundingClientRect();
+      if (ttRect.right > wrapRect.right - 5) {
+        tooltip.style.left = (wrapRect.width - ttRect.width - 5) + 'px';
+      } else if (ttRect.left < wrapRect.left + 5) {
+        tooltip.style.left = '5px';
+      }
+    }
+    function clear() {
+      cursor.setAttribute('opacity', '0');
+      dot.setAttribute('opacity', '0');
+      tooltip.style.display = 'none';
+    }
+    svg.addEventListener('mousemove', e => move(e.clientX));
+    svg.addEventListener('mouseleave', clear);
+    // 터치 디바이스
+    svg.addEventListener('touchmove', e => {
+      if (e.touches[0]) move(e.touches[0].clientX);
+    }, { passive: true });
+    svg.addEventListener('touchend', clear);
+  });
 }
 
 // ECOS 시간 형식 → 연도 추출 (단순화)
@@ -8903,9 +9002,20 @@ function renderEconomyPage() {
   loadEconomy().then(() => {
     if (location.hash.startsWith('#/economy')) {
       const body = document.getElementById('econ-body');
-      if (body) body.innerHTML = renderEconomyBody();
+      if (body) {
+        body.innerHTML = renderEconomyBody();
+        setupEconChartHover();
+      }
       // 정적 표시 완료 후 라이브 fetch 시도 (background)
-      tryLoadLiveEconomy().catch(() => {});
+      tryLoadLiveEconomy().then(() => {
+        if (location.hash.startsWith('#/economy')) {
+          const body2 = document.getElementById('econ-body');
+          if (body2) {
+            body2.innerHTML = renderEconomyBody();
+            setupEconChartHover();
+          }
+        }
+      }).catch(() => {});
     }
   });
   return `
@@ -8978,6 +9088,8 @@ function renderEconomyBody() {
       }
     }
 
+    // 호버 인터랙션용 데이터 (JSON으로 SVG에 저장 → 클라이언트가 파싱)
+    const hoverData = points.map(p => ({ x: p.x, y: p.y, year: p.year, value: p.value }));
     return `
       <div class="econ-card" data-ind="${escapeHtml(ind.id)}">
         <div class="econ-card-head">
@@ -8986,11 +9098,17 @@ function renderEconomyBody() {
             <div class="econ-card-meta">${escapeHtml(ind.source)}</div>
           </div>
           <div class="econ-card-now">
-            <div class="econ-card-now-v">${last.value.toLocaleString('ko-KR', {maximumFractionDigits: 2})}<span style="font-size:12px;color:var(--dim);font-weight:600;margin-left:3px">${escapeHtml(ind.unit)}</span></div>
+            <div class="econ-card-now-v"><span class="econ-card-now-value">${last.value.toLocaleString('ko-KR', {maximumFractionDigits: 2})}</span><span style="font-size:12px;color:var(--dim);font-weight:600;margin-left:3px">${escapeHtml(ind.unit)}</span></div>
             <div class="econ-card-delta" style="color:${arrowColor}">${arrow} ${Math.abs(delta).toLocaleString('ko-KR', {maximumFractionDigits: 2})}</div>
+            <div class="econ-card-year" style="font-size:10px;color:var(--dim);margin-top:2px">${last.year}년</div>
           </div>
         </div>
-        <div class="econ-svg-wrap">
+        <div class="econ-svg-wrap econ-chart-interactive"
+          data-points="${escapeHtml(JSON.stringify(hoverData))}"
+          data-unit="${escapeHtml(ind.unit)}"
+          data-label="${escapeHtml(ind.label)}"
+          data-line-color="${lineColor}"
+          data-w="${w}" data-h="${h}" data-padx="${padX}" data-pady="${padY}">
           <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:auto;display:block">
             ${presMarkers.map(m => `
               <line x1="${m.x.toFixed(1)}" y1="${padY}" x2="${m.x.toFixed(1)}" y2="${h - padY}" stroke="${m.color}" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.55"/>
@@ -8999,9 +9117,12 @@ function renderEconomyBody() {
             <path d="${path}" fill="none" stroke="${lineColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             ${points.map((p, i) => `
               <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === points.length - 1 ? 4.5 : 3}" fill="${i === points.length - 1 ? lineColor : 'var(--bg-card)'}" stroke="${lineColor}" stroke-width="2"/>
-              <title>${p.year}: ${p.value.toLocaleString('ko-KR', {maximumFractionDigits: 2})}${escapeHtml(ind.unit)}</title>
             `).join('')}
+            <!-- 호버 인터랙션 레이어 -->
+            <line class="econ-chart-cursor" x1="0" y1="${padY}" x2="0" y2="${h - padY}" stroke="${lineColor}" stroke-width="1" stroke-dasharray="2 2" opacity="0" pointer-events="none"/>
+            <circle class="econ-chart-cursor-dot" cx="0" cy="0" r="6" fill="${lineColor}" stroke="var(--bg-card)" stroke-width="2" opacity="0" pointer-events="none"/>
           </svg>
+          <div class="econ-chart-tooltip"></div>
           <div class="econ-axis">
             <span>${data[0].year}</span>
             <span>${data[Math.floor(data.length/2)].year}</span>
@@ -14458,6 +14579,14 @@ async function populateHomeEconMini() {
       renderTiles(); // 한 인디케이터 라이브 받을 때마다 즉시 다시 그림
       const liveBadge = document.getElementById('home-econ-live');
       if (liveBadge) liveBadge.style.display = 'inline-block';
+    }
+  }).then(() => {
+    // 모든 fetch 완료 후 최종 한 번 더 강제 갱신 (혹시 onProgress 놓친 게 있어도 보장)
+    if (document.getElementById('home-econ-tiles')) {
+      renderTiles();
+      const hasAnyLive = econ.indicators.some(i => i._live && pick.includes(i.id));
+      const liveBadge = document.getElementById('home-econ-live');
+      if (liveBadge && hasAnyLive) liveBadge.style.display = 'inline-block';
     }
   }).catch(() => {});
 }
