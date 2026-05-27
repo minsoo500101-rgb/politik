@@ -29,7 +29,8 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=1200');
 
   const geo = (req.query.geo || 'KR').toUpperCase();
-  const url = `${GOOGLE_TRENDS_RSS}?geo=${geo}`;
+  const hl = req.query.hl || 'ko';
+  const url = `${GOOGLE_TRENDS_RSS}?geo=${geo}&hl=${hl}`;
 
   try {
     const r = await fetch(url, {
@@ -56,11 +57,15 @@ export default async function handler(req, res) {
       });
     }
 
-    const items = parseTrendsRss(xml);
+    const allItems = parseTrendsRss(xml);
+    // 한국과 무관한 외국 토픽 필터링
+    const items = req.query.raw === '1' ? allItems : allItems.filter(it => isRelevantToKorea(it));
     return res.status(200).json({
       items,
       total: items.length,
+      filtered_out: allItems.length - items.length,
       geo,
+      hl,
       source: 'Google Trends',
       fetched_at: new Date().toISOString(),
     });
@@ -125,4 +130,38 @@ function decodeEntities(s) {
 
 function stripHtml(s) {
   return decodeEntities(s).replace(/<[^>]+>/g, '');
+}
+
+// 한국과 관련 있는 토픽인지 판별 (외국 스포츠·해외 이슈 제거)
+const FOREIGN_NOISE_PATTERNS = [
+  // 인도 IPL 크리켓
+  /\b(rajasthan|royals|sunrisers|hyderabad|mumbai indians|chennai super|delhi capitals|punjab kings|lucknow|gujarat titans|kolkata knight)\b/i,
+  /\b(ipl|cricket|scorecard|wicket|batsman)\b/i,
+  // 기타 해외 스포츠
+  /\b(nba|nfl|nhl|mlb|premier league|champions league)\b/i,
+  // 영어 매치업 패턴
+  /\bvs\b.*\b(match|game|score)\b/i,
+];
+const KOREAN_SOURCES = ['daum', 'naver', '조선', '중앙', '한겨레', '경향', 'kbs', 'mbc', 'sbs', 'jtbc', 'ytn', 'sbs.co.kr', 'donga', 'chosun', 'hani', 'khan', '연합뉴스', '뉴스1', '뉴시스', '머니투데이', '한국경제', '매일경제', '이데일리', '디지털타임스', 'zdnet'];
+
+function isRelevantToKorea(item) {
+  const title = item.title || '';
+  // 1) 한글이 포함된 토픽은 무조건 통과
+  if (/[가-힣]/.test(title)) return true;
+  // 2) 짧은 영어 (5자 이하, 약어로 추정) 통과 (SBS, BTS 등)
+  if (title.trim().length <= 5) return true;
+  // 3) 외국 노이즈 패턴 매칭되면 제외
+  for (const re of FOREIGN_NOISE_PATTERNS) {
+    if (re.test(title)) return false;
+  }
+  // 4) 뉴스 소스 중 한국 매체가 1개라도 있으면 통과
+  const newsSources = (item.news_items || []).map(n => (n.source || '').toLowerCase()).join(' ');
+  const newsUrls = (item.news_items || []).map(n => n.url || '').join(' ');
+  for (const k of KOREAN_SOURCES) {
+    if (newsSources.includes(k) || newsUrls.includes(k)) return true;
+  }
+  // 5) 한국 도메인 (.kr) 뉴스 있으면 통과
+  if (/\.kr[\/\b]/.test(newsUrls)) return true;
+  // 그 외 순수 영어 + 한국 매체 없음 = 외국 토픽으로 간주
+  return false;
 }
