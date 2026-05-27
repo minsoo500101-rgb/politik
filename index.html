@@ -10397,6 +10397,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.1', date: '2026-05-27', title: '📑 페이지별 동적 메타 태그 (SEO·SNS 공유)', items: [
+    '각 페이지마다 title·canonical·og:url·description 별도 설정',
+    '카카오톡·트위터 공유 시 페이지별 정확한 제목·설명 표시',
+    '검색엔진이 모든 페이지를 독립 인덱스로 인식 (V20 완성)',
+    '정적 라우트 30개 + 동적 라우트 4종 (`/m/`·`/bill/`·`/party/`·`/committee/`)',
+    '정치인·법안·정당 상세 페이지: 이름·정당 자동 삽입',
+    'route() 진입마다 자동 갱신'
+  ]},
   { v: 'V20.0', date: '2026-05-27', title: '🔗 라우팅 개편 — History API (#/path → /path)', items: [
     '주소창 깔끔한 URL: `patchkr.com/economy` (구: `#/economy`)',
     'SEO 대폭 개선 — 검색엔진이 각 페이지를 독립 URL로 인식',
@@ -12586,7 +12594,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.0 · 클린 URL</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.1 · 페이지별 메타</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -13611,9 +13619,133 @@ function nav(target) {
   }
 })();
 
+// ============================================================
+// 동적 메타 태그 갱신 — V20.1
+// 각 페이지마다 title·canonical·og:url·description 별도 설정 (SEO·SNS 공유 핵심)
+// ============================================================
+const SITE_NAME = '대한민국 패치 노트';
+const SITE_DESC_FALLBACK = '한국 정치·경제 종합 데이터. 22대 법안 1,595건·정치인 772명·9회 지선 실시간·경제 지표 8종 라이브.';
+const ROUTE_META = {
+  '/': { title: '대한민국 패치 노트 — 정치·법안·선거·경제 종합 플랫폼', desc: SITE_DESC_FALLBACK },
+  '/bills': { title: '22대 국회 통과 법안 1,595건 · 패치 노트', desc: '제22대 국회 본회의 통과 법안 1,595건 종합. 발의자·정당·15개 분야·통과 속도 분석.' },
+  '/election2026': { title: '🔴 9회 전국동시지방선거 (2026.6.3) LIVE — 697명 후보', desc: '제9회 전국동시지방선거 후보자 697명 실시간. 시도지사·교육감·시군구청장 5대 공약 비교.' },
+  '/committees': { title: '국회 위원회 25개 · 22대 상임위·특별위', desc: '제22대 국회 위원회 25개 (상임 17 + 특별 8). 처리 의안·위원장·간사·소속 의원.' },
+  '/map': { title: '정치 분포 지도 — 17 시도 + 250 시군구 정당색', desc: '대한민국 17개 시도 + 250개 시군구 정당색 인터랙티브 지도. 단체장 정보 클릭 탐색.' },
+  '/world': { title: '국제 비교 — 12개 민주국가 정치 지표', desc: '12개 민주국가 의원수·여성비율·투표율·민주주의지수·언론자유·청렴도 비교 분석.' },
+  '/elections': { title: '역대 지방선거 7·8회 결과 비교', desc: '제7회(2018)·제8회(2022) 전국동시지방선거 시도지사·교육감 결과 정당별 비교.' },
+  '/economy': { title: '경제 핵심 지표 — 기준금리·환율·물가·GDP·코스피', desc: '한국 경제 지표 9종 시계열 (2015~2025). 한국은행 ECOS 라이브 + 정부 임기별 비교.' },
+  '/glossary': { title: '정치 용어 사전 — 136개 용어 8 카테고리', desc: '한국 정치·법안·선거·사법 용어 136개 일반 시민용 사전. 8개 카테고리 검색.' },
+  '/about': { title: '소개 · 사이트 정보', desc: '대한민국 패치 노트 사이트 소개. 한국 정치·경제 데이터 종합 플랫폼 미션과 출처.' },
+  '/business': { title: '광고·데이터 라이선싱 문의', desc: '광고·데이터 라이선싱·컨설팅 문의. 비즈니스 협업 및 기업용 데이터 API 안내.' },
+  '/changelog': { title: '변경 이력 — 사이트 업데이트 패치 노트', desc: '대한민국 패치 노트 사이트 자체의 변경 이력. 새 기능·데이터 보충·개선 사항.' },
+  '/donate': { title: '후원하기 — Ko-fi 응원', desc: '대한민국 패치 노트 서버 운영비·API 사용료 후원. Ko-fi·GitHub Star로 응원하기.' },
+  '/privacy': { title: '개인정보 처리방침', desc: '대한민국 패치 노트 개인정보 처리방침. 쿠키·로컬스토리지·외부 API 호출 안내.' },
+  '/dex': { title: '정치인 도감 — 772명 컬렉션', desc: '대한민국 정치인 772명 Pokedex 스타일 도감. 입법부·행정부·사법부·지방·역사 5영역.' },
+  '/play': { title: '실험실 — 출신 분석·의원 비교·관계도', desc: '정치 데이터 부가 기능 모음. 출신 분석·의원 비교·공동발의 관계도 인터랙티브.' },
+  '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
+  '/bookmarks': { title: '관심 의원 — 북마크 모아보기', desc: '관심 정치인 북마크 모아보기. 개인 관심 의원·단체장 추적 페이지.' },
+  '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
+  '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
+  '/compare-cand': { title: '9회 지선 후보 비교 — 5대 공약 옆에 옆에', desc: '제9회 지방선거 후보자 최대 3명 옆에 옆에 비교. 5대 공약·약력·재산·전과 대조.' },
+  '/insights': { title: '출신 분석 — 22대 의원 출신·학력·직업', desc: '제22대 국회의원 출신 지역·대학·전직 분포 분석. 정당별·연령별 통계.' },
+  '/relations': { title: '관계도 — 공동발의 네트워크', desc: '제22대 국회의원 공동발의 관계 d3 네트워크 그래프. 정당 결속도·교차 협력 시각화.' },
+  '/history/parties': { title: '정당사 1948~현재 — 45개 정당 타임라인', desc: '대한민국 정당사 1948년~현재 45개 정당 시각 타임라인. 창당·합당·해산 흐름.' },
+  '/group/legislative': { title: '입법부 — 22대 국회의원 286명', desc: '제22대 국회의원 286명 정당별 분포. 지역구·비례·위원회 정보.' },
+  '/group/executive': { title: '행정부 — 대통령·총리·17부처 장관', desc: '대통령·국무총리·17개 부처 장관 및 차관·외청장·헌법기관장 종합.' },
+  '/group/judicial': { title: '사법부 — 대법관·헌법재판관·검찰', desc: '대법원장·대법관·헌법재판관·검찰총장 등 사법부 핵심 인사 종합.' },
+  '/group/local': { title: '지방 — 광역·기초단체장·교육감', desc: '17개 광역단체장·226개 기초단체장·17개 교육감 정보.' },
+  '/group/historical': { title: '역사 — 역대 대통령·총리·정당대표', desc: '역대 대한민국 대통령·국무총리·정당대표·사법부 수장 종합.' },
+};
+
+function _setMetaContent(selector, value) {
+  const el = document.querySelector(selector);
+  if (el) el.setAttribute('content', value);
+}
+function _setLinkHref(selector, value) {
+  const el = document.querySelector(selector);
+  if (el) el.setAttribute('href', value);
+}
+
+// 동적 라우트에서 entity 정보로 메타 생성
+function _resolveDynamicMeta(path) {
+  // /m/{id} — 정치인 detail
+  let m = path.match(/^\/m\/(.+)$/);
+  if (m) {
+    const id = decodeURIComponent(m[1]);
+    const mem = state.members?.find(x => x.MONA_CD === id);
+    if (mem) {
+      const role = mem.POLY_NM || mem._type_label || '';
+      const region = mem.ORIG_NM || '';
+      const parts = [role, region].filter(Boolean).join(' · ');
+      return {
+        title: `${mem.HG_NM}${parts ? ' (' + parts + ')' : ''} — 약력·발의·표결`,
+        desc: `${mem.HG_NM} ${role || '정치인'} 약력·발의 법안·표결 기록·위원회·재산 종합 정보.`
+      };
+    }
+  }
+  // /bill/{billId} — 법안 상세
+  m = path.match(/^\/bill\/(.+)$/);
+  if (m) {
+    const billId = decodeURIComponent(m[1]);
+    const bill = state.bills?.find(b => b.BILL_ID === billId);
+    if (bill) {
+      const name = (bill.BILL_NAME || '').slice(0, 60);
+      return {
+        title: `${name} — 법안 상세 (22대 국회)`,
+        desc: `${name} 법안 본문·발의자·정당별 표결·반란표·관련 판례·헌재 결정·뉴스.`
+      };
+    }
+  }
+  // /party/{name} — 정당 페이지
+  m = path.match(/^\/party\/(.+)$/);
+  if (m) {
+    const partyName = decodeURIComponent(m[1]);
+    return {
+      title: `${partyName} — 소속 의원·발의 법안 종합`,
+      desc: `${partyName} 22대 국회 소속 의원·발의 법안·통과율·정당 결속도 종합.`
+    };
+  }
+  // /committee/{name} — 위원회
+  m = path.match(/^\/committee\/(.+)$/);
+  if (m) {
+    const cmtName = decodeURIComponent(m[1]);
+    return {
+      title: `${cmtName} — 위원회 소속 의원·처리 의안`,
+      desc: `${cmtName} 22대 국회 위원회 소속 의원·처리 의안·위원장·간사 정보.`
+    };
+  }
+  return null;
+}
+
+function updateMeta() {
+  const path = currentPath();
+  const search = location.search || '';
+  const fullUrl = 'https://patchkr.com' + path + search;
+
+  // 1) 메타 정보 결정 — 정적 맵 우선, 그 다음 동적, 마지막 폴백
+  let meta = ROUTE_META[path];
+  if (!meta) meta = _resolveDynamicMeta(path);
+  if (!meta) meta = ROUTE_META['/'];
+
+  const fullTitle = path === '/' ? meta.title : `${meta.title} · ${SITE_NAME}`;
+  const desc = meta.desc;
+
+  // 2) 적용
+  document.title = fullTitle;
+  _setMetaContent('meta[name="description"]', desc);
+  _setMetaContent('meta[property="og:title"]', fullTitle);
+  _setMetaContent('meta[property="og:description"]', desc);
+  _setMetaContent('meta[property="og:url"]', fullUrl);
+  _setMetaContent('meta[name="twitter:title"]', fullTitle);
+  _setMetaContent('meta[name="twitter:description"]', desc);
+  _setLinkHref('link[rel="canonical"]', fullUrl);
+}
+
 function route() {
   const view = document.getElementById('view');
   const hash = currentRoute();
+  // 페이지 메타 갱신 (SEO·SNS 공유)
+  updateMeta();
   const filterBar = document.getElementById('filter-bar');
   const navStats = document.querySelector('.nav-stats');
   // 페이지 전환 시 잔존 툴팁 강제 숨김 (자동완성은 hashchange 핸들러에서 별도 close)
