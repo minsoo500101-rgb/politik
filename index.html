@@ -10783,7 +10783,7 @@ function renderTodayPage() {
       <div class="today-grid">
         <div class="today-block">
           <div class="today-block-h">
-            <h3>📰 정치 뉴스 (1시간 이내)</h3>
+            <h3 id="today-news-h">📰 전체 뉴스 (1시간 이내)</h3>
             <span class="today-src">네이버 검색 API</span>
           </div>
           <div id="today-news" class="today-news-list">
@@ -10877,8 +10877,69 @@ function renderTodayTrendList(data) {
   });
 }
 
+// V20.9 — 섹터별 네이버 뉴스 검색 키워드 매핑
+const SECTOR_NEWS_QUERY = {
+  all: '뉴스',
+  politics: '정치',
+  economy: '경제',
+  entertainment: '연예',
+  sports: '스포츠',
+  international: '국제',
+  society: '사회',
+  other: '한국',
+};
+const SECTOR_LABELS = {
+  all: '전체', politics: '정치', economy: '경제',
+  entertainment: '연예', sports: '스포츠', international: '국제',
+  society: '사회', other: '기타',
+};
+
+// 섹터별 뉴스 fetch + 렌더
+const _sectorNewsCache = {}; // sector → { items, fetchedAt }
+async function loadNewsForSector(sector) {
+  const target = document.getElementById('today-news');
+  if (!target) return;
+  // 헤더 라벨 갱신
+  const h = document.getElementById('today-news-h');
+  if (h) h.textContent = `📰 ${SECTOR_LABELS[sector] || sector} 뉴스 (1시간 이내)`;
+  // 캐시 (3분)
+  const cached = _sectorNewsCache[sector];
+  if (cached && Date.now() - cached.fetchedAt < 180000) {
+    renderSectorNews(target, cached.items);
+    return;
+  }
+  target.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span> ${escapeHtml(SECTOR_LABELS[sector] || sector)} 뉴스 fetch 중…</div>`;
+  const query = SECTOR_NEWS_QUERY[sector] || '뉴스';
+  try {
+    const news = await loadNaverNews(query, 10, 'date');
+    if (!news?.items?.length) {
+      target.innerHTML = `<div class="today-empty">${escapeHtml(SECTOR_LABELS[sector])} 뉴스 없음</div>`;
+      return;
+    }
+    _sectorNewsCache[sector] = { items: news.items, fetchedAt: Date.now() };
+    renderSectorNews(target, news.items);
+  } catch (e) {
+    target.innerHTML = `<div class="today-empty">뉴스 fetch 실패: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function renderSectorNews(target, items) {
+  const strip = s => (s || '').replace(/<\/?b>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&apos;/g, "'");
+  target.innerHTML = items.slice(0, 8).map(item => {
+    const title = strip(item.title);
+    const date = item.pubDate ? new Date(item.pubDate) : null;
+    const timeStr = date ? formatTimeAgo(date) : '';
+    const src = (item.originallink || item.link || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+    return `
+      <a class="td-news-row" href="${escapeHtml(item.link || item.originallink)}" target="_blank" rel="noopener">
+        <div class="td-news-title">${escapeHtml(title)}</div>
+        <div class="td-news-meta"><span>${timeStr}</span><span>${escapeHtml(src)}</span></div>
+      </a>`;
+  }).join('');
+}
+
 async function setupTodayEvents() {
-  // 탭 클릭
+  // 탭 클릭 — 위키 트렌드 + 네이버 뉴스 동시 갱신
   document.querySelectorAll('#today-tabs .today-tab').forEach(el => {
     el.addEventListener('click', async () => {
       _todayActiveSector = el.dataset.sector;
@@ -10887,6 +10948,7 @@ async function setupTodayEvents() {
       });
       const data = _trendingCache.data;
       if (data) renderTodayTrendList(data);
+      loadNewsForSector(_todayActiveSector);
     });
   });
 
@@ -10903,30 +10965,8 @@ async function setupTodayEvents() {
     if (t) t.innerHTML = `<div class="today-empty">위키 fetch 실패: ${escapeHtml(e.message)}</div>`;
   });
 
-  // 2. 정치 뉴스
-  loadNaverNews('정치', 8, 'date').then(news => {
-    const target = document.getElementById('today-news');
-    if (!target) return;
-    if (!news?.items?.length) {
-      target.innerHTML = `<div class="today-empty">뉴스 없음</div>`;
-      return;
-    }
-    const strip = s => (s || '').replace(/<\/?b>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&apos;/g, "'");
-    target.innerHTML = news.items.slice(0, 8).map(item => {
-      const title = strip(item.title);
-      const date = item.pubDate ? new Date(item.pubDate) : null;
-      const timeStr = date ? formatTimeAgo(date) : '';
-      const src = (item.originallink || item.link || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
-      return `
-        <a class="td-news-row" href="${escapeHtml(item.link || item.originallink)}" target="_blank" rel="noopener">
-          <div class="td-news-title">${escapeHtml(title)}</div>
-          <div class="td-news-meta"><span>${timeStr}</span><span>${escapeHtml(src)}</span></div>
-        </a>`;
-    }).join('');
-  }).catch(() => {
-    const t = document.getElementById('today-news');
-    if (t) t.innerHTML = `<div class="today-empty">뉴스 fetch 실패</div>`;
-  });
+  // 2. 섹터별 뉴스 (탭 클릭 시 갱신)
+  loadNewsForSector(_todayActiveSector);
 
   // 3. 이번 주 통과 법안
   const renderWeekBills = () => {
@@ -11629,6 +11669,13 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.9', date: '2026-05-27', title: '📰 /today 섹터-뉴스 연동 (탭 클릭 시 동시 갱신)', items: [
+    '섹터 탭 클릭 → 위키 트렌드 + 해당 섹터 네이버 뉴스 동시 갱신',
+    'SECTOR_NEWS_QUERY 매핑: politics=정치, economy=경제, entertainment=연예, sports=스포츠, society=사회, international=국제',
+    '뉴스 헤더도 자동 변경 (\"📰 경제 뉴스 (1시간 이내)\")',
+    '섹터별 3분 캐시 (탭 빠르게 전환 시 재호출 방지)',
+    '추후 V21.0 — Supabase 연결 + 공약 이행 라벨링 투표'
+  ]},
   { v: 'V20.8', date: '2026-05-27', title: '🌍 /today 6대 섹터 확장 — 정치·경제·엔터·스포츠·국제·사회', items: [
     '🔴 위키 어제 Top 1000 글 자동 6섹터 분류',
     '🏛 정치 — 정치인 DB 매칭 우선 (강제 분류)',
@@ -13917,7 +13964,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.8 · 🌍 6섹터 트렌드</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.9 · 섹터-뉴스 연동</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
