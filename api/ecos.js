@@ -40,10 +40,35 @@ export default async function handler(req, res) {
 
   try {
     const r = await fetch(url);
-    if (!r.ok) {
-      return res.status(502).json({ error: 'ECOS API 오류', status: r.status });
+    const text = await r.text();
+    let data = null;
+    try { data = JSON.parse(text); } catch {}
+
+    // debug 모드: 원본 그대로 반환 (URL에서 키만 마스킹)
+    if (req.query.debug === '1') {
+      const maskedUrl = url.replace(key, '***KEY***');
+      return res.status(200).json({
+        debug: true,
+        request_url: maskedUrl,
+        http_status: r.status,
+        ecos_raw: data || text.slice(0, 1000),
+      });
     }
-    const data = await r.json();
+
+    if (!r.ok) {
+      return res.status(502).json({ error: 'ECOS API 오류', status: r.status, body: text.slice(0, 200) });
+    }
+    // ECOS는 에러도 200으로 응답하고 RESULT 객체에 코드 넣음
+    if (data?.RESULT?.CODE && data.RESULT.CODE !== 'INFO-000') {
+      return res.status(200).json({
+        stat,
+        period,
+        count: 0,
+        data: [],
+        ecos_error: { code: data.RESULT.CODE, message: data.RESULT.MESSAGE },
+        source: '한국은행 ECOS',
+      });
+    }
     // ECOS 응답 정규화
     const rows = data?.StatisticSearch?.row || [];
     const normalized = rows.map(r => ({
