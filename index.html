@@ -2423,6 +2423,23 @@
   .lean-distro-row:last-child { border-bottom: none; }
 
   /* ============ 북마크 (/bookmarks + 버튼) ============ */
+  /* V21.7 — 페이지뷰 배지 (Supabase) */
+  .detail-pv-wrap {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .pv-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 11px; font-weight: 700;
+    color: var(--text-2);
+    letter-spacing: 0.3px;
+  }
+
   .bookmark-btn {
     background: none;
     border: none;
@@ -7210,9 +7227,15 @@ function isBookmarked(mid) {
 }
 function toggleBookmark(mid, memberName) {
   const bm = getBookmarks();
-  if (bm[mid]) delete bm[mid];
+  const wasBookmarked = !!bm[mid];
+  if (wasBookmarked) delete bm[mid];
   else bm[mid] = { t: Date.now(), name: memberName };
   try { localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bm)); } catch {}
+  // V21.7 — Supabase 동기화 (fire-and-forget)
+  if (typeof syncBookmarkToServer === 'function') {
+    if (wasBookmarked) removeBookmarkFromServer('politician', mid);
+    else syncBookmarkToServer({ type: 'politician', id: mid, name: memberName });
+  }
   return !!bm[mid];
 }
 function bookmarkCount() {
@@ -7231,13 +7254,14 @@ function getStance(mid) {
 }
 function setStance(mid, name, stance) {
   const all = getStances();
-  if (!stance || stance === all[mid]?.s) {
-    // 같은 stance 다시 누르면 해제
-    delete all[mid];
-  } else {
-    all[mid] = { s: stance, t: Date.now(), name };
-  }
+  const willRemove = !stance || stance === all[mid]?.s;
+  if (willRemove) delete all[mid];
+  else all[mid] = { s: stance, t: Date.now(), name };
   try { localStorage.setItem(STANCES_KEY, JSON.stringify(all)); } catch {}
+  // V21.7 — Supabase 동기화
+  if (typeof syncStanceToServer === 'function') {
+    syncStanceToServer(mid, name, willRemove ? null : stance);
+  }
   return all[mid]?.s || null;
 }
 function stanceCounts() {
@@ -8801,6 +8825,157 @@ async function submitRating(meta, rating) {
   });
 }
 
+// ============================================================
+// V21.7 — Supabase 본격 활용 (캐시·페이지뷰·북마크·stance 동기화)
+// ============================================================
+
+// 페이지뷰 기록 (fire-and-forget — 페이지 진입 시 호출)
+function logPageView(pageType, pageId) {
+  if (!pageType || !pageId) return;
+  const userId = getOrCreateAnonUserId();
+  // 비동기 + silent fail (분석용이라 실패해도 UX 영향 없음)
+  supabaseRest('/page_views', {
+    method: 'POST',
+    headers: { 'Prefer': 'return=minimal' },
+    body: JSON.stringify([{ page_type: pageType, page_id: pageId, user_id: userId }]),
+  }).catch(() => {});
+}
+
+// 페이지뷰 카운트 조회
+async function getPageViewCount(pageType, pageId) {
+  try {
+    const data = await supabaseRest(
+      `/page_views?page_type=eq.${encodeURIComponent(pageType)}&page_id=eq.${encodeURIComponent(pageId)}&select=id`
+    );
+    return (data || []).length;
+  } catch { return 0; }
+}
+
+// NEC 후보자 캐시 — Supabase 우선, miss 시 NEC API → 캐시 저장
+async function loadCandidateCached(huboid) {
+  // 1) Supabase 조회
+  try {
+    const data = await supabaseRest(`/nec_candidates_cache?huboid=eq.${encodeURIComponent(huboid)}&limit=1`);
+    if (data && data.length) return data[0];
+  } catch {}
+  // 2) Miss — NEC API 호출은 비싸므로 client에서 안 함. 호출자가 NEC fetch 결과 전달하면 캐시.
+  return null;
+}
+
+// NEC 후보자 캐시 저장 (upsert)
+async function cacheCandidate(c) {
+  if (!c?.huboid) return;
+  try {
+    await supabaseRest('/nec_candidates_cache?on_conflict=huboid', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify([{
+        huboid: c.huboid,
+        sg_id: c.sgId || c.sg_id || '',
+        sg_typecode: c.sgTypecode || c.sg_typecode || '',
+        name: c.name || '', party: c.jdName || c.party || '',
+        sd_name: c.sdName || '', sgg_name: c.sggName || '',
+        giho: c.giho || '', gender: c.gender || '',
+        age: parseInt(c.age) || null,
+        birthday: c.birthday || '',
+        job: c.job || '', edu: c.edu || '',
+        career1: c.career1 || '', career2: c.career2 || '',
+        addr: c.addr || '', status: c.status || '',
+      }]),
+    });
+  } catch {}
+}
+
+// NEC 공약 캐시 조회
+async function loadPledgesCached(sgId, huboid) {
+  try {
+    const data = await supabaseRest(
+      `/nec_pledges_cache?huboid=eq.${encodeURIComponent(huboid)}&sg_id=eq.${encodeURIComponent(sgId)}&order=ordinal.asc`
+    );
+    if (data && data.length) {
+      return data.map(p => ({
+        ord: p.ordinal, realm: p.realm || '',
+        title: p.title || '', cont: p.content || '',
+      }));
+    }
+  } catch {}
+  return null;
+}
+
+// NEC 공약 캐시 저장 (배치 upsert)
+async function cachePledges(sgId, huboid, pledges) {
+  if (!pledges?.length) return;
+  try {
+    const rows = pledges.map(p => ({
+      pledge_key: `${sgId}-${huboid}-${p.ord}`,
+      huboid, sg_id: sgId,
+      ordinal: parseInt(p.ord) || 0,
+      realm: p.realm || '', title: p.title || '', content: p.cont || '',
+    }));
+    await supabaseRest('/nec_pledges_cache?on_conflict=pledge_key', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify(rows),
+    });
+  } catch {}
+}
+
+// 북마크 동기화 — Supabase
+async function syncBookmarkToServer(item) {
+  const userId = getOrCreateAnonUserId();
+  try {
+    await supabaseRest('/bookmarks?on_conflict=user_id,item_type,item_id', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify([{
+        user_id: userId,
+        item_type: item.type || 'politician',
+        item_id: item.id,
+        item_name: item.name || '',
+        meta: item.meta || null,
+      }]),
+    });
+  } catch {}
+}
+async function removeBookmarkFromServer(itemType, itemId) {
+  const userId = getOrCreateAnonUserId();
+  try {
+    await supabaseRest(
+      `/bookmarks?user_id=eq.${encodeURIComponent(userId)}&item_type=eq.${itemType}&item_id=eq.${encodeURIComponent(itemId)}`,
+      { method: 'DELETE' }
+    );
+  } catch {}
+}
+async function loadBookmarksFromServer() {
+  const userId = getOrCreateAnonUserId();
+  try {
+    return await supabaseRest(`/bookmarks?user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc`);
+  } catch { return []; }
+}
+
+// stance 동기화
+async function syncStanceToServer(politicianId, politicianName, stance) {
+  const userId = getOrCreateAnonUserId();
+  try {
+    if (stance === null) {
+      // 제거
+      await supabaseRest(
+        `/user_stances?user_id=eq.${encodeURIComponent(userId)}&politician_id=eq.${encodeURIComponent(politicianId)}`,
+        { method: 'DELETE' }
+      );
+    } else {
+      await supabaseRest('/user_stances?on_conflict=user_id,politician_id', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify([{
+          user_id: userId, politician_id: politicianId,
+          politician_name: politicianName || '', stance,
+        }]),
+      });
+    }
+  } catch {}
+}
+
 // 평점 결과 집계
 async function loadRating(pledgeKey) {
   const data = await supabaseRest(`/pledge_ratings?pledge_key=eq.${encodeURIComponent(pledgeKey)}&select=rating,user_id`);
@@ -9068,34 +9243,41 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
     return;
   }
   try {
-    const j = await necFetch('policies', { sgId: '20260603', sgTypecode, cnddtId });
-    let items = j?.response?.body?.items?.item || j?.body?.items?.item || [];
-    if (!Array.isArray(items)) items = items ? [items] : [];
-    if (!items.length) {
-      const code = j?.response?.header?.resultCode || '';
-      const msg = code === 'INFO-03'
-        ? '이 후보자는 5대 공약을 등록하지 않았거나 NEC에 아직 반영되지 않음.'
-        : '공약 데이터 없음.';
-      document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">${msg}<br><br><a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="color:var(--link)">정책공약마당 (NEC) →</a></div>`;
-      return;
-    }
-    // 첫 번째 아이템에 prmsCnt, prmsTitle1~10, prmsRealmName1~10, prmmCont1~10 형태
-    // ⚠ 주의: 본문 필드는 prmmCont (m 두 개) — NEC API 자체 표기 (오타로 보이지만 공식)
-    const polData = items[0];
-    const cnt = parseInt(polData.prmsCnt || '0', 10) || 5;
-    const promises = [];
-    for (let i = 1; i <= 10; i++) {
-      const cont = polData['prmmCont' + i] || polData['prmsCont' + i] || '';
-      const title = polData['prmsTitle' + i] || '';
-      if (title || cont) {
-        promises.push({
-          ord: polData['prmsOrd' + i] || i,
-          realm: polData['prmsRealmName' + i] || '',
-          title: title,
-          cont: cont,
-        });
+    // V21.7 — Supabase 캐시 우선 (9회 공약 빠른 fetch)
+    let promises = await loadPledgesCached('20260603', cnddtId);
+    if (!promises || !promises.length) {
+      const j = await necFetch('policies', { sgId: '20260603', sgTypecode, cnddtId });
+      let items = j?.response?.body?.items?.item || j?.body?.items?.item || [];
+      if (!Array.isArray(items)) items = items ? [items] : [];
+      if (!items.length) {
+        const code = j?.response?.header?.resultCode || '';
+        const msg = code === 'INFO-03'
+          ? '이 후보자는 5대 공약을 등록하지 않았거나 NEC에 아직 반영되지 않음.'
+          : '공약 데이터 없음.';
+        document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">${msg}<br><br><a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="color:var(--link)">정책공약마당 (NEC) →</a></div>`;
+        return;
       }
+      // 첫 번째 아이템에 prmsCnt, prmsTitle1~10, prmsRealmName1~10, prmmCont1~10 형태
+      const polData = items[0];
+      promises = [];
+      for (let i = 1; i <= 10; i++) {
+        const cont = polData['prmmCont' + i] || polData['prmsCont' + i] || '';
+        const title = polData['prmsTitle' + i] || '';
+        if (title || cont) {
+          promises.push({
+            ord: polData['prmsOrd' + i] || i,
+            realm: polData['prmsRealmName' + i] || '',
+            title: title,
+            cont: cont,
+          });
+        }
+      }
+      // V21.7 — 캐시 저장 (fire-and-forget)
+      if (promises.length) cachePledges('20260603', cnddtId, promises);
     }
+    // V21.7 — 페이지뷰 기록 + 후보자 캐시 저장
+    logPageView('candidate', cnddtId);
+    if (c) cacheCandidate({ ...c, sgId: '20260603', sgTypecode });
     if (!promises.length) {
       document.getElementById('promise-modal-body').innerHTML = '<div class="promise-loading">공약 내용이 비어있음.</div>';
       return;
@@ -9210,6 +9392,10 @@ async function loadHistorical8Candidates() {
 }
 
 async function loadHistorical8Pledges(huboid) {
+  // V21.7 — Supabase 캐시 우선 (8회는 2022 영구 데이터)
+  const cached = await loadPledgesCached('20220601', huboid);
+  if (cached && cached.length) return cached;
+
   try {
     const j = await necFetch('policies', { sgId: '20220601', sgTypecode: '3', cnddtId: huboid });
     const items = j?.response?.body?.items?.item || [];
@@ -9227,6 +9413,8 @@ async function loadHistorical8Pledges(huboid) {
         });
       }
     }
+    // V21.7 — 캐시 저장 (fire-and-forget)
+    if (promises.length) cachePledges('20220601', huboid, promises);
     return promises;
   } catch { return []; }
 }
@@ -12489,6 +12677,17 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V21.7', date: '2026-05-27', title: '🗄 Supabase 본격 활용 — 캐시·페이지뷰·동기화', items: [
+    '사용자 요청: "DB에 전체 데이터 캐싱도 잘 활용해봐 (필요없음 말고)"',
+    '⚡ NEC 후보·공약 lazy 캐싱 — 한 번 fetch하면 모든 사용자에게 즉시',
+    '8회 (2022) 데이터는 영구 캐시 (/pledge-tracker 즉시 응답)',
+    '9회 후보 공약 모달 — 첫 클릭만 NEC fetch, 이후 모든 사용자 Supabase에서 즉시',
+    '👁 페이지뷰 카운터 — 정치인 페이지에 \"X회 조회\" 배지 (사회적 증명)',
+    '⭐ 북마크 다기기 동기화 — toggleBookmark가 자동으로 Supabase에도 저장',
+    '🗳 stance 다기기 동기화 — setStance가 자동으로 Supabase에 저장',
+    '5개 신규 테이블: nec_candidates_cache · nec_pledges_cache · page_views · bookmarks · user_stances',
+    '⚠ 사용자 작업: supabase/schema-v21.7.sql 통째로 SQL Editor에 실행 (1회)'
+  ]},
   { v: 'V21.6', date: '2026-05-27', title: '🏦 수출 단위 fix + 국가 신용등급 추가', items: [
     '사용자 발견: 수출 6,837 표시 + \"백만$\" 라벨 → 실제는 억$ (100배 차이)',
     '✅ 단위 라벨 \"백만$\" → \"억$\" 수정 (2024 = 6,837 억$ = $683.7B 정확)',
@@ -14849,7 +15048,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.6 · 🏦 신용등급</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.7 · 🗄 DB 활용</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -15651,6 +15850,7 @@ function renderDetail(id) {
           <div class="d-info">
             <h1>${escapeHtml(m.HG_NM)} <span class="hj">${escapeHtml(m.HJ_NM || '')}</span>
               <button class="bookmark-btn ${isBookmarked(m.MONA_CD) ? 'bookmarked' : ''}" id="bookmark-btn" data-mid="${escapeHtml(m.MONA_CD)}" data-name="${escapeHtml(m.HG_NM)}" title="${isBookmarked(m.MONA_CD) ? '북마크 해제' : '북마크 — 관심 의원으로 저장'}">${isBookmarked(m.MONA_CD) ? '⭐' : '☆'}</button>
+              <span id="detail-pageviews" class="detail-pv-wrap"></span>
             </h1>
             <div class="stance-bar">
               <button class="stance-btn stance-support ${getStance(m.MONA_CD) === 'support' ? 'active' : ''}" id="stance-support" data-mid="${escapeHtml(m.MONA_CD)}" data-name="${escapeHtml(m.HG_NM)}" title="개인 기록 — 익명">
@@ -16837,6 +17037,14 @@ function route() {
   if (m) {
     const memberId = decodeURIComponent(m[1]);
     view.innerHTML = renderDetail(memberId);
+    // V21.7 — 페이지뷰 기록 + 카운트 표시
+    logPageView('politician', memberId);
+    getPageViewCount('politician', memberId).then(count => {
+      const target = document.getElementById('detail-pageviews');
+      if (target && count > 0) {
+        target.innerHTML = `<span class="pv-badge">👁 ${count.toLocaleString()}회 조회</span>`;
+      }
+    }).catch(() => {});
     document.getElementById('back-btn')?.addEventListener('click', () => { nav('/'); });
     document.getElementById('bookmark-btn')?.addEventListener('click', e => {
       e.stopPropagation();
