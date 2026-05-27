@@ -6685,6 +6685,62 @@
     transition: all 0.12s;
   }
   .pf-reset:hover { color: var(--text); border-color: var(--text); }
+  /* V22.1 — 페이지네이션 (법안 페이지) */
+  .pagination {
+    margin: 18px 0 8px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+  }
+  .pg-info {
+    font-size: 11.5px; color: var(--text-2);
+  }
+  .pg-info b { color: var(--text); font-weight: 700; }
+  .pg-controls {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    justify-content: center;
+  }
+  .pg-btn {
+    min-width: 36px; height: 36px;
+    padding: 0 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-variant-numeric: tabular-nums;
+  }
+  .pg-btn:hover:not(.pg-disabled):not(.pg-current) {
+    background: var(--bg-elev);
+    color: var(--text);
+    border-color: var(--text-2);
+  }
+  .pg-btn.pg-current {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    cursor: default;
+    font-weight: 800;
+  }
+  .pg-btn.pg-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .pg-btn.pg-prev, .pg-btn.pg-next {
+    padding: 0 14px;
+    font-weight: 700;
+  }
+  .pg-ellipsis {
+    display: inline-flex; align-items: center;
+    padding: 0 6px;
+    color: var(--dim);
+    font-weight: 700;
+  }
+  @media (max-width: 600px) {
+    .pg-btn { min-width: 32px; height: 32px; font-size: 12px; padding: 0 6px; }
+    .pg-btn.pg-prev, .pg-btn.pg-next { padding: 0 10px; }
+  }
   .pf-more {
     width: 100%;
     margin-top: 10px;
@@ -7294,7 +7350,7 @@
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V22.0</a>
+      <a href="/changelog" id="foot-year">V22.1</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11647,7 +11703,7 @@ function renderCommitteeDetail(cmtName) {
 // Bills statistics page (22대 본회의 처리 의안)
 // ============================================================
 // 필터 state
-if (!state.billsFilter) state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, topic: 'all', q: '', limit: 30 };
+if (!state.billsFilter) state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, topic: 'all', q: '', page: 1, perPage: 50 };
 if (!state.homeFeedFilter) state.homeFeedFilter = { party: 'all' };
 
 function applyBillsFilter(bills) {
@@ -12970,6 +13026,16 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V22.1', date: '2026-05-28', title: '📄 법안 페이지 페이지네이션 (무한 스크롤 폐기)', items: [
+    "사용자 피드백: '전체 패치노트 끝도 없이 내려간다 1500건이 넘으니까'",
+    '🗑 무한 스크롤 (IntersectionObserver) 완전 제거',
+    '✅ 50건/페이지 페이지네이션 — 1,595건 = 32페이지',
+    '스마트 윈도우: 1 … N-2 N-1 [N] N+1 N+2 … LAST (현재 ±2)',
+    '이전/다음 버튼 + 첫/끝 페이지 항상 표시',
+    '필터·검색·정렬 변경 시 자동으로 1페이지로 리셋',
+    '페이지 변경 시 리스트 상단으로 부드러운 스크롤',
+    '모바일 반응형 (작은 버튼)'
+  ]},
   { v: 'V22.0', date: '2026-05-28', title: '🗳 통합 소셜 투표 — 정치·경제·트렌드 영역 확장', items: [
     "사용자 비전: '한줄평 할바에 채팅 차라리. 일단 찬반·지지반대 소셜 기능. 우리가 정치만 다루는 게 아니니까'",
     '🆕 단일 social_votes 테이블 — 모든 영역 공용 (정치인·법안·공약·경제·트렌드·뉴스·이슈)',
@@ -14750,6 +14816,90 @@ function renderBillDetailPage(billId) {
   `;
 }
 
+// V22.1 — 페이지네이션 렌더링 (스마트 윈도우: 1 … N-2 N-1 [N] N+1 N+2 … LAST)
+function renderBillsPagination(currentPage, totalPages, totalItems, perPage) {
+  if (totalPages <= 1) return '';
+  const pages = [];
+  const add = (p, label, isCurrent, disabled, special) => {
+    pages.push({ p, label: label != null ? label : String(p), isCurrent, disabled, special });
+  };
+  // 이전 버튼
+  add(currentPage - 1, '‹ 이전', false, currentPage === 1, 'prev');
+  // 페이지 번호 윈도우
+  const window_ = 2; // 현재 ±2
+  const showFirst = currentPage > window_ + 2;
+  const showLast = currentPage < totalPages - window_ - 1;
+  // 1 페이지
+  if (currentPage > 1) add(1, '1', false, false);
+  // 1과 윈도우 시작 사이 ...
+  if (showFirst) pages.push({ ellipsis: true });
+  // 윈도우 시작 ~ 끝
+  const winStart = Math.max(2, currentPage - window_);
+  const winEnd = Math.min(totalPages - 1, currentPage + window_);
+  for (let p = winStart; p <= winEnd; p++) {
+    if (p === 1 || p === totalPages) continue;
+    add(p, String(p), p === currentPage, false);
+  }
+  // 현재 페이지가 윈도우 밖이면 단독 추가
+  if (currentPage >= winStart && currentPage <= winEnd && currentPage !== 1 && currentPage !== totalPages) {
+    // 이미 위에서 추가됨
+  } else if (currentPage !== 1 && currentPage !== totalPages) {
+    add(currentPage, String(currentPage), true, false);
+  }
+  // 윈도우 끝과 마지막 사이 ...
+  if (showLast) pages.push({ ellipsis: true });
+  // 마지막 페이지
+  if (totalPages > 1 && currentPage !== totalPages) add(totalPages, String(totalPages), false, false);
+  // 첫 페이지 currentPage=1 처리 (위에서 빠짐)
+  if (currentPage === 1) add(1, '1', true, false);
+
+  // 중복 제거 (스마트 윈도우 가능성 보정)
+  const seen = new Set();
+  const dedup = pages.filter(it => {
+    if (it.ellipsis) return true;
+    const k = `${it.p}-${it.label}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  // 페이지 번호 정렬 (prev/현재/숫자/next 순서 유지를 위해 prev/next는 그대로 두고 나머지만 정렬)
+  // 실제로는 위 로직이 잘못 정렬할 수 있어서, 다시 명확히:
+  const ordered = [];
+  // prev
+  const prevBtn = dedup.find(x => x.special === 'prev');
+  if (prevBtn) ordered.push(prevBtn);
+  // 페이지 번호들 (ellipsis 포함, p 순서)
+  const numbers = dedup.filter(x => !x.special && !x.ellipsis).sort((a, b) => a.p - b.p);
+  // ellipsis 삽입 위치 재계산
+  const finalSeq = [];
+  for (let i = 0; i < numbers.length; i++) {
+    if (i > 0 && numbers[i].p - numbers[i-1].p > 1) {
+      finalSeq.push({ ellipsis: true });
+    }
+    finalSeq.push(numbers[i]);
+  }
+  ordered.push(...finalSeq);
+  // next
+  ordered.push({ p: currentPage + 1, label: '다음 ›', isCurrent: false, disabled: currentPage === totalPages, special: 'next' });
+
+  return `
+    <div class="pagination">
+      <div class="pg-info">총 <b>${totalItems.toLocaleString()}</b>건 · ${perPage}건/페이지 · ${totalPages}페이지</div>
+      <div class="pg-controls">
+        ${ordered.map(it => {
+          if (it.ellipsis) return '<span class="pg-ellipsis">…</span>';
+          const cls = ['pg-btn'];
+          if (it.isCurrent) cls.push('pg-current');
+          if (it.disabled) cls.push('pg-disabled');
+          if (it.special) cls.push('pg-' + it.special);
+          const attrs = it.disabled || it.isCurrent ? '' : `data-page="${it.p}"`;
+          return `<button class="${cls.join(' ')}" ${attrs} ${it.disabled ? 'disabled' : ''}>${escapeHtml(it.label)}</button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderBillsPage() {
   const bills = state.bills || [];
   if (!bills.length) {
@@ -14760,8 +14910,14 @@ function renderBillsPage() {
   }
 
   const f = state.billsFilter;
+  // V22.1 — 무한 스크롤 → 페이지네이션 (50건/페이지)
+  if (!f.page) f.page = 1;
+  if (!f.perPage) f.perPage = 50;
   const filtered = applyBillsFilter(bills).sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
-  const shown = filtered.slice(0, f.limit);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / f.perPage));
+  if (f.page > totalPages) f.page = totalPages;
+  const start = (f.page - 1) * f.perPage;
+  const shown = filtered.slice(start, start + f.perPage);
 
   // 정당·위원회 옵션
   const parties = new Set();
@@ -14922,13 +15078,13 @@ function renderBillsPage() {
       <div class="patch-feed" style="margin-bottom:18px">
         <div class="patch-feed-head">
           <h2>📋 결과 <span style="font-weight:700">${filteredCount.toLocaleString()}</span><span style="color:var(--dim);font-weight:500;font-size:13px"> / ${totalCount.toLocaleString()}건</span></h2>
-          <span class="chart-link">${filteredCount === 0 ? '필터 조건과 일치하는 의안 없음' : `최신 ${Math.min(shown.length, filteredCount)}건 표시`}</span>
+          <span class="chart-link">${filteredCount === 0 ? '필터 조건과 일치하는 의안 없음' : `${start + 1}–${Math.min(start + shown.length, filteredCount)}번째 (페이지 ${f.page}/${totalPages})`}</span>
         </div>
         ${shown.length ? `
           <div class="patch-list">
             ${shown.map((b, idx) => patchRowHTML(b, idx)).join('')}
           </div>
-          ${filtered.length > f.limit ? `<button class="pf-more" id="pf-more">+ 더 보기 (${(filtered.length - f.limit).toLocaleString()}건 남음)</button>` : ''}
+          ${totalPages > 1 ? renderBillsPagination(f.page, totalPages, filtered.length, f.perPage) : ''}
         ` : '<div class="ac-empty" style="padding:40px 20px">조건과 일치하는 의안 없음 — 필터를 조정해보세요</div>'}
       </div>
 
@@ -15358,7 +15514,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.0 · 🗳 소셜 투표</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.1 · 📄 페이지네이션</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -17174,19 +17330,19 @@ function route() {
       view.querySelectorAll('.pf-chip').forEach(el => {
         el.addEventListener('click', () => {
           state.billsFilter[el.dataset.f] = el.dataset.v === 'all' ? 'all' : el.dataset.v;
-          state.billsFilter.limit = 30;
+          state.billsFilter.page = 1;
           renderBills();
         });
       });
       // 정당/위원회 selects
       view.querySelector('#pf-party-select')?.addEventListener('change', e => {
         state.billsFilter.party = e.target.value || null;
-        state.billsFilter.limit = 30;
+        state.billsFilter.page = 1;
         renderBills();
       });
       view.querySelector('#pf-cmt-select')?.addEventListener('change', e => {
         state.billsFilter.committee = e.target.value || null;
-        state.billsFilter.limit = 30;
+        state.billsFilter.page = 1;
         renderBills();
       });
       // 검색 (debounced)
@@ -17197,7 +17353,7 @@ function route() {
           clearTimeout(qTimer);
           qTimer = setTimeout(() => {
             state.billsFilter.q = e.target.value;
-            state.billsFilter.limit = 30;
+            state.billsFilter.page = 1;
             renderBills();
             const ni = document.getElementById('pf-search');
             if (ni) { ni.focus(); ni.setSelectionRange(ni.value.length, ni.value.length); }
@@ -17206,32 +17362,22 @@ function route() {
       }
       // Reset
       view.querySelector('#pf-reset')?.addEventListener('click', () => {
-        state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, q: '', limit: 30 };
+        state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, q: '', page: 1, perPage: 50 };
         renderBills();
       });
-      // 더 보기 (수동 클릭)
-      const moreBtn = view.querySelector('#pf-more');
-      if (moreBtn) {
-        moreBtn.addEventListener('click', () => {
-          state.billsFilter.limit += 50;
-          renderBills();
+      // V22.1 — 페이지네이션 버튼 클릭 (무한 스크롤 제거)
+      view.querySelectorAll('.pg-btn[data-page]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = parseInt(btn.dataset.page, 10);
+          if (!isNaN(target) && target !== state.billsFilter.page) {
+            state.billsFilter.page = target;
+            renderBills();
+            // 리스트 상단으로 스크롤
+            const feed = view.querySelector('.patch-feed');
+            if (feed) feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         });
-        // 무한 스크롤 — 버튼이 뷰포트에 들어오면 자동 로드
-        try {
-          const io = new IntersectionObserver((entries) => {
-            for (const en of entries) {
-              if (en.isIntersecting && !moreBtn.disabled) {
-                moreBtn.disabled = true;
-                state.billsFilter.limit += 50;
-                renderBills();
-                io.disconnect();
-                break;
-              }
-            }
-          }, { rootMargin: '300px' });
-          io.observe(moreBtn);
-        } catch (e) { /* 구형 브라우저 — 버튼만 작동 */ }
-      }
+      });
       // 발의자 클릭 → 상세
       view.querySelectorAll('.patch-by-mp[data-mid]').forEach(el => {
         el.addEventListener('click', (e) => {
