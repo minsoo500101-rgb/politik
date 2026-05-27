@@ -6782,7 +6782,7 @@ const POLITICIANS_VER = 23;
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
-    const r = await fetch('data/politicians.json?v=' + POLITICIANS_VER);
+    const r = await fetch('/data/politicians.json?v=' + POLITICIANS_VER);
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
@@ -7006,7 +7006,7 @@ function getBillProposerInfo(b) {
 async function loadPartyHistory() {
   if (state.partyHistory) return state.partyHistory;
   try {
-    const res = await fetch('data/party_history.json', { cache: 'force-cache' });
+    const res = await fetch('/data/party_history.json', { cache: 'force-cache' });
     if (!res.ok) throw new Error('party_history fetch failed');
     state.partyHistory = await res.json();
   } catch (e) {
@@ -8039,7 +8039,7 @@ function renderPartyDonut() {
 async function loadElection2026() {
   if (state.election2026) return state.election2026;
   try {
-    const r = await fetch('data/election_2026.json', { cache: 'no-cache' });
+    const r = await fetch('/data/election_2026.json', { cache: 'no-cache' });
     if (!r.ok) throw new Error('election_2026 fetch failed');
     state.election2026 = await r.json();
   } catch (e) {
@@ -8402,8 +8402,7 @@ function renderPledgeTrackerPage() {
               <span class="pt-card-party" style="background:${partyColor(g.winner_party)}">${escapeHtml(g.winner_party)}</span>
             </div>
             <div class="pt-card-meta">${g.winner_pct}% 득표 · 격차 ${g.gap}%p</div>
-            <div class="pt-card-cta">📋 2022 공약 5개 펼치기 ▼</div>
-            <div class="pt-card-body" data-loaded="0"></div>
+            <div class="pt-card-cta">📋 2022 공약 5개 보기 →</div>
           </div>
         `).join('')}
       </div>
@@ -8422,75 +8421,116 @@ async function setupPledgeTrackerEvents() {
     if (view) view.innerHTML = renderPledgeTrackerPage();
   }
   document.querySelectorAll('.pt-card').forEach(card => {
-    card.addEventListener('click', async (e) => {
-      // 내부 링크·버튼 클릭은 카드 토글 막음
+    card.addEventListener('click', (e) => {
+      // 내부 링크·버튼 클릭은 카드 클릭 막음
       if (e.target.closest('a, button')) return;
-      const body = card.querySelector('.pt-card-body');
-      const cta = card.querySelector('.pt-card-cta');
-      if (!body) return;
-      if (body.dataset.loaded === '1') {
-        const isOpen = body.style.display !== 'none' && body.style.display !== '';
-        body.style.display = isOpen ? 'none' : 'block';
-        if (cta) cta.textContent = isOpen ? '📋 2022 공약 5개 펼치기 ▼' : '📋 공약 접기 ▲';
-        return;
-      }
-      body.style.display = 'block';
-      body.innerHTML = '<div class="pt-loading"><span class="loading-spinner"></span> 2022 공약 fetch 중…</div>';
-      try {
-        const name = card.dataset.name;
-        const region = card.dataset.region;
-        const party = card.dataset.party;
-        const winners = await loadHistorical8Candidates();
-        const sidoFull = REGION_SHORT_TO_FULL[region] || region;
-        // 매칭: 이름+시도 (NEC가 2022 당시 시도명 사용)
-        let cand = winners.byNameSido.get(`${name}|${sidoFull}`);
-        // 폴백: 이름만으로 매칭 (당선자 이름은 유일)
-        if (!cand) {
-          cand = winners.all.find(c => c.name === name);
-        }
-        if (!cand) {
-          body.innerHTML = `<div class="pt-empty">⚠ NEC 후보 DB에서 매칭 실패. <a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="color:var(--link)">정책공약마당 직접 확인 →</a></div>`;
-          return;
-        }
-        const pledges = await loadHistorical8Pledges(cand.huboid);
-        if (!pledges.length) {
-          body.innerHTML = `<div class="pt-empty">8회 공약 데이터 없음 (NEC 미등록)</div>`;
-          body.dataset.loaded = '1';
-          return;
-        }
-        const pc = partyColor(party);
-        body.innerHTML = pledges.map((p, i) => {
-          const pid = `pt-${cand.huboid}-${i}`;
-          const titleClean = (p.title || '').replace(/[()<>]/g, '').slice(0, 30);
-          const newsQ = `${name} ${titleClean} 이행`;
-          return `
-            <div class="pt-pledge" style="border-left-color:${pc}">
-              <div class="pt-pledge-h">
-                <span class="promise-num">${escapeHtml(p.ord)}</span>
-                ${p.realm ? `<span class="promise-realm">${escapeHtml(p.realm)}</span>` : ''}
-              </div>
-              <div class="pt-pledge-title">${escapeHtml(p.title)}</div>
-              ${p.cont ? `<div class="pt-pledge-cont">${escapeHtml(p.cont)}</div>` : ''}
-              <div class="pledge-tools">
-                <button class="pledge-tool-btn" onclick="event.stopPropagation();loadPledgeNews('${pid}', '${escapeHtml(newsQ).replace(/'/g, "\\'")}')">📰 "${escapeHtml(name)} 공약 이행" 뉴스</button>
-                <a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(newsQ)}" target="_blank" rel="noopener" class="pledge-tool-btn" onclick="event.stopPropagation()">🔗 네이버 직접 →</a>
-              </div>
-              <div class="pledge-news" id="pledge-news-${pid}" data-loaded="0"></div>
-            </div>
-          `;
-        }).join('') + `
-          <div style="margin-top:12px;padding:10px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.2);border-radius:8px;font-size:11.5px;color:var(--text-2);text-align:center;line-height:1.5">
-            ⚠ <b>이행 여부는 패치 노트가 평가하지 않습니다.</b><br>
-            위 뉴스 검색으로 객관 자료를 보고 본인 기준으로 판단하세요.
-          </div>
-        `;
-        body.dataset.loaded = '1';
-        if (cta) cta.textContent = '📋 공약 접기 ▲';
-      } catch (err) {
-        body.innerHTML = `<div class="pt-empty">로드 실패: ${escapeHtml(err.message)}</div>`;
-      }
+      const name = card.dataset.name;
+      const region = card.dataset.region;
+      const party = card.dataset.party;
+      openHistoricalPledgeModal({ name, region, party });
     });
   });
+}
+
+// V20.6 — 8회 공약 모달 (인라인 펼치기 → 모달 형식)
+async function openHistoricalPledgeModal({ name, region, party }) {
+  const pc = partyColor(party);
+  // 모달 DOM 생성 (promise-modal 스타일 재사용)
+  let modal = document.getElementById('promise-modal-bg');
+  if (modal) modal.remove();
+  modal = document.createElement('div');
+  modal.id = 'promise-modal-bg';
+  modal.className = 'promise-modal-bg';
+  modal.innerHTML = `
+    <div class="promise-modal" id="promise-modal-box">
+      <div class="promise-modal-head" style="border-left:6px solid ${pc};padding-left:10px;margin-left:-10px">
+        <div>
+          <div class="promise-modal-title">${escapeHtml(name)} <em style="color:${pc}">${escapeHtml(party)}</em></div>
+          <div class="promise-modal-sub">${escapeHtml(region)} · 8회 지선(2022) 당선자 · 임기 2022.07~2026.06</div>
+        </div>
+        <button class="promise-modal-close" id="promise-modal-close">×</button>
+      </div>
+      <div class="cand-section-divider"><span>📋 2022년 등록 5대 공약</span></div>
+      <div id="pt-modal-body">
+        <div class="promise-loading"><span class="loading-spinner"></span> 2022 공약 불러오는 중…</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  // 닫기
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  document.getElementById('promise-modal-close').addEventListener('click', () => modal.remove());
+  document.addEventListener('keydown', function esc(e) {
+    if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', esc); }
+  });
+
+  // 공약 fetch
+  try {
+    const winners = await loadHistorical8Candidates();
+    const sidoFull = REGION_SHORT_TO_FULL[region] || region;
+    let cand = winners.byNameSido.get(`${name}|${sidoFull}`);
+    if (!cand) cand = winners.all.find(c => c.name === name);
+    if (!cand) {
+      document.getElementById('pt-modal-body').innerHTML = `
+        <div class="promise-loading">⚠ NEC 후보 DB에서 매칭 실패.<br><br>
+          <a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="color:var(--link)">정책공약마당 직접 확인 →</a>
+        </div>`;
+      return;
+    }
+    const pledges = await loadHistorical8Pledges(cand.huboid);
+    if (!pledges.length) {
+      document.getElementById('pt-modal-body').innerHTML = `<div class="promise-loading">8회 공약 데이터 없음 (NEC 미등록)</div>`;
+      return;
+    }
+    // 점수카드 평균 (8회 공약도 V20.3 룰 재사용)
+    const scores = pledges.map(scorePledge);
+    const avgScore = Math.round(scores.reduce((s, x) => s + x.score, 0) / scores.length);
+    const avgLevel = avgScore >= 80 ? 'A' : avgScore >= 60 ? 'B' : avgScore >= 40 ? 'C' : 'D';
+    const avgColor = avgScore >= 80 ? '#16a34a' : avgScore >= 60 ? '#0ea5e9' : avgScore >= 40 ? '#f59e0b' : '#dc2626';
+
+    document.getElementById('pt-modal-body').innerHTML = `
+      <div class="pledge-score" style="background:linear-gradient(135deg, ${avgColor}11 0%, ${avgColor}06 100%);border-color:${avgColor}55">
+        <span class="pledge-score-badge" style="background:${avgColor}">2022 공약 평균 <b>${avgLevel}</b> · ${avgScore}점</span>
+        <span style="font-size:11.5px;color:var(--text-2)">4년 전 약속의 <b style="color:${avgColor}">구체성</b></span>
+      </div>
+    ` + pledges.map((p, i) => {
+      const s = scores[i];
+      const pid = `pt-${cand.huboid}-${i}`;
+      const titleClean = (p.title || '').replace(/[()<>]/g, '').slice(0, 30);
+      const newsQ = `${name} ${titleClean} 이행`;
+      const checksHtml = s.checks.map(ch => `
+        <span class="pledge-check ${ch.ok ? 'ok' : 'no'}" title="${ch.ok ? '충족' : '미충족'} · 가중치 ${ch.w}점">
+          <span class="ico">${ch.ok ? '✓' : '✗'}</span>${escapeHtml(ch.k)}
+        </span>`).join('');
+      return `
+        <div class="promise-item" style="border-left-color:${pc}">
+          <div>
+            <span class="promise-num">${escapeHtml(p.ord)}</span>
+            ${p.realm ? `<span class="promise-realm">${escapeHtml(p.realm)}</span>` : ''}
+          </div>
+          <div class="promise-title">${escapeHtml(p.title)}</div>
+          ${p.cont ? `<div class="promise-cont">${escapeHtml(p.cont)}</div>` : ''}
+          <div class="pledge-score">
+            <span class="pledge-score-badge" style="background:${s.color}">${s.level} · ${s.score}점</span>
+            <div class="pledge-score-checks">${checksHtml}</div>
+          </div>
+          <div class="pledge-tools">
+            <button class="pledge-tool-btn" onclick="loadPledgeNews('${pid}', '${escapeHtml(newsQ).replace(/'/g, "\\'")}')">📰 "${escapeHtml(name)} 이행" 뉴스 검색</button>
+            <a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(newsQ)}" target="_blank" rel="noopener" class="pledge-tool-btn">🔗 네이버 직접 →</a>
+          </div>
+          <div class="pledge-news" id="pledge-news-${pid}" data-loaded="0"></div>
+        </div>`;
+    }).join('') + `
+      <div style="margin-top:14px;padding:12px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.25);border-radius:10px;font-size:12px;color:var(--text);text-align:center;line-height:1.6">
+        ⚠ <b>이행 여부는 패치 노트가 평가하지 않습니다.</b><br>
+        위 뉴스 검색으로 객관 자료를 보고 본인 기준으로 판단하세요.
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center;line-height:1.6">
+        출처: 중앙선거관리위원회 (data.go.kr OpenAPI · 2022 정책공약마당)
+      </div>`;
+  } catch (e) {
+    document.getElementById('pt-modal-body').innerHTML = `<div class="promise-loading">로드 실패: ${escapeHtml(e.message)}</div>`;
+  }
 }
 
 // (legacy 호환 — localStorage 설정이 있으면 외부 URL 사용)
@@ -9133,7 +9173,7 @@ function renderElection2026Page() {
 async function loadLocalElections() {
   if (state.localElections) return state.localElections;
   try {
-    const r = await fetch('data/local_elections.json', { cache: 'force-cache' });
+    const r = await fetch('/data/local_elections.json', { cache: 'force-cache' });
     if (!r.ok) throw new Error('local_elections fetch failed');
     state.localElections = await r.json();
   } catch (e) {
@@ -9293,7 +9333,7 @@ function renderLocalElectionsPage() {
 async function loadWorldCompare() {
   if (state.worldCompare) return state.worldCompare;
   try {
-    const res = await fetch('data/world_compare.json', { cache: 'force-cache' });
+    const res = await fetch('/data/world_compare.json', { cache: 'force-cache' });
     if (!res.ok) throw new Error('world_compare fetch failed');
     state.worldCompare = await res.json();
   } catch (e) {
@@ -9322,7 +9362,7 @@ async function loadEconomy() {
     try {
       // 캐시 버스터 — 10분 단위 변경 (CDN·브라우저 캐시 빠르게 무효화)
       const cb = Math.floor(Date.now() / 600000);
-      const r = await fetch('data/economy.json?v=' + cb, { cache: 'no-cache' });
+      const r = await fetch('/data/economy.json?v=' + cb, { cache: 'no-cache' });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       economyState.data = await r.json();
       economyState.liveStatus = 'fallback';
@@ -10944,6 +10984,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.6', date: '2026-05-27', title: '🔧 UI 개선 3종 + V20 부작용 fix', items: [
+    '🐛 critical: V20 History API 마이그레이션 부작용 — 상대 경로 fetch가 깊은 라우트(/history/parties 등)에서 깨짐',
+    '7개 data fetch (politicians·party_history·election_2026·local_elections·world_compare·economy·glossary) `data/` → `/data/` 절대 경로로 통일',
+    '🔧 후보자 비교 페이지 상세 보기 클릭 시 페이지 이동 fix — 클릭 인터셉터가 e.defaultPrevented 존중',
+    '🪟 공약 이행 추적 (/pledge-tracker) 카드 클릭 → 인라인 펼치기 대신 모달 형식으로 변경',
+    '모달은 9회 후보 공약과 같은 UX (점수카드·뉴스 검색·정책공약마당 출처)',
+    '8회 공약에도 평균 등급 + 각 공약 A~D 점수 동일 적용'
+  ]},
   { v: 'V20.5', date: '2026-05-27', title: '🔥 8회 지선 당선자 공약 이행 추적 (/pledge-tracker)', items: [
     '4년 전 약속, 지금까지 얼마나 지켰나? — 17개 광역단체장 8회(2022) 당선자 5대 공약 본문',
     'NEC OpenAPI에서 후보 lookup → 매칭 → 2022 공약 자동 fetch',
@@ -11425,7 +11473,7 @@ const glossaryState = { data: null, filter: { q: '', category: '' } };
 async function loadGlossary() {
   if (glossaryState.data) return glossaryState.data;
   try {
-    const r = await fetch('data/glossary.json');
+    const r = await fetch('/data/glossary.json');
     glossaryState.data = await r.json();
     return glossaryState.data;
   } catch { return null; }
@@ -13200,7 +13248,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.5 · 공약 이행 추적</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.6 · UI 개선</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -15422,6 +15470,8 @@ window.addEventListener('popstate', () => {
 });
 // 내부 링크 자동 인터셉트 — <a href="/foo">는 nav()로 처리, _blank·외부 링크는 그대로
 document.addEventListener('click', (e) => {
+  // 다른 element-level 핸들러가 이미 처리했으면 (e.preventDefault 호출) 패스
+  if (e.defaultPrevented) return;
   const a = e.target.closest && e.target.closest('a');
   if (!a) return;
   const href = a.getAttribute('href');
