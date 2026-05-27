@@ -8649,9 +8649,11 @@ async function loadEconomy() {
   if (economyState.loading) return null;
   economyState.loading = true;
   try {
-    const r = await fetch('data/economy.json');
+    // 캐시 버스터 — 시간당 1회 변경 (브라우저·CDN 캐시 무효화)
+    const cb = Math.floor(Date.now() / 3600000);
+    const r = await fetch('data/economy.json?v=' + cb);
     economyState.data = await r.json();
-    economyState.liveStatus = 'fallback'; // 일단 정적, 라이브 시도 별도
+    economyState.liveStatus = 'fallback';
     return economyState.data;
   } catch (e) {
     return null;
@@ -8671,37 +8673,73 @@ function ecosTimeToYear(time) {
 async function fetchEcosForIndicator(ind, startYear, endYear) {
   if (!ind.ecos || !ind.ecos.stat) return null;
   const period = ind.ecos.period || 'M';
+  const transform = ind.ecos.transform || null; // null, 'yoy' (전년동월비), 'sum_year' (연간 합계)
   let start, end;
   if (period === 'A') {
     start = String(startYear);
     end = String(endYear);
   } else {
-    // M, Q
     start = startYear + '01';
     end = endYear + '12';
   }
+  // yoy 변환은 전년 데이터가 필요해서 1년 더 fetch
+  const fetchStart = transform === 'yoy' ? (startYear - 1) + '01' : start;
   const itemParam = ind.ecos.item ? '&item=' + encodeURIComponent(ind.ecos.item) : '';
-  const url = `/api/ecos?stat=${ind.ecos.stat}&period=${period}&start=${start}&end=${end}${itemParam}`;
+  const url = `/api/ecos?stat=${ind.ecos.stat}&period=${period}&start=${fetchStart}&end=${end}${itemParam}`;
   try {
     const r = await fetch(url);
     if (!r.ok) return null;
     const j = await r.json();
     if (j.ecos_error || j.error || !j.data || !j.data.length) return null;
-    // 시간순 정렬 후 연도별 최신 값 채택 (그해 가장 최근 월/분기 데이터)
+    // 시간순 정렬
     const sorted = j.data
-      .filter(r => !isNaN(r.value) && r.time)
-      .map(r => ({ time: String(r.time), value: r.value }))
+      .filter(x => !isNaN(x.value) && x.time)
+      .map(x => ({ time: String(x.time), value: x.value }))
       .sort((a, b) => a.time.localeCompare(b.time));
-    const byYear = new Map();
+    if (!sorted.length) return null;
+    // 같은 시점 중복 row 처리 — 첫 값만 채택 (일관성)
+    const byTime = new Map();
     for (const row of sorted) {
-      const y = ecosTimeToYear(row.time);
+      if (!byTime.has(row.time)) byTime.set(row.time, row.value);
+    }
+    // 변환 처리
+    if (transform === 'yoy') {
+      // 전년 동월 대비 등락률 = (현재 - 전년 동월) / 전년 동월 * 100
+      const monthly = [];
+      for (const [time, value] of byTime) {
+        const prevYear = parseInt(time.slice(0, 4), 10) - 1;
+        const prevTime = prevYear + time.slice(4);
+        const prev = byTime.get(prevTime);
+        if (prev && prev !== 0) {
+          monthly.push({ time, year: parseInt(time.slice(0, 4), 10), value: (value - prev) / prev * 100 });
+        }
+      }
+      // 연도별 마지막 월 값 (그해 가장 최근 yoy)
+      const byYear = new Map();
+      for (const r of monthly) byYear.set(r.year, r.value);
+      if (!byYear.size) return null;
+      return [...byYear.entries()].sort((a, b) => a[0] - b[0]).map(([year, value]) => ({ year, value }));
+    }
+    if (transform === 'sum_year') {
+      // 월별 → 연간 합계 (수출액 등)
+      const byYear = new Map();
+      for (const [time, value] of byTime) {
+        const y = parseInt(time.slice(0, 4), 10);
+        byYear.set(y, (byYear.get(y) || 0) + value);
+      }
+      if (!byYear.size) return null;
+      // 현재 진행중인 연도는 부분합 — 데이터 표시는 그대로 두되 _partial 표시 옵션 가능
+      return [...byYear.entries()].sort((a, b) => a[0] - b[0]).map(([year, value]) => ({ year, value: Math.round(value) }));
+    }
+    // 기본: 연도별 마지막 값 (그해 가장 최근 월)
+    const byYear = new Map();
+    for (const [time, value] of byTime) {
+      const y = ecosTimeToYear(time);
       if (!y) continue;
-      byYear.set(y, row.value); // 정렬되어 있으므로 마지막 = 그 해 가장 최근
+      byYear.set(y, value);
     }
     if (!byYear.size) return null;
-    return [...byYear.entries()]
-      .sort((a, b) => a[0] - b[0])
-      .map(([year, value]) => ({ year, value }));
+    return [...byYear.entries()].sort((a, b) => a[0] - b[0]).map(([year, value]) => ({ year, value }));
   } catch {
     return null;
   }
@@ -8901,11 +8939,15 @@ function renderEconomyBody() {
     ${presidentAvgTable()}
     <div class="econ-foot">
       📚 <b>출처</b>: 한국은행 ECOS · 통계청 KOSIS · 관세청 · 한국거래소 공식 공개 데이터.<br>
-      ${economyState.liveStatus === 'live'
-        ? `🟢 <b style="color:var(--ok)">라이브 데이터</b> — 한국은행 ECOS API 실시간 연결 (${economyState.liveCount || 0}개 지표). 페이지 카드 우측 상단 <span class="econ-live-dot">●</span> 표시.`
-        : economyState.liveStatus === 'pending'
-        ? `⏳ <b>ECOS 라이브 데이터 fetch 중…</b> 1-2초 후 자동 갱신`
-        : `📦 정적 데이터 (${escapeHtml(d.updatedAt)}) — ECOS API 키가 활성화되면 자동 라이브 전환`}<br>
+      ${(() => {
+        const total = indicators.length;
+        const liveCount = indicators.filter(i => i._live).length;
+        if (economyState.liveStatus === 'pending') return `⏳ <b>ECOS 라이브 데이터 fetch 중…</b> (${liveCount}/${total}) 1-2초 후 자동 갱신`;
+        if (liveCount > 0) {
+          return `🟢 <b style="color:var(--ok)">라이브 데이터</b> — ECOS API 실시간 (${liveCount}/${total} 지표). 카드 우측 상단 <span class="econ-live-dot">●</span> 표시. 나머지 ${total-liveCount}개는 정적 (수동 갱신).`;
+        }
+        return `📦 정적 데이터 (${escapeHtml(d.updatedAt)}) — ECOS API 키가 활성화되면 자동 라이브 전환`;
+      })()}<br>
       ⚠ 본 사이트는 <b>객관 수치 표시</b>만 합니다. 투자 자문·종목 추천 X. 자본시장법 회피.
     </div>
   `;

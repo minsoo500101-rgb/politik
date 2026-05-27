@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2026-05-27",
   "_note": "한국 핵심 경제 지표 시계열 (2015~2025). 출처: 한국은행 ECOS, 통계청 KOSIS, 한국거래소 공식. 정부 공식 공개 데이터 인용 — 추가 라이선스 불필요.",
   "indicators": [
@@ -55,12 +55,12 @@
       "id": "cpi",
       "label": "소비자물가 상승률",
       "unit": "%",
-      "source": "통계청",
+      "source": "통계청 (ECOS)",
       "source_url": "https://kostat.go.kr",
-      "desc": "전년 동월 대비 소비자물가지수(CPI) 상승률.",
+      "desc": "전년 동월 대비 소비자물가지수(CPI) 상승률 — 라이브는 지수 기준, 클라이언트에서 전년비 계산.",
       "interpretation": "한국은행 목표는 연 2%. 5% 이상이면 고물가, 0% 미만이면 디플레.",
       "higher_is_good": false,
-      "ecos": { "stat": "901Y009", "period": "M", "item": "0" },
+      "ecos": { "stat": "901Y009", "period": "M", "item": "0", "transform": "yoy" },
       "data": [
         { "year": 2015, "value": 0.7 },
         { "year": 2016, "value": 1.0 },
@@ -79,11 +79,12 @@
       "id": "unemployment",
       "label": "실업률",
       "unit": "%",
-      "source": "통계청",
+      "source": "통계청 (ECOS)",
       "source_url": "https://kosis.kr",
       "desc": "경제활동인구 중 실업자 비율 (연평균).",
       "interpretation": "낮을수록 좋음. 한국은 3% 내외 유지가 평균.",
       "higher_is_good": false,
+      "ecos": { "stat": "901Y027", "period": "M", "item": "I61BC" },
       "data": [
         { "year": 2015, "value": 3.6 },
         { "year": 2016, "value": 3.7 },
@@ -171,12 +172,13 @@
     {
       "id": "export",
       "label": "수출액",
-      "unit": "억$",
-      "source": "관세청",
+      "unit": "백만$",
+      "source": "관세청 (ECOS)",
       "source_url": "https://www.customs.go.kr",
-      "desc": "연간 총 수출액 (달러 기준).",
+      "desc": "월간 상품수출 (백만달러). 한국은행 ECOS 국제수지 통계.",
       "interpretation": "한국 GDP의 약 40%가 수출. 글로벌 경기·반도체 수요에 민감.",
       "higher_is_good": true,
+      "ecos": { "stat": "301Y013", "period": "M", "item": "110000", "transform": "sum_year" },
       "data": [
         { "year": 2015, "value": 5267 },
         { "year": 2016, "value": 4954 },
