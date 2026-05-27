@@ -4571,6 +4571,103 @@
     text-align: center; padding: 30px;
     color: var(--dim); font-size: 13px;
   }
+  /* V20.3 — 공약 점수카드 (룰 기반) */
+  .pledge-score {
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .pledge-score-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 11px; font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .pledge-score-badge b { font-size: 14px; }
+  .pledge-score-checks {
+    display: flex; gap: 6px; flex-wrap: wrap; flex: 1;
+  }
+  .pledge-check {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10.5px; font-weight: 600;
+    background: var(--bg-elev);
+    color: var(--text-2);
+    border: 1px solid var(--border);
+  }
+  .pledge-check.ok { color: var(--ok); background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); }
+  .pledge-check.no { color: var(--dim); }
+  .pledge-check .ico { font-size: 9px; }
+  .pledge-tools {
+    margin-top: 8px;
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .pledge-tool-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.13s;
+  }
+  .pledge-tool-btn:hover {
+    background: var(--text); color: var(--bg-card); border-color: var(--text);
+  }
+  .pledge-news {
+    margin-top: 8px; padding: 8px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: none;
+  }
+  .pledge-news.open { display: block; }
+  .pledge-news-loading { font-size: 11px; color: var(--dim); padding: 6px 0; text-align: center; }
+  .pledge-news-item {
+    display: block;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .pledge-news-item:last-child { border-bottom: 0; }
+  .pledge-news-item:hover { color: var(--link); }
+  .pledge-news-meta {
+    font-size: 10.5px; color: var(--dim);
+    margin-top: 2px;
+  }
+  .pledge-news-empty { font-size: 11px; color: var(--dim); padding: 4px 0; }
+  /* 같은 지역 후보 비교 진입 배너 */
+  .pledge-compare-banner {
+    margin: 12px 0 8px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, rgba(37,99,235,0.10) 0%, rgba(14,165,233,0.08) 100%);
+    border: 1px solid rgba(37,99,235,0.25);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .pledge-compare-banner b { color: var(--accent); }
+  .pledge-compare-banner a {
+    padding: 5px 12px;
+    background: var(--accent);
+    color: #fff !important;
+    border-radius: 8px;
+    font-size: 11.5px; font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .pledge-compare-banner a:hover { background: var(--accent-strong); }
   /* 후보자 detail 모달 — 기본 정보 */
   .cand-info-grid {
     display: grid;
@@ -7869,6 +7966,87 @@ async function necFetch(endpoint, params = {}) {
   return r.json();
 }
 
+// V20.3 — 공약 점수카드 (룰 기반, AI 불필요)
+function scorePledge(p) {
+  const cont = (p.cont || '').trim();
+  const title = (p.title || '').trim();
+  const checks = [];
+  let score = 0;
+  // 1. 구체적 수치 (숫자 포함)
+  const hasNumber = /\d/.test(cont);
+  checks.push({ k: '수치', ok: hasNumber, w: 20 });
+  if (hasNumber) score += 20;
+  // 2. 예산·재원 명시
+  const hasBudget = /(예산|재원|투자|조 ?원|억 ?원|만 ?원|투입|확보)/.test(cont);
+  checks.push({ k: '예산', ok: hasBudget, w: 25 });
+  if (hasBudget) score += 25;
+  // 3. 기간·일정
+  const hasDeadline = /(\d{4} ?년|임기 ?내|연내|연도|개월|단계별|로드맵|까지|이내|마련|시점)/.test(cont);
+  checks.push({ k: '기간', ok: hasDeadline, w: 20 });
+  if (hasDeadline) score += 20;
+  // 4. 추진 방법
+  const hasMethod = /(추진|구축|설치|확대|시행|개정|제정|증설|신설|확충|마련|조성|운영|개발|구성|도입|운영|체계|시스템)/.test(cont);
+  checks.push({ k: '추진방법', ok: hasMethod, w: 15 });
+  if (hasMethod) score += 15;
+  // 5. 본문 충실도 (80자 이상)
+  const isDetailed = cont.length >= 80;
+  checks.push({ k: `본문 ${cont.length}자`, ok: isDetailed, w: 20 });
+  if (isDetailed) score += 20;
+  let level, color;
+  if (score >= 80) { level = 'A'; color = '#16a34a'; }
+  else if (score >= 60) { level = 'B'; color = '#0ea5e9'; }
+  else if (score >= 40) { level = 'C'; color = '#f59e0b'; }
+  else { level = 'D'; color = '#dc2626'; }
+  return { score, checks, level, color };
+}
+
+// V20.3 — 공약별 뉴스 lazy load
+async function loadPledgeNews(pledgeId, query) {
+  const target = document.getElementById('pledge-news-' + pledgeId);
+  if (!target) return;
+  target.classList.add('open');
+  if (target.dataset.loaded === '1') return;
+  target.innerHTML = '<div class="pledge-news-loading"><span class="loading-spinner"></span> 관련 뉴스 검색 중…</div>';
+  const news = await loadNaverNews(query, 5, 'sim');
+  if (!news || !news.items || !news.items.length) {
+    target.innerHTML = '<div class="pledge-news-empty">관련 뉴스 검색 결과 없음.</div>';
+    target.dataset.loaded = '1';
+    return;
+  }
+  const strip = s => (s || '').replace(/<\/?b>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&apos;/g, "'");
+  target.innerHTML = news.items.slice(0, 3).map(item => {
+    const t = strip(item.title);
+    const d = strip(item.description).slice(0, 80);
+    const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' }) : '';
+    const src = (item.originallink || item.link || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+    return `
+      <a class="pledge-news-item" href="${escapeHtml(item.link || item.originallink)}" target="_blank" rel="noopener">
+        <div>${escapeHtml(t)}</div>
+        <div class="pledge-news-meta">${date ? date + ' · ' : ''}${escapeHtml(src)}</div>
+      </a>`;
+  }).join('');
+  target.dataset.loaded = '1';
+}
+window.loadPledgeNews = loadPledgeNews; // onclick에서 접근
+
+// 같은 지역 후보 비교 URL 생성 — sgTypecode 기준 (3=광역단체장, 4=시군구청장, 11=교육감)
+function buildRegionCompareUrl(currentCand, allCands) {
+  if (!currentCand) return null;
+  const sgType = currentCand.sgTypecode;
+  const isMuni = sgType === '4'; // 시군구청장은 시군구 단위로 매칭
+  const same = allCands.filter(c =>
+    c.sgTypecode === sgType &&
+    c.sdName === currentCand.sdName &&
+    (!isMuni || c.sggName === currentCand.sggName)
+  );
+  if (same.length < 2) return null;
+  // 본인 + 다른 후보 최대 2명 (최대 3 슬롯)
+  const ordered = [currentCand, ...same.filter(c => c.huboid !== currentCand.huboid)].slice(0, 3);
+  const slots = ['a', 'b', 'c'];
+  const qs = ordered.map((c, i) => `${slots[i]}=${encodeURIComponent(c.huboid)}`).join('&');
+  return { url: '/compare-cand?' + qs, count: same.length };
+}
+
 // 후보자 5대 공약 모달
 async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
   // state에서 후보자 풀 정보 찾기
@@ -7949,16 +8127,16 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
       return;
     }
     // 첫 번째 아이템에 prmsCnt, prmsTitle1~10, prmsRealmName1~10, prmsCont1~10 형태
-    const c = items[0];
-    const cnt = parseInt(c.prmsCnt || '0', 10) || 5;
+    const polData = items[0];
+    const cnt = parseInt(polData.prmsCnt || '0', 10) || 5;
     const promises = [];
     for (let i = 1; i <= 10; i++) {
-      if (c['prmsTitle' + i] || c['prmsCont' + i]) {
+      if (polData['prmsTitle' + i] || polData['prmsCont' + i]) {
         promises.push({
-          ord: c['prmsOrd' + i] || i,
-          realm: c['prmsRealmName' + i] || '',
-          title: c['prmsTitle' + i] || '',
-          cont: c['prmsCont' + i] || '',
+          ord: polData['prmsOrd' + i] || i,
+          realm: polData['prmsRealmName' + i] || '',
+          title: polData['prmsTitle' + i] || '',
+          cont: polData['prmsCont' + i] || '',
         });
       }
     }
@@ -7967,7 +8145,34 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
       return;
     }
     const pc = partyColor(party);
-    document.getElementById('promise-modal-body').innerHTML = promises.map((p, i) => `
+    // 평균 점수 (전체 5대 공약)
+    const scores = promises.map(scorePledge);
+    const avgScore = Math.round(scores.reduce((s, x) => s + x.score, 0) / scores.length);
+    const avgLevel = avgScore >= 80 ? 'A' : avgScore >= 60 ? 'B' : avgScore >= 40 ? 'C' : 'D';
+    const avgColor = avgScore >= 80 ? '#16a34a' : avgScore >= 60 ? '#0ea5e9' : avgScore >= 40 ? '#f59e0b' : '#dc2626';
+    // 같은 지역 후보 비교 배너
+    const allCandsForRegion = [...(nec.governors||[]), ...(nec.munis||[]), ...(nec.eduSupers||[])];
+    const cmp = c ? buildRegionCompareUrl(c, allCandsForRegion) : null;
+    const compareBanner = cmp ? `
+      <div class="pledge-compare-banner">
+        <div>📊 이 지역 같은 직책 후보 <b>${cmp.count}명</b> 공약 옆에 옆에 비교</div>
+        <a href="${cmp.url}">🆚 비교 보기 →</a>
+      </div>` : '';
+    // 평균 점수카드 (전체 요약)
+    const overallScore = `
+      <div class="pledge-score" style="background:linear-gradient(135deg, ${avgColor}11 0%, ${avgColor}06 100%);border-color:${avgColor}55">
+        <span class="pledge-score-badge" style="background:${avgColor}">평균 등급 <b>${avgLevel}</b> · ${avgScore}점</span>
+        <span style="font-size:11.5px;color:var(--text-2)">5대 공약 평균 — <b style="color:${avgColor}">${avgScore >= 80 ? '구체적' : avgScore >= 60 ? '양호' : avgScore >= 40 ? '보통' : '모호'}</b></span>
+      </div>`;
+    document.getElementById('promise-modal-body').innerHTML = overallScore + compareBanner + promises.map((p, i) => {
+      const s = scores[i];
+      const pid = `${cnddtId}-${i}`;
+      const newsQ = (p.title || '').replace(/\(.*?\)/g, '').replace(/[<>]/g, '').trim().slice(0, 40);
+      const checksHtml = s.checks.map(ch => `
+        <span class="pledge-check ${ch.ok ? 'ok' : 'no'}" title="${ch.ok ? '충족' : '미충족'} · 가중치 ${ch.w}점">
+          <span class="ico">${ch.ok ? '✓' : '✗'}</span>${escapeHtml(ch.k)}
+        </span>`).join('');
+      return `
       <div class="promise-item" style="border-left-color:${pc}">
         <div>
           <span class="promise-num">${escapeHtml(p.ord)}</span>
@@ -7975,8 +8180,21 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
         </div>
         <div class="promise-title">${escapeHtml(p.title)}</div>
         ${p.cont ? `<div class="promise-cont">${escapeHtml(p.cont)}</div>` : ''}
+        <div class="pledge-score">
+          <span class="pledge-score-badge" style="background:${s.color}">${s.level} · ${s.score}점</span>
+          <div class="pledge-score-checks">${checksHtml}</div>
+        </div>
+        <div class="pledge-tools">
+          <button class="pledge-tool-btn" onclick="loadPledgeNews('${pid}', '${escapeHtml(newsQ).replace(/'/g, "\\'")}')">📰 관련 뉴스 검색</button>
+        </div>
+        <div class="pledge-news" id="pledge-news-${pid}" data-loaded="0"></div>
       </div>
-    `).join('') + `<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center">출처: 중앙선거관리위원회 (data.go.kr OpenAPI)</div>`;
+    `;}).join('') + `
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center;line-height:1.6">
+        <div>📋 공약 본문: <b>중앙선거관리위원회</b> (data.go.kr OpenAPI · 정책공약마당)</div>
+        <div>📊 점수카드: 패치 노트 자체 룰 (수치·예산·기간·추진방법·본문량 5개 자동 평가)</div>
+        <div>📰 관련 뉴스: 네이버 검색 API</div>
+      </div>`;
   } catch (e) {
     document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">공약 fetch 실패: ${escapeHtml(e.message)}</div>`;
   }
@@ -10433,6 +10651,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.3', date: '2026-05-27', title: '📊 공약 모달 풍부화 — 점수카드·뉴스·지역 비교', items: [
+    '🅰 공약 점수카드 (룰 기반, AI 불필요) — 수치·예산·기간·추진방법·본문량 5개 자동 평가',
+    '5대 공약 평균 등급 (A/B/C/D) + 색상 배지 표시',
+    '각 공약마다 ✓✗ 체크리스트로 어떤 항목 충족했는지 한눈에',
+    '📰 공약별 관련 뉴스 토글 — 네이버 검색 API로 그 공약 본문 검색 (lazy load)',
+    '🔄 같은 지역 같은 직책 후보 N명 공약 옆에 옆에 비교 진입 배너 (자동 URL 생성)',
+    '비용 0원 (룰 기반 점수 + 기존 API 활용)'
+  ]},
   { v: 'V20.2', date: '2026-05-27', title: '🗳 선거 narrative 홈 모드 — D-30~D-Day 자동 적용', items: [
     '헤어 버튼 3종 시즌별 자동 전환',
     '선거 모드 (D-30~D-Day): 🔴 9회 지선 D-X · 🆚 후보 5대 공약 비교 · 💰 경제로 정부 평가',
@@ -12663,7 +12889,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.2 · 선거 모드</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.3 · 공약 점수카드</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
