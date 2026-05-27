@@ -152,7 +152,9 @@
     --text: #111827;
     --text-2: #4b5563;
     --dim: #9ca3af;
-    --accent: #111827;
+    --accent: #2563eb;
+    --accent-strong: #1d4ed8;
+    --danger: #dc2626;
     --link: #1e40af;
     --ok: #059669;
     --warn: #d97706;
@@ -371,6 +373,9 @@
     --text: #e6edf3;
     --text-2: #b8c1cc;
     --dim: #7d858f;
+    --accent: #58a6ff;
+    --accent-strong: #79b8ff;
+    --danger: #f85149;
     --link: #6cb8ff;
     --ok: #3fb950;
     --warn: #d29922;
@@ -9069,9 +9074,9 @@ function renderEconomyBody() {
     const isDown = ind.higher_is_good === true ? delta < 0 : ind.higher_is_good === false ? delta > 0 : false;
     const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
     // 화살표 색 (델타 방향성 표시)
-    const arrowColor = ind.higher_is_good == null ? 'var(--text)' : isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--text-2)';
+    const arrowColor = ind.higher_is_good == null ? 'var(--text)' : isUp ? 'var(--ok)' : isDown ? 'var(--danger)' : 'var(--text-2)';
     // 라인 색 (sparkline 본체) — 항상 진하게 표시
-    const lineColor = ind.higher_is_good == null ? 'var(--accent)' : isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--accent)';
+    const lineColor = ind.higher_is_good == null ? 'var(--accent)' : isUp ? 'var(--ok)' : isDown ? 'var(--danger)' : 'var(--accent)';
 
     // 정부 임기 마커 — 정식 대통령만 표시 (권한대행 제외, 겹침·가독성 문제)
     const presMarkers = [];
