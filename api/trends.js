@@ -36,12 +36,26 @@ export default async function handler(req, res) {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; KoreaPatchNotes/1.0; +https://patchkr.com)',
         'Accept': 'application/rss+xml, text/xml, */*',
+        'Accept-Language': 'ko-KR,ko;q=0.9',
       },
     });
     if (!r.ok) {
       return res.status(502).json({ error: 'Google Trends fetch 실패', status: r.status });
     }
-    const xml = await r.text();
+    // 명시적 UTF-8 디코딩 (Vercel Edge에서 r.text() charset 오인 회피)
+    const buf = await r.arrayBuffer();
+    const xml = new TextDecoder('utf-8').decode(buf);
+
+    // 디버그 모드: ?debug=1
+    if (req.query.debug === '1') {
+      return res.status(200).json({
+        debug: true,
+        xml_length: xml.length,
+        xml_preview: xml.slice(0, 1500),
+        contains_korean: /[가-힣]/.test(xml),
+      });
+    }
+
     const items = parseTrendsRss(xml);
     return res.status(200).json({
       items,
