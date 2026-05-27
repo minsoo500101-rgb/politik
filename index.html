@@ -3332,10 +3332,40 @@
     margin-bottom: 6px;
   }
   .gloss-def {
-    font-size: 13px; color: var(--text-2);
+    font-size: 13px; color: var(--text);
     line-height: 1.55;
     margin-bottom: 10px;
+    font-weight: 600;
   }
+  /* V22.3 — 백과사전 필드 */
+  .gloss-card-rich {
+    border-left-width: 4px;
+  }
+  .gloss-rich-badge {
+    font-size: 12px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .gloss-def-long {
+    font-size: 12.5px; color: var(--text-2);
+    line-height: 1.65;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    background: var(--bg-elev);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+  }
+  .gloss-example, .gloss-history {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background: var(--bg-elev);
+    border-radius: 5px;
+  }
+  .gloss-example b { color: #059669; font-weight: 700; margin-right: 4px; }
+  .gloss-history b { color: #7c3aed; font-weight: 700; margin-right: 4px; }
   .gloss-related {
     font-size: 11px; color: var(--dim);
     display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
@@ -4244,13 +4274,24 @@
   }
   .trend-keyword:hover { color: var(--accent); }
   .trend-meta { margin-top: 4px; }
-  .trend-traffic {
-    display: inline-block;
+  .trend-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .trend-traffic, .trend-time, .trend-cat {
+    display: inline-flex; align-items: center;
     font-size: 11px; font-weight: 700;
     padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .trend-traffic {
     background: rgba(220,38,38,0.08);
     color: #dc2626;
-    border-radius: 10px;
+  }
+  .trend-time {
+    background: var(--bg-elev);
+    color: var(--text-2);
+  }
+  .trend-cat {
+    color: #fff;
+    letter-spacing: 0.2px;
   }
   [data-theme="dark"] .trend-traffic { background: rgba(248,113,113,0.15); color: #f87171; }
   .trend-pol-link {
@@ -7350,7 +7391,7 @@
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V22.1</a>
+      <a href="/changelog" id="foot-year">V22.3</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11876,6 +11917,7 @@ async function loadGoogleTrendsKR() {
         pictureSource: it.picture_source || '',
         newsItems: (it.news_items || []).slice(0, 3),
         politician: matched || null,
+        category: it.category || null,  // V22.2 — 자동 분류
       };
     });
     const data = { items, total: items.length, fetchedAt: j.fetched_at };
@@ -12092,13 +12134,19 @@ async function renderTodayTrends() {
       target.innerHTML = `<div class="today-empty" style="grid-column:1/-1;padding:40px;text-align:center">트렌드 데이터 없음 (API 응답 실패)</div>`;
       return;
     }
+    // V22.2 — 트렌드 카드 풍부화 (카테고리·시간·정치인)
     target.innerHTML = data.items.map(it => {
       const isPolitician = !!it.politician;
       const p = it.politician;
-      const partyColor_ = isPolitician && p?.POLY_NM ? partyColor(p.POLY_NM) : 'var(--accent)';
+      const cat = it.category || { id: 'other', label: '📌 기타', color: '#6b7280' };
+      // 정치인이면 정당 색, 아니면 카테고리 색
+      const topColor = isPolitician && p?.POLY_NM ? partyColor(p.POLY_NM) : cat.color;
       const trafficBadge = it.traffic ? `<span class="trend-traffic">🔍 ${escapeHtml(it.traffic)}</span>` : '';
+      const timeAgo = it.pubDate ? formatTimeAgo(new Date(it.pubDate)) : '';
+      const timeBadge = timeAgo ? `<span class="trend-time">⏱ ${escapeHtml(timeAgo)}</span>` : '';
+      const catBadge = `<span class="trend-cat" style="background:${cat.color}">${escapeHtml(cat.label)}</span>`;
       const polBadge = isPolitician
-        ? `<a class="trend-pol-link" href="/m/${encodeURIComponent(p.MONA_CD)}" style="background:${partyColor_}">${escapeHtml(p.POLY_NM || '정치인')} · 인물 상세 →</a>`
+        ? `<a class="trend-pol-link" href="/m/${encodeURIComponent(p.MONA_CD)}" style="background:${topColor}">👤 ${escapeHtml(p.POLY_NM || '정치인')} · ${escapeHtml(p.HG_NM)} 상세 →</a>`
         : '';
       const newsHtml = (it.newsItems || []).slice(0, 3).map(n => {
         const src = n.source || (n.url ? (n.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '');
@@ -12112,12 +12160,12 @@ async function renderTodayTrends() {
           </a>`;
       }).join('');
       return `
-        <div class="trend-card" style="border-top-color:${partyColor_}">
+        <div class="trend-card" style="border-top-color:${topColor}">
           <div class="trend-card-h">
             <div class="trend-rank">#${it.rank}</div>
             <div class="trend-keyword-wrap">
               <a class="trend-keyword" href="https://search.naver.com/search.naver?where=nexearch&query=${encodeURIComponent(it.keyword)}" target="_blank" rel="noopener">${escapeHtml(it.keyword)}</a>
-              <div class="trend-meta">${trafficBadge}</div>
+              <div class="trend-meta">${catBadge}${trafficBadge}${timeBadge}</div>
             </div>
           </div>
           ${polBadge}
@@ -13026,6 +13074,22 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V22.3', date: '2026-05-28', title: '📚 용어 사전 백과사전 확장 (136 → 213개) + 트렌드 정밀화', items: [
+    "사용자 요청: '검색 실시간 트렌드 세밀 검토 + 정치용어 사전 백과사전만큼 채우기'",
+    '✅ 카테고리 8 → 14개 (경제·국제·미디어·시민·헌법·정치학 추가)',
+    '✅ 용어 136 → 213개 (+77 신규: GDP·인플레이션·기준금리·FTA·G7·G20·OECD·UN·삼권분립·법치주의·페미니즘·이대남·기본소득·최저임금·이재명·윤석열 등)',
+    '🆕 def_long 필드 (250자 평균 백과사전급) — 77개 용어 적용',
+    '🆕 example 필드 — 실제 사례 (8개)',
+    '🆕 history 필드 — 역사적 배경 (24개)',
+    '📖 백과사전 아이콘으로 풍부 용어 표시 / 색상 강조 leftborder',
+    '🔧 트렌드 API 정밀 보완 (V22.2):',
+    '  • 화이트리스트: SBS·KBS·BTS·KIA·LG 등 한국 약어 통과',
+    '  • 모호어 필터: 기사·뉴스·데이터·회사 등 너무 일반어 제외',
+    '  • 띄어쓰기 정규화 (Google 분리 문제 fix)',
+    '  • 자동 카테고리: 정치/경제/연예/스포츠/사회/IT/국제 7분류',
+    '  • 시간 표시: 30분 전·2시간 전 (pubDate 기반)',
+    '  • 중복 제거: 비슷한 키워드 통합 (오상진/오상진 아내 → primary만)'
+  ]},
   { v: 'V22.1', date: '2026-05-28', title: '📄 법안 페이지 페이지네이션 (무한 스크롤 폐기)', items: [
     "사용자 피드백: '전체 패치노트 끝도 없이 내려간다 1500건이 넘으니까'",
     '🗑 무한 스크롤 (IntersectionObserver) 완전 제거',
@@ -13719,9 +13783,12 @@ function renderGlossaryBody() {
     items.sort((a, b) => a.term.localeCompare(b.term, 'ko'));
     items.forEach(t => {
       html += `
-        <div class="gloss-card" data-term="${escapeHtml(t.term)}">
-          <div class="gloss-term" style="color:${catInfo.color}">${escapeHtml(t.term)}</div>
+        <div class="gloss-card ${t.def_long ? 'gloss-card-rich' : ''}" data-term="${escapeHtml(t.term)}">
+          <div class="gloss-term" style="color:${catInfo.color}">${escapeHtml(t.term)}${t.def_long ? ' <span class="gloss-rich-badge">📖</span>' : ''}</div>
           <div class="gloss-def">${escapeHtml(t.def)}</div>
+          ${t.def_long ? `<div class="gloss-def-long">${escapeHtml(t.def_long)}</div>` : ''}
+          ${t.example ? `<div class="gloss-example"><b>예시</b> ${escapeHtml(t.example)}</div>` : ''}
+          ${t.history ? `<div class="gloss-history"><b>역사</b> ${escapeHtml(t.history)}</div>` : ''}
           ${t.related && t.related.length ? `<div class="gloss-related">관련: ${t.related.map(r => `<span class="gloss-rel-tag" data-rel="${escapeHtml(r)}">${escapeHtml(r)}</span>`).join('')}</div>` : ''}
         </div>`;
     });
@@ -15514,7 +15581,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.1 · 📄 페이지네이션</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.3 · 📚 사전 백과사전</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
