@@ -5120,6 +5120,71 @@
     text-align: center; padding: 30px;
     color: var(--dim); font-size: 13px;
   }
+  /* V22.0 — 통합 소셜 투표 (정치·경제·트렌드 공용) */
+  .social-vote {
+    margin: 10px 0;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .social-vote-h {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap; gap: 6px;
+  }
+  .social-vote-question {
+    font-size: 12px; font-weight: 700;
+    color: var(--text);
+  }
+  .social-vote-total {
+    font-size: 11px; font-weight: 600;
+    color: var(--dim);
+  }
+  .social-vote-btns {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .social-vote-btn {
+    padding: 7px 10px;
+    background: var(--bg-elev);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px; font-weight: 700;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.13s;
+  }
+  .social-vote-btn:hover { transform: translateY(-1px); }
+  .social-vote-support:hover { background: rgba(22,163,74,0.10); border-color: #16a34a; color: #16a34a; }
+  .social-vote-oppose:hover { background: rgba(220,38,38,0.10); border-color: #dc2626; color: #dc2626; }
+  .social-vote-btn.selected.social-vote-support { background: #16a34a; border-color: #16a34a; color: #fff; }
+  .social-vote-btn.selected.social-vote-oppose { background: #dc2626; border-color: #dc2626; color: #fff; }
+  .social-vote-bar { font-size: 11px; }
+  .sv-bar-row { display: flex; flex-direction: column; gap: 4px; }
+  .sv-bar-fill {
+    height: 8px;
+    background: var(--bg-elev);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .sv-bar-sup {
+    height: 100%;
+    background: linear-gradient(90deg, #16a34a, #22c55e);
+    transition: width 0.4s ease;
+  }
+  .sv-bar-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10.5px; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .sv-pct-sup { color: #16a34a; }
+  .sv-pct-opp { color: #dc2626; }
+  [data-theme="dark"] .sv-pct-sup { color: #22c55e; }
+  [data-theme="dark"] .sv-pct-opp { color: #f87171; }
+
   /* V21.0 — 공약 이행 투표 (4지선다) */
   .ihaeng-vote {
     margin-top: 10px;
@@ -7229,7 +7294,7 @@
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V21.7</a>
+      <a href="/changelog" id="foot-year">V22.0</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -9062,6 +9127,137 @@ async function syncStanceToServer(politicianId, politicianName, stance) {
   } catch {}
 }
 
+// ============================================================
+// V22.0 — 통합 소셜 투표 (정치·경제·트렌드·이슈 통합)
+// ============================================================
+// 라벨 매핑 — target_type별 버튼 텍스트 (UX 분화)
+const SOCIAL_VOTE_LABELS = {
+  politician: { support: '👍 지지', oppose: '👎 반대' },
+  bill:       { support: '✅ 찬성', oppose: '❌ 반대' },
+  pledge:     { support: '✅ 찬성', oppose: '❌ 반대' },
+  economy:    { support: '😊 동의', oppose: '😟 우려' },
+  trend:      { support: '👀 주목', oppose: '😴 별로' },
+  news:       { support: '👍 동의', oppose: '👎 비동의' },
+  topic:      { support: '✅ 찬성', oppose: '❌ 반대' },
+};
+
+async function submitSocialVote(targetType, targetId, label, vote, meta) {
+  const userId = getOrCreateAnonUserId();
+  if (!vote) {
+    // 투표 제거
+    return supabaseRest(
+      `/social_votes?user_id=eq.${encodeURIComponent(userId)}&target_type=eq.${encodeURIComponent(targetType)}&target_id=eq.${encodeURIComponent(targetId)}`,
+      { method: 'DELETE' }
+    );
+  }
+  return supabaseRest('/social_votes?on_conflict=target_type,target_id,user_id', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify([{
+      target_type: targetType,
+      target_id: targetId,
+      target_label: (label || '').slice(0, 200),
+      meta: meta || null,
+      user_id: userId,
+      vote: vote,
+    }]),
+  });
+}
+
+async function loadSocialVotes(targetType, targetId) {
+  try {
+    const data = await supabaseRest(
+      `/social_votes?target_type=eq.${encodeURIComponent(targetType)}&target_id=eq.${encodeURIComponent(targetId)}&select=vote,user_id`
+    );
+    const counts = { support: 0, oppose: 0 };
+    for (const v of (data || [])) {
+      if (counts[v.vote] !== undefined) counts[v.vote]++;
+    }
+    const userId = getOrCreateAnonUserId();
+    const my = (data || []).find(v => v.user_id === userId);
+    return {
+      counts,
+      total: counts.support + counts.oppose,
+      myVote: my?.vote || null,
+    };
+  } catch {
+    return { counts: { support: 0, oppose: 0 }, total: 0, myVote: null };
+  }
+}
+
+// 소셜 투표 UI 렌더 (재사용 가능)
+function renderSocialVoteBox(targetType, targetId, label, opts = {}) {
+  const labels = SOCIAL_VOTE_LABELS[targetType] || SOCIAL_VOTE_LABELS.topic;
+  const containerId = `sv-${targetType}-${targetId}`;
+  return `
+    <div class="social-vote" id="${escapeHtml(containerId)}" data-target-type="${escapeHtml(targetType)}" data-target-id="${escapeHtml(targetId)}" data-target-label="${escapeHtml(label || '')}">
+      <div class="social-vote-h">
+        <span class="social-vote-question">${escapeHtml(opts.question || '이것에 대한 당신의 의견은?')}</span>
+        <span class="social-vote-total" data-role="total">로딩 중…</span>
+      </div>
+      <div class="social-vote-btns">
+        <button class="social-vote-btn social-vote-support" data-vote="support">${labels.support}</button>
+        <button class="social-vote-btn social-vote-oppose" data-vote="oppose">${labels.oppose}</button>
+      </div>
+      <div class="social-vote-bar" data-role="bar"></div>
+    </div>`;
+}
+
+// 소셜 투표 박스 활성화 (DOM 삽입 후 호출)
+async function setupSocialVote(targetType, targetId, label, meta) {
+  const containerId = `sv-${targetType}-${targetId}`;
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const render = (res) => {
+    const total = res.total || 0;
+    const sup = res.counts.support || 0;
+    const opp = res.counts.oppose || 0;
+    container.querySelector('[data-role="total"]').textContent = total > 0 ? `${total.toLocaleString()}표` : '아직 투표 없음';
+    container.querySelectorAll('.social-vote-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.vote === res.myVote);
+    });
+    if (total > 0) {
+      const supPct = Math.round(sup / total * 100);
+      const oppPct = 100 - supPct;
+      container.querySelector('[data-role="bar"]').innerHTML = `
+        <div class="sv-bar-row">
+          <div class="sv-bar-fill"><div class="sv-bar-sup" style="width:${supPct}%"></div></div>
+          <div class="sv-bar-labels">
+            <span class="sv-pct-sup">${supPct}% (${sup.toLocaleString()})</span>
+            <span class="sv-pct-opp">${oppPct}% (${opp.toLocaleString()})</span>
+          </div>
+        </div>`;
+    } else {
+      container.querySelector('[data-role="bar"]').innerHTML = '';
+    }
+  };
+
+  // 초기 로드
+  try {
+    const res = await loadSocialVotes(targetType, targetId);
+    render(res);
+  } catch (e) {
+    container.querySelector('[data-role="total"]').textContent = '오프라인';
+  }
+
+  // 클릭 이벤트
+  container.querySelectorAll('.social-vote-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const vote = btn.dataset.vote;
+      const isCurrent = btn.classList.contains('selected');
+      container.querySelectorAll('.social-vote-btn').forEach(b => b.disabled = true);
+      try {
+        await submitSocialVote(targetType, targetId, label, isCurrent ? null : vote, meta);
+        const res = await loadSocialVotes(targetType, targetId);
+        render(res);
+      } catch (e) { /* silent */ }
+      container.querySelectorAll('.social-vote-btn').forEach(b => b.disabled = false);
+    });
+  });
+}
+
 // 평점 결과 집계
 async function loadRating(pledgeKey) {
   const data = await supabaseRest(`/pledge_ratings?pledge_key=eq.${encodeURIComponent(pledgeKey)}&select=rating,user_id`);
@@ -10764,12 +10960,21 @@ async function tryLoadLiveEconomy(onProgress) {
 }
 
 function renderEconomyPage() {
+  // V22.0 — 경제 지표 소셜 투표 활성화 헬퍼
+  const _activateEconVotes = () => {
+    const econ = economyState.data;
+    if (!econ?.indicators) return;
+    econ.indicators.forEach(ind => {
+      setupSocialVote('economy', ind.id, ind.label, { unit: ind.unit });
+    });
+  };
   loadEconomy().then(() => {
     if (currentRoute().startsWith('#/economy')) {
       const body = document.getElementById('econ-body');
       if (body) {
         body.innerHTML = renderEconomyBody();
         setupEconChartHover();
+        _activateEconVotes();
       }
       // 정적 표시 완료 후 라이브 fetch 시도 (background)
       tryLoadLiveEconomy().then(() => {
@@ -10778,6 +10983,7 @@ function renderEconomyPage() {
           if (body2) {
             body2.innerHTML = renderEconomyBody();
             setupEconChartHover();
+            _activateEconVotes();
           }
         }
       }).catch(() => {});
@@ -10896,6 +11102,7 @@ function renderEconomyBody() {
         </div>
         <div class="econ-card-desc">${escapeHtml(ind.desc)}</div>
         <div class="econ-card-interp">${escapeHtml(ind.interpretation)}</div>
+        ${renderSocialVoteBox('economy', ind.id, ind.label, { question: `현재 ${ind.label} 수치에 대한 당신의 의견은?` })}
       </div>
     `;
   }
@@ -12763,6 +12970,18 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V22.0', date: '2026-05-28', title: '🗳 통합 소셜 투표 — 정치·경제·트렌드 영역 확장', items: [
+    "사용자 비전: '한줄평 할바에 채팅 차라리. 일단 찬반·지지반대 소셜 기능. 우리가 정치만 다루는 게 아니니까'",
+    '🆕 단일 social_votes 테이블 — 모든 영역 공용 (정치인·법안·공약·경제·트렌드·뉴스·이슈)',
+    '👍 정치인 페이지: 다른 사용자 지지 vs 반대 집계 표시',
+    '✅ 법안 페이지: 찬성·반대 % 막대 그래프',
+    '😊 경제 지표 카드: 동의·우려 (예: 환율 1,500원에 우려)',
+    '구조 안전성: 텍스트 댓글 X, 정량만, 1인 1표 (UUID + unique constraint)',
+    '재사용 헬퍼: renderSocialVoteBox() / setupSocialVote() — 어디든 한 줄로 추가',
+    '라벨 분화: politician=지지/반대, bill=찬성/반대, economy=동의/우려, trend=주목/별로',
+    '⚠ 사용자 작업: supabase/schema-v22.sql 통째로 SQL Editor에 실행 (1회)',
+    '추후 V22.1+ — 트렌드 카드·뉴스·공약에도 확장'
+  ]},
   { v: 'V21.7', date: '2026-05-27', title: '🗄 Supabase 본격 활용 — 캐시·페이지뷰·동기화', items: [
     '사용자 요청: "DB에 전체 데이터 캐싱도 잘 활용해봐 (필요없음 말고)"',
     '⚡ NEC 후보·공약 lazy 캐싱 — 한 번 fetch하면 모든 사용자에게 즉시',
@@ -14456,6 +14675,11 @@ function renderBillDetailPage(billId) {
           <div class="bd-vote-pct">${(y/tot*100).toFixed(1)}% 찬성</div>
         </div>` : ''}
 
+      <!-- V22.0 — 법안 소셜 찬반 투표 -->
+      <div class="bd-card">
+        ${renderSocialVoteBox('bill', billId, bill?.BILL_NAME || '', { question: '🗳 이 법안에 대한 당신의 의견은?' })}
+      </div>
+
       <!-- 법안 내용 (API 로드 중) -->
       <div class="bd-card" id="bd-content-card">
         <h3>📜 법안 내용 (제안이유·주요 내용)</h3>
@@ -15134,7 +15358,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.7 · 🗄 DB 활용</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.0 · 🗳 소셜 투표</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -15949,6 +16173,7 @@ function renderDetail(id) {
               </button>
               <span class="stance-hint">로컬 저장 · 서버 X · 익명</span>
             </div>
+            ${renderSocialVoteBox('politician', m.MONA_CD, m.HG_NM, { question: '🗳 다른 사용자들의 평가 — 지지 vs 반대' })}
             <div class="d-party" style="color:${color}">
               ${escapeHtml(m.POLY_NM || '—')}
               ${partyRolesForThis.map(r => `<span class="role-badge" style="border-color:${color};color:${color}">${escapeHtml(r.role)}</span>`).join('')}
@@ -16507,6 +16732,10 @@ function route() {
     document.getElementById('back-bills')?.addEventListener('click', () => { nav('/bills'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
+    // V22.0 — 법안 소셜 투표 활성화
+    const _bill = state.bills?.find(x => x.BILL_ID === billId);
+    setupSocialVote('bill', billId, _bill?.BILL_NAME || '', { committee: _bill?.CURR_COMMITTEE });
+    logPageView('bill', billId);
     // 비동기 fetch: 법안 본문 + 위키
     const bill = state.bills?.find(b => b.BILL_ID === billId);
     if (bill) {
@@ -17132,6 +17361,9 @@ function route() {
       }
     }).catch(() => {});
     document.getElementById('back-btn')?.addEventListener('click', () => { nav('/'); });
+    // V22.0 — 정치인 소셜 투표 활성화
+    const _mem = state.members?.find(x => x.MONA_CD === memberId);
+    if (_mem) setupSocialVote('politician', memberId, _mem.HG_NM, { party: _mem.POLY_NM });
     document.getElementById('bookmark-btn')?.addEventListener('click', e => {
       e.stopPropagation();
       const btn = e.currentTarget;
