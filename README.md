@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Vercel](https://img.shields.io/badge/Deployed-Vercel-000?logo=vercel)](https://patchkr.com)
-[![Buy Me a Coffee](https://img.shields.io/badge/☕-Buy_me_a_coffee-yellow)](https://buymeacoffee.com/HYTech)
+[![Ko-fi](https://img.shields.io/badge/☕-Ko--fi-FF5E5B)](https://ko-fi.com/patchkr)
 
 > **한국의 모든 것을 데이터로** — 정치·법안·선거·인물·역사 종합 데이터 플랫폼.
 
@@ -130,7 +130,7 @@ curl https://patchkr.com/api/data?type=info
 
 서버 운영비·API 사용료에 사용됩니다:
 
-- ☕ [Buy Me a Coffee](https://buymeacoffee.com/HYTech)
+- ☕ [Ko-fi 후원](https://ko-fi.com/patchkr)
 - ⭐ GitHub Star (무료 응원)
 
 ## 📊 누적 통계
