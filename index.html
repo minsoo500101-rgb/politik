@@ -8126,17 +8126,20 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
       document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">${msg}<br><br><a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="color:var(--link)">정책공약마당 (NEC) →</a></div>`;
       return;
     }
-    // 첫 번째 아이템에 prmsCnt, prmsTitle1~10, prmsRealmName1~10, prmsCont1~10 형태
+    // 첫 번째 아이템에 prmsCnt, prmsTitle1~10, prmsRealmName1~10, prmmCont1~10 형태
+    // ⚠ 주의: 본문 필드는 prmmCont (m 두 개) — NEC API 자체 표기 (오타로 보이지만 공식)
     const polData = items[0];
     const cnt = parseInt(polData.prmsCnt || '0', 10) || 5;
     const promises = [];
     for (let i = 1; i <= 10; i++) {
-      if (polData['prmsTitle' + i] || polData['prmsCont' + i]) {
+      const cont = polData['prmmCont' + i] || polData['prmsCont' + i] || '';
+      const title = polData['prmsTitle' + i] || '';
+      if (title || cont) {
         promises.push({
           ord: polData['prmsOrd' + i] || i,
           realm: polData['prmsRealmName' + i] || '',
-          title: polData['prmsTitle' + i] || '',
-          cont: polData['prmsCont' + i] || '',
+          title: title,
+          cont: cont,
         });
       }
     }
@@ -8190,7 +8193,15 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
         <div class="pledge-news" id="pledge-news-${pid}" data-loaded="0"></div>
       </div>
     `;}).join('') + `
-      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center;line-height:1.6">
+      <div style="margin-top:14px;padding:12px 14px;background:var(--bg-elev);border-radius:10px;border:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:700;margin-bottom:6px">📚 공약 원본 자료 더 보기</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--accent);color:#fff;border-radius:8px;font-size:11.5px;font-weight:600;text-decoration:none">📋 정책공약마당 →</a>
+          <a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(name + ' ' + party + ' 공약')}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:11.5px;font-weight:600;text-decoration:none">📰 네이버 뉴스 →</a>
+          <a href="https://www.google.com/search?q=${encodeURIComponent(name + ' ' + party + ' 9회 지방선거 공약')}" target="_blank" rel="noopener" style="padding:6px 12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:11.5px;font-weight:600;text-decoration:none">🔍 구글 →</a>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center;line-height:1.6">
         <div>📋 공약 본문: <b>중앙선거관리위원회</b> (data.go.kr OpenAPI · 정책공약마당)</div>
         <div>📊 점수카드: 패치 노트 자체 룰 (수치·예산·기간·추진방법·본문량 5개 자동 평가)</div>
         <div>📰 관련 뉴스: 네이버 검색 API</div>
@@ -10651,6 +10662,13 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.4', date: '2026-05-27', title: '🐛 공약 본문 누락 fix + 원본 자료 진입로', items: [
+    '🔥 critical bug: NEC API 본문 필드가 `prmsCont`가 아닌 `prmmCont` (m 두 개) — 모든 후보 공약 본문이 그동안 비어있게 나오던 문제',
+    '두 곳 모두 수정: openPromiseModal · loadCandidatePledges (compare-cand에서 사용)',
+    '폴백 추가: `prmmCont` 시도 후 `prmsCont` 시도 (혹시 API 표기가 바뀔 경우 대비)',
+    'NEC OpenAPI에 공약전문 PDF URL 노출 안 됨 확인 — 모달 하단에 외부 자료 진입로 3종 추가 (정책공약마당·네이버 뉴스·구글)',
+    '⚠ 표시로 사용자에게 PDF는 외부 링크에서 확인 가능함을 안내'
+  ]},
   { v: 'V20.3', date: '2026-05-27', title: '📊 공약 모달 풍부화 — 점수카드·뉴스·지역 비교', items: [
     '🅰 공약 점수카드 (룰 기반, AI 불필요) — 수치·예산·기간·추진방법·본문량 5개 자동 평가',
     '5대 공약 평균 등급 (A/B/C/D) + 색상 배지 표시',
@@ -11259,7 +11277,8 @@ async function fetchCandPledges(huboid, sg) {
     for (let i = 1; i <= 10; i++) {
       const realm = data['prmsRealmName' + i] || '';
       const title = data['prmsTitle' + i] || '';
-      const cont = data['prmsCont' + i] || '';
+      // ⚠ NEC API 본문 필드는 prmmCont (m 두 개) — 공식 표기. prmsCont는 폴백.
+      const cont = data['prmmCont' + i] || data['prmsCont' + i] || '';
       if (realm || title) pledges.push({ ord: i, realm, title, cont });
     }
     CAND_PLEDGE_CACHE.set(huboid, pledges);
@@ -12889,7 +12908,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.3 · 공약 점수카드</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.4 · 공약 본문 fix</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
