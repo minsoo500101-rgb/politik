@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "updatedAt": "2026-05-27",
   "_note": "한국 핵심 경제 지표 시계열 (2015~2025). 출처: 한국은행 ECOS, 통계청 KOSIS, 한국거래소 공식. 정부 공식 공개 데이터 인용 — 추가 라이선스 불필요.",
   "indicators": [
@@ -124,13 +124,14 @@
     },
     {
       "id": "kospi",
-      "label": "코스피 연말 종가",
+      "label": "코스피 종가",
       "unit": "pt",
-      "source": "한국거래소",
+      "source": "한국거래소 (ECOS)",
       "source_url": "https://www.krx.co.kr",
-      "desc": "코스피 지수 12월 30일 종가 (공개 데이터).",
+      "desc": "코스피 지수 연말 종가 (한국거래소).",
       "interpretation": "주식시장 전반 흐름 지표. 단 개별 종목 추천 X.",
       "higher_is_good": null,
+      "ecos": { "stat": "802Y001", "period": "D", "item": "0001000", "count": "3500" },
       "data": [
         { "year": 2015, "value": 1961 },
         { "year": 2016, "value": 2026 },
@@ -143,6 +144,30 @@
         { "year": 2023, "value": 2655 },
         { "year": 2024, "value": 2399 },
         { "year": 2025, "value": 2750 }
+      ]
+    },
+    {
+      "id": "kosdaq",
+      "label": "코스닥 종가",
+      "unit": "pt",
+      "source": "한국거래소 (ECOS)",
+      "source_url": "https://www.krx.co.kr",
+      "desc": "코스닥 지수 연말 종가. 중소·벤처기업 중심.",
+      "interpretation": "기술주·바이오 동향 지표. 코스피보다 변동성 큼.",
+      "higher_is_good": null,
+      "ecos": { "stat": "802Y001", "period": "D", "item": "0089000", "count": "3500" },
+      "data": [
+        { "year": 2015, "value": 682 },
+        { "year": 2016, "value": 631 },
+        { "year": 2017, "value": 798 },
+        { "year": 2018, "value": 675 },
+        { "year": 2019, "value": 669 },
+        { "year": 2020, "value": 968 },
+        { "year": 2021, "value": 1033 },
+        { "year": 2022, "value": 679 },
+        { "year": 2023, "value": 866 },
+        { "year": 2024, "value": 678 },
+        { "year": 2025, "value": 1100 }
       ]
     },
     {
