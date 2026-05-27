@@ -3780,6 +3780,7 @@
   .domain-politics::before  { background: #6366f1; }
   .domain-bills::before     { background: #10b981; }
   .domain-elections::before { background: #ef4444; }
+  .domain-economy::before   { background: #0ea5e9; }
   .domain-people::before    { background: #f97316; }
   .domain-history::before   { background: #a16207; }
 
@@ -3793,6 +3794,88 @@
   .insight-half { padding: 16px 18px; }
   @media (max-width: 700px) {
     .insight-row { grid-template-columns: 1fr; }
+  }
+
+  /* 홈 경제 미니 위젯 */
+  .econ-mini-row {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    position: relative; overflow: hidden;
+  }
+  .econ-mini-row::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 100% 0%, rgba(14,165,233,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .econ-mini-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  .econ-mini-head h3 {
+    font-size: 14px; font-weight: 800; color: var(--text);
+    margin: 0;
+  }
+  .econ-mini-live {
+    font-size: 10px; font-weight: 800;
+    padding: 2px 8px; border-radius: 8px;
+    background: var(--ok); color: #fff;
+    margin-left: 8px;
+    letter-spacing: 0.5px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .econ-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    position: relative; z-index: 1;
+  }
+  .econ-mini-tile {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .econ-mini-tile:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  [data-theme="dark"] .econ-mini-tile:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .econ-mini-label {
+    font-size: 11px; color: var(--text-2);
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .econ-mini-value {
+    font-size: 19px; font-weight: 800; color: var(--text);
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .econ-mini-unit {
+    font-size: 11px; font-weight: 600; color: var(--dim);
+    margin-left: 2px;
+  }
+  .econ-mini-delta {
+    font-size: 10.5px; font-weight: 700;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .econ-mini-delta.up { color: var(--ok); }
+  .econ-mini-delta.down { color: #dc2626; }
+  .econ-mini-delta.flat { color: var(--text-2); }
+  @media (max-width: 700px) {
+    .econ-mini-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 420px) {
+    .econ-mini-grid { gap: 6px; }
+    .econ-mini-tile { padding: 10px 11px; }
+    .econ-mini-value { font-size: 16px; }
   }
 
   /* 보조 도구 (작은 alt-link) */
@@ -10142,6 +10225,22 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V18.0', date: '2026-05-27', title: '🏠 홈 업그레이드 — 정치+경제 6대 영역', items: [
+    '📊 5대 데이터 영역 → 6대 (경제 신규)',
+    '💰 홈에 경제 핵심 지표 미니 위젯 — 기준금리·환율·실업률·CPI 4개 한눈에',
+    '🟢 LIVE 배지 — ECOS 라이브 데이터 자동 갱신 시 표시',
+    '경제 카드 NEW 배지 + 도메인 컬러 (#0ea5e9 sky blue)',
+    '카드 클릭 → /economy 즉시',
+    '경제 sparkline 인물명 마커 오류 fix (권한대행 제외, 정식 대통령 4명만)',
+    '한덕수 권한대행 시기 정확화 + 최상목 권한대행 데이터 추가 (참고용)'
+  ]},
+  { v: 'V17.1', date: '2026-05-27', title: 'ECOS 라이브 정밀 점검 — 5개 지표 라이브', items: [
+    '환율 안 보이던 원인: 잘못된 코드(731Y001) + count=200 제한 + 캐시',
+    '731Y004(환율)·901Y027(실업률)·901Y009(CPI yoy)·301Y013(수출 연합계) 모두 라이브',
+    '같은 시점 중복 row → 첫 값 채택 (평균환율 일관성)',
+    'CPI yoy 변환·수출 연간 합계 자동',
+    'economy.json 캐시 버스터 추가'
+  ]},
   { v: 'V16.0', date: '2026-05-27', title: '🚨 경제 데이터 확장 — /economy 신설', items: [
     '💰 한국 경제 지표 8종 시계열 (2015~2025) — 기준금리·환율·CPI·실업률·GDP·코스피·가계부채/GDP·수출',
     '📊 SVG sparkline 차트 + 정부 임기 마커 (박근혜·문재인·윤석열·이재명)',
@@ -12300,7 +12399,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V16.0 · 정치+경제</a></h1>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V18.0 · 정치+경제</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -12417,7 +12516,7 @@ function renderHome() {
         `}
       </div>
 
-      <!-- 5대 데이터 영역 — 큰 카드 그리드 -->
+      <!-- 6대 데이터 영역 — 큰 카드 그리드 -->
       <div class="domain-grid">
         <div class="domain-card domain-politics" onclick="location.hash='#/group/executive'">
           <div class="domain-icon">🏛</div>
@@ -12426,7 +12525,7 @@ function renderHome() {
             <div class="domain-meta">대통령 · 국무총리 · 17부처 · 외청 · 헌법기관</div>
             <div class="domain-stats">
               <span><b>${(groups.executive||[]).length}</b>명</span>
-              <span>장관 17 · 차관 26 · 외청 23 · 대통령실 4</span>
+              <span>장관 17 · 차관 26 · 외청 23</span>
             </div>
           </div>
         </div>
@@ -12438,7 +12537,7 @@ function renderHome() {
             <div class="domain-meta">22대 국회 본회의 통과 의안 · 15개 분야</div>
             <div class="domain-stats">
               <span><b>${(state.bills?.length||0).toLocaleString()}</b>건</span>
-              <span>발의자 17,224 매핑 · 통과 속도</span>
+              <span>발의자 17,224 매핑</span>
             </div>
           </div>
         </div>
@@ -12447,10 +12546,22 @@ function renderHome() {
           <div class="domain-icon">🗳</div>
           <div class="domain-body">
             <div class="domain-h">선거 (Elections)</div>
-            <div class="domain-meta">9회 지방선거 · 광역+기초단체장+광역의원+교육감 실시간 · 역대 결과</div>
+            <div class="domain-meta">9회 지방선거 실시간 · 역대 비교</div>
             <div class="domain-stats">
               <span><b>${state.nec2026Governors ? ((state.nec2026Governors.totalGov||0)+(state.nec2026Governors.totalMuni||0)+(state.nec2026Governors.totalLocalAssembly||0)+(state.nec2026Governors.totalLocalAssemblyProp||0)+(state.nec2026Governors.totalEdu||0)).toLocaleString() : '1,500+'}</b>명</span>
-              <span>광역단체장 · 기초단체장 · 광역의원 · 비례 광역의원 · 교육감</span>
+              <span>광역 · 기초 · 교육감 · 광역의원</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="domain-card domain-economy" onclick="location.hash='#/economy'">
+          <div class="domain-icon">💰</div>
+          <div class="domain-body">
+            <div class="domain-h">경제 (Economy) <span style="font-size:10px;color:var(--ok);font-weight:700;padding:2px 6px;background:rgba(16,185,129,0.15);border-radius:6px;margin-left:4px">NEW</span></div>
+            <div class="domain-meta">한국은행·통계청 라이브 지표 + 정부 임기 시너지</div>
+            <div class="domain-stats">
+              <span><b>8</b>개 지표</span>
+              <span>금리 · 환율 · 물가 · 실업률 · GDP · 수출</span>
             </div>
           </div>
         </div>
@@ -12509,6 +12620,19 @@ function renderHome() {
                 <span class="ml-name">${escapeHtml(p.name)}</span>
                 <b class="ml-cnt">${p.count}</b>
               </div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- 경제 핵심 지표 미니 위젯 (정치+경제 시너지) -->
+      <div class="econ-mini-row" id="home-econ-mini">
+        <div class="econ-mini-head">
+          <h3>💰 경제 핵심 지표 <span class="econ-mini-live" id="home-econ-live" style="display:none">🟢 LIVE</span></h3>
+          <a href="#/economy" class="chart-link">전체 →</a>
+        </div>
+        <div class="econ-mini-grid" id="home-econ-tiles">
+          <div class="loading" style="padding:20px;text-align:center;grid-column:1/-1">
+            <span class="loading-spinner"></span>경제 지표 불러오는 중…
           </div>
         </div>
       </div>
@@ -14240,9 +14364,56 @@ function route() {
         for (const m of arr) if (!state.photos.has(m.MONA_CD)) prefetch.push(m);
       }
       prefetchPhotos(prefetch, 3);
+      // 홈 경제 미니 위젯 — 정적 데이터 즉시 표시 + 라이브 fetch 백그라운드
+      populateHomeEconMini();
       if (filterBar) filterBar.style.display = 'none';
     }
   }
+}
+
+// 홈 경제 미니 위젯 — 4개 핵심 지표 (기준금리·환율·실업률·CPI상승률)
+async function populateHomeEconMini() {
+  const tiles = document.getElementById('home-econ-tiles');
+  if (!tiles) return;
+  const econ = await loadEconomy();
+  if (!econ) {
+    tiles.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--dim);font-size:12px;padding:14px">경제 데이터 불러올 수 없음</div>';
+    return;
+  }
+  const pick = ['base_rate', 'usd_krw', 'unemployment', 'cpi'];
+  function renderTiles() {
+    tiles.innerHTML = pick.map(id => {
+      const ind = econ.indicators.find(x => x.id === id);
+      if (!ind || !ind.data?.length) return '';
+      const last = ind.data[ind.data.length - 1];
+      const prev = ind.data[ind.data.length - 2];
+      const delta = prev ? last.value - prev.value : 0;
+      const isUp = ind.higher_is_good === true ? delta > 0 : ind.higher_is_good === false ? delta < 0 : delta > 0;
+      const cls = delta > 0 ? (ind.higher_is_good === false ? 'down' : 'up') :
+                  delta < 0 ? (ind.higher_is_good === false ? 'up' : 'down') :
+                  'flat';
+      const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
+      const v = last.value.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+      const liveDot = ind._live ? '<span style="display:inline-block;width:6px;height:6px;background:var(--ok);border-radius:50%;margin-left:4px;animation:pulse 2s ease-in-out infinite" title="라이브"></span>' : '';
+      return `
+        <a class="econ-mini-tile" href="#/economy">
+          <div class="econ-mini-label">${escapeHtml(ind.label)}${liveDot}</div>
+          <div class="econ-mini-value">${v}<span class="econ-mini-unit">${escapeHtml(ind.unit)}</span></div>
+          <div class="econ-mini-delta ${cls}">${arrow} ${Math.abs(delta).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}</div>
+        </a>
+      `;
+    }).join('');
+  }
+  renderTiles();
+  // 백그라운드 라이브 fetch
+  tryLoadLiveEconomy().then(() => {
+    if (document.getElementById('home-econ-tiles')) {
+      renderTiles();
+      const liveCount = econ.indicators.filter(i => i._live && pick.includes(i.id)).length;
+      const liveBadge = document.getElementById('home-econ-live');
+      if (liveBadge && liveCount > 0) liveBadge.style.display = 'inline-block';
+    }
+  }).catch(() => {});
 }
 
 window.addEventListener('hashchange', () => {
