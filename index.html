@@ -4885,6 +4885,121 @@
     text-align: center; padding: 30px;
     color: var(--dim); font-size: 13px;
   }
+  /* V21.0 — 공약 이행 투표 (4지선다) */
+  .ihaeng-vote {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .ihaeng-vote-h {
+    font-size: 12px; font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 6px;
+  }
+  .ihaeng-vote-total {
+    font-size: 11px; font-weight: 600; color: var(--dim);
+  }
+  .ihaeng-vote-btns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 480px) {
+    .ihaeng-vote-btns { grid-template-columns: repeat(2, 1fr); }
+  }
+  .ihaeng-vote-btn {
+    padding: 8px 4px;
+    background: var(--bg-elev);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px; font-weight: 700;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.13s;
+    text-align: center;
+  }
+  .ihaeng-vote-btn:hover { transform: translateY(-1px); border-color: var(--text-2); }
+  .ihaeng-vote-btn[data-vote="이행"]:hover { background: rgba(22,163,74,0.10); border-color: #16a34a; color: #16a34a; }
+  .ihaeng-vote-btn[data-vote="일부이행"]:hover { background: rgba(14,165,233,0.10); border-color: #0ea5e9; color: #0ea5e9; }
+  .ihaeng-vote-btn[data-vote="추진중"]:hover { background: rgba(245,158,11,0.10); border-color: #f59e0b; color: #f59e0b; }
+  .ihaeng-vote-btn[data-vote="미이행"]:hover { background: rgba(220,38,38,0.10); border-color: #dc2626; color: #dc2626; }
+  .ihaeng-vote-btn.selected[data-vote="이행"] { background: #16a34a; border-color: #16a34a; color: #fff; }
+  .ihaeng-vote-btn.selected[data-vote="일부이행"] { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
+  .ihaeng-vote-btn.selected[data-vote="추진중"] { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+  .ihaeng-vote-btn.selected[data-vote="미이행"] { background: #dc2626; border-color: #dc2626; color: #fff; }
+  .ihaeng-vote-results {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .ihaeng-vote-bar {
+    display: grid;
+    grid-template-columns: 70px 1fr 50px;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .ihaeng-vote-bar-label {
+    font-weight: 700;
+    color: var(--text-2);
+  }
+  .ihaeng-vote-bar-label.이행 { color: #16a34a; }
+  .ihaeng-vote-bar-label.일부이행 { color: #0ea5e9; }
+  .ihaeng-vote-bar-label.추진중 { color: #f59e0b; }
+  .ihaeng-vote-bar-label.미이행 { color: #dc2626; }
+  .ihaeng-vote-bar-fill {
+    height: 8px;
+    background: var(--bg-elev);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .ihaeng-vote-bar-fill > div {
+    height: 100%;
+    transition: width 0.4s ease;
+  }
+  .ihaeng-vote-bar-pct {
+    font-weight: 700;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-2);
+  }
+
+  /* V21.0 — 9회 공약 ★평점 */
+  .pledge-rating {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .pledge-rating-h {
+    font-size: 12px; font-weight: 700;
+    color: var(--text);
+  }
+  .pledge-rating-stars { display: flex; gap: 2px; }
+  .pledge-rating-star {
+    font-size: 22px;
+    cursor: pointer;
+    color: #d1d5db;
+    transition: color 0.13s, transform 0.13s;
+    user-select: none;
+    line-height: 1;
+  }
+  [data-theme="dark"] .pledge-rating-star { color: #4b5563; }
+  .pledge-rating-star:hover { transform: scale(1.15); }
+  .pledge-rating-star.filled { color: #f59e0b; }
+  .pledge-rating-star.my { color: #dc2626; }
+  .pledge-rating-stats {
+    font-size: 11.5px; font-weight: 600;
+    color: var(--text-2);
+    margin-left: auto;
+  }
+  .pledge-rating-stats b { color: #f59e0b; font-size: 13px; }
+
   /* V20.3 — 공약 점수카드 (룰 기반) */
   .pledge-score {
     margin-top: 10px;
@@ -8270,6 +8385,106 @@ async function loadElection2026() {
   return state.election2026;
 }
 
+// ============================================================
+// V21.0 — Supabase 연결 (REST API, SDK 불필요)
+// anon key는 RLS로 보호 — 공개 OK
+// ============================================================
+const SUPABASE_URL = 'https://oaivxaniwvxclzigiswr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haXZ4YW5pd3Z4Y2x6aWdpc3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NzY1NjYsImV4cCI6MjA5NTQ1MjU2Nn0.CEgk464VOiU7WG4AjhHeWDkSTk0A39_MBAWWZfIbw1U';
+
+// 익명 사용자 ID — UUID v4 localStorage 영속
+function getOrCreateAnonUserId() {
+  const KEY = 'patchkr:anonUid';
+  try {
+    let uid = localStorage.getItem(KEY);
+    if (!uid) {
+      uid = (crypto.randomUUID && crypto.randomUUID()) ||
+        ('u_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10));
+      localStorage.setItem(KEY, uid);
+    }
+    return uid;
+  } catch { return 'anon_fallback_' + Math.random().toString(36).slice(2); }
+}
+
+async function supabaseRest(path, opts = {}) {
+  const headers = {
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+    'Content-Type': 'application/json',
+    ...(opts.headers || {}),
+  };
+  const r = await fetch(`${SUPABASE_URL}/rest/v1${path}`, { ...opts, headers });
+  if (!r.ok) {
+    const t = await r.text();
+    throw new Error(`Supabase ${r.status}: ${t.slice(0, 120)}`);
+  }
+  // DELETE 등은 빈 응답
+  const ct = r.headers.get('content-type') || '';
+  if (ct.includes('application/json')) return r.json();
+  return null;
+}
+
+// 이행 투표 제출 (upsert via Prefer: resolution=merge-duplicates)
+async function submitIhaengVote(meta, vote) {
+  const userId = getOrCreateAnonUserId();
+  const body = [{
+    pledge_key: meta.pledgeKey,
+    candidate_name: meta.name,
+    region: meta.region,
+    party: meta.party,
+    pledge_title: (meta.title || '').slice(0, 200),
+    user_id: userId,
+    vote: vote,
+  }];
+  return supabaseRest('/pledge_ihaeng_votes?on_conflict=pledge_key,user_id', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+    body: JSON.stringify(body),
+  });
+}
+
+// 이행 결과 집계 (특정 공약)
+async function loadIhaengResults(pledgeKey) {
+  const data = await supabaseRest(`/pledge_ihaeng_votes?pledge_key=eq.${encodeURIComponent(pledgeKey)}&select=vote,user_id`);
+  const counts = { '이행': 0, '일부이행': 0, '미이행': 0, '추진중': 0 };
+  for (const v of (data || [])) {
+    if (counts[v.vote] !== undefined) counts[v.vote]++;
+  }
+  const userId = getOrCreateAnonUserId();
+  const my = (data || []).find(v => v.user_id === userId);
+  return { counts, total: (data || []).length, myVote: my?.vote || null };
+}
+
+// 9회 공약 ★평점 제출
+async function submitRating(meta, rating) {
+  const userId = getOrCreateAnonUserId();
+  const body = [{
+    pledge_key: meta.pledgeKey,
+    candidate_name: meta.name,
+    region: meta.region,
+    party: meta.party,
+    pledge_title: (meta.title || '').slice(0, 200),
+    user_id: userId,
+    rating: rating,
+  }];
+  return supabaseRest('/pledge_ratings?on_conflict=pledge_key,user_id', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+    body: JSON.stringify(body),
+  });
+}
+
+// 평점 결과 집계
+async function loadRating(pledgeKey) {
+  const data = await supabaseRest(`/pledge_ratings?pledge_key=eq.${encodeURIComponent(pledgeKey)}&select=rating,user_id`);
+  const total = (data || []).length;
+  const sum = (data || []).reduce((s, r) => s + (r.rating || 0), 0);
+  const avg = total > 0 ? sum / total : 0;
+  const userId = getOrCreateAnonUserId();
+  const my = (data || []).find(r => r.user_id === userId);
+  return { avg, total, myRating: my?.rating || null };
+}
+
 // NEC API — Vercel Serverless Function 내장 (/api/nec)
 // 사용자 설정 불필요 — 같은 도메인 fetch
 async function necFetch(endpoint, params = {}) {
@@ -8314,6 +8529,101 @@ function scorePledge(p) {
   else if (score >= 40) { level = 'C'; color = '#f59e0b'; }
   else { level = 'D'; color = '#dc2626'; }
   return { score, checks, level, color };
+}
+
+// V21.0 — 이행 투표 UI 셋업 (8회 공약 모달용)
+async function setupIhaengVote(pledgeKey, meta) {
+  const container = document.getElementById(`ihaeng-${pledgeKey}`);
+  if (!container) return;
+  const renderResults = (res) => {
+    const total = res.total || 0;
+    container.querySelector('.ihaeng-vote-total').textContent = total > 0 ? `${total}표` : '아직 투표 없음';
+    container.querySelectorAll('.ihaeng-vote-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.vote === res.myVote);
+    });
+    if (total === 0) {
+      container.querySelector('.ihaeng-vote-results').innerHTML = '';
+      return;
+    }
+    const colors = { '이행':'#16a34a', '일부이행':'#0ea5e9', '추진중':'#f59e0b', '미이행':'#dc2626' };
+    const order = ['이행', '일부이행', '추진중', '미이행'];
+    container.querySelector('.ihaeng-vote-results').innerHTML = order.map(k => {
+      const c = res.counts[k] || 0;
+      const pct = total > 0 ? Math.round(c / total * 100) : 0;
+      return `
+        <div class="ihaeng-vote-bar">
+          <div class="ihaeng-vote-bar-label ${k}">${k}</div>
+          <div class="ihaeng-vote-bar-fill"><div style="width:${pct}%;background:${colors[k]}"></div></div>
+          <div class="ihaeng-vote-bar-pct">${pct}% (${c})</div>
+        </div>
+      `;
+    }).join('');
+  };
+  // 초기 로드
+  try {
+    const res = await loadIhaengResults(pledgeKey);
+    renderResults(res);
+  } catch (e) {
+    container.querySelector('.ihaeng-vote-total').textContent = '결과 로드 실패';
+  }
+  // 클릭
+  container.querySelectorAll('.ihaeng-vote-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const vote = btn.dataset.vote;
+      btn.disabled = true;
+      try {
+        await submitIhaengVote(meta, vote);
+        const res = await loadIhaengResults(pledgeKey);
+        renderResults(res);
+      } catch (e) {
+        alert('투표 실패: ' + e.message);
+      } finally {
+        container.querySelectorAll('.ihaeng-vote-btn').forEach(b => { b.disabled = false; });
+      }
+    });
+  });
+}
+
+// V21.0 — ★평점 UI 셋업 (9회 공약 모달용)
+async function setupPledgeRating(pledgeKey, meta) {
+  const container = document.getElementById(`rating-${pledgeKey}`);
+  if (!container) return;
+  const renderStars = (res) => {
+    const stars = container.querySelectorAll('.pledge-rating-star');
+    stars.forEach((s, idx) => {
+      const val = idx + 1;
+      const isFilled = res.myRating ? val <= res.myRating : val <= Math.round(res.avg);
+      s.classList.toggle('filled', isFilled);
+      s.classList.toggle('my', res.myRating && val <= res.myRating);
+    });
+    const stats = container.querySelector('.pledge-rating-stats');
+    if (res.total > 0) {
+      stats.innerHTML = `<b>${res.avg.toFixed(1)}</b> / 5.0 · ${res.total}명${res.myRating ? ` · 내 점수 ★${res.myRating}` : ''}`;
+    } else {
+      stats.textContent = '아직 평가 없음';
+    }
+  };
+  try {
+    const res = await loadRating(pledgeKey);
+    renderStars(res);
+  } catch (e) {
+    container.querySelector('.pledge-rating-stats').textContent = '결과 로드 실패';
+  }
+  container.querySelectorAll('.pledge-rating-star').forEach((s, idx) => {
+    s.addEventListener('click', async () => {
+      const rating = idx + 1;
+      container.querySelectorAll('.pledge-rating-star').forEach(el => el.style.pointerEvents = 'none');
+      try {
+        await submitRating(meta, rating);
+        const res = await loadRating(pledgeKey);
+        renderStars(res);
+      } catch (e) {
+        alert('평점 등록 실패: ' + e.message);
+      } finally {
+        container.querySelectorAll('.pledge-rating-star').forEach(el => el.style.pointerEvents = '');
+      }
+    });
+  });
 }
 
 // V20.3 — 공약별 뉴스 lazy load
@@ -8486,13 +8796,14 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
     document.getElementById('promise-modal-body').innerHTML = overallScore + compareBanner + promises.map((p, i) => {
       const s = scores[i];
       const pid = `${cnddtId}-${i}`;
+      const pledgeKey = `9-${cnddtId}-${i}`;
       const newsQ = (p.title || '').replace(/\(.*?\)/g, '').replace(/[<>]/g, '').trim().slice(0, 40);
       const checksHtml = s.checks.map(ch => `
         <span class="pledge-check ${ch.ok ? 'ok' : 'no'}" title="${ch.ok ? '충족' : '미충족'} · 가중치 ${ch.w}점">
           <span class="ico">${ch.ok ? '✓' : '✗'}</span>${escapeHtml(ch.k)}
         </span>`).join('');
       return `
-      <div class="promise-item" style="border-left-color:${pc}">
+      <div class="promise-item" style="border-left-color:${pc}" data-pledge-key="${escapeHtml(pledgeKey)}" data-pledge-title="${escapeHtml(p.title)}">
         <div>
           <span class="promise-num">${escapeHtml(p.ord)}</span>
           ${p.realm ? `<span class="promise-realm">${escapeHtml(p.realm)}</span>` : ''}
@@ -8502,6 +8813,17 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
         <div class="pledge-score">
           <span class="pledge-score-badge" style="background:${s.color}">${s.level} · ${s.score}점</span>
           <div class="pledge-score-checks">${checksHtml}</div>
+        </div>
+        <div class="pledge-rating" id="rating-${pledgeKey}">
+          <span class="pledge-rating-h">★ 이 공약 평가</span>
+          <div class="pledge-rating-stars">
+            <span class="pledge-rating-star" data-val="1">★</span>
+            <span class="pledge-rating-star" data-val="2">★</span>
+            <span class="pledge-rating-star" data-val="3">★</span>
+            <span class="pledge-rating-star" data-val="4">★</span>
+            <span class="pledge-rating-star" data-val="5">★</span>
+          </div>
+          <span class="pledge-rating-stats">로딩 중…</span>
         </div>
         <div class="pledge-tools">
           <button class="pledge-tool-btn" onclick="loadPledgeNews('${pid}', '${escapeHtml(newsQ).replace(/'/g, "\\'")}')">📰 관련 뉴스 검색</button>
@@ -8520,8 +8842,15 @@ async function openPromiseModal({ cnddtId, sgTypecode, name, party, region }) {
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center;line-height:1.6">
         <div>📋 공약 본문: <b>중앙선거관리위원회</b> (data.go.kr OpenAPI · 정책공약마당)</div>
         <div>📊 점수카드: 패치 노트 자체 룰 (수치·예산·기간·추진방법·본문량 5개 자동 평가)</div>
-        <div>📰 관련 뉴스: 네이버 검색 API</div>
+        <div>📰 관련 뉴스: 네이버 검색 API · ★ 평가: Supabase 익명 투표</div>
       </div>`;
+
+    // V21.0 — ★평점 이벤트 + 결과 로드
+    promises.forEach((p, i) => {
+      const pledgeKey = `9-${cnddtId}-${i}`;
+      const meta = { pledgeKey, name, region, party, title: p.title };
+      setupPledgeRating(pledgeKey, meta);
+    });
   } catch (e) {
     document.getElementById('promise-modal-body').innerHTML = `<div class="promise-loading">공약 fetch 실패: ${escapeHtml(e.message)}</div>`;
   }
@@ -8717,6 +9046,7 @@ async function openHistoricalPledgeModal({ name, region, party }) {
     ` + pledges.map((p, i) => {
       const s = scores[i];
       const pid = `pt-${cand.huboid}-${i}`;
+      const pledgeKey = `8-${cand.huboid}-${i}`;
       const titleClean = (p.title || '').replace(/[()<>]/g, '').slice(0, 30);
       const newsQ = `${name} ${titleClean} 이행`;
       const checksHtml = s.checks.map(ch => `
@@ -8724,7 +9054,7 @@ async function openHistoricalPledgeModal({ name, region, party }) {
           <span class="ico">${ch.ok ? '✓' : '✗'}</span>${escapeHtml(ch.k)}
         </span>`).join('');
       return `
-        <div class="promise-item" style="border-left-color:${pc}">
+        <div class="promise-item" style="border-left-color:${pc}" data-pledge-key="${escapeHtml(pledgeKey)}" data-pledge-title="${escapeHtml(p.title)}">
           <div>
             <span class="promise-num">${escapeHtml(p.ord)}</span>
             ${p.realm ? `<span class="promise-realm">${escapeHtml(p.realm)}</span>` : ''}
@@ -8735,6 +9065,19 @@ async function openHistoricalPledgeModal({ name, region, party }) {
             <span class="pledge-score-badge" style="background:${s.color}">${s.level} · ${s.score}점</span>
             <div class="pledge-score-checks">${checksHtml}</div>
           </div>
+          <div class="ihaeng-vote" id="ihaeng-${pledgeKey}">
+            <div class="ihaeng-vote-h">
+              <span>🗳 이 공약 이행됐다고 보시나요?</span>
+              <span class="ihaeng-vote-total">로딩 중…</span>
+            </div>
+            <div class="ihaeng-vote-btns">
+              <button class="ihaeng-vote-btn" data-vote="이행">이행</button>
+              <button class="ihaeng-vote-btn" data-vote="일부이행">일부이행</button>
+              <button class="ihaeng-vote-btn" data-vote="추진중">추진중</button>
+              <button class="ihaeng-vote-btn" data-vote="미이행">미이행</button>
+            </div>
+            <div class="ihaeng-vote-results"></div>
+          </div>
           <div class="pledge-tools">
             <button class="pledge-tool-btn" onclick="loadPledgeNews('${pid}', '${escapeHtml(newsQ).replace(/'/g, "\\'")}')">📰 "${escapeHtml(name)} 이행" 뉴스 검색</button>
             <a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(newsQ)}" target="_blank" rel="noopener" class="pledge-tool-btn">🔗 네이버 직접 →</a>
@@ -8743,12 +9086,19 @@ async function openHistoricalPledgeModal({ name, region, party }) {
         </div>`;
     }).join('') + `
       <div style="margin-top:14px;padding:12px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.25);border-radius:10px;font-size:12px;color:var(--text);text-align:center;line-height:1.6">
-        ⚠ <b>이행 여부는 패치 노트가 평가하지 않습니다.</b><br>
-        위 뉴스 검색으로 객관 자료를 보고 본인 기준으로 판단하세요.
+        ⚠ <b>이행 여부는 사용자들의 익명 투표로 집계됩니다.</b><br>
+        위 뉴스 검색으로 객관 자료를 보고 본인 판단으로 투표하세요. 1인 1표.
       </div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);text-align:center;line-height:1.6">
-        출처: 중앙선거관리위원회 (data.go.kr OpenAPI · 2022 정책공약마당)
+        출처: 중앙선거관리위원회 (data.go.kr OpenAPI · 2022 정책공약마당) · 투표: Supabase
       </div>`;
+
+    // V21.0 — 이행 투표 이벤트 + 결과 로드
+    pledges.forEach((p, i) => {
+      const pledgeKey = `8-${cand.huboid}-${i}`;
+      const meta = { pledgeKey, name, region, party, title: p.title };
+      setupIhaengVote(pledgeKey, meta);
+    });
   } catch (e) {
     document.getElementById('pt-modal-body').innerHTML = `<div class="promise-loading">로드 실패: ${escapeHtml(e.message)}</div>`;
   }
@@ -11669,6 +12019,16 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V21.0', date: '2026-05-27', title: '🗳 Supabase 커뮤니티 첫 기능 — 공약 이행 투표 + ★평점', items: [
+    '🆕 첫 인터랙티브 기능 — 익명 1인 1표 (UUID localStorage)',
+    '🏛 8회 당선자 공약 이행 4지선다 투표 — 이행 / 일부이행 / 추진중 / 미이행',
+    '📊 투표 결과 색상 막대 그래프 (실시간 %)',
+    '⭐ 9회 후보 공약 ★평점 1~5점 — 평균 + 표 수 표시',
+    '🔒 Supabase RLS — 익명 쓰기 OK, unique constraint로 1인 1표 보장',
+    '🌐 REST API 직접 호출 (SDK 불필요) — bundle 크기 0 증가',
+    '편향·법적 분쟁 최소 — 정량 투표만 (자유 댓글·욕설 X)',
+    '추후 V21.1+ — 북마크 동기화, /m/X 평점 등'
+  ]},
   { v: 'V20.9', date: '2026-05-27', title: '📰 /today 섹터-뉴스 연동 (탭 클릭 시 동시 갱신)', items: [
     '섹터 탭 클릭 → 위키 트렌드 + 해당 섹터 네이버 뉴스 동시 갱신',
     'SECTOR_NEWS_QUERY 매핑: politics=정치, economy=경제, entertainment=연예, sports=스포츠, society=사회, international=국제',
@@ -13964,7 +14324,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.9 · 섹터-뉴스 연동</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.0 · 🗳 공약 투표·평점</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
