@@ -8834,10 +8834,11 @@ function renderEconomyBody() {
     const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
     const arrowColor = ind.higher_is_good == null ? 'var(--text-2)' : isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--text-2)';
 
-    // 정부 임기 마커 — 각 정부 시작 시점에 세로선
+    // 정부 임기 마커 — 정식 대통령만 표시 (권한대행 제외, 겹침·가독성 문제)
     const presMarkers = [];
     const firstYear = data[0].year, lastYear = data[data.length - 1].year;
     for (const p of presidents) {
+      if (p.acting) continue; // 권한대행 마커 제외
       const startY = parseInt((p.start || '').slice(0, 4), 10);
       if (startY < firstYear || startY > lastYear) continue;
       const idx = data.findIndex(d => d.year === startY);
@@ -8888,7 +8889,7 @@ function renderEconomyBody() {
   function presidentAvgTable() {
     const rows = [];
     for (const p of presidents) {
-      if (p.name.includes('권한대행')) continue;
+      if (p.acting) continue; // 권한대행 제외 (정식 대통령만 평균 계산)
       const startY = parseInt((p.start || '').slice(0, 4), 10);
       const endY = p.end === '재임 중' ? 2025 : parseInt((p.end || '').slice(0, 4), 10);
       const partyC = partyColor(p.party);
