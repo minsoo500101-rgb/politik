@@ -5971,6 +5971,115 @@
 
   /* ============ World compare ============ */
   /* ============ 경제 데이터 페이지 (/economy) ============ */
+  /* V21.6 — 국가 신용등급 패널 */
+  .credit-panel {
+    margin: 24px 0;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .credit-head { margin-bottom: 16px; }
+  .credit-head h2 {
+    font-size: 20px; font-weight: 800; margin: 0 0 4px;
+    color: var(--text);
+  }
+  .credit-sub { font-size: 12.5px; color: var(--text-2); }
+  .credit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 800px) {
+    .credit-grid { grid-template-columns: 1fr; }
+  }
+  .credit-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 16px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.15s;
+    display: flex; flex-direction: column;
+    gap: 10px;
+  }
+  .credit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
+  [data-theme="dark"] .credit-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+  .credit-card-h {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 10px;
+  }
+  .credit-agency { font-size: 13.5px; font-weight: 800; color: var(--text); }
+  .credit-country { font-size: 11px; color: var(--dim); }
+  .credit-rating-box {
+    color: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .credit-rating-val {
+    font-size: 32px; font-weight: 900;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+  .credit-rating-tier {
+    font-size: 10.5px; font-weight: 700;
+    opacity: 0.9;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+  .credit-outlook {
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .credit-since {
+    font-size: 11px; color: var(--dim);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .credit-history-h {
+    font-size: 11px; font-weight: 700;
+    color: var(--dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .credit-history {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .credit-hist-row {
+    display: grid;
+    grid-template-columns: 60px 50px 1fr;
+    gap: 6px;
+    font-size: 11px;
+    align-items: center;
+  }
+  .credit-hist-date { color: var(--dim); font-variant-numeric: tabular-nums; }
+  .credit-hist-rating { font-weight: 700; color: var(--text); }
+  .credit-hist-note {
+    color: var(--text-2);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .credit-card-foot {
+    font-size: 11px; color: var(--accent);
+    font-weight: 600;
+    text-align: right;
+  }
+  .credit-context {
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    font-size: 11.5px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+  .credit-context b { color: var(--text); }
+
   .econ-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
   .econ-hero {
     background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
@@ -10296,16 +10405,17 @@ async function fetchEcosForIndicator(ind, startYear, endYear) {
       if (!byYear.size) return null;
       return [...byYear.entries()].sort((a, b) => a[0] - b[0]).map(([year, value]) => ({ year, value }));
     }
-    if (transform === 'sum_year') {
+    if (transform === 'sum_year' || transform === 'sum_year_oku') {
       // 월별 → 연간 합계 (수출액 등)
+      // sum_year_oku: 백만달러 합산 결과를 100으로 나눠 억달러로 변환
       const byYear = new Map();
       for (const [time, value] of byTime) {
         const y = parseInt(time.slice(0, 4), 10);
         byYear.set(y, (byYear.get(y) || 0) + value);
       }
       if (!byYear.size) return null;
-      // 현재 진행중인 연도는 부분합 — 데이터 표시는 그대로 두되 _partial 표시 옵션 가능
-      return [...byYear.entries()].sort((a, b) => a[0] - b[0]).map(([year, value]) => ({ year, value: Math.round(value) }));
+      const div = transform === 'sum_year_oku' ? 100 : 1;
+      return [...byYear.entries()].sort((a, b) => a[0] - b[0]).map(([year, value]) => ({ year, value: Math.round(value / div) }));
     }
     // 기본: 연도별 마지막 값 (그해 가장 최근 월)
     const byYear = new Map();
@@ -10564,13 +10674,65 @@ function renderEconomyBody() {
     `;
   }
 
+  // V21.6 — 국가 신용등급 패널 (S&P · Moody's · Fitch)
+  function creditRatingPanel() {
+    const cr = d.credit_ratings;
+    if (!cr || !cr.agencies?.length) return '';
+    const tierColor = t => t <= 2 ? '#16a34a' : t <= 4 ? '#0ea5e9' : t <= 8 ? '#f59e0b' : '#dc2626';
+    const outlookEmoji = o => o === 'positive' ? '📈' : o === 'negative' ? '📉' : o === 'stable' ? '➡️' : '❓';
+    const outlookText = o => ({ positive:'긍정적', negative:'부정적', stable:'안정적', developing:'유동적' }[o] || o);
+    return `
+      <div class="credit-panel">
+        <div class="credit-head">
+          <h2>🏦 국가 신용등급 (Sovereign Credit Rating)</h2>
+          <div class="credit-sub">3대 신용평가사 공식 평가 — 한국 정부의 외화 표시 채무 상환 능력</div>
+        </div>
+        <div class="credit-grid">
+          ${cr.agencies.map(a => `
+            <a class="credit-card" href="${escapeHtml(a.url)}" target="_blank" rel="noopener" style="border-top-color:${tierColor(a.tier)}">
+              <div class="credit-card-h">
+                <div class="credit-agency">${escapeHtml(a.name)}</div>
+                <div class="credit-country">${escapeHtml(a.country)}</div>
+              </div>
+              <div class="credit-rating-box" style="background:${tierColor(a.tier)}">
+                <div class="credit-rating-val">${escapeHtml(a.current)}</div>
+                <div class="credit-rating-tier">상위 ${a.tier}/${a.max_tier} 등급</div>
+              </div>
+              <div class="credit-outlook">
+                ${outlookEmoji(a.outlook)} 전망: <b>${escapeHtml(outlookText(a.outlook))}</b>
+              </div>
+              <div class="credit-since">현 등급 ${escapeHtml(a.since)}부터 유지</div>
+              <div class="credit-history-h">변경 이력</div>
+              <div class="credit-history">
+                ${(a.history || []).slice(0, 3).map(h => `
+                  <div class="credit-hist-row">
+                    <span class="credit-hist-date">${escapeHtml(h.date.slice(0,7))}</span>
+                    <span class="credit-hist-rating">${escapeHtml(h.rating)}</span>
+                    <span class="credit-hist-note">${escapeHtml(h.note || '')}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="credit-card-foot">${escapeHtml(a.name.split(' ')[0])} 공식 페이지 →</div>
+            </a>
+          `).join('')}
+        </div>
+        <div class="credit-context">
+          💡 <b>${escapeHtml(cr._korea_rank || '')}</b><br>
+          ⚠ 신용등급은 <b>국가 채무</b> 상환 능력 평가입니다. 주식·환율·경기와는 별개 지표. 등급 변동은 수년에 1회 수준.
+          <br>📊 <b>등급 스케일:</b> ${escapeHtml(cr._scale_note || '')}
+        </div>
+      </div>
+    `;
+  }
+
   return `
     <div class="econ-grid">
       ${indicators.map(sparkSVG).join('')}
     </div>
+    ${creditRatingPanel()}
     ${presidentAvgTable()}
     <div class="econ-foot">
-      📚 <b>출처</b>: 한국은행 ECOS · 통계청 KOSIS · 관세청 · 한국거래소 공식 공개 데이터.<br>
+      📚 <b>출처</b>: 한국은행 ECOS · 통계청 KOSIS · 관세청 · 한국거래소 · S&P·Moody's·Fitch 공식 공개 데이터.<br>
       ${(() => {
         const total = indicators.length;
         const liveCount = indicators.filter(i => i._live).length;
@@ -12327,6 +12489,15 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V21.6', date: '2026-05-27', title: '🏦 수출 단위 fix + 국가 신용등급 추가', items: [
+    '사용자 발견: 수출 6,837 표시 + \"백만$\" 라벨 → 실제는 억$ (100배 차이)',
+    '✅ 단위 라벨 \"백만$\" → \"억$\" 수정 (2024 = 6,837 억$ = $683.7B 정확)',
+    'ECOS sum_year_oku transform 추가 (월별 백만$ 합 → /100 → 억$)',
+    "🆕 국가 신용등급 패널 — S&P(AA)·Moody's(Aa2)·Fitch(AA-) 3대 평가사",
+    '각 카드: 현재 등급 + 전망 + 마지막 변경 + 변경 이력 + 공식 페이지 링크',
+    '등급 색상: 상위 2등급 초록, 3~4등급 파랑, 5~8등급 주황, 9+등급 빨강',
+    '사용자 통찰: \"수출 줄었는데 시장 호황 — 괴리감\" = 실제 한국 거시 현상 (실물·금융 디커플링)'
+  ]},
   { v: 'V21.5', date: '2026-05-27', title: '🔥 진짜 실검 — 구글 트렌드 RSS 통합 (전면 재설계)', items: [
     '사용자 피드백: \"왜 자꾸 정치인 매핑하느냐\" \"옛 네이버 실검처럼 못하면 기능 재고하자\"',
     '✅ 솔직히 인정: 키워드 빈도 분석은 실검이 아니라 \"뉴스 단어 카운트\"',
@@ -14678,7 +14849,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.5 · 🔥 한국 실검</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.6 · 🏦 신용등급</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>

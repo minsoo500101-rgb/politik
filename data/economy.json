@@ -197,13 +197,13 @@
     {
       "id": "export",
       "label": "수출액",
-      "unit": "백만$",
+      "unit": "억$",
       "source": "관세청 (ECOS)",
       "source_url": "https://www.customs.go.kr",
-      "desc": "월간 상품수출 (백만달러). 한국은행 ECOS 국제수지 통계.",
-      "interpretation": "한국 GDP의 약 40%가 수출. 글로벌 경기·반도체 수요에 민감.",
+      "desc": "연간 상품수출 (억달러). 한국은행 ECOS 국제수지 통계 월별 합계.",
+      "interpretation": "한국 GDP의 약 40%가 수출. 글로벌 경기·반도체 수요에 민감. 2024년 $683.8B = 6,837 억$.",
       "higher_is_good": true,
-      "ecos": { "stat": "301Y013", "period": "M", "item": "110000", "transform": "sum_year" },
+      "ecos": { "stat": "301Y013", "period": "M", "item": "110000", "transform": "sum_year_oku" },
       "data": [
         { "year": 2015, "value": 5267 },
         { "year": 2016, "value": 4954 },
@@ -219,6 +219,66 @@
       ]
     }
   ],
+  "credit_ratings": {
+    "_note": "한국 국가(소버린) 신용등급 — 3대 신용평가사 공식 발표. 등급 변경은 수년에 1회 수준이라 수동 업데이트.",
+    "_scale_note": "S&P/Fitch: AAA > AA+ > AA > AA- > A+ ... | Moody's: Aaa > Aa1 > Aa2 > Aa3 > A1 ...",
+    "_korea_rank": "한국은 일본·중국과 함께 아시아 최상위권. 미국 AA+(S&P)와 같은 수준 또는 한 단계 아래.",
+    "agencies": [
+      {
+        "id": "sp",
+        "name": "S&P (Standard & Poor's)",
+        "country": "미국",
+        "url": "https://www.spglobal.com/ratings/en/research-insights/topics/sovereign-ratings",
+        "current": "AA",
+        "outlook": "stable",
+        "since": "2016-08-08",
+        "tier": 3,
+        "max_tier": 22,
+        "history": [
+          { "date": "2016-08-08", "rating": "AA", "outlook": "stable", "note": "AA-에서 AA로 상향" },
+          { "date": "2015-09-15", "rating": "AA-", "outlook": "positive", "note": "A+에서 AA-로 상향" },
+          { "date": "2012-09-14", "rating": "A+", "outlook": "stable", "note": "A에서 A+로 상향" }
+        ]
+      },
+      {
+        "id": "moodys",
+        "name": "Moody's",
+        "country": "미국",
+        "url": "https://www.moodys.com/credit-ratings/Korea-Republic-of-credit-rating-450050",
+        "current": "Aa2",
+        "outlook": "stable",
+        "since": "2015-12-19",
+        "tier": 3,
+        "max_tier": 22,
+        "history": [
+          { "date": "2015-12-19", "rating": "Aa2", "outlook": "stable", "note": "Aa3에서 Aa2로 상향" },
+          { "date": "2012-08-27", "rating": "Aa3", "outlook": "stable", "note": "A1에서 Aa3로 상향" }
+        ]
+      },
+      {
+        "id": "fitch",
+        "name": "Fitch",
+        "country": "미국·영국",
+        "url": "https://www.fitchratings.com/entity/republic-of-korea-83214737",
+        "current": "AA-",
+        "outlook": "stable",
+        "since": "2012-09-06",
+        "tier": 4,
+        "max_tier": 22,
+        "history": [
+          { "date": "2012-09-06", "rating": "AA-", "outlook": "stable", "note": "A+에서 AA-로 상향" },
+          { "date": "2011-11-07", "rating": "A+", "outlook": "positive", "note": "A에서 A+로 상향" }
+        ]
+      }
+    ],
+    "rating_meaning": {
+      "AAA": "최고 신용도 — 디폴트 위험 사실상 0",
+      "AA": "매우 높은 신용도 — 작은 차이로 AAA와 구분",
+      "A": "높은 신용도 — 일부 외부 변수 영향",
+      "BBB": "투자 등급 하한 — 경기 침체 시 신용 악화 가능",
+      "BB+": "투기 등급 진입 — 정크본드"
+    }
+  },
   "presidents": [
     { "name": "박근혜", "start": "2013-02", "end": "2017-03", "party": "새누리당", "note": "탄핵", "acting": false },
     { "name": "황교안", "start": "2016-12", "end": "2017-05", "party": "—", "note": "권한대행 (박근혜 탄핵소추~문재인 취임)", "acting": true },
