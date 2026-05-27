@@ -4190,6 +4190,114 @@
     .insight-row { grid-template-columns: 1fr; }
   }
 
+  /* V21.5 — 한국 실검 트렌드 카드 (구글 트렌드 RSS) */
+  .today-trends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .trend-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 14px 10px;
+    display: flex; flex-direction: column;
+    gap: 10px;
+  }
+  .trend-card-h {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .trend-rank {
+    font-size: 22px; font-weight: 900;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .trend-card:nth-child(-n+3) .trend-rank { color: #dc2626; }
+  .trend-keyword-wrap { flex: 1; min-width: 0; }
+  .trend-keyword {
+    font-size: 17px; font-weight: 800;
+    color: var(--text);
+    text-decoration: none;
+    display: block;
+    line-height: 1.2;
+  }
+  .trend-keyword:hover { color: var(--accent); }
+  .trend-meta { margin-top: 4px; }
+  .trend-traffic {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px;
+    background: rgba(220,38,38,0.08);
+    color: #dc2626;
+    border-radius: 10px;
+  }
+  [data-theme="dark"] .trend-traffic { background: rgba(248,113,113,0.15); color: #f87171; }
+  .trend-pol-link {
+    display: inline-block;
+    padding: 4px 10px;
+    color: #fff !important;
+    font-size: 11px; font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none;
+    align-self: flex-start;
+  }
+  .trend-pol-link:hover { opacity: 0.88; }
+  .trend-news-list { display: flex; flex-direction: column; gap: 6px; }
+  .trend-news {
+    display: flex; gap: 8px;
+    padding: 6px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.12s;
+  }
+  .trend-news:hover { background: var(--bg-elev); }
+  .trend-news-img {
+    width: 50px; height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .trend-news-body { flex: 1; min-width: 0; }
+  .trend-news-title {
+    font-size: 12px; font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .trend-news-src {
+    font-size: 10.5px; color: var(--dim);
+    margin-top: 2px;
+  }
+  .trend-card-foot {
+    display: flex; gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .trend-card-foot a {
+    padding: 3px 9px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    color: var(--text-2);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .trend-card-foot a:hover { background: var(--accent); color: #fff !important; }
+  .today-foot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 700px) { .today-foot-grid { grid-template-columns: 1fr; } }
+
   /* V21.1 — 홈 정치 트렌드 위젯 */
   .home-trend-row {
     background: linear-gradient(135deg, rgba(239,68,68,0.06) 0%, rgba(220,38,38,0.03) 100%);
@@ -11038,8 +11146,50 @@ async function loadBillMemberVotes(billId) {
   }
 }
 
-// V21.1 — 네이버 뉴스 기반 실시간 트렌드 (위키 24h 지연 폐기)
-// 섹터별 뉴스 키워드 빈도 분석 — 분 단위 신선도
+// ============================================================
+// V21.5 — 구글 트렌드 한국 RSS = 진짜 실검
+// ============================================================
+const _googleTrendsCache = { data: null, fetchedAt: 0 };
+
+async function loadGoogleTrendsKR() {
+  // 10분 캐시 (Vercel CDN 캐시랑 일치)
+  if (_googleTrendsCache.data && Date.now() - _googleTrendsCache.fetchedAt < 600000) {
+    return _googleTrendsCache.data;
+  }
+  try {
+    const r = await fetch('/api/trends?geo=KR');
+    if (!r.ok) throw new Error('Trends API ' + r.status);
+    const j = await r.json();
+    // 정치인 매핑 시도 (DB lookup)
+    const politicians = state.members || [];
+    const polMap = new Map();
+    for (const m of politicians) {
+      if (m.HG_NM && m.HG_NM.length >= 2) polMap.set(m.HG_NM, m);
+    }
+    const items = (j.items || []).map((it, i) => {
+      const matched = polMap.get(it.title);
+      return {
+        rank: i + 1,
+        keyword: it.title,
+        traffic: it.approx_traffic || '',
+        pubDate: it.pubDate || '',
+        picture: it.picture || '',
+        pictureSource: it.picture_source || '',
+        newsItems: (it.news_items || []).slice(0, 3),
+        politician: matched || null,
+      };
+    });
+    const data = { items, total: items.length, fetchedAt: j.fetched_at };
+    _googleTrendsCache.data = data;
+    _googleTrendsCache.fetchedAt = Date.now();
+    return data;
+  } catch (e) {
+    console.warn('Google Trends KR load failed:', e.message);
+    return { items: [], total: 0 };
+  }
+}
+
+// V21.1 — 네이버 뉴스 기반 키워드 빈도 (보조 — 섹터별 탭에서만 사용)
 const _trendingCache = {}; // sector → { data, fetchedAt }
 
 // 섹터별 네이버 검색 쿼리 (다중 키워드로 풍부한 데이터)
@@ -11195,47 +11345,16 @@ function renderTodayPage() {
     <div class="group-back" id="back-home">← 홈</div>
     <div class="today-page">
       <div class="today-head">
-        <div class="today-eye">🔴 LIVE · 지금 한국</div>
-        <h1 class="today-h1">지금 한국 — 6대 섹터 트렌드</h1>
-        <div class="today-sub">${escapeHtml(todayStr)} · 네이버 뉴스 분 단위 키워드·인물 빈도 분석</div>
+        <div class="today-eye">🔴 LIVE · 한국 실시간 검색 트렌드</div>
+        <h1 class="today-h1">지금 한국 — 실검</h1>
+        <div class="today-sub">${escapeHtml(todayStr)} · 구글 트렌드 한국 (Daily) · 분류·편향 없는 순수 검색량 기준</div>
       </div>
-      <div class="today-tabs" id="today-tabs">
-        ${sectors.map(s => `
-          <button class="today-tab ${s.id === _todayActiveSector ? 'active' : ''}" data-sector="${s.id}">${s.label}</button>
-        `).join('')}
-      </div>
-      <div class="today-main">
-        <div class="today-twocol">
-          <div class="today-block today-block-hot">
-            <div class="today-block-h">
-              <h3 id="today-person-h">🔥 오늘 뉴스 핫 인물 Top 12</h3>
-              <span class="today-src">네이버 뉴스 본문 매칭</span>
-            </div>
-            <div id="today-person-list" class="today-pol-list">
-              <div class="today-loading"><span class="loading-spinner"></span> 뉴스 분석 중…</div>
-            </div>
-          </div>
-          <div class="today-block">
-            <div class="today-block-h">
-              <h3 id="today-keyword-h">🏷 키워드 빈도 Top 15</h3>
-              <span class="today-src">2~5자 한글 명사·불용어 제외</span>
-            </div>
-            <div id="today-keyword-list" class="today-keyword-cloud">
-              <div class="today-loading"><span class="loading-spinner"></span> 키워드 분석 중…</div>
-            </div>
-          </div>
+      <div class="today-trends-grid" id="today-trends-grid">
+        <div class="today-loading" style="grid-column:1/-1;padding:60px;text-align:center">
+          <span class="loading-spinner"></span> 구글 트렌드 fetch 중…
         </div>
       </div>
-      <div class="today-grid">
-        <div class="today-block">
-          <div class="today-block-h">
-            <h3 id="today-news-h">📰 전체 뉴스 (분 단위)</h3>
-            <span class="today-src">네이버 검색 API</span>
-          </div>
-          <div id="today-news" class="today-news-list">
-            <div class="today-loading"><span class="loading-spinner"></span> fetch 중…</div>
-          </div>
-        </div>
+      <div class="today-foot-grid">
         <div class="today-block">
           <div class="today-block-h">
             <h3>📜 이번 주 본회의 통과</h3>
@@ -11256,15 +11375,68 @@ function renderTodayPage() {
         </div>
       </div>
       <div class="today-foot">
-        ⚡ 네이버 뉴스 분 단위 · 5분 캐시 · 의안 1시간 캐시<br>
-        🎯 인물 매칭: 우리 정치인 DB 772명 · 클릭 시 인물 상세 페이지
+        ⚡ <b>구글 트렌드 RSS</b> (Daily Search Trends, geo=KR) · 10분 캐시<br>
+        🎯 정치인은 우리 DB와 자동 매칭 — 매칭되면 인물 상세 페이지 링크 (그 외는 그대로 표시)<br>
+        📰 각 검색어 아래 관련 뉴스 3개 자동 첨부 (출처: 구글이 큐레이션)
       </div>
     </div>
   `;
 }
 
-// V21.4 — 'all' = 통합 클라우드 (인물·키워드 한꺼번에 빈도 정렬)
-// 섹터 탭 = 인물 + 키워드 별도
+// V21.5 — 구글 트렌드 카드 렌더 (실검)
+async function renderTodayTrends() {
+  const target = document.getElementById('today-trends-grid');
+  if (!target) return;
+  try {
+    const data = await loadGoogleTrendsKR();
+    if (!data?.items?.length) {
+      target.innerHTML = `<div class="today-empty" style="grid-column:1/-1;padding:40px;text-align:center">트렌드 데이터 없음 (API 응답 실패)</div>`;
+      return;
+    }
+    target.innerHTML = data.items.map(it => {
+      const isPolitician = !!it.politician;
+      const p = it.politician;
+      const partyColor_ = isPolitician && p?.POLY_NM ? partyColor(p.POLY_NM) : 'var(--accent)';
+      const trafficBadge = it.traffic ? `<span class="trend-traffic">🔍 ${escapeHtml(it.traffic)}</span>` : '';
+      const polBadge = isPolitician
+        ? `<a class="trend-pol-link" href="/m/${encodeURIComponent(p.MONA_CD)}" style="background:${partyColor_}">${escapeHtml(p.POLY_NM || '정치인')} · 인물 상세 →</a>`
+        : '';
+      const newsHtml = (it.newsItems || []).slice(0, 3).map(n => {
+        const src = n.source || (n.url ? (n.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '');
+        return `
+          <a class="trend-news" href="${escapeHtml(n.url || '#')}" target="_blank" rel="noopener">
+            ${n.picture ? `<img class="trend-news-img" src="${escapeHtml(n.picture)}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+            <div class="trend-news-body">
+              <div class="trend-news-title">${escapeHtml(n.title || '')}</div>
+              <div class="trend-news-src">${escapeHtml(src)}</div>
+            </div>
+          </a>`;
+      }).join('');
+      return `
+        <div class="trend-card" style="border-top-color:${partyColor_}">
+          <div class="trend-card-h">
+            <div class="trend-rank">#${it.rank}</div>
+            <div class="trend-keyword-wrap">
+              <a class="trend-keyword" href="https://search.naver.com/search.naver?where=nexearch&query=${encodeURIComponent(it.keyword)}" target="_blank" rel="noopener">${escapeHtml(it.keyword)}</a>
+              <div class="trend-meta">${trafficBadge}</div>
+            </div>
+          </div>
+          ${polBadge}
+          <div class="trend-news-list">${newsHtml}</div>
+          <div class="trend-card-foot">
+            <a href="https://search.naver.com/search.naver?where=nexearch&query=${encodeURIComponent(it.keyword)}" target="_blank" rel="noopener">N 검색</a>
+            <a href="https://www.google.com/search?q=${encodeURIComponent(it.keyword)}" target="_blank" rel="noopener">G 검색</a>
+            <a href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(it.keyword)}" target="_blank" rel="noopener">📰 뉴스 더보기</a>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    target.innerHTML = `<div class="today-empty" style="grid-column:1/-1;padding:40px;text-align:center">로드 실패: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+// V21.4 (보조) — 'all' = 통합 클라우드 (인물·키워드 한꺼번에 빈도 정렬)
+// 섹터 탭 = 인물 + 키워드 별도 (현재 미사용 — V21.5에서 단일 메인으로 통일)
 async function renderTodayTrendForSector(sector) {
   const personTarget = document.getElementById('today-person-list');
   const kwTarget = document.getElementById('today-keyword-list');
@@ -11451,23 +11623,8 @@ function renderSectorNews(target, items) {
 }
 
 async function setupTodayEvents() {
-  // 탭 클릭 — 트렌드 + 뉴스 동시 갱신
-  document.querySelectorAll('#today-tabs .today-tab').forEach(el => {
-    el.addEventListener('click', async () => {
-      _todayActiveSector = el.dataset.sector;
-      document.querySelectorAll('#today-tabs .today-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.sector === _todayActiveSector);
-      });
-      renderTodayTrendForSector(_todayActiveSector);
-      loadNewsForSector(_todayActiveSector);
-    });
-  });
-
-  // 1. 네이버 뉴스 키워드·인물 분석
-  renderTodayTrendForSector(_todayActiveSector);
-
-  // 2. 섹터별 뉴스 (탭 클릭 시 갱신)
-  loadNewsForSector(_todayActiveSector);
+  // V21.5 — 구글 트렌드 메인 패널
+  renderTodayTrends();
 
   // 3. 이번 주 통과 법안
   const renderWeekBills = () => {
@@ -12170,6 +12327,19 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V21.5', date: '2026-05-27', title: '🔥 진짜 실검 — 구글 트렌드 RSS 통합 (전면 재설계)', items: [
+    '사용자 피드백: \"왜 자꾸 정치인 매핑하느냐\" \"옛 네이버 실검처럼 못하면 기능 재고하자\"',
+    '✅ 솔직히 인정: 키워드 빈도 분석은 실검이 아니라 \"뉴스 단어 카운트\"',
+    '🆕 구글 트렌드 한국 RSS = 진짜 실검 (실제 검색량 + 검색 급상승)',
+    '/api/trends.js — Vercel 프록시 신설 (CORS 우회 · XML→JSON · 10분 캐시)',
+    '구글이 직접 큐레이션한 관련 뉴스 3개 자동 첨부 (이미지·출처·제목)',
+    '검색량 표시 (예: 500+, 1,000+ 등)',
+    '/today 전면 재설계 — 6섹터 탭·키워드 클라우드 제거, 트렌드 카드 그리드',
+    '홈 위젯 \"한국 실시간 검색 트렌드\" — 상위 6개 (정치·연예·경제·사건 자연 혼합)',
+    '🎯 정치인 매핑은 보너스 — 우연히 트렌드된 정치인만 인물 상세 링크 (강요 X)',
+    '비정치인 검색어 → 네이버 검색으로 자연스럽게 이동',
+    'AI 분류·우리 DB 매칭 한계로 인한 정치 편향 완전 해소'
+  ]},
   { v: 'V21.4', date: '2026-05-27', title: '🎯 트렌드 탈정치화 — \"지금 대한민국이 어떻게 돌아가는지\"', items: [
     '문제: 우리 DB가 정치인 772명뿐이라 \"전체\" 탭도 정치인 우선 매칭 → 정치 편향',
     '✅ \"전체\" 섹터 쿼리 재설계 — 연예·경제·스포츠·드라마·주가·사건 6개 균등 검색',
@@ -14508,7 +14678,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.4 · 🎯 순수 트렌드</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.5 · 🔥 한국 실검</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -14549,15 +14719,15 @@ function renderHome() {
         `;
       })()}
 
-      <!-- 🔥 V21.4 — 지금 대한민국 화제 (6섹터 통합 트렌드) -->
+      <!-- 🔥 V21.5 — 한국 실검 (구글 트렌드 RSS) -->
       <div class="home-trend-row" id="home-trend-row">
         <div class="home-trend-head">
-          <h3>🔥 지금 대한민국 화제 <span class="econ-mini-live">🟢 LIVE</span></h3>
-          <a href="/today" class="chart-link">6대 섹터 전체 보기 →</a>
+          <h3>🔥 한국 실시간 검색 트렌드 <span class="econ-mini-live">🟢 LIVE</span></h3>
+          <a href="/today" class="chart-link">전체 보기 →</a>
         </div>
         <div class="home-trend-grid" id="home-trend-tiles">
           <div class="loading" style="padding:14px;text-align:center;grid-column:1/-1">
-            <span class="loading-spinner"></span>네이버 뉴스 분석 중… (연예·경제·스포츠·정치 통합)
+            <span class="loading-spinner"></span>구글 트렌드 fetch 중…
           </div>
         </div>
       </div>
@@ -16695,45 +16865,36 @@ function route() {
   }
 }
 
-// V21.4 — 홈 통합 트렌드 위젯 (정치 편향 제거, 6섹터 통합)
+// V21.5 — 홈 실검 위젯 (구글 트렌드 한국 RSS — 실제 검색량)
 async function populateHomeTrend() {
   const target = document.getElementById('home-trend-tiles');
   if (!target) return;
   try {
-    const data = await loadSectorTrending('all');
-    if (!data || (!data.persons.length && !data.keywords.length)) {
-      target.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--dim);font-size:12px;padding:14px">트렌드 데이터 부족 (뉴스가 적은 시간대일 수 있음)</div>';
+    const data = await loadGoogleTrendsKR();
+    if (!data?.items?.length) {
+      target.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--dim);font-size:12px;padding:14px">실검 데이터 불러올 수 없음</div>';
       return;
     }
-    // 인물·키워드 통합 → 빈도 순 상위 6개
-    const unified = [
-      ...data.persons.map(p => ({
-        word: p.name, count: p.count, isPerson: true, member: p.member,
-      })),
-      ...data.keywords.map(k => ({
-        word: k.word, count: k.count, isPerson: false,
-      })),
-    ].sort((a, b) => b.count - a.count).slice(0, 6);
-
-    target.innerHTML = unified.map((it, i) => {
-      const m = it.member;
-      const isPolitician = it.isPerson && m;
-      const pColor = isPolitician && m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+    // 상위 6개
+    target.innerHTML = data.items.slice(0, 6).map(it => {
+      const isPolitician = !!it.politician;
+      const p = it.politician;
+      const pColor = isPolitician && p?.POLY_NM ? partyColor(p.POLY_NM) : 'var(--accent)';
       const meta = isPolitician
-        ? (m.POLY_NM || m._type_label || '정치인')
-        : (it.isPerson ? '인물' : '키워드');
-      const href = isPolitician && m?.MONA_CD
-        ? `/m/${encodeURIComponent(m.MONA_CD)}`
-        : `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(it.word)}`;
+        ? (p.POLY_NM || p._type_label || '정치인')
+        : (it.traffic || '검색 급상승');
+      const href = isPolitician && p?.MONA_CD
+        ? `/m/${encodeURIComponent(p.MONA_CD)}`
+        : `https://search.naver.com/search.naver?where=nexearch&query=${encodeURIComponent(it.keyword)}`;
       const target_ = isPolitician ? '' : ' target="_blank" rel="noopener"';
       return `
         <a class="home-trend-tile" href="${href}"${target_} style="border-left-color:${pColor}">
-          <div class="home-trend-rank">${i + 1}</div>
+          <div class="home-trend-rank">${it.rank}</div>
           <div class="home-trend-body">
-            <div class="home-trend-name">${escapeHtml(it.word)}</div>
+            <div class="home-trend-name">${escapeHtml(it.keyword)}</div>
             <div class="home-trend-meta" style="color:${pColor}">${escapeHtml(meta)}</div>
           </div>
-          <div class="home-trend-count">${it.count}회</div>
+          <div class="home-trend-count">${escapeHtml(it.traffic || '🔥')}</div>
         </a>`;
     }).join('');
   } catch (e) {
