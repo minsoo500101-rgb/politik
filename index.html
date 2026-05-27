@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>대한민국 패치 노트 — 정치·법안·선거·인물 데이터 종합 플랫폼</title>
-<meta name="description" content="한국의 모든 것 한 곳에. 22대 국회 통과 법안 1,595건, 정치인 744명 (대통령·국회·내각·사법부·지방정부·역대), 9회 지방선거 후보자 697명 실시간, 17개 시도×250 시군구 정치 분포 지도, 국제 12개국 비교, 역대 대통령·총리·정당사까지.">
+<meta name="description" content="한국의 모든 것 한 곳에. 22대 국회 통과 법안 1,595건, 정치인 744명, 9회 지방선거 후보 697명 실시간, 정치 분포 지도 17×250, 한국 경제 지표 8종 시계열 (금리·환율·물가·GDP·실업률), 국제 12개국 비교, 역대 대통령·총리·정당사까지.">
 <meta name="keywords" content="대한민국 정치, 한국 정치 데이터, 국회 의안, 22대 국회, 9회 지방선거, 후보자 정보, 5대 공약, 통과 법안, 발의자, 정당, 광역단체장, 기초단체장, 교육감, 대법관, 헌법재판관, 역대 대통령, 역대 총리, 정당사, 국제 비교, 정치 분포 지도, 정치인 약력, 한국 정치 인덱스, 정치 데이터 허브">
 <meta name="author" content="Korea Patch Notes">
 <meta name="theme-color" content="#111827">
@@ -5099,6 +5099,145 @@
   }
 
   /* ============ World compare ============ */
+  /* ============ 경제 데이터 페이지 (/economy) ============ */
+  .econ-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
+  .econ-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 30px;
+    margin-bottom: 18px;
+    position: relative; overflow: hidden;
+  }
+  .econ-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 100% 50%, rgba(16,185,129,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .econ-hero-eye {
+    font-size: 10.5px; color: var(--dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 8px;
+    position: relative; z-index: 1;
+  }
+  .econ-hero h1 {
+    font-size: 28px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.6px; margin-bottom: 6px;
+    position: relative; z-index: 1;
+  }
+  .econ-hero p { font-size: 13px; color: var(--text-2); position: relative; z-index: 1; }
+  .econ-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 14px;
+  }
+  .econ-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .econ-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .econ-card-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .econ-card-label { font-size: 14px; font-weight: 800; color: var(--text); }
+  .econ-card-meta { font-size: 10.5px; color: var(--dim); margin-top: 2px; }
+  .econ-card-now { text-align: right; }
+  .econ-card-now-v {
+    font-size: 22px; font-weight: 800; color: var(--text);
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .econ-card-delta {
+    font-size: 11px; font-weight: 700; margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .econ-svg-wrap { margin: 8px -4px; }
+  .econ-axis {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--dim);
+    padding: 0 32px;
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+  .econ-card-desc {
+    font-size: 12px; color: var(--text); line-height: 1.5;
+    margin-top: 10px;
+  }
+  .econ-card-interp {
+    font-size: 11.5px; color: var(--text-2); line-height: 1.5;
+    margin-top: 6px;
+    padding: 8px 10px;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+  }
+  .econ-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-top: 18px;
+  }
+  .econ-section h2 {
+    font-size: 16px; font-weight: 800; color: var(--text);
+    margin-bottom: 12px;
+  }
+  .econ-table-wrap { overflow-x: auto; }
+  .econ-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px;
+  }
+  .econ-table thead th {
+    text-align: left;
+    padding: 9px 8px;
+    border-bottom: 2px solid var(--border-strong);
+    color: var(--text-2);
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .econ-table th.num, .econ-table td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .econ-table tbody td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .econ-note {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    font-size: 11.5px; color: var(--text-2);
+    line-height: 1.55;
+  }
+  .econ-foot {
+    margin-top: 24px;
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    font-size: 11.5px; color: var(--text-2);
+    line-height: 1.6;
+  }
+  @media (max-width: 700px) {
+    .econ-page { padding: 8px 14px 60px; }
+    .econ-hero { padding: 22px 20px; }
+    .econ-hero h1 { font-size: 22px; }
+    .econ-grid { grid-template-columns: 1fr; }
+    .econ-card { padding: 14px 16px; }
+    .econ-card-now-v { font-size: 18px; }
+    .econ-section { padding: 14px 16px; }
+    .econ-table { font-size: 11px; }
+    .econ-table thead th { font-size: 9.5px; padding: 6px 4px; }
+    .econ-table tbody td { padding: 7px 4px; }
+  }
+
   .world-page { max-width: 1280px; margin: 0 auto; padding: 8px 24px 60px; }
   @media (max-width: 700px) {
     .world-page { padding: 8px 14px 60px; }
@@ -5939,6 +6078,7 @@
       <a href="#/map">🗺 정치 분포 지도</a>
       <a href="#/bookmarks">⭐ 관심 의원</a>
       <a href="#/stances">🗳 내 정치 입장</a>
+      <a href="#/economy">💰 경제 지표</a>
       <a href="#/play">🧪 실험실</a>
     </div>
     <div class="foot-col">
@@ -8486,6 +8626,196 @@ async function loadWorldCompare() {
   return state.worldCompare;
 }
 
+// ============================================================
+// 경제 데이터 (/economy) — 한국 핵심 지표 시계열 + 정부 임기 마커
+// ============================================================
+const economyState = { data: null, loading: false };
+
+async function loadEconomy() {
+  if (economyState.data) return economyState.data;
+  if (economyState.loading) return null;
+  economyState.loading = true;
+  try {
+    const r = await fetch('data/economy.json');
+    economyState.data = await r.json();
+    return economyState.data;
+  } catch (e) {
+    return null;
+  } finally {
+    economyState.loading = false;
+  }
+}
+
+function renderEconomyPage() {
+  loadEconomy().then(() => {
+    if (location.hash.startsWith('#/economy')) {
+      const body = document.getElementById('econ-body');
+      if (body) body.innerHTML = renderEconomyBody();
+    }
+  });
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="econ-page">
+      <div class="econ-hero">
+        <div class="econ-hero-eye">REPUBLIC OF KOREA · ECONOMY</div>
+        <h1>💰 한국 경제 지표</h1>
+        <p>한국은행·통계청·관세청 공식 데이터. 정부 임기와 함께 보는 경제 흐름. <span style="color:var(--dim);font-size:12px">평가·전망·예측 없음 — 공식 수치 그대로.</span></p>
+      </div>
+      <div id="econ-body">
+        <div class="loading"><span class="loading-spinner"></span>경제 지표 불러오는 중…</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEconomyBody() {
+  const d = economyState.data;
+  if (!d) return '<div class="empty">경제 데이터를 불러올 수 없습니다.</div>';
+  const indicators = d.indicators || [];
+  const presidents = d.presidents || [];
+
+  // 정부 임기 시점 (year 단위)
+  function presidentAtYear(year) {
+    return presidents.find(p => {
+      const startY = parseInt((p.start || '').slice(0, 4), 10);
+      const endY = p.end === '재임 중' ? 9999 : parseInt((p.end || '').slice(0, 4), 10);
+      return year >= startY && year <= endY;
+    });
+  }
+
+  function sparkSVG(ind) {
+    const data = ind.data;
+    const w = 560, h = 140, padX = 32, padY = 18;
+    const vals = data.map(d => d.value);
+    const mn = Math.min(...vals), mx = Math.max(...vals);
+    const range = mx - mn || 1;
+    const xStep = (w - padX * 2) / (data.length - 1);
+    const points = data.map((d, i) => ({
+      x: padX + i * xStep,
+      y: padY + (1 - (d.value - mn) / range) * (h - padY * 2),
+      year: d.year,
+      value: d.value
+    }));
+    const path = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+    const last = points[points.length - 1];
+    const prev = points[points.length - 2];
+    const delta = last && prev ? last.value - prev.value : 0;
+    const isUp = ind.higher_is_good === true ? delta > 0 : ind.higher_is_good === false ? delta < 0 : false;
+    const isDown = ind.higher_is_good === true ? delta < 0 : ind.higher_is_good === false ? delta > 0 : false;
+    const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
+    const arrowColor = ind.higher_is_good == null ? 'var(--text-2)' : isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--text-2)';
+
+    // 정부 임기 마커 — 각 정부 시작 시점에 세로선
+    const presMarkers = [];
+    const firstYear = data[0].year, lastYear = data[data.length - 1].year;
+    for (const p of presidents) {
+      const startY = parseInt((p.start || '').slice(0, 4), 10);
+      if (startY < firstYear || startY > lastYear) continue;
+      const idx = data.findIndex(d => d.year === startY);
+      if (idx >= 0) {
+        const px = padX + idx * xStep;
+        const partyC = partyColor(p.party === '—' ? '무소속' : p.party);
+        presMarkers.push({ x: px, name: p.name, party: p.party, color: partyC, year: startY });
+      }
+    }
+
+    return `
+      <div class="econ-card" data-ind="${escapeHtml(ind.id)}">
+        <div class="econ-card-head">
+          <div>
+            <div class="econ-card-label">${escapeHtml(ind.label)}</div>
+            <div class="econ-card-meta">${escapeHtml(ind.source)}</div>
+          </div>
+          <div class="econ-card-now">
+            <div class="econ-card-now-v">${last.value.toLocaleString('ko-KR', {maximumFractionDigits: 2})}<span style="font-size:12px;color:var(--dim);font-weight:600;margin-left:3px">${escapeHtml(ind.unit)}</span></div>
+            <div class="econ-card-delta" style="color:${arrowColor}">${arrow} ${Math.abs(delta).toLocaleString('ko-KR', {maximumFractionDigits: 2})}</div>
+          </div>
+        </div>
+        <div class="econ-svg-wrap">
+          <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:auto;display:block">
+            ${presMarkers.map(m => `
+              <line x1="${m.x.toFixed(1)}" y1="${padY}" x2="${m.x.toFixed(1)}" y2="${h - padY}" stroke="${m.color}" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
+              <text x="${m.x.toFixed(1)}" y="${padY - 4}" text-anchor="middle" font-size="9" fill="${m.color}" font-weight="700">${escapeHtml(m.name.split(' ')[0])}</text>
+            `).join('')}
+            <path d="${path}" fill="none" stroke="${arrowColor === 'var(--text-2)' ? 'var(--accent)' : arrowColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            ${points.map((p, i) => `
+              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === points.length - 1 ? 4 : 2.5}" fill="${i === points.length - 1 ? (arrowColor === 'var(--text-2)' ? 'var(--accent)' : arrowColor) : 'var(--bg-card)'}" stroke="${arrowColor === 'var(--text-2)' ? 'var(--accent)' : arrowColor}" stroke-width="1.5"/>
+              <title>${p.year}: ${p.value.toLocaleString('ko-KR', {maximumFractionDigits: 2})}${escapeHtml(ind.unit)}</title>
+            `).join('')}
+          </svg>
+          <div class="econ-axis">
+            <span>${data[0].year}</span>
+            <span>${data[Math.floor(data.length/2)].year}</span>
+            <span>${data[data.length-1].year}</span>
+          </div>
+        </div>
+        <div class="econ-card-desc">${escapeHtml(ind.desc)}</div>
+        <div class="econ-card-interp">${escapeHtml(ind.interpretation)}</div>
+      </div>
+    `;
+  }
+
+  // 정부별 평균 비교 (선택된 지표 기준 — 기본 GDP 성장률)
+  function presidentAvgTable() {
+    const rows = [];
+    for (const p of presidents) {
+      if (p.name.includes('권한대행')) continue;
+      const startY = parseInt((p.start || '').slice(0, 4), 10);
+      const endY = p.end === '재임 중' ? 2025 : parseInt((p.end || '').slice(0, 4), 10);
+      const partyC = partyColor(p.party);
+      const stats = {};
+      for (const ind of indicators) {
+        const slice = ind.data.filter(d => d.year >= startY && d.year <= endY);
+        if (slice.length) {
+          stats[ind.id] = slice.reduce((s, d) => s + d.value, 0) / slice.length;
+        }
+      }
+      rows.push({ p, partyC, stats, startY, endY });
+    }
+    if (!rows.length) return '';
+    return `
+      <div class="econ-section">
+        <h2>📊 정부별 평균 비교 <span style="font-size:11px;color:var(--dim);font-weight:400">· 임기 동안 연 평균</span></h2>
+        <div class="econ-table-wrap">
+          <table class="econ-table">
+            <thead>
+              <tr>
+                <th>대통령</th>
+                <th>임기</th>
+                ${indicators.map(ind => `<th class="num">${escapeHtml(ind.label)}<br><span style="font-weight:400;font-size:9px;color:var(--dim)">${escapeHtml(ind.unit)}</span></th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr>
+                  <td><b style="color:${r.partyC}">${escapeHtml(r.p.name)}</b><br><span style="font-size:11px;color:var(--text-2)">${escapeHtml(r.p.party)}</span></td>
+                  <td><span style="font-size:11px;color:var(--text-2)">${r.startY}~${r.endY === 2025 ? '현재' : r.endY}</span></td>
+                  ${indicators.map(ind => `<td class="num">${r.stats[ind.id] != null ? r.stats[ind.id].toLocaleString('ko-KR', {maximumFractionDigits: 2}) : '—'}</td>`).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="econ-note">
+          ⚠ 정부 임기와 경제 지표의 인과관계는 단순 비교만으로 단정할 수 없습니다. 글로벌 경기·외부 충격·전임 정부 정책 영향이 함께 작용합니다. <b>참고용 객관 비교</b>일 뿐, 평가·우열이 아닙니다.
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="econ-grid">
+      ${indicators.map(sparkSVG).join('')}
+    </div>
+    ${presidentAvgTable()}
+    <div class="econ-foot">
+      📚 <b>출처</b>: 한국은행 ECOS · 통계청 KOSIS · 관세청 · 한국거래소 공식 공개 데이터.<br>
+      ↻ 데이터 수동 갱신 (${escapeHtml(d.updatedAt)}). 한국은행 ECOS API 키 등록 시 자동 실시간 (운영자 안내).<br>
+      ⚠ 본 사이트는 <b>객관 수치 표시</b>만 합니다. 투자 자문·종목 추천 X. 자본시장법 회피.
+    </div>
+  `;
+}
+
 function renderWorldComparePage() {
   const wc = state.worldCompare;
   if (!wc) return `
@@ -9674,6 +10004,16 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V16.0', date: '2026-05-27', title: '🚨 경제 데이터 확장 — /economy 신설', items: [
+    '💰 한국 경제 지표 8종 시계열 (2015~2025) — 기준금리·환율·CPI·실업률·GDP·코스피·가계부채/GDP·수출',
+    '📊 SVG sparkline 차트 + 정부 임기 마커 (박근혜·문재인·윤석열·이재명)',
+    '📋 정부별 평균 비교 표 — 임기 동안 각 지표의 연 평균',
+    '🛡 자본시장법 회피 — 종목·주가 추천 X, 공식 수치만 표시',
+    '🔌 한국은행 ECOS API 프록시 추가 (/api/ecos) — ECOS_API_KEY 등록 시 자동 라이브',
+    'data/economy.json 정적 fallback — API 키 없어도 100% 동작',
+    '홈 탐색 그리드 13개 도구로 확장 · 푸터 진입점 추가',
+    '사이트 정체성 확장: "정치 데이터" → "정치·경제 종합 데이터"'
+  ]},
   { v: 'V15.3', date: '2026-05-27', title: '9회 지선 공약 분석 섹션 통째로 제거', items: [
     '지선 페이지의 공약 키워드 분석·분야 분포·정당별 비교·시도별 후보 비교 그리드 전부 삭제',
     '이유: "와닿지가 않음" — 분야 분포는 결국 비슷한 인상 (경제·교육·복지 어디나 비슷), 추상적 통계는 사용자 결정에 도움 안 됨',
@@ -11822,8 +12162,8 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V15.3 · 22대 ${state.bills?.length || 0}건</a></h1>
-          <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·인물·역사를 데이터로.<br>
+          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V16.0 · 정치+경제</a></h1>
+          <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -12039,9 +12379,10 @@ function renderHome() {
       <div class="explore-section">
         <div class="explore-h-row">
           <h2 class="explore-h">🧭 탐색 도구</h2>
-          <span class="explore-sub">12개 도구 · 모두 무료</span>
+          <span class="explore-sub">13개 도구 · 모두 무료</span>
         </div>
         <div class="explore-grid explore-grid-compact">
+          <a class="tool-card" href="#/economy"><span>💰</span><div><b>경제 지표</b><em>금리·환율·물가·GDP 추이 + 정부 임기</em></div></a>
           <a class="tool-card" href="#/compare-cand"><span>🆚</span><div><b>9회 후보 비교</b><em>최대 3명 옆에 옆에</em></div></a>
           <a class="tool-card" href="#/dex"><span>📕</span><div><b>정치인 도감</b><em>삼권+지방+역사 컬렉션</em></div></a>
           <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구</em></div></a>
@@ -13337,6 +13678,14 @@ function route() {
       view.innerHTML = renderLocalElectionsPage();
       document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
     });
+    return;
+  }
+  // 경제 지표 (/economy)
+  if (hash === '#/economy') {
+    view.innerHTML = renderEconomyPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
     return;
   }
   // 국제 비교
