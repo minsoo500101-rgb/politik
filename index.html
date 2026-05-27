@@ -8832,25 +8832,55 @@ async function fetchEcosForIndicator(ind, startYear, endYear) {
   }
 }
 
-// 라이브 데이터 시도 — 성공한 지표만 정적 데이터를 덮어쓰기
-async function tryLoadLiveEconomy() {
+// 라이브 데이터 시도 — 인디케이터별 점진적 갱신 (한 개 실패해도 나머지 즉시 표시)
+// onProgress(ind, success) 콜백으로 각 인디케이터 완료 즉시 통지
+let _liveLoadPromise = null;
+async function tryLoadLiveEconomy(onProgress) {
   if (!economyState.data) await loadEconomy();
   if (!economyState.data) return;
+  // 이미 진행 중이면 같은 Promise 반환 (호출자는 onProgress 등록 후 기다림)
+  if (_liveLoadPromise) {
+    // 이미 라이브 완료된 인디케이터는 즉시 통지
+    if (onProgress) {
+      for (const ind of economyState.data.indicators) {
+        if (ind._live) onProgress(ind, true);
+      }
+    }
+    return _liveLoadPromise;
+  }
   economyState.liveStatus = 'pending';
 
   const indicators = economyState.data.indicators || [];
   const startYear = 2015, endYear = new Date().getFullYear();
-  const results = await Promise.all(
-    indicators.map(ind => fetchEcosForIndicator(ind, startYear, endYear))
-  );
+
+  // 각 인디케이터 독립적으로 처리 (Promise.allSettled 효과)
   let liveCount = 0;
-  for (let i = 0; i < indicators.length; i++) {
-    if (results[i] && results[i].length >= 3) {
-      indicators[i]._live = true;
-      indicators[i].data = results[i];
-      liveCount++;
+  _liveLoadPromise = Promise.all(indicators.map(async (ind) => {
+    try {
+      // KOSPI/KOSDAQ daily는 데이터 양 많아서 startYear 좁힘 (2020~)
+      const sy = (ind.id === 'kospi' || ind.id === 'kosdaq') ? 2020 : startYear;
+      const result = await fetchEcosForIndicator(ind, sy, endYear);
+      if (result && result.length >= 3) {
+        // 정적 + 라이브 병합: 라이브가 덮는 연도만 갱신, 그 외 정적 유지
+        const liveByYear = new Map(result.map(r => [r.year, r.value]));
+        const merged = ind.data.map(d => liveByYear.has(d.year) ? { year: d.year, value: liveByYear.get(d.year) } : d);
+        // 라이브에는 있지만 정적엔 없는 연도도 추가
+        for (const [y, v] of liveByYear) {
+          if (!merged.find(d => d.year === y)) merged.push({ year: y, value: v });
+        }
+        merged.sort((a, b) => a.year - b.year);
+        ind._live = true;
+        ind.data = merged;
+        liveCount++;
+        if (onProgress) onProgress(ind, true);
+      } else if (onProgress) {
+        onProgress(ind, false);
+      }
+    } catch {
+      if (onProgress) onProgress(ind, false);
     }
-  }
+  }));
+  try { await _liveLoadPromise; } catch {}
   economyState.liveStatus = liveCount > 0 ? 'live' : 'fallback';
   economyState.liveCount = liveCount;
   // 페이지에 머물러 있으면 다시 렌더링
@@ -8901,7 +8931,7 @@ function renderEconomyBody() {
 
   function sparkSVG(ind) {
     const data = ind.data;
-    const w = 560, h = 140, padX = 32, padY = 18;
+    const w = 560, h = 160, padX = 32, padY = 26;
     const vals = data.map(d => d.value);
     const mn = Math.min(...vals), mx = Math.max(...vals);
     const range = mx - mn || 1;
@@ -8919,7 +8949,10 @@ function renderEconomyBody() {
     const isUp = ind.higher_is_good === true ? delta > 0 : ind.higher_is_good === false ? delta < 0 : false;
     const isDown = ind.higher_is_good === true ? delta < 0 : ind.higher_is_good === false ? delta > 0 : false;
     const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
-    const arrowColor = ind.higher_is_good == null ? 'var(--text-2)' : isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--text-2)';
+    // 화살표 색 (델타 방향성 표시)
+    const arrowColor = ind.higher_is_good == null ? 'var(--text)' : isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--text-2)';
+    // 라인 색 (sparkline 본체) — 항상 진하게 표시
+    const lineColor = ind.higher_is_good == null ? 'var(--accent)' : isUp ? 'var(--ok)' : isDown ? '#dc2626' : 'var(--accent)';
 
     // 정부 임기 마커 — 정식 대통령만 표시 (권한대행 제외, 겹침·가독성 문제)
     const presMarkers = [];
@@ -8951,12 +8984,12 @@ function renderEconomyBody() {
         <div class="econ-svg-wrap">
           <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:auto;display:block">
             ${presMarkers.map(m => `
-              <line x1="${m.x.toFixed(1)}" y1="${padY}" x2="${m.x.toFixed(1)}" y2="${h - padY}" stroke="${m.color}" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
-              <text x="${m.x.toFixed(1)}" y="${padY - 4}" text-anchor="middle" font-size="9" fill="${m.color}" font-weight="700">${escapeHtml(m.name.split(' ')[0])}</text>
+              <line x1="${m.x.toFixed(1)}" y1="${padY}" x2="${m.x.toFixed(1)}" y2="${h - padY}" stroke="${m.color}" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.55"/>
+              <text x="${m.x.toFixed(1)}" y="${padY - 5}" text-anchor="middle" font-size="11" fill="${m.color}" font-weight="800">${escapeHtml(m.name.split(' ')[0])}</text>
             `).join('')}
-            <path d="${path}" fill="none" stroke="${arrowColor === 'var(--text-2)' ? 'var(--accent)' : arrowColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="${path}" fill="none" stroke="${lineColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             ${points.map((p, i) => `
-              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === points.length - 1 ? 4 : 2.5}" fill="${i === points.length - 1 ? (arrowColor === 'var(--text-2)' ? 'var(--accent)' : arrowColor) : 'var(--bg-card)'}" stroke="${arrowColor === 'var(--text-2)' ? 'var(--accent)' : arrowColor}" stroke-width="1.5"/>
+              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${i === points.length - 1 ? 4.5 : 3}" fill="${i === points.length - 1 ? lineColor : 'var(--bg-card)'}" stroke="${lineColor}" stroke-width="2"/>
               <title>${p.year}: ${p.value.toLocaleString('ko-KR', {maximumFractionDigits: 2})}${escapeHtml(ind.unit)}</title>
             `).join('')}
           </svg>
@@ -14410,13 +14443,12 @@ async function populateHomeEconMini() {
     }).join('');
   }
   renderTiles();
-  // 백그라운드 라이브 fetch
-  tryLoadLiveEconomy().then(() => {
-    if (document.getElementById('home-econ-tiles')) {
-      renderTiles();
-      const liveCount = econ.indicators.filter(i => i._live && pick.includes(i.id)).length;
+  // 백그라운드 라이브 fetch — 인디케이터별 점진 갱신
+  tryLoadLiveEconomy((ind, success) => {
+    if (success && pick.includes(ind.id) && document.getElementById('home-econ-tiles')) {
+      renderTiles(); // 한 인디케이터 라이브 받을 때마다 즉시 다시 그림
       const liveBadge = document.getElementById('home-econ-live');
-      if (liveBadge && liveCount > 0) liveBadge.style.display = 'inline-block';
+      if (liveBadge) liveBadge.style.display = 'inline-block';
     }
   }).catch(() => {});
 }
