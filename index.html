@@ -6202,23 +6202,23 @@
   <div class="foot-row">
     <div class="foot-col">
       <div class="foot-h">탐색</div>
-      <a href="#/dex">📕 정치인 도감</a>
-      <a href="#/glossary">📖 정치 용어 사전</a>
-      <a href="#/rankings">📊 활동 랭킹</a>
-      <a href="#/map">🗺 정치 분포 지도</a>
-      <a href="#/bookmarks">⭐ 관심 의원</a>
-      <a href="#/stances">🗳 내 정치 입장</a>
-      <a href="#/economy">💰 경제 지표</a>
-      <a href="#/play">🧪 실험실</a>
+      <a href="/dex">📕 정치인 도감</a>
+      <a href="/glossary">📖 정치 용어 사전</a>
+      <a href="/rankings">📊 활동 랭킹</a>
+      <a href="/map">🗺 정치 분포 지도</a>
+      <a href="/bookmarks">⭐ 관심 의원</a>
+      <a href="/stances">🗳 내 정치 입장</a>
+      <a href="/economy">💰 경제 지표</a>
+      <a href="/play">🧪 실험실</a>
     </div>
     <div class="foot-col">
       <div class="foot-h">서비스</div>
-      <a href="#/about">소개 · 사이트 정보</a>
-      <a href="#/changelog">📋 변경 이력</a>
-      <a href="#/business">광고 · 데이터 문의</a>
+      <a href="/about">소개 · 사이트 정보</a>
+      <a href="/changelog">📋 변경 이력</a>
+      <a href="/business">광고 · 데이터 문의</a>
       <a href="mailto:minsoo500101@gmail.com?subject=%5B%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%20%ED%8C%A8%EC%B9%98%20%EB%85%B8%ED%8A%B8%5D%20">📧 minsoo500101@gmail.com</a>
-      <a href="#/donate">☕ 후원하기</a>
-      <a href="#/privacy">개인정보 처리방침</a>
+      <a href="/donate">☕ 후원하기</a>
+      <a href="/privacy">개인정보 처리방침</a>
       <a href="https://ko-fi.com/patchkr" target="_blank" rel="noopener" class="bmc-foot-btn">☕ Ko-fi로 후원</a>
     </div>
     <div class="foot-col">
@@ -7264,12 +7264,12 @@ function drawMap(geo, layer) {
       if (layer === 'muni') {
         const key = muniMatchKey(d);
         const muni = muniByName.get(key);
-        if (muni) location.hash = `#/m/${encodeURIComponent(muni.MONA_CD)}`;
+        if (muni) nav(`/m/${encodeURIComponent(muni.MONA_CD)}`);
         return;
       }
       const r = getRegionForFeature(d);
       const lg = r ? lgByRegion.get(r) : null;
-      if (lg) location.hash = `#/m/${encodeURIComponent(lg.MONA_CD)}`;
+      if (lg) nav(`/m/${encodeURIComponent(lg.MONA_CD)}`);
     });
 
   // 시도 라벨 (province 레이어만)
@@ -7327,7 +7327,7 @@ function renderMapLegend() {
     <div class="map-foot">데이터: <a href="https://github.com/southkorea/southkorea-maps" target="_blank">southkorea-maps</a> · 2018 기준</div>
   `;
   legend.querySelectorAll('.legend-row').forEach(el => {
-    el.addEventListener('click', () => location.hash = `#/party/${encodeURIComponent(el.dataset.party)}`);
+    el.addEventListener('click', () => nav(`/party/${encodeURIComponent(el.dataset.party)}`));
   });
 }
 
@@ -7415,7 +7415,7 @@ function initRelationsGraph() {
   const proposersLoaded = Object.keys(state.billProposers || {}).length;
   if (proposersLoaded === 0) {
     container.innerHTML = '<div class="rel-loading"><span class="loading-spinner"></span>발의자 데이터 로드 중… 잠시 후 자동 표시</div>';
-    setTimeout(() => { if (location.hash === '#/relations' && Object.keys(state.billProposers || {}).length > 0) initRelationsGraph(); }, 2000);
+    setTimeout(() => { if (currentRoute() === '#/relations' && Object.keys(state.billProposers || {}).length > 0) initRelationsGraph(); }, 2000);
     return;
   }
   const f = state.relFilter || { topic: 'all', minWeight: 1 };
@@ -7530,7 +7530,7 @@ function initRelationsGraph() {
       if (tip) tip.style.display = 'none';
       nodeSel.style('opacity', null);
     })
-    .on('click', (e, d) => location.hash = `#/m/${encodeURIComponent(d.mid)}`);
+    .on('click', (e, d) => nav(`/m/${encodeURIComponent(d.mid)}`));
 
   nodeSel.append('circle')
     .attr('r', d => rScale(d.leadCount))
@@ -7598,7 +7598,7 @@ function initRelationsGraph() {
       </div>
     `;
     lg.querySelectorAll('.rl-clickable').forEach(el => {
-      el.addEventListener('click', () => location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`);
+      el.addEventListener('click', () => nav(`/m/${encodeURIComponent(el.dataset.mid)}`));
     });
   }
 }
@@ -7782,8 +7782,8 @@ function renderPartyDonut() {
       <div class="donut-head">
         <h2>22대 국회 정당별 의석</h2>
         <div class="donut-sub">현재 등록 ${total}명 · 클릭하면 정당 페이지</div>
-        <a class="rel-link-btn" href="#/map">정치 분포 지도 🗺</a>
-        <a class="rel-link-btn" href="#/relations">관계도 보기 →</a>
+        <a class="rel-link-btn" href="/map">정치 분포 지도 🗺</a>
+        <a class="rel-link-btn" href="/relations">관계도 보기 →</a>
       </div>
       <div class="donut-wrap">
         <svg viewBox="0 0 ${size} ${size}" class="donut" width="${size}" height="${size}">
@@ -8997,7 +8997,7 @@ async function tryLoadLiveEconomy(onProgress) {
   economyState.liveStatus = liveCount > 0 ? 'live' : 'fallback';
   economyState.liveCount = liveCount;
   // 페이지에 머물러 있으면 다시 렌더링
-  if (location.hash.startsWith('#/economy')) {
+  if (currentRoute().startsWith('#/economy')) {
     const body = document.getElementById('econ-body');
     if (body) body.innerHTML = renderEconomyBody();
   }
@@ -9005,7 +9005,7 @@ async function tryLoadLiveEconomy(onProgress) {
 
 function renderEconomyPage() {
   loadEconomy().then(() => {
-    if (location.hash.startsWith('#/economy')) {
+    if (currentRoute().startsWith('#/economy')) {
       const body = document.getElementById('econ-body');
       if (body) {
         body.innerHTML = renderEconomyBody();
@@ -9013,7 +9013,7 @@ function renderEconomyPage() {
       }
       // 정적 표시 완료 후 라이브 fetch 시도 (background)
       tryLoadLiveEconomy().then(() => {
-        if (location.hash.startsWith('#/economy')) {
+        if (currentRoute().startsWith('#/economy')) {
           const body2 = document.getElementById('econ-body');
           if (body2) {
             body2.innerHTML = renderEconomyBody();
@@ -9666,7 +9666,7 @@ function patchRowHTML(b, freshIdx = -1) {
   const info = getBillProposerInfo(b);
   const topic = getBillTopic(b);
   // 내부 detail 페이지 (이전: likms 외부 링크)
-  const link = b.BILL_ID ? `#/bill/${encodeURIComponent(b.BILL_ID)}` : '';
+  const link = b.BILL_ID ? `/bill/${encodeURIComponent(b.BILL_ID)}` : '';
   const partyColorCss = info.party ? partyColor(info.party) : 'var(--text-2)';
   const proposerHtml = info.kind === 'gov'
     ? `<span class="patch-by-gov">⚖ 정부</span>`
@@ -9695,7 +9695,7 @@ function patchRowHTML(b, freshIdx = -1) {
     }
   }
   return `
-    <div class="patch-row${isFresh ? ' patch-fresh' : ''}"${link ? ` onclick="location.hash='${link}'"` : ''} style="${link ? 'cursor:pointer' : ''}; border-left-color:${partyColorCss}">
+    <div class="patch-row${isFresh ? ' patch-fresh' : ''}"${link ? ` onclick="nav('${link}')"` : ''} style="${link ? 'cursor:pointer' : ''}; border-left-color:${partyColorCss}">
       <div class="patch-meta">
         <span class="patch-tag ${resultClass}">${resultLabel}</span>
         <span class="patch-topic" style="color:${topic.color}; border-color:${topic.color}" title="${escapeHtml(topic.label)}">${topic.icon} ${escapeHtml(topic.label)}</span>
@@ -10023,8 +10023,8 @@ function renderAboutPage() {
       </div>
 
       <div class="about-cta">
-        <a href="#/business" class="about-cta-btn">📧 광고·데이터 문의</a>
-        <a href="#/donate" class="about-cta-btn about-cta-secondary">☕ 후원하기</a>
+        <a href="/business" class="about-cta-btn">📧 광고·데이터 문의</a>
+        <a href="/donate" class="about-cta-btn about-cta-secondary">☕ 후원하기</a>
       </div>
     </div>
   `;
@@ -10326,7 +10326,7 @@ function renderDexBody() {
   });
   document.querySelectorAll('.dex-card').forEach(el => {
     el.addEventListener('click', () => {
-      location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
+      nav(`/m/${encodeURIComponent(el.dataset.mid)}`);
     });
   });
 }
@@ -10397,6 +10397,21 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.0', date: '2026-05-27', title: '🔗 라우팅 개편 — History API (#/path → /path)', items: [
+    '주소창 깔끔한 URL: `patchkr.com/economy` (구: `#/economy`)',
+    'SEO 대폭 개선 — 검색엔진이 각 페이지를 독립 URL로 인식',
+    '네이버·구글 색인 가속 (모든 페이지 개별 인덱싱 가능)',
+    '구 해쉬 URL (`#/economy`) 자동 마이그레이션 — 북마크·외부 링크 호환',
+    '뒤로/앞으로 버튼 정상 동작 (popstate)',
+    '카카오톡·트위터 공유 시 페이지별 OG 메타 정확 표시',
+    '사이트맵 갱신 — 263 URL 전부 클린 URL로'
+  ]},
+  { v: 'V19.1', date: '2026-05-27', title: '🎨 다크모드 색상 시스템 통일', items: [
+    '다크모드 --accent 누락 fix (검정색이 다크 배경에 묻히던 문제)',
+    '라이트/다크 모드 모두 --accent: blue 통일 (#2563eb / #58a6ff)',
+    '--accent-strong·--danger CSS 변수 추가',
+    '차트·LIVE 배지·검색 포커스 컬러 일관성 확보'
+  ]},
   { v: 'V18.0', date: '2026-05-27', title: '🏠 홈 업그레이드 — 정치+경제 6대 영역', items: [
     '📊 5대 데이터 영역 → 6대 (경제 신규)',
     '💰 홈에 경제 핵심 지표 미니 위젯 — 기준금리·환율·실업률·CPI 4개 한눈에',
@@ -10718,7 +10733,7 @@ function renderBookmarksPage() {
           <h2>아직 북마크한 의원이 없습니다</h2>
           <p>의원 페이지에 들어가서 이름 옆 <b>☆</b> 버튼을 클릭하면 여기에 추가됩니다.<br>
           관심 의원을 모아두면 활동·뉴스·통과 법안을 빠르게 확인할 수 있어요.</p>
-          <a href="#/bills" class="bm-cta">법안 보러 가기 →</a>
+          <a href="/bills" class="bm-cta">법안 보러 가기 →</a>
         </div>
       </div>
     `;
@@ -10780,7 +10795,7 @@ function renderPlayPage() {
       </div>
 
       <div class="play-grid">
-        <a class="play-card" href="#/insights">
+        <a class="play-card" href="/insights">
           <div class="play-icon">🔬</div>
           <div class="play-h">출신 분석</div>
           <div class="play-meta">정치인 ${(state.members||[]).filter(p=>p.MEM_TITLE&&p.MEM_TITLE.length>30).length}명 데이터 기반</div>
@@ -10788,7 +10803,7 @@ function renderPlayPage() {
           <div class="play-tag">통계</div>
         </a>
 
-        <a class="play-card" href="#/compare">
+        <a class="play-card" href="/compare">
           <div class="play-icon">⚖</div>
           <div class="play-h">의원 vs 의원</div>
           <div class="play-meta">두 의원 나란히</div>
@@ -10796,7 +10811,7 @@ function renderPlayPage() {
           <div class="play-tag">비교</div>
         </a>
 
-        <a class="play-card" href="#/relations">
+        <a class="play-card" href="/relations">
           <div class="play-icon">🔗</div>
           <div class="play-h">발의 관계도</div>
           <div class="play-meta">법안-의원 연결</div>
@@ -10808,7 +10823,7 @@ function renderPlayPage() {
 
       <div class="play-note">
         💡 여기 있는 기능은 <b>실험적</b>이거나 일부 사용자에게만 유용한 것들입니다.<br>
-        핵심 데이터는 <a href="#/">홈</a>·<a href="#/bills">법안</a>·<a href="#/election2026">9회 지선</a>·<a href="#/glossary">용어 사전</a>에서 확인하세요.
+        핵심 데이터는 <a href="/">홈</a>·<a href="/bills">법안</a>·<a href="/election2026">9회 지선</a>·<a href="/glossary">용어 사전</a>에서 확인하세요.
       </div>
     </div>
   `;
@@ -10831,7 +10846,7 @@ async function loadGlossary() {
 function renderGlossaryPage() {
   // 비동기 로드 시작
   loadGlossary().then(() => {
-    if (location.hash === '#/glossary') {
+    if (currentRoute() === '#/glossary') {
       document.getElementById('gloss-body').innerHTML = renderGlossaryBody();
       attachGlossaryHandlers();
     }
@@ -10999,7 +11014,7 @@ function getAllNecCandidates() {
 }
 
 function renderCandComparePage() {
-  const params = new URLSearchParams(location.hash.split('?')[1] || '');
+  const params = new URLSearchParams(location.search || '');
   const ids = [params.get('a'), params.get('b'), params.get('c')].filter(Boolean);
   const allCands = getAllNecCandidates();
   if (!allCands.length) {
@@ -11065,7 +11080,7 @@ function renderCandComparePage() {
           <div class="cmp-pledge-h">📋 5대 공약</div>
           <div class="cmp-pledge-body"><span class="loading-spinner"></span> 공약 불러오는 중…</div>
         </div>
-        <a href="#/election2026" class="cmp-detail-link" data-huboid="${escapeHtml(c.huboid)}" data-sg="${escapeHtml(c._sg)}" data-name="${escapeHtml(c.name)}" data-party="${escapeHtml(c.jdName || '무소속')}" data-region="${escapeHtml(region)}">👤 상세 보기 →</a>
+        <a href="/election2026" class="cmp-detail-link" data-huboid="${escapeHtml(c.huboid)}" data-sg="${escapeHtml(c._sg)}" data-name="${escapeHtml(c.name)}" data-party="${escapeHtml(c.jdName || '무소속')}" data-region="${escapeHtml(region)}">👤 상세 보기 →</a>
       </div>
     `;
   }
@@ -11095,7 +11110,7 @@ function renderCandComparePage() {
             ${recommendations.slice(0, 8).map(r => {
               const [sd, sgg, kind] = r.key.split('|');
               const label = [sd, sgg !== sd ? sgg : '', kind].filter(Boolean).join(' · ');
-              const url = '#/compare-cand?' + r.cands.slice(0, 3).map((c, i) => 'abc'[i] + '=' + encodeURIComponent(c.huboid)).join('&');
+              const url = '/compare-cand?' + r.cands.slice(0, 3).map((c, i) => 'abc'[i] + '=' + encodeURIComponent(c.huboid)).join('&');
               return `<a class="cmp-reco-pill" href="${url}">${escapeHtml(label)} <b>(${r.cands.length}명)</b></a>`;
             }).join('')}
           </div>
@@ -11119,11 +11134,11 @@ function setupCandCompareEvents() {
   document.querySelectorAll('.cmp-slot-input').forEach(el => {
     el.addEventListener('change', () => {
       const slot = el.dataset.slot;
-      const params = new URLSearchParams(location.hash.split('?')[1] || '');
+      const params = new URLSearchParams(location.search || '');
       if (el.value) params.set(slot, el.value);
       else params.delete(slot);
       const qs = params.toString();
-      location.hash = '#/compare-cand' + (qs ? '?' + qs : '');
+      nav('/compare-cand' + (qs ? '?' + qs : ''));
     });
   });
   // 공약 lazy fetch
@@ -11167,7 +11182,7 @@ function setupCandCompareEvents() {
 // ============================================================
 function renderComparePage() {
   // URL parse
-  const params = new URLSearchParams(location.hash.split('?')[1] || '');
+  const params = new URLSearchParams(location.search || '');
   const aId = params.get('a') || '';
   const bId = params.get('b') || '';
   const members = state.members || [];
@@ -11280,7 +11295,7 @@ function renderComparePage() {
 }
 
 function setupCompareEvents() {
-  const params = new URLSearchParams(location.hash.split('?')[1] || '');
+  const params = new URLSearchParams(location.search || '');
   const aSel = document.getElementById('cmp-a');
   const bSel = document.getElementById('cmp-b');
   if (aSel && params.get('a')) aSel.value = params.get('a');
@@ -11288,7 +11303,7 @@ function setupCompareEvents() {
   document.getElementById('cmp-go')?.addEventListener('click', () => {
     const a = aSel?.value || '';
     const b = bSel?.value || '';
-    location.hash = `#/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`;
+    nav(`/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);
   });
 }
 
@@ -11742,7 +11757,7 @@ function renderRankingsPage() {
 
         <!-- 위원회별 처리량 -->
         <div class="dash-card col-6 chart-card">
-          <div class="chart-head"><h3>🏢 위원회별 처리 의안 Top 10</h3><a href="#/committees" class="chart-link">전체 →</a></div>
+          <div class="chart-head"><h3>🏢 위원회별 처리 의안 Top 10</h3><a href="/committees" class="chart-link">전체 →</a></div>
           <div class="party-bars">
             ${topCmts.map(([c, n]) => `
               <div class="party-bar-row">
@@ -12571,7 +12586,7 @@ function renderHome() {
       <div class="dash-hero">
         <div class="dash-hero-l">
           <div class="dash-hero-eye">REPUBLIC OF KOREA · COMPREHENSIVE DATA</div>
-          <h1>대한민국 패치 노트 <a href="#/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V18.0 · 정치+경제</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.0 · 클린 URL</a></h1>
           <p><b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
           22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.</p>
           <div class="share-bar">
@@ -12584,9 +12599,9 @@ function renderHome() {
           </div>
         </div>
         <div class="dash-hero-r">
-          <a class="hero-btn hero-btn-live" href="#/election2026">🔴  9회 지선 LIVE</a>
-          <a class="hero-btn" href="#/bills">📜  법안</a>
-          <a class="hero-btn" href="#/map">🗺  지도</a>
+          <a class="hero-btn hero-btn-live" href="/election2026">🔴  9회 지선 LIVE</a>
+          <a class="hero-btn" href="/bills">📜  법안</a>
+          <a class="hero-btn" href="/map">🗺  지도</a>
         </div>
       </div>
 
@@ -12601,7 +12616,7 @@ function renderHome() {
         const dDay = dayDiff > 0 ? `D-${dayDiff}` : dayDiff === 0 ? 'D-Day' : `D+${Math.abs(dayDiff)}`;
         const phase = dayDiff > 0 ? '선거운동 중' : dayDiff === 0 ? '투표 진행' : '투표 종료';
         return `
-          <div class="home-e26-card" onclick="location.hash='#/election2026'">
+          <div class="home-e26-card" onclick="nav('/election2026')">
             <div class="home-e26-l">
               <div class="home-e26-eye">🔴 LIVE · 9회 전국동시지방선거</div>
               <div class="home-e26-title">${escapeHtml(phase)} — 2026.06.03</div>
@@ -12620,7 +12635,7 @@ function renderHome() {
       <div class="econ-mini-row" id="home-econ-mini">
         <div class="econ-mini-head">
           <h3>💰 경제 핵심 지표 <span class="econ-mini-live" id="home-econ-live" style="display:none">🟢 LIVE</span></h3>
-          <a href="#/economy" class="chart-link">전체 →</a>
+          <a href="/economy" class="chart-link">전체 →</a>
         </div>
         <div class="econ-mini-grid" id="home-econ-tiles">
           <div class="loading" style="padding:20px;text-align:center;grid-column:1/-1">
@@ -12679,7 +12694,7 @@ function renderHome() {
       <div class="patch-feed">
         <div class="patch-feed-head">
           <h2>📋 최신 패치 <span class="patch-live">LIVE</span></h2>
-          <a href="#/bills" class="chart-link">전체 패치 노트 →</a>
+          <a href="/bills" class="chart-link">전체 패치 노트 →</a>
         </div>
         <div class="home-filter-bar">
           ${homePartyChips.map(c => `
@@ -12703,7 +12718,7 @@ function renderHome() {
 
       <!-- 6대 데이터 영역 — 큰 카드 그리드 -->
       <div class="domain-grid">
-        <div class="domain-card domain-politics" onclick="location.hash='#/group/executive'">
+        <div class="domain-card domain-politics" onclick="nav('/group/executive')">
           <div class="domain-icon">🏛</div>
           <div class="domain-body">
             <div class="domain-h">정치 (Politics)</div>
@@ -12715,7 +12730,7 @@ function renderHome() {
           </div>
         </div>
 
-        <div class="domain-card domain-bills" onclick="location.hash='#/bills'">
+        <div class="domain-card domain-bills" onclick="nav('/bills')">
           <div class="domain-icon">📜</div>
           <div class="domain-body">
             <div class="domain-h">법안 (Bills)</div>
@@ -12727,7 +12742,7 @@ function renderHome() {
           </div>
         </div>
 
-        <div class="domain-card domain-elections" onclick="location.hash='#/election2026'">
+        <div class="domain-card domain-elections" onclick="nav('/election2026')">
           <div class="domain-icon">🗳</div>
           <div class="domain-body">
             <div class="domain-h">선거 (Elections)</div>
@@ -12739,7 +12754,7 @@ function renderHome() {
           </div>
         </div>
 
-        <div class="domain-card domain-economy" onclick="location.hash='#/economy'">
+        <div class="domain-card domain-economy" onclick="nav('/economy')">
           <div class="domain-icon">💰</div>
           <div class="domain-body">
             <div class="domain-h">경제 (Economy) <span style="font-size:10px;color:var(--ok);font-weight:700;padding:2px 6px;background:rgba(16,185,129,0.15);border-radius:6px;margin-left:4px">NEW</span></div>
@@ -12751,7 +12766,7 @@ function renderHome() {
           </div>
         </div>
 
-        <div class="domain-card domain-people" onclick="location.hash='#/group/legislative'">
+        <div class="domain-card domain-people" onclick="nav('/group/legislative')">
           <div class="domain-icon">👥</div>
           <div class="domain-body">
             <div class="domain-h">인물 (People)</div>
@@ -12763,7 +12778,7 @@ function renderHome() {
           </div>
         </div>
 
-        <div class="domain-card domain-history" onclick="location.hash='#/history/parties'">
+        <div class="domain-card domain-history" onclick="nav('/history/parties')">
           <div class="domain-icon">📚</div>
           <div class="domain-body">
             <div class="domain-h">역사 (History)</div>
@@ -12781,7 +12796,7 @@ function renderHome() {
         <div class="dash-card chart-card insight-half">
           <div class="chart-head">
             <h3>22대 국회 정당별 의석</h3>
-            <a href="#/group/legislative" class="chart-link">전체 →</a>
+            <a href="/group/legislative" class="chart-link">전체 →</a>
           </div>
           <div class="party-bars">
             ${partyArr.slice(0, 6).map(p => `
@@ -12796,7 +12811,7 @@ function renderHome() {
         <div class="dash-card chart-card insight-half">
           <div class="chart-head">
             <h3>지방정부 정당 분포</h3>
-            <a href="#/map" class="chart-link">지도 →</a>
+            <a href="/map" class="chart-link">지도 →</a>
           </div>
           <div class="mini-list">
             ${locArr.slice(0, 6).map(p => `
@@ -12816,19 +12831,19 @@ function renderHome() {
           <span class="explore-sub">13개 도구 · 모두 무료</span>
         </div>
         <div class="explore-grid explore-grid-compact">
-          <a class="tool-card" href="#/economy"><span>💰</span><div><b>경제 지표</b><em>금리·환율·물가·GDP 추이 + 정부 임기</em></div></a>
-          <a class="tool-card" href="#/compare-cand"><span>🆚</span><div><b>9회 후보 비교</b><em>최대 3명 옆에 옆에</em></div></a>
-          <a class="tool-card" href="#/dex"><span>📕</span><div><b>정치인 도감</b><em>삼권+지방+역사 컬렉션</em></div></a>
-          <a class="tool-card" href="#/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구</em></div></a>
-          <a class="tool-card" href="#/rankings"><span>📊</span><div><b>활동 랭킹</b><em>점수·발의·통과율</em></div></a>
-          <a class="tool-card" href="#/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>136개 용어 8 카테고리</em></div></a>
-          <a class="tool-card" href="#/bookmarks"><span>⭐</span><div><b>관심 의원</b><em>북마크 모아보기</em></div></a>
-          <a class="tool-card" href="#/stances"><span>🗳</span><div><b>내 정치 입장</b><em>지지·반대 익명 기록</em></div></a>
-          <a class="tool-card" href="#/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
-          <a class="tool-card" href="#/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
-          <a class="tool-card" href="#/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
-          <a class="tool-card" href="#/history/parties"><span>📚</span><div><b>정당사 1948~</b><em>45개 정당 타임라인</em></div></a>
-          <a class="tool-card play-link" href="#/play"><span>🧪</span><div><b>실험실</b><em>출신 분석·의원 비교·관리</em></div></a>
+          <a class="tool-card" href="/economy"><span>💰</span><div><b>경제 지표</b><em>금리·환율·물가·GDP 추이 + 정부 임기</em></div></a>
+          <a class="tool-card" href="/compare-cand"><span>🆚</span><div><b>9회 후보 비교</b><em>최대 3명 옆에 옆에</em></div></a>
+          <a class="tool-card" href="/dex"><span>📕</span><div><b>정치인 도감</b><em>삼권+지방+역사 컬렉션</em></div></a>
+          <a class="tool-card" href="/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 250 시군구</em></div></a>
+          <a class="tool-card" href="/rankings"><span>📊</span><div><b>활동 랭킹</b><em>점수·발의·통과율</em></div></a>
+          <a class="tool-card" href="/glossary"><span>📖</span><div><b>정치 용어 사전</b><em>136개 용어 8 카테고리</em></div></a>
+          <a class="tool-card" href="/bookmarks"><span>⭐</span><div><b>관심 의원</b><em>북마크 모아보기</em></div></a>
+          <a class="tool-card" href="/stances"><span>🗳</span><div><b>내 정치 입장</b><em>지지·반대 익명 기록</em></div></a>
+          <a class="tool-card" href="/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
+          <a class="tool-card" href="/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
+          <a class="tool-card" href="/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
+          <a class="tool-card" href="/history/parties"><span>📚</span><div><b>정당사 1948~</b><em>45개 정당 타임라인</em></div></a>
+          <a class="tool-card play-link" href="/play"><span>🧪</span><div><b>실험실</b><em>출신 분석·의원 비교·관리</em></div></a>
         </div>
       </div>
     </div>
@@ -13029,7 +13044,7 @@ function renderPartyPage(partyName) {
           <div class="mini-list">
             ${topProposers.map(([name, cnt]) => {
               const mem = mps.find(x => x.HG_NM === name);
-              return `<div class="ml-row"${mem ? ` onclick="location.hash='#/m/${encodeURIComponent(mem.MONA_CD)}'"` : ''} style="${mem?'cursor:pointer':''}">
+              return `<div class="ml-row"${mem ? ` onclick="nav('/m/${encodeURIComponent(mem.MONA_CD)}')"` : ''} style="${mem?'cursor:pointer':''}">
                 <span class="ml-dot" style="background:${color}"></span>
                 <span class="ml-name">${escapeHtml(name)}</span>
                 <b class="ml-cnt">${cnt}건</b>
@@ -13536,21 +13551,69 @@ function renderFilters() {
       const p = el.dataset.party;
       if (!p) {
         state.filterParty = null;
-        location.hash = '';
+        nav('/');
         renderFilters(); route();
       } else {
-        location.hash = `#/party/${encodeURIComponent(p)}`;
+        nav(`/party/${encodeURIComponent(p)}`);
       }
     });
   });
 }
 
 // ============================================================
-// Routing
+// Routing (History API — V20)
 // ============================================================
+// currentPath() — 정규화된 path. '/' (홈) | '/about' | '/m/12345' | '/glossary?q=...'
+function currentPath() {
+  let p = location.pathname || '/';
+  if (!p.startsWith('/')) p = '/' + p;
+  if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+  return p;
+}
+// currentRoute() — 기존 코드 호환용 pseudo-hash. 홈은 '', 그 외는 '#/path[?query]'
+function currentRoute() {
+  const p = currentPath();
+  if (p === '/' || p === '') return '';
+  return '#' + p + (location.search || '');
+}
+// nav(target) — '#/about' | '/about' | '' (홈) 모두 허용. pushState + route() 실행.
+function nav(target) {
+  if (target == null) target = '/';
+  let path = String(target);
+  if (path.startsWith('#')) path = path.slice(1);
+  if (!path || path === '/') path = '/';
+  else if (!path.startsWith('/')) path = '/' + path;
+  // 쿼리 분리
+  let query = '';
+  const qIdx = path.indexOf('?');
+  if (qIdx >= 0) { query = path.slice(qIdx); path = path.slice(0, qIdx); }
+  const target_url = path + query;
+  const current_url = location.pathname + location.search;
+  if (target_url !== current_url) {
+    history.pushState({}, '', target_url);
+  }
+  // popstate는 자동 발화하지 않으므로 직접 호출
+  const _drop = document.getElementById('ac-dropdown');
+  if (_drop) _drop.classList.remove('open');
+  route();
+  window.scrollTo(0, 0);
+}
+// 구 해쉬 URL (#/path) 자동 마이그레이션 — 북마크·외부 링크 호환
+(function migrateHashUrl() {
+  if (location.hash && location.hash.startsWith('#/')) {
+    const tail = location.hash.slice(1); // '/economy' or '/economy?q=...'
+    const idx = tail.indexOf('?');
+    const newPath = idx >= 0 ? tail.slice(0, idx) : tail;
+    const newQuery = idx >= 0 ? tail.slice(idx) : (location.search || '');
+    try {
+      history.replaceState({}, '', newPath + newQuery);
+    } catch {}
+  }
+})();
+
 function route() {
   const view = document.getElementById('view');
-  const hash = location.hash || '';
+  const hash = currentRoute();
   const filterBar = document.getElementById('filter-bar');
   const navStats = document.querySelector('.nav-stats');
   // 페이지 전환 시 잔존 툴팁 강제 숨김 (자동완성은 hashchange 핸들러에서 별도 close)
@@ -13560,7 +13623,7 @@ function route() {
   // 소개 페이지 (/about)
   if (hash === '#/about') {
     view.innerHTML = renderAboutPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -13568,7 +13631,7 @@ function route() {
   // 비즈니스 / 광고·데이터 문의 (/business)
   if (hash === '#/business') {
     view.innerHTML = renderBusinessPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -13576,7 +13639,7 @@ function route() {
   // 정치인 도감 (/dex)
   if (hash.startsWith('#/dex')) {
     view.innerHTML = renderDexPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupDexEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -13585,7 +13648,7 @@ function route() {
   // 변경 이력 (/changelog)
   if (hash === '#/changelog') {
     view.innerHTML = renderChangelogPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -13593,9 +13656,9 @@ function route() {
   // 내 stance — 지지/반대 모아보기 (/stances)
   if (hash === '#/stances') {
     view.innerHTML = renderStancesPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     document.querySelectorAll('.bm-card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.mid)}`); });
     });
     document.querySelectorAll('.bm-remove').forEach(el => {
       el.addEventListener('click', e => {
@@ -13619,9 +13682,9 @@ function route() {
   // 북마크 (/bookmarks)
   if (hash === '#/bookmarks') {
     view.innerHTML = renderBookmarksPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     document.querySelectorAll('.bm-card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.mid)}`); });
     });
     document.querySelectorAll('.bm-remove').forEach(el => {
       el.addEventListener('click', e => {
@@ -13637,7 +13700,7 @@ function route() {
   // 실험실 (/play) — 부가·재미 기능 모음
   if (hash === '#/play') {
     view.innerHTML = renderPlayPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -13651,7 +13714,7 @@ function route() {
     if (qParam) glossaryState.filter.q = qParam;
     if (catParam) glossaryState.filter.category = catParam;
     view.innerHTML = renderGlossaryPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupGlossaryEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -13660,14 +13723,14 @@ function route() {
   // 9회 후보자 비교 (/compare-cand?a=&b=&c=)
   if (hash.startsWith('#/compare-cand')) {
     view.innerHTML = renderCandComparePage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupCandCompareEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     // 데이터 로드 안 됐으면 자동 재렌더
     if (!state.nec2026Governors) {
       loadNec2026Governors().then(() => {
-        if (location.hash.startsWith('#/compare-cand')) route();
+        if (currentRoute().startsWith('#/compare-cand')) route();
       });
     }
     return;
@@ -13675,7 +13738,7 @@ function route() {
   // 의원 비교 (/compare?a=...&b=...)
   if (hash.startsWith('#/compare')) {
     view.innerHTML = renderComparePage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupCompareEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -13684,9 +13747,9 @@ function route() {
   // 출신 분석 페이지 (/insights)
   if (hash === '#/insights') {
     view.innerHTML = renderInsightsPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     document.querySelectorAll('.ins-person').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.mid)}`); });
     });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -13695,7 +13758,7 @@ function route() {
   // 개인정보 처리방침 (/privacy)
   if (hash === '#/privacy') {
     view.innerHTML = renderPrivacyPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -13703,7 +13766,7 @@ function route() {
   // 후원 페이지 (/donate)
   if (hash === '#/donate') {
     view.innerHTML = renderDonatePage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -13711,14 +13774,14 @@ function route() {
   // 발의자·정당·분야 랭킹 (/rankings)
   if (hash === '#/rankings') {
     view.innerHTML = renderRankingsPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     document.querySelectorAll('.rank-click[data-mid]').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.mid)}`); });
     });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     if (!state.bills?.length) {
-      setTimeout(() => { if (location.hash === '#/rankings' && state.bills?.length) route(); }, 2000);
+      setTimeout(() => { if (currentRoute() === '#/rankings' && state.bills?.length) route(); }, 2000);
     }
     return;
   }
@@ -13727,7 +13790,7 @@ function route() {
   if (bMatch) {
     const billId = decodeURIComponent(bMatch[1]);
     view.innerHTML = renderBillDetailPage(billId);
-    document.getElementById('back-bills')?.addEventListener('click', () => { location.hash = '#/bills'; });
+    document.getElementById('back-bills')?.addEventListener('click', () => { nav('/bills'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     // 비동기 fetch: 법안 본문 + 위키
@@ -13735,7 +13798,7 @@ function route() {
     if (bill) {
       loadBillDetail(billId).then(data => {
         const body = document.getElementById('bd-content-body');
-        if (!body || location.hash !== hash) return;
+        if (!body || currentRoute() !== hash) return;
         const summary = data?.bill?.SUMMARY || data?.bill?.PROPOSER_REASON || '';
         if (summary) {
           body.innerHTML = `<div class="bd-content-summary">${escapeHtml(summary)}</div>`;
@@ -13746,7 +13809,7 @@ function route() {
       // 의원별 표결 기록 fetch (정당별 집계 + 반란표 강조)
       loadBillMemberVotes(billId).then(votes => {
         const body = document.getElementById('bd-votes-body');
-        if (!body || location.hash !== hash) return;
+        if (!body || currentRoute() !== hash) return;
         if (!votes.length) {
           body.innerHTML = `<div class="bd-content-empty">의원별 표결 기록 없음 — 무기명 표결이거나 기록 미공개</div>`;
           return;
@@ -13803,7 +13866,7 @@ function route() {
       // 법령 본문 fetch (open.law.go.kr) — 개정문·제개정이유·조문 모두 표시
       loadLawByName(bill.BILL_NAME || '').then(law => {
         const body = document.getElementById('bd-law-body');
-        if (!body || location.hash !== hash) return;
+        if (!body || currentRoute() !== hash) return;
         if (!law) {
           body.innerHTML = `
             <div class="bd-content-empty">
@@ -13906,7 +13969,7 @@ function route() {
       // 관련 판례 (target=prec)
       loadLawRelated(bill.BILL_NAME || '', 'prec').then(items => {
         const body = document.getElementById('bd-prec-body');
-        if (!body || location.hash !== hash) return;
+        if (!body || currentRoute() !== hash) return;
         if (!items || !items.length) {
           body.innerHTML = `<div class="bd-content-empty">관련 판례 미발견.<br><a href="https://www.law.go.kr/precSc.do?menuId=7&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener" style="color:var(--link)">대법원 판례 직접 검색 →</a></div>`;
           return;
@@ -13940,7 +14003,7 @@ function route() {
       // 헌법재판소 결정 (target=detc)
       loadLawRelated(bill.BILL_NAME || '', 'detc').then(items => {
         const body = document.getElementById('bd-detc-body');
-        if (!body || location.hash !== hash) return;
+        if (!body || currentRoute() !== hash) return;
         if (!items || !items.length) {
           body.innerHTML = `<div class="bd-content-empty">관련 헌재 결정 미발견.<br><a href="https://www.law.go.kr/detcSc.do?menuId=7&query=${encodeURIComponent(bill.BILL_NAME||'')}" target="_blank" rel="noopener" style="color:var(--link)">헌법재판소 결정문 직접 검색 →</a></div>`;
           return;
@@ -13977,7 +14040,7 @@ function route() {
         const cleaned = (bill.BILL_NAME || '').replace(/일부개정법률안.*$/, '').replace(/전부개정법률안.*$/, '').replace(/제정법률안.*$/, '').replace(/\(.*\)$/, '').replace(/\s*법률안\s*$/, '').trim();
         const news = await loadNaverNews(cleaned, 5, 'date');
         const body = document.getElementById('bd-news-body');
-        if (!body || location.hash !== hash) return;
+        if (!body || currentRoute() !== hash) return;
         if (!news || !news.items || !news.items.length) {
           body.innerHTML = `
             <div class="bd-content-empty">
@@ -14007,7 +14070,7 @@ function route() {
 
       loadBillWiki(bill.BILL_NAME || '').then(wiki => {
         const body = document.getElementById('bd-wiki-body');
-        if (!body || location.hash !== hash) return;
+        if (!body || currentRoute() !== hash) return;
         if (wiki && wiki.extract) {
           body.innerHTML = `
             ${wiki.thumbnail ? `<img class="bd-wiki-thumb" src="${escapeHtml(wiki.thumbnail.source)}" alt="">` : ''}
@@ -14025,7 +14088,7 @@ function route() {
   if (hash === '#/election2026') {
     const renderE26 = () => {
       view.innerHTML = renderElection2026Page();
-      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
       // 후보 클릭 → 5대 공약 모달
       document.querySelectorAll('.e26-cand-click').forEach(el => {
         el.addEventListener('click', () => {
@@ -14091,12 +14154,12 @@ function route() {
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     loadElection2026().then(() => {
-      if (location.hash !== '#/election2026') return;
+      if (currentRoute() !== '#/election2026') return;
       renderE26();
     });
     // NEC 후보자 데이터 자동 로드 (/api/nec — Vercel Serverless)
     loadNec2026Governors().then(() => {
-      if (location.hash !== '#/election2026') return;
+      if (currentRoute() !== '#/election2026') return;
       renderE26();
     });
     return;
@@ -14104,20 +14167,20 @@ function route() {
   // 지방선거 (역대)
   if (hash === '#/elections') {
     view.innerHTML = renderLocalElectionsPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     loadLocalElections().then(() => {
-      if (location.hash !== '#/elections') return;
+      if (currentRoute() !== '#/elections') return;
       view.innerHTML = renderLocalElectionsPage();
-      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     });
     return;
   }
   // 경제 지표 (/economy)
   if (hash === '#/economy') {
     view.innerHTML = renderEconomyPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
@@ -14125,13 +14188,13 @@ function route() {
   // 국제 비교
   if (hash === '#/world') {
     view.innerHTML = renderWorldComparePage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     loadWorldCompare().then(() => {
-      if (location.hash !== '#/world') return;
+      if (currentRoute() !== '#/world') return;
       view.innerHTML = renderWorldComparePage();
-      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     });
     return;
   }
@@ -14140,9 +14203,9 @@ function route() {
   if (cMatch) {
     const cmtName = decodeURIComponent(cMatch[1]);
     view.innerHTML = renderCommitteeDetail(cmtName);
-    document.getElementById('back-cmt')?.addEventListener('click', () => { location.hash = '#/committees'; });
+    document.getElementById('back-cmt')?.addEventListener('click', () => { nav('/committees'); });
     document.querySelectorAll('.card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.id)}`); });
     });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -14151,9 +14214,9 @@ function route() {
   // 위원회 목록
   if (hash === '#/committees') {
     view.innerHTML = renderCommitteesPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     document.querySelectorAll('.cmt-card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/committee/${encodeURIComponent(el.dataset.cmt)}`; });
+      el.addEventListener('click', () => { nav(`/committee/${encodeURIComponent(el.dataset.cmt)}`); });
     });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -14163,7 +14226,7 @@ function route() {
   if (hash === '#/bills') {
     const renderBills = () => {
       view.innerHTML = renderBillsPage();
-      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
       // Filter chips
       view.querySelectorAll('.pf-chip').forEach(el => {
         el.addEventListener('click', () => {
@@ -14230,7 +14293,7 @@ function route() {
       view.querySelectorAll('.patch-by-mp[data-mid]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
+          nav(`/m/${encodeURIComponent(el.dataset.mid)}`);
         });
       });
     };
@@ -14239,7 +14302,7 @@ function route() {
     window.scrollTo(0, 0);
     if (!state.bills.length) {
       const tryRender = () => {
-        if (location.hash !== '#/bills') return;
+        if (currentRoute() !== '#/bills') return;
         if (state.bills.length) renderBills();
         else setTimeout(tryRender, 2000);
       };
@@ -14250,12 +14313,12 @@ function route() {
   // 정당사 타임라인
   if (hash === '#/history/parties') {
     view.innerHTML = renderPartyHistoryPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     loadPartyHistory().then(() => {
       view.innerHTML = renderPartyHistoryPage();
-      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
       // 막대 클릭 → 위키 이동
       view.querySelectorAll('.ph-bar, .ph-list-row').forEach(el => {
         el.addEventListener('click', () => {
@@ -14269,7 +14332,7 @@ function route() {
   // 정치 분포 지도 페이지
   if (hash === '#/map') {
     view.innerHTML = renderMapPage();
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     setTimeout(initMap, 100);
@@ -14279,7 +14342,7 @@ function route() {
   if (hash === '#/relations') {
     const renderRel = () => {
       view.innerHTML = renderRelationsPage();
-      document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+      document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
       // 분야 필터
       view.querySelectorAll('.pf-chip[data-rt]').forEach(el => {
         el.addEventListener('click', () => {
@@ -14308,9 +14371,9 @@ function route() {
   if (pMatch) {
     const partyName = decodeURIComponent(pMatch[1]);
     view.innerHTML = renderPartyPage(partyName);
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     document.querySelectorAll('.card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.id)}`); });
     });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -14323,9 +14386,9 @@ function route() {
   if (gMatch) {
     const gid = gMatch[1];
     view.innerHTML = renderGroupPage(gid);
-    document.getElementById('back-home')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     document.querySelectorAll('.card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.id)}`); });
     });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -14334,9 +14397,9 @@ function route() {
     // historical 그룹: 2~21대 역대 의원 전부 lazy load (단계별 — 5천명 이상)
     if (gid === 'historical') {
       ensureHistoricalAssemblies([21, 20, 19, 18, 17, 16, 15, 14, 13]).then(changed => {
-        if (changed && location.hash === `#/group/historical`) route();
+        if (changed && currentRoute() === `#/group/historical`) route();
         ensureHistoricalAssemblies([12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]).then(c2 => {
-          if (c2 && location.hash === `#/group/historical`) route();
+          if (c2 && currentRoute() === `#/group/historical`) route();
         });
       });
     }
@@ -14346,7 +14409,7 @@ function route() {
   if (m) {
     const memberId = decodeURIComponent(m[1]);
     view.innerHTML = renderDetail(memberId);
-    document.getElementById('back-btn')?.addEventListener('click', () => { location.hash = ''; });
+    document.getElementById('back-btn')?.addEventListener('click', () => { nav('/'); });
     document.getElementById('bookmark-btn')?.addEventListener('click', e => {
       e.stopPropagation();
       const btn = e.currentTarget;
@@ -14371,13 +14434,13 @@ function route() {
       });
     });
     document.querySelectorAll('.col-card').forEach(el => {
-      el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+      el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.id)}`); });
     });
     // 패치 노트에서 발의자 클릭 → 상세 (다른 의원이면 이동)
     document.querySelectorAll('.patch-by-mp[data-mid]').forEach(el => {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (el.dataset.mid !== memberId) location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
+        if (el.dataset.mid !== memberId) nav(`/m/${encodeURIComponent(el.dataset.mid)}`);
       });
     });
     window.scrollTo(0, 0);
@@ -14388,7 +14451,7 @@ function route() {
       const needsFetch = !cached || (cached.extract == null && !cached.miss);
       if (needsFetch) {
         ensurePhoto(member).then(() => {
-          if (location.hash.endsWith(memberId)) route();
+          if (currentRoute().endsWith(memberId)) route();
         });
       }
       // 위키 페이지뷰 (관심도) — 최근 30일
@@ -14396,7 +14459,7 @@ function route() {
         const wikiTitle = member._wiki || member.HG_NM;
         const views = await loadWikiPageViews(wikiTitle, 30);
         const body = document.getElementById('m-trend-body');
-        if (!body || !location.hash.endsWith(memberId)) return;
+        if (!body || !currentRoute().endsWith(memberId)) return;
         if (!views || !views.length) {
           body.innerHTML = `<div style="font-size:12px;color:var(--dim);padding:8px 0">위키 페이지뷰 데이터 없음 (위키 페이지 미등록 또는 데이터 부족)</div>`;
           return;
@@ -14424,7 +14487,7 @@ function route() {
       (async () => {
         const news = await loadNaverNews(member.HG_NM, 5, 'date');
         const body = document.getElementById('m-news-body');
-        if (!body || !location.hash.endsWith(memberId)) return;
+        if (!body || !currentRoute().endsWith(memberId)) return;
         if (!news || !news.items || !news.items.length) {
           body.innerHTML = `
             <div style="font-size:12px;color:var(--dim);padding:8px 0">
@@ -14461,7 +14524,7 @@ function route() {
     if (state.search.trim() || state.filterParty) {
       view.innerHTML = renderGrid();
       document.querySelectorAll('.card').forEach(el => {
-        el.addEventListener('click', () => { location.hash = `#/m/${encodeURIComponent(el.dataset.id)}`; });
+        el.addEventListener('click', () => { nav(`/m/${encodeURIComponent(el.dataset.id)}`); });
       });
       const visible = state.members
         .filter(m => !state.filterParty || m.POLY_NM === state.filterParty)
@@ -14473,20 +14536,20 @@ function route() {
       view.innerHTML = renderHome();
       document.querySelectorAll('.grpbox, .org-box').forEach(el => {
         el.addEventListener('click', () => {
-          if (el.dataset.group) location.hash = `#/group/${el.dataset.group}`;
+          if (el.dataset.group) nav(`/group/${el.dataset.group}`);
         });
       });
       document.querySelectorAll('.party-link').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          location.hash = `#/party/${encodeURIComponent(el.dataset.party)}`;
+          nav(`/party/${encodeURIComponent(el.dataset.party)}`);
         });
       });
       // 패치 노트 발의자 클릭 → 상세
       document.querySelectorAll('.patch-by-mp[data-mid]').forEach(el => {
         el.addEventListener('click', (e) => {
           e.stopPropagation();
-          location.hash = `#/m/${encodeURIComponent(el.dataset.mid)}`;
+          nav(`/m/${encodeURIComponent(el.dataset.mid)}`);
         });
       });
       // 홈 정당 필터 chip
@@ -14525,7 +14588,7 @@ function route() {
       document.querySelectorAll('.donut-seg, .donut-leg-row').forEach(el => {
         el.addEventListener('click', () => {
           const p = el.dataset.party;
-          if (p) location.hash = `#/party/${encodeURIComponent(p)}`;
+          if (p) nav(`/party/${encodeURIComponent(p)}`);
         });
       });
       // 각 그룹의 상위 6명 사진 프리페치
@@ -14569,7 +14632,7 @@ async function populateHomeEconMini() {
       const v = last.value.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
       const liveDot = ind._live ? '<span style="display:inline-block;width:6px;height:6px;background:var(--ok);border-radius:50%;margin-left:4px;animation:pulse 2s ease-in-out infinite" title="라이브"></span>' : '';
       return `
-        <a class="econ-mini-tile" href="#/economy">
+        <a class="econ-mini-tile" href="/economy">
           <div class="econ-mini-label">${escapeHtml(ind.label)}${liveDot}</div>
           <div class="econ-mini-value">${v}<span class="econ-mini-unit">${escapeHtml(ind.unit)}</span></div>
           <div class="econ-mini-delta ${cls}">${arrow} ${Math.abs(delta).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}</div>
@@ -14596,17 +14659,37 @@ async function populateHomeEconMini() {
   }).catch(() => {});
 }
 
-window.addEventListener('hashchange', () => {
+// 뒤로/앞으로 (History API)
+window.addEventListener('popstate', () => {
   const _drop = document.getElementById('ac-dropdown');
   if (_drop) _drop.classList.remove('open');
   route();
 });
+// 내부 링크 자동 인터셉트 — <a href="/foo">는 nav()로 처리, _blank·외부 링크는 그대로
+document.addEventListener('click', (e) => {
+  const a = e.target.closest && e.target.closest('a');
+  if (!a) return;
+  const href = a.getAttribute('href');
+  if (!href) return;
+  // 외부 링크 / 앵커 / 새 탭
+  if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//')) return;
+  if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
+  if (a.target === '_blank' || a.hasAttribute('download')) return;
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+  // 내부 링크 ('/...' 또는 '#/...' 구 형식 호환)
+  let target = href;
+  if (target.startsWith('#/')) target = target.slice(1);
+  else if (target.startsWith('#')) return; // 페이지 내 앵커는 그대로
+  else if (!target.startsWith('/')) return; // 상대 경로는 그대로
+  e.preventDefault();
+  nav(target);
+});
 document.getElementById('brand').addEventListener('click', () => {
   // 이미 홈에 있으면 강제 새로고침 (CDN·브라우저 캐시 무효화)
-  if (location.hash === '' || location.hash === '#' || location.hash === '#/') {
+  if (currentPath() === '/') {
     location.reload();
   } else {
-    location.hash = '';
+    nav('/');
   }
 });
 
@@ -14855,32 +14938,32 @@ const AC = (() => {
     if (!item) return;
     close();
     $input.blur();
-    if (item.action === 'member') location.hash = `#/m/${encodeURIComponent(item.id)}`;
-    else if (item.action === 'party') location.hash = `#/party/${encodeURIComponent(item.party)}`;
-    else if (item.action === 'group') location.hash = `#/group/${item.gid}`;
+    if (item.action === 'member') nav(`/m/${encodeURIComponent(item.id)}`);
+    else if (item.action === 'party') nav(`/party/${encodeURIComponent(item.party)}`);
+    else if (item.action === 'group') nav(`/group/${item.gid}`);
     else if (item.action === 'bill') {
-      if (item.billId) location.hash = `#/bill/${encodeURIComponent(item.billId)}`;
+      if (item.billId) nav(`/bill/${encodeURIComponent(item.billId)}`);
       else if (item.link) window.open(item.link, '_blank', 'noopener');
     }
     else if (item.action === 'cand') {
       if (item.huboid && typeof openPromiseModal === 'function') {
         openPromiseModal({ cnddtId: item.huboid, sgTypecode: item.sg, name: item.name, party: item.party, region: item.region });
       } else {
-        location.hash = '#/election2026';
+        nav('/election2026');
       }
     }
     else if (item.action === 'gloss') {
-      if (item.term) location.hash = '#/glossary?q=' + encodeURIComponent(item.term);
-      else location.hash = '#/glossary';
+      if (item.term) nav('/glossary?q=' + encodeURIComponent(item.term));
+      else nav('/glossary');
     }
   }
 
   $input.addEventListener('input', e => {
     state.search = e.target.value;
     const q = e.target.value.trim();
-    if (q.length === 0) { close(); if (!location.hash) route(); return; }
+    if (q.length === 0) { close(); if (currentPath() === '/') route(); return; }
     render(q);
-    if (!location.hash) route();
+    if (currentPath() === '/') route();
   });
   $input.addEventListener('focus', () => {
     const q = $input.value.trim();
@@ -14994,22 +15077,22 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
         arr.sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
       }
       // 홈에서 패치 노트 재렌더 (bills가 더 늦게 로드되므로)
-      if (!location.hash) route();
-      if (location.hash.startsWith('#/m/') || location.hash === '#/bills' || location.hash === '#/committees') route();
+      if (currentPath() === '/') route();
+      if (currentRoute().startsWith('#/m/') || currentRoute() === '#/bills' || currentRoute() === '#/committees') route();
     }).catch(e => console.warn('bills load failed:', e.message));
     // 발의자 정보 별도 로드 (5K건 fetch)
     loadBillProposers().then(map => {
       state.billProposers = map;
       // 홈/의안/패치 페이지면 재렌더
-      if (!location.hash || location.hash === '#/bills' || location.hash === '#/patches') route();
+      if (currentPath() === '/' || currentRoute() === '#/bills' || currentRoute() === '#/patches') route();
     }).catch(e => console.warn('proposers load failed:', e.message));
     // 지방선거 데이터 백그라운드 로드 (광역단체장 detail에 사용)
     loadLocalElections().then(() => {
-      if (location.hash.startsWith('#/m/')) route();
+      if (currentRoute().startsWith('#/m/')) route();
     }).catch(e => console.warn('elections load failed:', e.message));
     // 9회 지선 NEC 데이터 — 홈 LIVE 카드에 사용
     loadNec2026Governors().then(() => {
-      if (!location.hash || location.hash === '#/election2026') route();
+      if (currentPath() === '/' || currentRoute() === '#/election2026') route();
     }).catch(e => console.warn('nec2026 load failed:', e.message));
   } catch (e) {
     console.warn('데이터 로드 실패:', e.message);

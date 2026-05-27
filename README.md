@@ -124,7 +124,7 @@ curl https://patchkr.com/api/data?type=info
 
 - 📧 이메일: [minsoo500101@gmail.com](mailto:minsoo500101@gmail.com?subject=%5B%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%20%ED%8C%A8%EC%B9%98%20%EB%85%B8%ED%8A%B8%5D%20%EB%AC%B8%EC%9D%98)
 - 🐙 [GitHub 문의 템플릿](https://github.com/minsoo500101-rgb/politik/issues/new?template=business-inquiry.md)
-- 🌐 [사이트 문의 페이지](https://patchkr.com/#/business)
+- 🌐 [사이트 문의 페이지](https://patchkr.com/business)
 
 ## ☕ 후원
 
