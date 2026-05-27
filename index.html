@@ -6978,23 +6978,95 @@
   @media (max-width: 480px) {
     .foot-row { grid-template-columns: 1fr; gap: 16px; }
   }
-  .foot-col { display: flex; flex-direction: column; gap: 5px; }
-  .foot-col a { color: var(--text-2); text-decoration: none; }
-  .foot-col a:hover { color: var(--link); }
-  .foot-col span b { color: var(--text); font-weight: 600; }
-  .foot-h {
-    color: var(--text); font-weight: 600; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    margin-bottom: 6px;
+  .foot-col { display: flex; flex-direction: column; gap: 6px; }
+  .foot-col a {
+    color: var(--text-2); text-decoration: none;
+    font-size: 12px;
+    transition: color 0.13s;
   }
+  .foot-col a:hover { color: var(--accent); }
+  .foot-col span b { color: var(--text); font-weight: 600; }
+  .foot-mini {
+    font-size: 10.5px;
+    color: var(--dim);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .foot-h {
+    color: var(--text); font-weight: 800; font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  /* V21.8 — 데이터 출처 별도 줄 */
+  .foot-sources {
+    max-width: 1280px; margin: 0 auto;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    display: flex; flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: center;
+    font-size: 11.5px;
+  }
+  .foot-sources-label {
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: 0.5px;
+    margin-right: 4px;
+  }
+  .foot-sources a {
+    color: var(--text-2);
+    text-decoration: none;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg-elev);
+    transition: all 0.13s;
+  }
+  .foot-sources a:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+  /* V21.8 — 하단 정체성 + 메타 */
   .foot-bottom {
     max-width: 1280px; margin: 0 auto;
-    padding-top: 18px; border-top: 1px solid var(--border);
-    display: flex; gap: 14px; flex-wrap: wrap; justify-content: space-between;
-    color: var(--dim); font-size: 10px;
+    padding-top: 14px;
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between;
+    align-items: center;
+    color: var(--dim); font-size: 11px;
   }
-  .foot-bottom a { color: var(--text-2); }
-  .foot-bottom a:hover { color: var(--link); }
+  .foot-bottom-l {
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .foot-brand {
+    font-weight: 800; color: var(--text); font-size: 13px;
+    letter-spacing: -0.3px;
+  }
+  .foot-tag {
+    font-size: 10.5px; color: var(--dim);
+  }
+  .foot-bottom-r {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    font-size: 11px;
+  }
+  .foot-bottom-r a {
+    color: var(--text-2);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .foot-bottom-r a:hover { color: var(--accent); }
+  .foot-bottom-r #foot-year {
+    padding: 2px 8px;
+    background: var(--accent);
+    color: #fff !important;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+  .foot-bottom-r #foot-year:hover { background: var(--accent-strong); }
+  .foot-dot { color: var(--dim); }
+  .foot-sync b { color: var(--text); font-variant-numeric: tabular-nums; }
 
   @media (max-width: 600px) {
     .h-inner { grid-template-columns: 1fr; gap: 10px; }
@@ -7107,48 +7179,62 @@
 <footer>
   <div class="foot-row">
     <div class="foot-col">
-      <div class="foot-h">탐색</div>
-      <a href="/dex">📕 정치인 도감</a>
-      <a href="/glossary">📖 정치 용어 사전</a>
-      <a href="/rankings">📊 활동 랭킹</a>
-      <a href="/map">🗺 정치 분포 지도</a>
-      <a href="/bookmarks">⭐ 관심 의원</a>
-      <a href="/stances">🗳 내 정치 입장</a>
-      <a href="/economy">💰 경제 지표</a>
-      <a href="/play">🧪 실험실</a>
-      <a href="/today">🌍 지금 한국 (6섹터)</a>
-      <a href="/pledge-tracker">🔥 공약 이행 추적</a>
+      <div class="foot-h">📊 데이터</div>
+      <a href="/bills">22대 법안 1,595건</a>
+      <a href="/election2026">🔴 9회 지선 LIVE</a>
+      <a href="/economy">경제 지표</a>
+      <a href="/dex">정치인 도감 772명</a>
+      <a href="/map">정치 분포 지도</a>
+      <a href="/history/parties">정당사 1948~</a>
     </div>
     <div class="foot-col">
-      <div class="foot-h">서비스</div>
-      <a href="/about">소개 · 사이트 정보</a>
-      <a href="/changelog">📋 변경 이력</a>
-      <a href="/business">광고 · 데이터 문의</a>
-      <a href="mailto:minsoo500101@gmail.com?subject=%5B%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%20%ED%8C%A8%EC%B9%98%20%EB%85%B8%ED%8A%B8%5D%20">📧 minsoo500101@gmail.com</a>
+      <div class="foot-h">🔧 도구</div>
+      <a href="/today">🔥 한국 실검</a>
+      <a href="/pledge-tracker">공약 이행 추적</a>
+      <a href="/compare-cand">9회 후보 비교</a>
+      <a href="/rankings">활동 랭킹</a>
+      <a href="/glossary">정치 용어 사전</a>
+      <a href="/world">국제 비교</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-h">⭐ 내 활동</div>
+      <a href="/bookmarks">관심 의원</a>
+      <a href="/stances">내 정치 입장</a>
+      <a href="/play">실험실</a>
+      <span class="foot-mini">📋 익명 UUID로 다기기 동기화</span>
+    </div>
+    <div class="foot-col">
+      <div class="foot-h">📩 사이트</div>
+      <a href="/about">소개</a>
+      <a href="/changelog">변경 이력</a>
+      <a href="/business">광고·데이터 문의</a>
       <a href="/donate">☕ 후원하기</a>
       <a href="/privacy">개인정보 처리방침</a>
-      <a href="https://ko-fi.com/patchkr" target="_blank" rel="noopener" class="bmc-foot-btn">☕ Ko-fi로 후원</a>
-    </div>
-    <div class="foot-col">
-      <div class="foot-h">출처 · 라이선스</div>
-      <a href="https://open.assembly.go.kr" target="_blank" rel="noopener">국회 OPEN API</a>
-      <a href="https://ko.wikipedia.org" target="_blank" rel="noopener">위키미디어 (CC BY-SA)</a>
-      <a href="https://github.com/southkorea/southkorea-maps" target="_blank" rel="noopener">southkorea-maps</a>
-      <span style="font-size:11px;color:var(--dim);margin-top:4px">공공누리 1유형 · CC BY-SA 4.0</span>
-    </div>
-    <div class="foot-col">
-      <div class="foot-h">운영 원칙</div>
-      <span>객관 수치만 표시</span>
-      <span>평가·의견·해석 없음</span>
-      <span>광고 — 정치/종교/선거 차단</span>
-      <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener">오류 신고 → GitHub</a>
-      <span style="font-size:11px;color:var(--dim);margin-top:4px">마지막 동기화 <b id="last-sync">—</b></span>
+      <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener">🐛 오류 신고</a>
     </div>
   </div>
+  <div class="foot-sources">
+    <span class="foot-sources-label">데이터 출처</span>
+    <a href="https://open.assembly.go.kr" target="_blank" rel="noopener">국회 OPEN API</a>
+    <a href="https://www.nec.go.kr" target="_blank" rel="noopener">중앙선거관리위원회</a>
+    <a href="https://ecos.bok.or.kr" target="_blank" rel="noopener">한국은행 ECOS</a>
+    <a href="https://open.law.go.kr" target="_blank" rel="noopener">국가법령정보</a>
+    <a href="https://developers.naver.com" target="_blank" rel="noopener">네이버 검색·뉴스</a>
+    <a href="https://trends.google.com" target="_blank" rel="noopener">구글 트렌드</a>
+    <a href="https://ko.wikipedia.org" target="_blank" rel="noopener">위키미디어</a>
+  </div>
   <div class="foot-bottom">
-    <span>대한민국 패치 노트 · Korea Patch Notes</span>
-    <span><a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">소스 코드 (MIT)</a></span>
-    <span id="foot-year">v22.0 · 2026</span>
+    <div class="foot-bottom-l">
+      <span class="foot-brand">📋 대한민국 패치 노트</span>
+      <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
+    </div>
+    <div class="foot-bottom-r">
+      <a href="/changelog" id="foot-year">V21.7</a>
+      <span class="foot-dot">·</span>
+      <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
+      <span class="foot-dot">·</span>
+      <span class="foot-sync">마지막 동기화 <b id="last-sync">—</b></span>
+    </div>
   </div>
 </footer>
 
@@ -17737,8 +17823,7 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       const dd = String(d.getDate()).padStart(2,'0');
       _hFresh.textContent = '실시간 ' + d.getFullYear() + '.' + mm + '.' + dd;
     }
-    const fy = document.getElementById('foot-year');
-    if (fy) fy.textContent = `v2.1 · ${new Date().getFullYear()}`;
+    // V21.8 — foot-year는 HTML에 하드코딩된 버전 표시 (덮어쓰지 않음)
     renderFilters();
     route();
     // 의안은 백그라운드 로드 (홈 표시 후)
