@@ -2879,6 +2879,196 @@
     border-style: solid;
   }
 
+  /* ============ V20.7 — 실시간 정치 트렌드 (/today) ============ */
+  .today-page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+  .today-head {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .today-eye {
+    font-size: 11px; color: #dc2626;
+    font-weight: 800; letter-spacing: 1.8px;
+    margin-bottom: 6px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .today-eye::before {
+    content: ''; width: 7px; height: 7px;
+    background: #dc2626; border-radius: 50%;
+    animation: pulse 1.8s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  [data-theme="dark"] .today-eye { color: #f87171; }
+  [data-theme="dark"] .today-eye::before { background: #f87171; }
+  .today-h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.7px; }
+  .today-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+  .today-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 800px) {
+    .today-grid { grid-template-columns: 1fr; }
+  }
+  .today-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .today-block-hot { border-color: var(--accent); }
+  .today-block-h {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 6px;
+  }
+  .today-block-h h3 { font-size: 14px; font-weight: 700; margin: 0; }
+  .today-src { font-size: 10.5px; color: var(--dim); }
+  .today-loading, .today-empty {
+    padding: 20px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--dim);
+  }
+  .today-pol-list { display: flex; flex-direction: column; gap: 2px; }
+  .td-pol-row {
+    display: grid;
+    grid-template-columns: 26px 1fr auto auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .td-pol-row:hover { background: var(--bg-elev); }
+  .td-rank {
+    font-size: 13px; font-weight: 800;
+    color: var(--dim);
+    text-align: center;
+  }
+  .td-pol-row:first-child .td-rank { color: #dc2626; }
+  .td-pol-row:nth-child(2) .td-rank { color: #f59e0b; }
+  .td-pol-row:nth-child(3) .td-rank { color: #f59e0b; }
+  .td-name { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .td-meta { font-size: 11px; font-weight: 600; }
+  .td-views { font-size: 11px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .td-delta {
+    font-size: 11px; font-weight: 700;
+    padding: 2px 7px; border-radius: 10px;
+    min-width: 52px; text-align: center;
+  }
+  .td-delta-up { background: rgba(220,38,38,0.12); color: #dc2626; }
+  .td-delta-dn { background: rgba(14,165,233,0.12); color: #0284c7; }
+  .td-delta-eq { background: var(--bg-elev); color: var(--dim); }
+  .td-delta-new { background: #fef3c7; color: #92400e; }
+  [data-theme="dark"] .td-delta-up { background: rgba(248,113,113,0.18); color: #f87171; }
+  [data-theme="dark"] .td-delta-dn { background: rgba(56,189,248,0.18); color: #38bdf8; }
+  [data-theme="dark"] .td-delta-new { background: rgba(252,211,77,0.18); color: #fcd34d; }
+  .td-pol-foot {
+    font-size: 10.5px; color: var(--dim);
+    text-align: center; margin-top: 10px;
+    padding-top: 8px; border-top: 1px dashed var(--border);
+  }
+  .today-news-list { display: flex; flex-direction: column; gap: 2px; }
+  .td-news-row {
+    display: block;
+    padding: 9px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.12s;
+  }
+  .td-news-row:hover { background: var(--bg-elev); }
+  .td-news-title {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    line-height: 1.45;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .td-news-meta {
+    font-size: 10.5px; color: var(--dim);
+    margin-top: 3px;
+    display: flex; gap: 8px;
+  }
+  .today-bills-list { display: flex; flex-direction: column; gap: 6px; }
+  .td-bill-row {
+    display: block;
+    padding: 9px 10px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+    text-decoration: none;
+    transition: transform 0.12s;
+  }
+  .td-bill-row:hover { transform: translateX(2px); }
+  .td-bill-name {
+    font-size: 12.5px; font-weight: 600; color: var(--text);
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .td-bill-meta {
+    font-size: 10.5px; color: var(--dim);
+    margin-top: 3px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .today-election-block {
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(239,68,68,0.10) 0%, rgba(220,38,38,0.05) 100%);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+  }
+  .td-elec-h {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .td-elec-phase {
+    font-size: 12.5px; font-weight: 800;
+    color: #dc2626;
+    letter-spacing: 0.5px;
+  }
+  .td-elec-dday {
+    font-size: 28px; font-weight: 900;
+    color: #dc2626;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  [data-theme="dark"] .td-elec-phase, [data-theme="dark"] .td-elec-dday { color: #f87171; }
+  .td-elec-meta { font-size: 12px; color: var(--text-2); margin-bottom: 10px; }
+  .td-elec-cta { display: flex; flex-direction: column; gap: 6px; }
+  .td-elec-btn {
+    display: block;
+    padding: 9px 12px;
+    background: #dc2626;
+    color: #fff !important;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 12.5px; font-weight: 700;
+    text-decoration: none;
+    transition: background 0.13s;
+  }
+  .td-elec-btn:hover { background: #b91c1c; }
+  .td-elec-btn-2 { background: var(--accent); }
+  .td-elec-btn-2:hover { background: var(--accent-strong); }
+  .today-foot {
+    margin-top: 18px;
+    padding: 10px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--text-2);
+    text-align: center;
+  }
+
   /* ============ V20.5 — 8회 공약 이행 추적 (/pledge-tracker) ============ */
   .pt-page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
   .pt-head { margin-bottom: 22px; }
@@ -6437,6 +6627,7 @@
       <a href="/stances">🗳 내 정치 입장</a>
       <a href="/economy">💰 경제 지표</a>
       <a href="/play">🧪 실험실</a>
+      <a href="/today">🔴 지금 한국 정치</a>
       <a href="/pledge-tracker">🔥 공약 이행 추적</a>
     </div>
     <div class="foot-col">
@@ -10357,6 +10548,279 @@ async function loadBillMemberVotes(billId) {
   }
 }
 
+// V20.7 — 실시간 정치 트렌드 (위키 어제 Top 1000 → 정치인 필터)
+const _trendingCache = { data: null, fetchedAt: 0 };
+async function loadTrendingPoliticians() {
+  // 5분 캐시
+  if (_trendingCache.data && Date.now() - _trendingCache.fetchedAt < 300000) {
+    return _trendingCache.data;
+  }
+  const fetchTopForDate = async (offset) => {
+    const d = new Date();
+    d.setDate(d.getDate() - offset);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    try {
+      const r = await fetch(`https://wikimedia.org/api/rest_v1/metrics/pageviews/top/ko.wikipedia/all-access/${y}/${m}/${day}`);
+      if (!r.ok) return [];
+      const j = await r.json();
+      return j.items?.[0]?.articles || [];
+    } catch { return []; }
+  };
+
+  const [yesterday, dayBefore] = await Promise.all([fetchTopForDate(1), fetchTopForDate(2)]);
+
+  // 정치인 이름 매핑
+  const politicians = state.members || [];
+  const nameMap = new Map();
+  for (const m of politicians) {
+    if (m.HG_NM) nameMap.set(m.HG_NM, m);
+  }
+
+  // 어제 데이터에서 정치인만 추출
+  const yesterdayMap = new Map(); // name → { rank, views }
+  for (const art of yesterday) {
+    const title = (art.article || '').replace(/_/g, ' ');
+    const cleanTitle = title.split(' (')[0].trim();
+    if (nameMap.has(cleanTitle) && !yesterdayMap.has(cleanTitle)) {
+      yesterdayMap.set(cleanTitle, {
+        rank: art.rank,
+        views: art.views,
+        wikiTitle: art.article,
+        member: nameMap.get(cleanTitle),
+      });
+    }
+  }
+
+  // 그저께 view 수 매핑 (delta 계산용)
+  const dayBeforeMap = new Map();
+  for (const art of dayBefore) {
+    const title = (art.article || '').replace(/_/g, ' ');
+    const cleanTitle = title.split(' (')[0].trim();
+    if (nameMap.has(cleanTitle) && !dayBeforeMap.has(cleanTitle)) {
+      dayBeforeMap.set(cleanTitle, art.views);
+    }
+  }
+
+  // delta 계산 + 정렬
+  const matched = Array.from(yesterdayMap.entries()).map(([name, info]) => {
+    const prev = dayBeforeMap.get(name) || 0;
+    const delta = prev > 0 ? Math.round(((info.views - prev) / prev) * 100) : null;
+    return { name, ...info, prevViews: prev, delta };
+  });
+  matched.sort((a, b) => b.views - a.views);
+
+  const result = {
+    politicians: matched.slice(0, 20),
+    date: (() => {
+      const d = new Date(); d.setDate(d.getDate() - 1);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    })(),
+    totalScanned: yesterday.length,
+  };
+  _trendingCache.data = result;
+  _trendingCache.fetchedAt = Date.now();
+  return result;
+}
+
+// /today 페이지 — 실시간 정치 트렌드
+function renderTodayPage() {
+  const todayStr = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="today-page">
+      <div class="today-head">
+        <div class="today-eye">🔴 LIVE · 한국 정치 실시간</div>
+        <h1 class="today-h1">지금 한국 정치</h1>
+        <div class="today-sub">${escapeHtml(todayStr)} · 위키 페이지뷰·네이버 뉴스·국회 의안 통합</div>
+      </div>
+      <div class="today-grid">
+        <div class="today-block today-block-hot">
+          <div class="today-block-h">
+            <h3>👤 어제 가장 검색된 정치인 Top 10</h3>
+            <span class="today-src">위키 한국어 · 일 단위 (24h 지연 데이터)</span>
+          </div>
+          <div id="today-politicians" class="today-pol-list">
+            <div class="today-loading"><span class="loading-spinner"></span> 어제 위키 트렌드 분석 중…</div>
+          </div>
+        </div>
+        <div class="today-block">
+          <div class="today-block-h">
+            <h3>📰 정치 뉴스 (1시간 이내)</h3>
+            <span class="today-src">네이버 검색 API · 분 단위</span>
+          </div>
+          <div id="today-news" class="today-news-list">
+            <div class="today-loading"><span class="loading-spinner"></span> 최신 정치 뉴스 fetch 중…</div>
+          </div>
+        </div>
+        <div class="today-block">
+          <div class="today-block-h">
+            <h3>📜 이번 주 본회의 통과</h3>
+            <span class="today-src">국회 OPEN API · 일 단위</span>
+          </div>
+          <div id="today-bills" class="today-bills-list">
+            <div class="today-loading"><span class="loading-spinner"></span> 통과 법안 로드 중…</div>
+          </div>
+        </div>
+        <div class="today-block">
+          <div class="today-block-h">
+            <h3>🗳 9회 지선 카운트다운</h3>
+            <span class="today-src">실시간</span>
+          </div>
+          <div id="today-election" class="today-election-block">
+            <div class="today-loading"><span class="loading-spinner"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="today-foot">
+        ⚡ 자동 갱신: 위키 24시간 (어제 기준) · 네이버 뉴스 5분 캐시 · 의안 1시간 캐시 · 페이지 로드 시 새로고침
+      </div>
+    </div>
+  `;
+}
+
+async function setupTodayEvents() {
+  // 1. 위키 트렌드 정치인
+  loadTrendingPoliticians().then(data => {
+    const target = document.getElementById('today-politicians');
+    if (!target) return;
+    if (!data.politicians?.length) {
+      target.innerHTML = `<div class="today-empty">위키 데이터에서 정치인 매칭 결과 없음. 우리 DB 인물 ${state.members?.length || 0}명 vs 위키 Top ${data.totalScanned || 0}.</div>`;
+      return;
+    }
+    target.innerHTML = data.politicians.slice(0, 10).map((p, i) => {
+      const m = p.member;
+      const partyColor_ = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+      const deltaHtml = p.delta != null
+        ? p.delta > 0
+          ? `<span class="td-delta td-delta-up">▲ ${p.delta}%</span>`
+          : p.delta < 0
+            ? `<span class="td-delta td-delta-dn">▼ ${Math.abs(p.delta)}%</span>`
+            : `<span class="td-delta td-delta-eq">—</span>`
+        : `<span class="td-delta td-delta-new">NEW</span>`;
+      return `
+        <div class="td-pol-row" data-mid="${escapeHtml(m?.MONA_CD || '')}" data-name="${escapeHtml(p.name)}">
+          <span class="td-rank">${i + 1}</span>
+          <span class="td-name">${escapeHtml(p.name)}</span>
+          <span class="td-meta" style="color:${partyColor_}">${escapeHtml(m?.POLY_NM || m?._type_label || '—')}</span>
+          <span class="td-views">${p.views.toLocaleString()}회</span>
+          ${deltaHtml}
+        </div>
+      `;
+    }).join('') + `<div class="td-pol-foot">⚡ 위키 한국어 어제(${escapeHtml(data.date)}) Top ${data.totalScanned}개 글 중 정치인 ${data.politicians.length}명 추출</div>`;
+    // 클릭 시 인물 상세
+    document.querySelectorAll('.td-pol-row').forEach(el => {
+      el.addEventListener('click', () => {
+        const mid = el.dataset.mid;
+        if (mid) nav(`/m/${encodeURIComponent(mid)}`);
+        else window.open('https://ko.wikipedia.org/wiki/' + encodeURIComponent(el.dataset.name), '_blank');
+      });
+    });
+  }).catch(e => {
+    const t = document.getElementById('today-politicians');
+    if (t) t.innerHTML = `<div class="today-empty">위키 fetch 실패: ${escapeHtml(e.message)}</div>`;
+  });
+
+  // 2. 정치 뉴스
+  loadNaverNews('정치', 8, 'date').then(news => {
+    const target = document.getElementById('today-news');
+    if (!target) return;
+    if (!news?.items?.length) {
+      target.innerHTML = `<div class="today-empty">뉴스 없음</div>`;
+      return;
+    }
+    const strip = s => (s || '').replace(/<\/?b>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&apos;/g, "'");
+    target.innerHTML = news.items.slice(0, 8).map(item => {
+      const title = strip(item.title);
+      const date = item.pubDate ? new Date(item.pubDate) : null;
+      const timeStr = date ? formatTimeAgo(date) : '';
+      const src = (item.originallink || item.link || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+      return `
+        <a class="td-news-row" href="${escapeHtml(item.link || item.originallink)}" target="_blank" rel="noopener">
+          <div class="td-news-title">${escapeHtml(title)}</div>
+          <div class="td-news-meta"><span>${timeStr}</span><span>${escapeHtml(src)}</span></div>
+        </a>`;
+    }).join('');
+  }).catch(() => {
+    const t = document.getElementById('today-news');
+    if (t) t.innerHTML = `<div class="today-empty">뉴스 fetch 실패</div>`;
+  });
+
+  // 3. 이번 주 통과 법안
+  const renderWeekBills = () => {
+    const target = document.getElementById('today-bills');
+    if (!target) return;
+    const bills = state.bills || [];
+    if (!bills.length) {
+      target.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span> 법안 로드 중...</div>`;
+      return;
+    }
+    const weekAgo = Date.now() - 7 * 86400000;
+    const recent = bills.filter(b => {
+      const d = new Date(b.PROC_DT).getTime();
+      return d >= weekAgo && /가결/.test(b.PROC_RESULT_CD || '');
+    }).sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+    if (!recent.length) {
+      target.innerHTML = `<div class="today-empty">이번 주 통과 법안 없음 (회기 외 가능)</div>`;
+      return;
+    }
+    target.innerHTML = recent.slice(0, 6).map(b => {
+      const info = getBillProposerInfo ? getBillProposerInfo(b) : { kind:'기타', name:'' };
+      const topic = getBillTopic ? getBillTopic(b) : { label: '기타' };
+      return `
+        <a class="td-bill-row" href="/bill/${encodeURIComponent(b.BILL_ID)}">
+          <div class="td-bill-name">${escapeHtml(b.BILL_NAME || '')}</div>
+          <div class="td-bill-meta">
+            <span>${escapeHtml(topic.label || '')}</span>
+            <span>${escapeHtml(b.CURR_COMMITTEE || '미상')}</span>
+            <span>${escapeHtml((b.PROC_DT || '').slice(5))}</span>
+          </div>
+        </a>`;
+    }).join('') + `<div class="td-pol-foot">최근 7일 본회의 가결 ${recent.length}건 중 6건</div>`;
+  };
+  renderWeekBills();
+  if (!state.bills?.length) {
+    setTimeout(renderWeekBills, 2500);
+  }
+
+  // 4. 9회 지선 D-day
+  const elTarget = document.getElementById('today-election');
+  if (elTarget) {
+    const today = new Date();
+    const eday = new Date('2026-06-03T06:00:00+09:00');
+    const ddiff = Math.ceil((eday - today) / 86400000);
+    const phase = ddiff > 0 ? `D-${ddiff}` : ddiff === 0 ? 'D-Day' : `D+${Math.abs(ddiff)}`;
+    const phaseText = ddiff > 7 ? '선거운동 중' : ddiff > 0 ? '선거 D-Week' : ddiff === 0 ? '🔴 투표 진행' : '투표 종료';
+    const nec = state.nec2026Governors;
+    const totalCands = nec ? (nec.totalGov||0)+(nec.totalMuni||0)+(nec.totalEdu||0) : 0;
+    elTarget.innerHTML = `
+      <div class="td-elec-h">
+        <div class="td-elec-phase">${escapeHtml(phaseText)}</div>
+        <div class="td-elec-dday">${escapeHtml(phase)}</div>
+      </div>
+      <div class="td-elec-meta">2026.06.03 (수)${totalCands > 0 ? ` · 등록 후보 ${totalCands.toLocaleString()}명` : ''}</div>
+      <div class="td-elec-cta">
+        <a class="td-elec-btn" href="/election2026">🔴 9회 지선 LIVE →</a>
+        <a class="td-elec-btn td-elec-btn-2" href="/pledge-tracker">📋 8회 공약 이행 추적 →</a>
+      </div>
+    `;
+  }
+}
+
+// 상대 시간 포맷 (X분 전 / X시간 전)
+function formatTimeAgo(date) {
+  const diffMs = Date.now() - date.getTime();
+  const m = Math.floor(diffMs / 60000);
+  if (m < 1) return '방금';
+  if (m < 60) return `${m}분 전`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}시간 전`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}일 전`;
+  return date.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+}
+
 // 네이버 뉴스 검색 (Vercel Serverless 프록시)
 async function loadNaverNews(keyword, display = 5, sort = 'date') {
   if (!keyword) return null;
@@ -10984,6 +11448,16 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V20.7', date: '2026-05-27', title: '🔴 /today — 지금 한국 정치 실시간 트렌드', items: [
+    '👤 어제 가장 검색된 정치인 Top 10 — 위키 한국어 페이지뷰 (전일 대비 ▲▼% delta 표시)',
+    '📰 정치 뉴스 1시간 이내 — 네이버 검색 API (분 단위 신선도)',
+    '📜 이번 주 본회의 통과 법안 — 국회 OPEN API',
+    '🗳 9회 지선 D-day 카운트다운 + 등록 후보 수',
+    '위키 어제 Top 1000 글에서 정치인 자동 추출 (772명 DB 매칭)',
+    'Wikimedia REST API 직접 fetch (CORS 허용·무료·인증 X) — 서버 부하 0',
+    '5분 캐시 + 클릭 시 인물 상세 페이지로 이동',
+    '5대 영역 카드 + 네비 메뉴에서 진입 가능'
+  ]},
   { v: 'V20.6', date: '2026-05-27', title: '🔧 UI 개선 3종 + V20 부작용 fix', items: [
     '🐛 critical: V20 History API 마이그레이션 부작용 — 상대 경로 fetch가 깊은 라우트(/history/parties 등)에서 깨짐',
     '7개 data fetch (politicians·party_history·election_2026·local_elections·world_compare·economy·glossary) `data/` → `/data/` 절대 경로로 통일',
@@ -13248,7 +13722,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.6 · UI 개선</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V20.7 · 🔴 실시간 트렌드</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -13500,6 +13974,7 @@ function renderHome() {
           <a class="tool-card" href="/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
           <a class="tool-card" href="/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
           <a class="tool-card" href="/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
+          <a class="tool-card" href="/today"><span>🔴</span><div><b>지금 한국 정치</b><em>실시간 트렌드·핫 정치인·최신 뉴스</em></div></a>
           <a class="tool-card" href="/pledge-tracker"><span>🔥</span><div><b>8회 공약 이행 추적</b><em>4년 약속, 진짜 했나?</em></div></a>
           <a class="tool-card" href="/history/parties"><span>📚</span><div><b>정당사 1948~</b><em>45개 정당 타임라인</em></div></a>
           <a class="tool-card play-link" href="/play"><span>🧪</span><div><b>실험실</b><em>출신 분석·의원 비교·관리</em></div></a>
@@ -14290,6 +14765,7 @@ const ROUTE_META = {
   '/business': { title: '광고·데이터 라이선싱 문의', desc: '광고·데이터 라이선싱·컨설팅 문의. 비즈니스 협업 및 기업용 데이터 API 안내.' },
   '/changelog': { title: '변경 이력 — 사이트 업데이트 패치 노트', desc: '대한민국 패치 노트 사이트 자체의 변경 이력. 새 기능·데이터 보충·개선 사항.' },
   '/pledge-tracker': { title: '🔥 8회 지선 당선자 공약 이행 추적 (4년 약속, 진짜 했나?)', desc: '제8회(2022) 지방선거 광역단체장 17명 당선자의 5대 공약 본문과 자동 뉴스 검색. 임기 4년 약속을 객관 자료로 검증.' },
+  '/today': { title: '🔴 지금 한국 정치 — 실시간 트렌드·핫 정치인·최신 뉴스', desc: '어제 가장 검색된 정치인 (위키 페이지뷰) · 1시간 이내 최신 정치 뉴스 · 이번 주 통과 법안 · 9회 지선 카운트다운 통합.' },
   '/donate': { title: '후원하기 — Ko-fi 응원', desc: '대한민국 패치 노트 서버 운영비·API 사용료 후원. Ko-fi·GitHub Star로 응원하기.' },
   '/privacy': { title: '개인정보 처리방침', desc: '대한민국 패치 노트 개인정보 처리방침. 쿠키·로컬스토리지·외부 API 호출 안내.' },
   '/dex': { title: '정치인 도감 — 772명 컬렉션', desc: '대한민국 정치인 772명 Pokedex 스타일 도감. 입법부·행정부·사법부·지방·역사 5영역.' },
@@ -14433,6 +14909,15 @@ function route() {
   if (hash === '#/changelog') {
     view.innerHTML = renderChangelogPage();
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // V20.7 — 실시간 정치 트렌드 (/today)
+  if (hash === '#/today') {
+    view.innerHTML = renderTodayPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    setupTodayEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
