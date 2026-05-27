@@ -11044,7 +11044,8 @@ const _trendingCache = {}; // sector → { data, fetchedAt }
 
 // 섹터별 네이버 검색 쿼리 (다중 키워드로 풍부한 데이터)
 const SECTOR_TREND_QUERIES = {
-  all: ['속보', '오늘 뉴스'],
+  // '전체' = 6섹터 균등 검색 → 정치 편향 제거
+  all: ['연예', '경제', '스포츠', '드라마', '주가', '사건'],
   politics: ['국회', '정치', '대통령실'],
   economy: ['주가', '환율', '경제', '기업'],
   entertainment: ['연예', '드라마', 'K-POP'],
@@ -11262,7 +11263,8 @@ function renderTodayPage() {
   `;
 }
 
-// V21.1 — 인물 + 키워드 동시 렌더 (네이버 뉴스 기반)
+// V21.4 — 'all' = 통합 클라우드 (인물·키워드 한꺼번에 빈도 정렬)
+// 섹터 탭 = 인물 + 키워드 별도
 async function renderTodayTrendForSector(sector) {
   const personTarget = document.getElementById('today-person-list');
   const kwTarget = document.getElementById('today-keyword-list');
@@ -11270,13 +11272,83 @@ async function renderTodayTrendForSector(sector) {
   const kwH = document.getElementById('today-keyword-h');
   if (!personTarget || !kwTarget) return;
   const label = SECTOR_LABELS_FULL[sector] || sector;
-  if (personH) personH.textContent = `🔥 ${label} 뉴스 핫 인물 Top 12`;
-  if (kwH) kwH.textContent = `🏷 ${label} 키워드 빈도 Top 15`;
-  personTarget.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span> ${escapeHtml(label)} 뉴스 분석 중…</div>`;
-  kwTarget.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span></div>`;
+
+  if (sector === 'all') {
+    // 헤더 라벨
+    if (personH) personH.textContent = `🔥 지금 대한민국 화제 Top 25 (정치·경제·연예·스포츠·사회 통합)`;
+    if (kwH) kwH.textContent = `🏷 보조 키워드`;
+    personTarget.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span> 6섹터 뉴스 통합 분석 중…</div>`;
+    kwTarget.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span></div>`;
+  } else {
+    if (personH) personH.textContent = `🔥 ${label} 뉴스 핫 인물 Top 12`;
+    if (kwH) kwH.textContent = `🏷 ${label} 키워드 빈도 Top 15`;
+    personTarget.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span> ${escapeHtml(label)} 뉴스 분석 중…</div>`;
+    kwTarget.innerHTML = `<div class="today-loading"><span class="loading-spinner"></span></div>`;
+  }
+
   try {
     const data = await loadSectorTrending(sector);
-    // 인물
+
+    if (sector === 'all') {
+      // 통합 클라우드 — 인물·키워드 모두 합쳐서 빈도 순
+      const unified = [
+        ...data.persons.map(p => ({
+          word: p.name, count: p.count, isPerson: true, member: p.member,
+        })),
+        ...data.keywords.map(k => ({
+          word: k.word, count: k.count, isPerson: false,
+        })),
+      ].sort((a, b) => b.count - a.count).slice(0, 25);
+
+      if (!unified.length) {
+        personTarget.innerHTML = `<div class="today-empty">트렌드 데이터 없음</div>`;
+        kwTarget.innerHTML = '';
+        return;
+      }
+
+      personTarget.innerHTML = unified.map((it, i) => {
+        const m = it.member;
+        const partyColor_ = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+        const meta = it.isPerson
+          ? (m?.POLY_NM || m?._type_label || '정치인')
+          : '키워드';
+        const clickAttr = it.isPerson && m?.MONA_CD
+          ? `data-mid="${escapeHtml(m.MONA_CD)}"`
+          : `data-search="${escapeHtml(it.word)}"`;
+        return `
+          <div class="td-pol-row td-pol-row-all" ${clickAttr} data-name="${escapeHtml(it.word)}">
+            <span class="td-rank">${i + 1}</span>
+            <span class="td-name">${escapeHtml(it.word)}</span>
+            <span class="td-meta" style="color:${partyColor_}">${escapeHtml(meta)}</span>
+            <span class="td-views">${it.count}회 언급</span>
+          </div>`;
+      }).join('') + `<div class="td-pol-foot">📰 ${data.total}개 뉴스 통합 분석 · 6섹터(연예·경제·스포츠·드라마·주가·사건) 병렬 검색</div>`;
+
+      document.querySelectorAll('#today-person-list .td-pol-row').forEach(el => {
+        el.addEventListener('click', () => {
+          const mid = el.dataset.mid;
+          const search = el.dataset.search;
+          if (mid) nav(`/m/${encodeURIComponent(mid)}`);
+          else window.open('https://search.naver.com/search.naver?where=news&query=' + encodeURIComponent(search || el.dataset.name), '_blank');
+        });
+      });
+
+      // 사이드 키워드: 키워드만 (보조)
+      if (data.keywords.length) {
+        const maxCount = data.keywords[0].count;
+        kwTarget.innerHTML = data.keywords.slice(0, 20).map(k => {
+          const ratio = k.count / maxCount;
+          const fs = Math.round(11 + ratio * 9);
+          const opacity = 0.55 + ratio * 0.45;
+          return `<a class="td-kw" href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(k.word)}" target="_blank" rel="noopener" style="font-size:${fs}px;opacity:${opacity.toFixed(2)}" title="${k.count}회 언급">${escapeHtml(k.word)} <small>${k.count}</small></a>`;
+        }).join('');
+      } else {
+        kwTarget.innerHTML = `<div class="today-empty">키워드 없음</div>`;
+      }
+      return;
+    }
+
+    // 섹터별 (정치·경제·엔터 등) — 인물 + 키워드 별도
     if (!data.persons.length) {
       personTarget.innerHTML = `<div class="today-empty">이 섹터 뉴스에서 매칭된 인물 없음 (정치인 DB 기반)</div>`;
     } else {
@@ -11300,14 +11372,13 @@ async function renderTodayTrendForSector(sector) {
         });
       });
     }
-    // 키워드 클라우드 (빈도 기반 크기)
     if (!data.keywords.length) {
       kwTarget.innerHTML = `<div class="today-empty">키워드 추출 결과 없음</div>`;
     } else {
       const maxCount = data.keywords[0].count;
       kwTarget.innerHTML = data.keywords.map(k => {
         const ratio = k.count / maxCount;
-        const fs = Math.round(11 + ratio * 11); // 11~22px
+        const fs = Math.round(11 + ratio * 11);
         const opacity = 0.5 + ratio * 0.5;
         return `<a class="td-kw" href="https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(k.word)}" target="_blank" rel="noopener" style="font-size:${fs}px;opacity:${opacity.toFixed(2)}" title="${k.count}회 언급">${escapeHtml(k.word)} <small>${k.count}</small></a>`;
       }).join('');
@@ -12099,6 +12170,15 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V21.4', date: '2026-05-27', title: '🎯 트렌드 탈정치화 — \"지금 대한민국이 어떻게 돌아가는지\"', items: [
+    '문제: 우리 DB가 정치인 772명뿐이라 \"전체\" 탭도 정치인 우선 매칭 → 정치 편향',
+    '✅ \"전체\" 섹터 쿼리 재설계 — 연예·경제·스포츠·드라마·주가·사건 6개 균등 검색',
+    '✅ \"전체\" 탭 = 인물·키워드 통합 클라우드 (빈도 정렬, 정치 우선권 X)',
+    '✅ 홈 위젯 \"오늘 정치 화제\" → \"지금 대한민국 화제\" 리네임',
+    '✅ 홈 위젯 데이터 \'politics\' → \'all\' (6섹터 통합)',
+    '클릭: 정치인 매칭 → 인물 상세 / 비정치인·키워드 → 네이버 뉴스 검색',
+    '인물·키워드 메타 라벨 표시 (\"정치인\"/\"인물\"/\"키워드\")'
+  ]},
   { v: 'V21.3', date: '2026-05-27', title: '🚨 vercel.json critical fix — 클린 URL 진짜 작동', items: [
     'V20에서 도입한 클린 URL (/about /today /economy 등)이 실제로는 404였음',
     '원인 1: 옛 GH Pages 시절 정적 HTML 8개 (bills.html 등)가 #/path로 리다이렉트',
@@ -14428,7 +14508,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.3 · 🚨 클린 URL fix</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V21.4 · 🎯 순수 트렌드</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -14469,15 +14549,15 @@ function renderHome() {
         `;
       })()}
 
-      <!-- 🔥 V21.1 — 오늘 정치 화제 (네이버 뉴스 인물 빈도) -->
+      <!-- 🔥 V21.4 — 지금 대한민국 화제 (6섹터 통합 트렌드) -->
       <div class="home-trend-row" id="home-trend-row">
         <div class="home-trend-head">
-          <h3>🔥 오늘 정치 화제 <span class="econ-mini-live">🟢 LIVE</span></h3>
-          <a href="/today" class="chart-link">6대 섹터 트렌드 →</a>
+          <h3>🔥 지금 대한민국 화제 <span class="econ-mini-live">🟢 LIVE</span></h3>
+          <a href="/today" class="chart-link">6대 섹터 전체 보기 →</a>
         </div>
         <div class="home-trend-grid" id="home-trend-tiles">
           <div class="loading" style="padding:14px;text-align:center;grid-column:1/-1">
-            <span class="loading-spinner"></span>네이버 뉴스 분석 중…
+            <span class="loading-spinner"></span>네이버 뉴스 분석 중… (연예·경제·스포츠·정치 통합)
           </div>
         </div>
       </div>
@@ -16615,27 +16695,45 @@ function route() {
   }
 }
 
-// V21.1 — 홈 정치 트렌드 위젯
+// V21.4 — 홈 통합 트렌드 위젯 (정치 편향 제거, 6섹터 통합)
 async function populateHomeTrend() {
   const target = document.getElementById('home-trend-tiles');
   if (!target) return;
   try {
-    const data = await loadSectorTrending('politics');
-    if (!data?.persons?.length) {
-      target.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--dim);font-size:12px;padding:14px">정치 인물 매칭 없음 (뉴스가 부족한 시간대일 수 있음)</div>';
+    const data = await loadSectorTrending('all');
+    if (!data || (!data.persons.length && !data.keywords.length)) {
+      target.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--dim);font-size:12px;padding:14px">트렌드 데이터 부족 (뉴스가 적은 시간대일 수 있음)</div>';
       return;
     }
-    target.innerHTML = data.persons.slice(0, 6).map((p, i) => {
-      const m = p.member;
-      const pColor = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+    // 인물·키워드 통합 → 빈도 순 상위 6개
+    const unified = [
+      ...data.persons.map(p => ({
+        word: p.name, count: p.count, isPerson: true, member: p.member,
+      })),
+      ...data.keywords.map(k => ({
+        word: k.word, count: k.count, isPerson: false,
+      })),
+    ].sort((a, b) => b.count - a.count).slice(0, 6);
+
+    target.innerHTML = unified.map((it, i) => {
+      const m = it.member;
+      const isPolitician = it.isPerson && m;
+      const pColor = isPolitician && m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+      const meta = isPolitician
+        ? (m.POLY_NM || m._type_label || '정치인')
+        : (it.isPerson ? '인물' : '키워드');
+      const href = isPolitician && m?.MONA_CD
+        ? `/m/${encodeURIComponent(m.MONA_CD)}`
+        : `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(it.word)}`;
+      const target_ = isPolitician ? '' : ' target="_blank" rel="noopener"';
       return `
-        <a class="home-trend-tile" href="/m/${encodeURIComponent(m?.MONA_CD || '')}" style="border-left-color:${pColor}">
+        <a class="home-trend-tile" href="${href}"${target_} style="border-left-color:${pColor}">
           <div class="home-trend-rank">${i + 1}</div>
           <div class="home-trend-body">
-            <div class="home-trend-name">${escapeHtml(p.name)}</div>
-            <div class="home-trend-meta" style="color:${pColor}">${escapeHtml(m?.POLY_NM || m?._type_label || '—')}</div>
+            <div class="home-trend-name">${escapeHtml(it.word)}</div>
+            <div class="home-trend-meta" style="color:${pColor}">${escapeHtml(meta)}</div>
           </div>
-          <div class="home-trend-count">${p.count}회</div>
+          <div class="home-trend-count">${it.count}회</div>
         </a>`;
     }).join('');
   } catch (e) {
