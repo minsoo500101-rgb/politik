@@ -65,7 +65,7 @@ export default async function handler(req, res) {
     const pol = getPoliticians();
     const gloss = getGlossary();
     return res.status(200).json({
-      name: '대한민국 패치 노트 데이터 API',
+      name: '대한민국 패치노트 데이터 API',
       version: '1.0',
       endpoints: {
         '/api/data?type=politicians': '정치인 전체 (' + (pol?.people?.length || '?') + '명) — group·id 파라미터 지원',

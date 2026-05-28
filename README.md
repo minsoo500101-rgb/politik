@@ -1,4 +1,4 @@
-# 📋 대한민국 패치 노트 (Korea Patch Notes)
+# 📋 대한민국 패치노트 (Korea Patch Notes)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Vercel](https://img.shields.io/badge/Deployed-Vercel-000?logo=vercel)](https://patchkr.com)
