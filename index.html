@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V26.8 — Hero 통계 strip 4개 큰 숫자 카드 (선거/평시 시즌별), brand 액센트 띠, 클릭 → 해당 페이지 -->
+<!-- V26.9 — economy·glossary·today 카드 ds 통일 (rd-xl·brand hover·sh-md, KOSPI 시세 26px 큰 숫자) -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -3739,18 +3739,24 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .gloss-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    transition: transform 0.15s, box-shadow 0.15s;
+    border-radius: var(--rd-lg);
+    padding: var(--sp-3) var(--sp-4);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   }
   .gloss-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    box-shadow: var(--sh-md);
+    border-color: var(--brand);
   }
+  [data-theme="dark"] .gloss-card:hover { box-shadow: var(--sh-lg); }
   .gloss-term {
-    font-size: 16px; font-weight: 800;
-    margin-bottom: 6px;
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-heavy);
+    margin-bottom: var(--sp-1);
+    color: var(--text);
+    letter-spacing: -0.01em;
   }
+  .gloss-card:hover .gloss-term { color: var(--brand); }
   .gloss-def {
     font-size: 13px; color: var(--text);
     line-height: 1.55;
@@ -3769,11 +3775,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .gloss-def-long {
     font-size: 12.5px; color: var(--text-2);
     line-height: 1.65;
-    margin-bottom: 10px;
-    padding: 8px 10px;
+    margin-bottom: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
     background: var(--bg-elev);
-    border-radius: 6px;
-    border-left: 3px solid var(--accent);
+    border-radius: var(--rd-md);
+    border-left: 3px solid var(--brand);
   }
   .gloss-example, .gloss-history {
     font-size: 11.5px;
@@ -5276,12 +5282,19 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .trend-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-top: 4px solid var(--accent);
-    border-radius: 12px;
-    padding: 14px 14px 10px;
+    border-top: 4px solid var(--brand);
+    border-radius: var(--rd-lg);
+    padding: var(--sp-3) var(--sp-3) var(--sp-2);
     display: flex; flex-direction: column;
-    gap: 10px;
+    gap: var(--sp-2);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   }
+  .trend-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sh-md);
+    border-color: var(--brand);
+  }
+  [data-theme="dark"] .trend-card:hover { box-shadow: var(--sh-lg); }
   .trend-card-h {
     display: flex; align-items: center; gap: 12px;
   }
@@ -5301,7 +5314,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     display: block;
     line-height: 1.2;
   }
-  .trend-keyword:hover { color: var(--accent); }
+  .trend-keyword:hover { color: var(--brand); }
   .trend-meta { margin-top: 4px; }
   .trend-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
   .trend-traffic, .trend-time, .trend-cat {
@@ -7309,16 +7322,21 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .econ-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 20px;
-    transition: border-color 0.15s, transform 0.15s;
+    border-radius: var(--rd-xl);
+    padding: var(--sp-4) var(--sp-5);
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
   }
-  .econ-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .econ-card:hover {
+    border-color: var(--brand);
+    transform: translateY(-2px);
+    box-shadow: var(--sh-md);
+  }
+  [data-theme="dark"] .econ-card:hover { box-shadow: var(--sh-lg); }
   .econ-card-head {
     display: flex; justify-content: space-between; align-items: flex-start;
-    margin-bottom: 14px;
+    margin-bottom: var(--sp-3);
   }
-  .econ-card-label { font-size: 14px; font-weight: 800; color: var(--text); }
+  .econ-card-label { font-size: var(--fs-md); font-weight: var(--fw-heavy); color: var(--text); }
   .econ-live-dot {
     color: var(--ok);
     font-size: 9px;
@@ -7326,11 +7344,15 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     animation: pulse 2s ease-in-out infinite;
     vertical-align: middle;
   }
-  .econ-card-meta { font-size: 10.5px; color: var(--dim); margin-top: 2px; }
+  .econ-card-meta { font-size: var(--fs-xs); color: var(--dim); margin-top: 2px; }
   .econ-card-now { text-align: right; }
   .econ-card-now-v {
-    font-size: 22px; font-weight: 800; color: var(--text);
-    font-variant-numeric: tabular-nums; line-height: 1.1;
+    font-size: 26px;
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
   }
   .econ-card-delta {
     font-size: 11px; font-weight: 700; margin-top: 2px;
@@ -17552,6 +17574,22 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V26.9', date: '2026-05-28', title: '💰 economy·glossary·today 3페이지 ds 통일', items: [
+    '💰 .econ-card (/economy 시세·시계열)',
+    '  • rd-14 → rd-xl, padding sp-4/sp-5',
+    '  • hover: brand border + lift -2px + sh-md (다크: sh-lg)',
+    '  • econ-card-now-v: 22px → 26px (tabular-nums + tight letter-spacing)',
+    '  • label·meta 폰트 토큰 (fs-md·fw-heavy·fs-xs)',
+    '📖 .gloss-card (/glossary 용어 사전 248개)',
+    '  • rd-8 → rd-lg, padding sp-3/sp-4',
+    '  • hover: brand border + lift -2px + sh-md',
+    '  • gloss-term: hover에 brand 컬러 전환 (16px → fs-lg + tight)',
+    '  • def-long border-left: accent → brand',
+    '🌍 .trend-card (/today 6 섹터 트렌드)',
+    '  • border-top accent → brand (4px 액센트 띠)',
+    '  • hover: brand border + lift -2px + sh-md',
+    '  • keyword link hover: accent → brand'
+  ]},
   { v: 'V26.8', date: '2026-05-28', title: '📊 홈 Hero 통계 strip — 4개 큰 숫자 카드', items: [
     '🎯 .ds-hero-strip 신규 유틸 — 4개 그리드 (모바일 2x2)',
     '🔢 시즌별 stat 자동 분기:',
@@ -21485,7 +21523,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.8 · 📊 hero 통계</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.9 · 💰 시세·용어 폴리시</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
