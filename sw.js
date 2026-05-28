@@ -1,7 +1,8 @@
-// V26.0 — Service Worker (정적 자산 캐싱 + 오프라인 지원)
+// V27.9 — Service Worker (캐시 버전 bump, 옛 인덱스 강제 갱신)
 // 전략: cache-first (정적 자산) + network-first (API·데이터)
+// V27.9: HTML(document)은 network-first로 변경 — 사용자에게 즉시 최신 UI 노출
 
-const CACHE_VERSION = 'patchkr-v26.0';
+const CACHE_VERSION = 'patchkr-v27.9';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 
@@ -72,8 +73,23 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // HTML / CSS / JS / 이미지: cache-first (정적 자산)
-  if (req.destination === 'document' || req.destination === 'style' ||
+  // V27.9 — HTML(document)은 network-first (옛 UI 캐시 차단)
+  // 사용자가 매번 최신 index.html을 받게 함 → /developers 옛 endpoints 안 보이는 버그 fix
+  if (req.destination === 'document') {
+    event.respondWith(
+      fetch(req).then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(STATIC_CACHE).then(c => c.put(req, clone)).catch(() => {});
+        }
+        return res;
+      }).catch(() => caches.match(req).then(r => r || Response.error()))
+    );
+    return;
+  }
+
+  // CSS / JS / 이미지 / 폰트: cache-first (정적 자산, URL 버전 query로 갱신)
+  if (req.destination === 'style' ||
       req.destination === 'script' || req.destination === 'image' ||
       req.destination === 'font') {
     event.respondWith(

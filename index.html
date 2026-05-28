@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V27.8 — /election2026 조잡함 정리: hero·notice·section·region-card·라이브후보·외부링크 tokens 일관 적용, 점선 → solid, 초록 → brand, 격전지 톤다운 -->
+<!-- V27.9 — Service Worker HTML network-first (옛 캐시 강제 갱신) + dev page glossary 213→248 + validate.yml에 verify-counts.js 통합 -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -17734,6 +17734,26 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V27.9', date: '2026-05-28', title: '🔄 SW HTML 캐시 fix + dev 페이지 정정 + CI 통합', items: [
+    '🐛 진단: /developers 페이지에 endpoints 9개 중 2개만 보임',
+    '   원인: Service Worker가 옛 HTML을 cache-first로 서빙',
+    '   사용자가 본 페이지는 V25.x 시점의 stale index.html',
+    '🔧 SW fix:',
+    '  • CACHE_VERSION: patchkr-v26.0 → v27.9 (강제 cache invalidation)',
+    '  • HTML(document)만 network-first로 변경 (CSS·JS·이미지는 그대로 cache-first)',
+    '  • 사용자가 사이트 진입 시 항상 최신 index.html 받음',
+    '🐛 dev 페이지 stale desc:',
+    '  • 용어 사전 "213개" → "248개 (15 카테고리)"',
+    '🤖 CI 통합:',
+    '  • validate.yml에 scripts/verify-counts.js 추가',
+    '  • 매 push/PR마다 사이트 표기 ↔ 실제 데이터 자동 검증',
+    '  • stale 발견 시 CI 차단 (회귀 방지)',
+    '📊 AI 갱신 자동화 현황 (사용자 질문 답변):',
+    '  • politicians.json: ✅ 자동 (daily-sync.yml, 매일 9시 KST)',
+    '  • llms.txt·llms-full.txt: 🟡 수동 (매 commit 갱신)',
+    '  • verify-counts.js: ✅ 자동 (CI 통합)',
+    '  • robots.txt·sitemap.xml: 🟡 수동'
+  ]},
   { v: 'V27.8', date: '2026-05-28', title: '🗳 /election2026 조잡함 정리', items: [
     '진단: 한 region 카드에 8개 요소 산만 + 톤 충돌 (초록·노랑·점선·실선 혼재)',
     '🏛 e26-hero',
@@ -19219,7 +19239,7 @@ async function shareCardToInstagram(type, opts = {}) {
 function renderDevelopersPage() {
   const endpoints = [
     { method: 'GET', path: '/api/data/politicians.json', desc: '자체 DB 482명 (22대 의원은 국회 OpenAPI에서 라이브 fetch)', example: '/api/data/politicians.json' },
-    { method: 'GET', path: '/api/data/glossary.json', desc: '정치·경제 용어 사전 213개', example: '/api/data/glossary.json' },
+    { method: 'GET', path: '/api/data/glossary.json', desc: '정치·경제·데이터 용어 사전 248개 (15 카테고리)', example: '/api/data/glossary.json' },
     { method: 'GET', path: '/api/bill', desc: '22대 법안 상세 (국회 OPEN API 프록시)', example: '/api/bill?billId=PRC_X1V5O0G7G3I0L1V5K3P3I8V5M2C3F7' },
     { method: 'GET', path: '/api/law', desc: '국가법령정보 검색 (법령·판례·헌재 결정)', example: '/api/law?target=law&query=공직선거법' },
     { method: 'GET', path: '/api/nec', desc: '9회 지방선거 후보·공약 (중앙선관위 OpenAPI 프록시)', example: '/api/nec?endpoint=candidates&sgId=20260603&sgTypecode=3' },
@@ -21836,7 +21856,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.8 · 🗳 지선 정리</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.9 · 🔄 캐시 강제 갱신</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자

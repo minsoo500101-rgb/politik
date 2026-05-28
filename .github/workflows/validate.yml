@@ -19,6 +19,9 @@ jobs:
       - name: 데이터 무결성 검증
         run: node scripts/validate.js
 
+      - name: V27.4 — 사이트 표기 vs 실제 데이터 일관성 검증
+        run: node scripts/verify-counts.js
+
       - name: index.html JavaScript 신택스 검증
         run: |
           # 인라인 JS 추출 후 node --check
