@@ -9350,10 +9350,11 @@
   .pulse-empty h3 { font-size: 18px; margin: 0 0 8px; }
   .pulse-empty p { color: var(--text-2); font-size: 13.5px; line-height: 1.6; margin-bottom: 20px; }
 
-  /* V23.5/V24.7 — Yahoo Finance 자체 위젯 (KOSPI/KOSDAQ — KRX 라이선스 우회) */
+  /* V23.5/V24.7/V24.8 — Yahoo Finance 자체 위젯 (KOSPI/KOSDAQ — KRX 라이선스 우회) */
+  /* auto-fit으로 빈 열 0으로 collapse (auto-fill은 빈 열 남김) */
   .econ-yf-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 10px;
     margin-bottom: 10px;
   }
@@ -9508,10 +9509,44 @@
     color: var(--dim);
     font-weight: 500;
   }
+  /* V24.8 — 데이터 출처 명확 라벨 */
+  .econ-section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 2px 8px;
+    flex-wrap: wrap;
+  }
+  .econ-section-tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 14px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .econ-section-daily {
+    background: rgba(245,158,11,0.12);
+    color: #d97706;
+    border: 1px solid rgba(245,158,11,0.3);
+  }
+  [data-theme="dark"] .econ-section-daily { color: #fbbf24; }
+  .econ-section-live {
+    background: rgba(239,68,68,0.12);
+    color: #dc2626;
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+  [data-theme="dark"] .econ-section-live { color: #f87171; }
+  .econ-section-desc {
+    font-size: 11.5px;
+    color: var(--dim);
+    font-weight: 500;
+  }
   .econ-tv-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
   }
   .econ-tv-widget {
     min-height: 200px;
@@ -14572,19 +14607,29 @@ function renderEconomyPage() {
         <p>한국은행·통계청·관세청 공식 데이터. 정부 임기와 함께 보는 경제 흐름. <span style="color:var(--dim);font-size:12px">평가·전망·예측 없음 — 공식 수치 그대로.</span></p>
       </div>
 
-      <!-- V23.1 — TradingView 실시간 위젯 (15분 지연) -->
+      <!-- V23.1/V24.8 — 시세 위젯 (정확한 데이터 출처·시점 표시) -->
       <div class="econ-tv-section">
         <div class="econ-tv-head">
-          <h2>📈 실시간 시세 <span class="econ-tv-live">🔴 LIVE</span></h2>
-          <span class="econ-tv-meta">Yahoo Finance + TradingView · 15~20분 지연</span>
+          <h2>📈 시세 모니터</h2>
+          <span class="econ-tv-meta">정확한 시점·출처는 각 카드 라벨 참조</span>
         </div>
-        <!-- V23.5 — KOSPI/KOSDAQ은 Yahoo Finance 자체 fetch (KRX 라이선스 우회) -->
+
+        <!-- 한국 시장: ECOS 일 종가 (TradingView가 KRX 차단 + Yahoo가 Vercel·CORS 차단) -->
+        <div class="econ-section-label">
+          <span class="econ-section-tag econ-section-daily">📅 일 종가</span>
+          <span class="econ-section-desc">한국 시장 — 한국은행 ECOS API (실시간 데이터 라이선스 제약)</span>
+        </div>
         <div class="econ-yf-grid">
           <div class="econ-yf-widget" data-yf-symbol="^KS11" data-yf-name="코스피 (KOSPI)" data-yf-currency="KRW"></div>
           <div class="econ-yf-widget" data-yf-symbol="^KQ11" data-yf-name="코스닥 (KOSDAQ)" data-yf-currency="KRW"></div>
           <div class="econ-yf-widget" data-yf-symbol="KRW=X" data-yf-name="USD/KRW 환율" data-yf-currency="KRW" data-yf-decimals="2"></div>
         </div>
-        <!-- 환율/원자재/BTC는 TradingView (라이선스 OK) -->
+
+        <!-- 원자재·암호화폐: TradingView 실시간 -->
+        <div class="econ-section-label" style="margin-top:14px">
+          <span class="econ-section-tag econ-section-live">🔴 LIVE · 15~20분 지연</span>
+          <span class="econ-section-desc">원자재·암호화폐 — TradingView 임베드 위젯</span>
+        </div>
         <div class="econ-tv-grid">
           <div class="econ-tv-widget" data-tv-symbol="TVC:USOIL" data-tv-name="WTI 원유"></div>
           <div class="econ-tv-widget" data-tv-symbol="TVC:GOLD" data-tv-name="국제 금"></div>
@@ -20791,7 +20836,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.7 · 📊 시민 여론판</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.8 · 📅 데이터 출처</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
