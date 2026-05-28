@@ -13549,37 +13549,75 @@ function setupTradingViewWidgets() {
   const widgets = document.querySelectorAll('.econ-tv-widget:not(.tv-loaded)');
   if (!widgets.length) return;
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  console.log('[TV] setting up', widgets.length, 'widgets, dark:', isDark);
   widgets.forEach(el => {
     el.classList.add('tv-loaded');
     const symbol = el.dataset.tvSymbol;
     const name = el.dataset.tvName || '';
-    // 라벨 + 위젯 컨테이너
+    // 라벨 + 위젯 컨테이너 + 로딩 skeleton + 외부 링크 fallback
+    const fallbackUrl = `https://www.tradingview.com/symbols/${encodeURIComponent(symbol.replace(':', '-'))}/`;
     el.innerHTML = `
       <div class="econ-tv-card">
-        <div class="econ-tv-card-name">${escapeHtml(name)}</div>
-        <div class="tradingview-widget-container" data-tv-mount>
-          <div class="tradingview-widget-container__widget"></div>
+        <div class="econ-tv-card-name">${escapeHtml(name)} <span style="font-size:10px;color:var(--dim);margin-left:4px">${escapeHtml(symbol)}</span></div>
+        <div class="tradingview-widget-container" data-tv-mount style="min-height:180px;position:relative">
+          <div class="tradingview-widget-container__widget" style="min-height:180px"></div>
+          <div class="tv-skeleton" data-tv-skeleton style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--dim);font-size:12px;background:var(--bg);">
+            <span class="loading-spinner"></span>
+            <span>TradingView 로딩 중…</span>
+          </div>
+        </div>
+        <div class="econ-tv-fallback" data-tv-fallback style="display:none;padding:10px 12px;font-size:11.5px;color:var(--dim);text-align:center;border-top:1px solid var(--border)">
+          위젯 로딩 실패 (AdBlock·네트워크 문제 가능) — <a href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener" style="color:var(--accent)">TradingView에서 보기 →</a>
         </div>
       </div>
     `;
     const mount = el.querySelector('[data-tv-mount]');
-    // TradingView mini-symbol-overview 위젯 동적 삽입
+    const skeleton = el.querySelector('[data-tv-skeleton]');
+    const fallback = el.querySelector('[data-tv-fallback]');
+
+    // TradingView 위젯 동적 삽입 — script.text가 가장 안정적 (TradingView가 currentScript.text를 읽음)
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
     script.async = true;
-    script.innerHTML = JSON.stringify({
+    // ⚠️ 순서 중요: text를 먼저 설정한 다음 src
+    script.text = JSON.stringify({
       symbol: symbol,
       width: "100%",
       height: 180,
       locale: "kr",
       dateRange: "12M",
       colorTheme: isDark ? "dark" : "light",
-      isTransparent: true,
+      isTransparent: false,
       autosize: false,
       largeChartUrl: ""
     });
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+    script.onerror = () => {
+      console.warn('[TV] script load failed for', symbol);
+      if (skeleton) skeleton.style.display = 'none';
+      if (fallback) fallback.style.display = 'block';
+    };
     mount.appendChild(script);
+
+    // 위젯 iframe 생성 모니터링 — 4초 내 iframe 없으면 fallback
+    let checks = 0;
+    const checkTimer = setInterval(() => {
+      checks++;
+      const iframe = mount.querySelector('iframe');
+      if (iframe) {
+        // iframe 생성 = 위젯 로딩 시작
+        if (skeleton) skeleton.style.display = 'none';
+        clearInterval(checkTimer);
+        return;
+      }
+      if (checks >= 8) {
+        // 4초 (500ms × 8) 안에 iframe 없으면 fallback
+        console.warn('[TV] iframe not created in 4s for', symbol);
+        if (skeleton) skeleton.style.display = 'none';
+        if (fallback) fallback.style.display = 'block';
+        clearInterval(checkTimer);
+      }
+    }, 500);
   });
 }
 
@@ -18557,7 +18595,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.3 · 🇰🇷 한국의 마음</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.4 · 📈 TV fix</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -20516,6 +20554,13 @@ function route() {
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
+    // V23.4 — TradingView 위젯 다중 trigger (race condition 방지)
+    requestAnimationFrame(() => {
+      if (currentRoute() === '#/economy') setupTradingViewWidgets();
+    });
+    setTimeout(() => {
+      if (currentRoute() === '#/economy') setupTradingViewWidgets();
+    }, 500);
     return;
   }
   // 국제 비교
