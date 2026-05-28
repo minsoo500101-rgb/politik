@@ -7929,6 +7929,564 @@
     .group-back { font-size: 12px; }
   }
 
+  /* V23.3 — 홈 한국의 마음 진입 카드 */
+  .home-pulse-card {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(135deg, #cd2e3a 0%, #0047a0 100%);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    position: relative;
+  }
+  .home-pulse-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15), transparent 60%);
+    pointer-events: none;
+  }
+  .home-pulse-card > * { position: relative; z-index: 1; }
+  .home-pulse-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(205,46,58,0.3);
+  }
+  .home-pulse-l { flex: 1; min-width: 0; }
+  .home-pulse-r {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+  }
+  .home-pulse-flag {
+    font-size: 56px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+  }
+  .home-pulse-eye {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 6px;
+  }
+  .home-pulse-title {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+  .home-pulse-sub {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .home-pulse-sub b { font-weight: 800; }
+  .home-pulse-cta {
+    font-size: 12px;
+    font-weight: 800;
+    background: rgba(255,255,255,0.18);
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+  @media (max-width: 700px) {
+    .home-pulse-card { padding: 14px 16px; }
+    .home-pulse-title { font-size: 18px; }
+    .home-pulse-sub { font-size: 11.5px; }
+    .home-pulse-flag { font-size: 40px; }
+  }
+
+  /* ============================================================
+     V23.3 — 한국의 마음 (Korea Pulse)
+     "국민이 곧 국가" — 시민 의견 라이브 집계 페이지
+     ============================================================ */
+  .pulse-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+  .pulse-hero {
+    background: linear-gradient(135deg, #cd2e3a 0%, #0047a0 50%, #cd2e3a 100%);
+    background-size: 200% 200%;
+    animation: pulseHero 12s ease infinite;
+    color: #fff;
+    border-radius: 16px;
+    padding: 36px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  @keyframes pulseHero {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .pulse-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12), transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(255,255,255,0.08), transparent 50%);
+    pointer-events: none;
+  }
+  .pulse-hero > * { position: relative; z-index: 1; }
+  .pulse-hero-eye {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 8px;
+  }
+  .pulse-hero h1 {
+    font-size: 38px;
+    font-weight: 900;
+    margin: 0 0 8px;
+    letter-spacing: -1px;
+  }
+  .pulse-date {
+    font-size: 15px;
+    margin: 0 0 8px;
+    color: rgba(255,255,255,0.95);
+  }
+  .pulse-date b { font-weight: 800; }
+  .pulse-sub {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.78);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.55;
+  }
+  /* 종합 통계 카드 */
+  .pulse-overview {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 900px) {
+    .pulse-overview { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .pulse-overview { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  }
+  .pulse-ov-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .pulse-ov-card.pulse-ov-highlight {
+    background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02));
+    border-color: rgba(239,68,68,0.3);
+  }
+  .pulse-ov-num {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .pulse-ov-lbl {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  /* 섹션 공통 */
+  .pulse-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .pulse-section h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0 0 14px;
+  }
+  .pulse-section h3 {
+    font-size: 13px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: var(--text);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pulse-empty-small {
+    padding: 16px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 12px;
+  }
+  /* 참여 추이 */
+  .pulse-trend-chart {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 4px;
+    align-items: end;
+    height: 160px;
+    padding: 0 4px;
+  }
+  .pulse-trend-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    min-width: 0;
+  }
+  .pulse-trend-bar {
+    width: 100%;
+    max-width: 24px;
+    background: linear-gradient(180deg, #ef4444 0%, #cd2e3a 100%);
+    border-radius: 4px 4px 0 0;
+    min-height: 2px;
+    transition: height 0.4s ease;
+  }
+  .pulse-trend-val {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pulse-trend-date {
+    font-size: 9px;
+    color: var(--dim);
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+  @media (max-width: 700px) {
+    .pulse-trend-chart {
+      grid-template-columns: repeat(7, 1fr);
+      height: 120px;
+    }
+    .pulse-trend-col:nth-child(n+8) { display: none; }
+  }
+  /* 정치인 평가 */
+  .pulse-pol-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 700px) {
+    .pulse-pol-grid { grid-template-columns: 1fr; gap: 14px; }
+  }
+  .pulse-pol-row {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 6px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.1s;
+    margin-bottom: 2px;
+  }
+  .pulse-pol-row:hover { background: var(--bg-elev); }
+  .pulse-pol-rank {
+    font-weight: 900;
+    color: var(--dim);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .pulse-pol-row:nth-child(2) .pulse-pol-rank { color: #dc2626; }
+  .pulse-pol-row:nth-child(3) .pulse-pol-rank { color: #f59e0b; }
+  .pulse-pol-row:nth-child(4) .pulse-pol-rank { color: #f59e0b; }
+  .pulse-pol-name {
+    font-size: 13px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pulse-pol-approval {
+    font-size: 14px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+  .pulse-pos { color: #10b981; }
+  .pulse-neg { color: #ef4444; }
+  .pulse-pol-sample {
+    font-size: 10.5px;
+    color: var(--dim);
+    font-weight: 600;
+  }
+  /* 법안 동의도 */
+  .pulse-bill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pulse-bill-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 56px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .pulse-bill-row:hover {
+    background: var(--bg-elev);
+    transform: translateX(2px);
+  }
+  .pulse-bill-rank {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--accent);
+    text-align: center;
+  }
+  .pulse-bill-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .pulse-bill-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .pulse-bill-fill {
+    height: 100%;
+    transition: width 0.4s ease;
+  }
+  .pulse-bill-support { background: #10b981; }
+  .pulse-bill-oppose { background: #ef4444; }
+  .pulse-bill-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .pulse-bill-sample {
+    color: var(--dim);
+    margin-left: auto;
+  }
+  .pulse-bill-pct {
+    font-size: 18px;
+    font-weight: 900;
+    color: #10b981;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  /* 경제 우려도 */
+  .pulse-econ-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .pulse-econ-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+  }
+  @media (max-width: 700px) {
+    .pulse-econ-row { grid-template-columns: 1fr auto; gap: 6px; }
+    .pulse-econ-bar { grid-column: 1 / -1; }
+    .pulse-econ-sample { grid-column: 2; }
+  }
+  .pulse-econ-name {
+    font-size: 13px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pulse-econ-bar {
+    height: 8px;
+    background: var(--bg-elev);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .pulse-econ-fill {
+    height: 100%;
+    background: #ef4444;
+    transition: width 0.4s ease;
+  }
+  .pulse-econ-pct {
+    font-size: 12px;
+    font-weight: 800;
+    color: #ef4444;
+    white-space: nowrap;
+  }
+  .pulse-econ-sample {
+    font-size: 10.5px;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  /* 시도별 정치 성향 */
+  .pulse-region-sub {
+    font-size: 11.5px;
+    color: var(--dim);
+    margin: 0 0 12px;
+  }
+  .pulse-region-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pulse-region-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 60px 50px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+  }
+  .pulse-region-name {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .pulse-region-bar {
+    height: 10px;
+    background: var(--bg-elev);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .pulse-region-fill {
+    height: 100%;
+    transition: width 0.4s ease;
+  }
+  .pulse-region-pct {
+    font-size: 13px;
+    font-weight: 800;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .pulse-region-sample {
+    font-size: 10.5px;
+    color: var(--dim);
+    text-align: right;
+  }
+  .pulse-region-foot {
+    font-size: 11px;
+    color: var(--dim);
+    text-align: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .pulse-region-pending {
+    padding: 24px;
+    background: var(--bg);
+    border-radius: 10px;
+    text-align: center;
+    color: var(--text-2);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  /* 공유 섹션 */
+  .pulse-share-section {
+    background: linear-gradient(135deg, rgba(205,46,58,0.05) 0%, rgba(0,71,160,0.05) 100%);
+    border: 1px solid rgba(205,46,58,0.18);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .pulse-share-section h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0 0 4px;
+  }
+  .pulse-share-sub {
+    font-size: 12px;
+    color: var(--dim);
+    margin: 0 0 14px;
+  }
+  .pulse-share-btns {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pulse-share-btn {
+    padding: 10px 18px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-card);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pulse-share-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .pulse-share-x:hover { background: #000; color: #fff; border-color: #000; }
+  .pulse-share-fb:hover { background: #1877F2; color: #fff; border-color: #1877F2; }
+  .pulse-share-band:hover { background: #03C75A; color: #fff; border-color: #03C75A; }
+  .pulse-share-copy:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+  /* Methodology */
+  .pulse-methodology {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+  }
+  .pulse-methodology h3 {
+    font-size: 13px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: var(--text);
+  }
+  .pulse-methodology ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .pulse-methodology li b { color: var(--text); font-weight: 700; }
+  /* 모바일 */
+  @media (max-width: 700px) {
+    .pulse-page { padding: 12px 8px 80px; }
+    .pulse-hero { padding: 24px 18px; border-radius: 14px; }
+    .pulse-hero h1 { font-size: 28px; }
+    .pulse-section { padding: 14px 14px; }
+    .pulse-ov-num { font-size: 20px; }
+    .pulse-region-row { grid-template-columns: 50px 1fr 50px; }
+    .pulse-region-sample { display: none; }
+    .pulse-bill-row { grid-template-columns: 24px 1fr 50px; padding: 10px; }
+    .pulse-bill-pct { font-size: 16px; }
+  }
+  /* Empty state */
+  .pulse-empty {
+    text-align: center;
+    padding: 60px 24px;
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+  .pulse-empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .pulse-empty h3 { font-size: 18px; margin: 0 0 8px; }
+  .pulse-empty p { color: var(--text-2); font-size: 13.5px; line-height: 1.6; margin-bottom: 20px; }
+
   /* V23.1 — TradingView 실시간 위젯 (경제 페이지) */
   .econ-tv-section {
     margin: 18px 0 24px;
@@ -8589,6 +9147,7 @@
     </div>
     <div class="foot-col">
       <div class="foot-h">⭐ 내 활동</div>
+      <a href="/pulse">🇰🇷 한국의 마음 (Pulse)</a>
       <a href="/me">📋 내 활동 대시보드</a>
       <a href="/bookmarks">관심 의원</a>
       <a href="/stances">내 정치 입장</a>
@@ -15593,6 +16152,308 @@ function renderBookmarksPage() {
 // ============================================================
 // V22.6 — /me 내 활동 대시보드
 // ============================================================
+// ============================================================
+// V23.3 — 한국의 마음 (Korea Pulse) — 시민 의견 라이브 집계
+// "국민이 곧 국가" — 익명 stance·vote·pageview를 매일 변화하는 한국의 정치 지도로
+// ============================================================
+
+// 일 단위 캐시 (매일 11시 갱신 효과)
+const PULSE_CACHE = { ts: 0, data: null };
+const PULSE_CACHE_MS = 30 * 60 * 1000; // 30분 캐시
+
+async function loadKoreaPulse() {
+  const now = Date.now();
+  if (PULSE_CACHE.data && (now - PULSE_CACHE.ts) < PULSE_CACHE_MS) return PULSE_CACHE.data;
+  try {
+    // 7개 RPC 병렬 호출
+    const [overview, topPol, bottomPol, topBills, economy, regionDist, daily] = await Promise.all([
+      supabaseRpc('pulse_overview', { p_days: 30 }).catch(() => []),
+      supabaseRpc('pulse_top_politicians', { p_days: 30, p_limit: 10, p_min_votes: 3 }).catch(() => []),
+      supabaseRpc('pulse_bottom_politicians', { p_days: 30, p_limit: 10, p_min_votes: 3 }).catch(() => []),
+      supabaseRpc('pulse_top_bills', { p_days: 30, p_limit: 5, p_min_votes: 3 }).catch(() => []),
+      supabaseRpc('pulse_economy', { p_days: 30, p_limit: 10, p_min_votes: 2 }).catch(() => []),
+      supabaseRpc('pulse_region_distribution', { p_days: 30, p_min_samples: 5 }).catch(() => []),
+      supabaseRpc('pulse_daily_activity', { p_days: 14 }).catch(() => []),
+    ]);
+    const data = {
+      overview: (overview && overview[0]) || null,
+      topPoliticians: topPol || [],
+      bottomPoliticians: bottomPol || [],
+      topBills: topBills || [],
+      economy: economy || [],
+      regions: regionDist || [],
+      daily: daily || [],
+      generatedAt: new Date().toISOString(),
+    };
+    PULSE_CACHE.data = data;
+    PULSE_CACHE.ts = now;
+    return data;
+  } catch (e) {
+    console.warn('pulse load failed', e);
+    return null;
+  }
+}
+
+// Supabase RPC 호출 헬퍼 (없으면 추가)
+async function supabaseRpc(fnName, args) {
+  const url = SUPABASE_URL + '/rest/v1/rpc/' + encodeURIComponent(fnName);
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args || {}),
+  });
+  if (!r.ok) throw new Error('rpc ' + fnName + ' fail ' + r.status);
+  return await r.json();
+}
+
+function renderPulsePage() {
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('ko-KR', {
+    year: 'numeric', month: 'long', day: 'numeric',
+    weekday: 'long', timeZone: 'Asia/Seoul'
+  });
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="pulse-page">
+      <div class="pulse-hero">
+        <div class="pulse-hero-eye">REPUBLIC OF KOREA · CITIZEN PULSE</div>
+        <h1>🇰🇷 한국의 마음</h1>
+        <p class="pulse-date">${escapeHtml(dateStr)} · <b>국민이 곧 국가</b></p>
+        <p class="pulse-sub">시민이 누른 익명 지지·반대·동의·우려를 매일 집계. 정치인 평가는 사용자 누적 의견 기반. 표본 부족 항목은 표시되지 않음.</p>
+      </div>
+
+      <div id="pulse-body">
+        <div class="loading"><span class="loading-spinner"></span>한국의 마음 집계 중…</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPulseBody(data) {
+  if (!data || !data.overview) {
+    return `
+      <div class="pulse-empty">
+        <div class="pulse-empty-icon">📭</div>
+        <h3>아직 데이터가 부족합니다</h3>
+        <p>사용자들이 정치인 지지·법안 찬반·경제 동의 등을 누적하면<br>매일 자동으로 한국의 마음이 시각화됩니다.</p>
+        <a href="/" class="btn-out">홈으로 돌아가기</a>
+      </div>
+    `;
+  }
+  const ov = data.overview;
+  return `
+    <!-- 종합 통계 -->
+    <div class="pulse-overview">
+      <div class="pulse-ov-card">
+        <div class="pulse-ov-num">${(ov.total_votes || 0).toLocaleString()}</div>
+        <div class="pulse-ov-lbl">시민 투표 (30일)</div>
+      </div>
+      <div class="pulse-ov-card">
+        <div class="pulse-ov-num">${(ov.total_stances || 0).toLocaleString()}</div>
+        <div class="pulse-ov-lbl">정치 입장 (30일)</div>
+      </div>
+      <div class="pulse-ov-card">
+        <div class="pulse-ov-num">${(ov.unique_voters || 0).toLocaleString()}</div>
+        <div class="pulse-ov-lbl">참여 시민 (30일)</div>
+      </div>
+      <div class="pulse-ov-card pulse-ov-highlight">
+        <div class="pulse-ov-num">${(ov.voters_today || 0).toLocaleString()}</div>
+        <div class="pulse-ov-lbl">오늘 참여자</div>
+      </div>
+      <div class="pulse-ov-card">
+        <div class="pulse-ov-num">${(ov.total_pageviews || 0).toLocaleString()}</div>
+        <div class="pulse-ov-lbl">페이지 열람 (30일)</div>
+      </div>
+      <div class="pulse-ov-card">
+        <div class="pulse-ov-num">${(ov.total_bookmarks || 0).toLocaleString()}</div>
+        <div class="pulse-ov-lbl">관심 등록</div>
+      </div>
+    </div>
+
+    ${renderPulseTrend(data.daily)}
+
+    ${renderPulsePoliticians(data.topPoliticians, data.bottomPoliticians)}
+
+    ${renderPulseBills(data.topBills)}
+
+    ${renderPulseEconomy(data.economy)}
+
+    ${renderPulseRegions(data.regions)}
+
+    <div class="pulse-share-section">
+      <h2>📤 한국의 마음 공유</h2>
+      <p class="pulse-share-sub">"국민이 곧 국가" — 오늘의 한국 정치 데이터를 SNS에 공유하세요.</p>
+      <div class="pulse-share-btns">
+        <button class="pulse-share-btn pulse-share-x" id="pulse-share-x">𝕏 트위터 공유</button>
+        <button class="pulse-share-btn pulse-share-fb" id="pulse-share-fb">📘 페이스북</button>
+        <button class="pulse-share-btn pulse-share-band" id="pulse-share-band">🟢 밴드</button>
+        <button class="pulse-share-btn pulse-share-copy" id="pulse-share-copy">🔗 URL 복사</button>
+      </div>
+    </div>
+
+    <div class="pulse-methodology">
+      <h3>📊 집계 방법</h3>
+      <ul>
+        <li><b>익명 UUID 기반</b> — 개인정보 수집 없음. localStorage 익명 ID로 1인 1표 제어</li>
+        <li><b>30일 누적 데이터</b> — 매일 자동 집계, 30분 캐시</li>
+        <li><b>최소 표본</b> — 정치인 3표·법안 3표·경제 2표·시도별 5표 이상만 표시</li>
+        <li><b>편향 안내</b> — 본 데이터는 patchkr.com 사용자 표본 (한국 전체 여론과 다를 수 있음)</li>
+        <li><b>출처</b> — Supabase 익명 social_votes·user_stances·page_views</li>
+      </ul>
+    </div>
+  `;
+}
+
+function renderPulseTrend(daily) {
+  if (!daily || daily.length < 3) return '';
+  const max = Math.max(...daily.map(d => d.votes_count));
+  if (!max) return '';
+  return `
+    <div class="pulse-section">
+      <h2>📈 시민 참여 추이 — 최근 14일</h2>
+      <div class="pulse-trend-chart">
+        ${daily.map(d => {
+          const h = max ? (d.votes_count / max * 100) : 0;
+          const dStr = new Date(d.activity_date).toLocaleDateString('ko-KR', {
+            month: 'short', day: 'numeric', timeZone: 'Asia/Seoul'
+          });
+          return `
+            <div class="pulse-trend-col" title="${dStr} · ${d.votes_count}표">
+              <div class="pulse-trend-bar" style="height:${h}%"></div>
+              <div class="pulse-trend-val">${d.votes_count || ''}</div>
+              <div class="pulse-trend-date">${dStr.replace(/일|월/g, '').trim()}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPulsePoliticians(topList, bottomList) {
+  if (!topList?.length && !bottomList?.length) return '';
+  return `
+    <div class="pulse-section">
+      <h2>👤 정치인 평가 — 시민 누적 의견 (30일)</h2>
+      <div class="pulse-pol-grid">
+        <div class="pulse-pol-col">
+          <h3>🌟 가장 지지받는 정치인 Top ${topList.length}</h3>
+          ${topList.length ? topList.map((p, i) => `
+            <a class="pulse-pol-row" href="/m/${encodeURIComponent(p.politician_id)}">
+              <span class="pulse-pol-rank">${i + 1}</span>
+              <span class="pulse-pol-name">${escapeHtml(p.politician_name || p.politician_id)}</span>
+              <span class="pulse-pol-approval pulse-pos">${p.approval_pct}%</span>
+              <span class="pulse-pol-sample">표본 ${p.total}</span>
+            </a>
+          `).join('') : '<div class="pulse-empty-small">표본 부족</div>'}
+        </div>
+        <div class="pulse-pol-col">
+          <h3>⚠ 가장 반대받는 정치인 Top ${bottomList.length}</h3>
+          ${bottomList.length ? bottomList.map((p, i) => `
+            <a class="pulse-pol-row" href="/m/${encodeURIComponent(p.politician_id)}">
+              <span class="pulse-pol-rank">${i + 1}</span>
+              <span class="pulse-pol-name">${escapeHtml(p.politician_name || p.politician_id)}</span>
+              <span class="pulse-pol-approval pulse-neg">${p.approval_pct}%</span>
+              <span class="pulse-pol-sample">표본 ${p.total}</span>
+            </a>
+          `).join('') : '<div class="pulse-empty-small">표본 부족</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPulseBills(bills) {
+  if (!bills?.length) return '';
+  return `
+    <div class="pulse-section">
+      <h2>📜 시민 동의 — 법안 Top ${bills.length} (30일)</h2>
+      <div class="pulse-bill-list">
+        ${bills.map((b, i) => `
+          <a class="pulse-bill-row" href="/bill/${encodeURIComponent(b.bill_id)}">
+            <div class="pulse-bill-rank">${i + 1}</div>
+            <div class="pulse-bill-body">
+              <div class="pulse-bill-name">${escapeHtml((b.bill_label || b.bill_id).slice(0, 80))}</div>
+              <div class="pulse-bill-bar">
+                <div class="pulse-bill-fill pulse-bill-support" style="width:${b.approval_pct}%"></div>
+                <div class="pulse-bill-fill pulse-bill-oppose" style="width:${100 - b.approval_pct}%"></div>
+              </div>
+              <div class="pulse-bill-meta">
+                <span class="pulse-pos">✓ ${b.support_count} 찬성</span>
+                <span class="pulse-neg">✗ ${b.oppose_count} 반대</span>
+                <span class="pulse-bill-sample">총 ${b.total}표</span>
+              </div>
+            </div>
+            <div class="pulse-bill-pct">${b.approval_pct}%</div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPulseEconomy(economy) {
+  if (!economy?.length) return '';
+  return `
+    <div class="pulse-section">
+      <h2>💰 시민 경제 평가 — 우려도 순 (30일)</h2>
+      <div class="pulse-econ-list">
+        ${economy.map(e => `
+          <div class="pulse-econ-row">
+            <div class="pulse-econ-name">${escapeHtml(e.indicator_label || e.indicator_id)}</div>
+            <div class="pulse-econ-bar">
+              <div class="pulse-econ-fill pulse-econ-concern" style="width:${e.concern_pct}%"></div>
+            </div>
+            <div class="pulse-econ-pct">😟 ${e.concern_pct}% 우려</div>
+            <div class="pulse-econ-sample">표본 ${e.total}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPulseRegions(regions) {
+  if (!regions?.length) return `
+    <div class="pulse-section">
+      <h2>🗺 시도별 정치 성향</h2>
+      <div class="pulse-region-pending">
+        <b>표본 누적 중</b><br>
+        시도별 표본 5표 이상 누적되면 자동 표시됩니다. 정치인 페이지에서 지지·반대를 눌러주세요.
+      </div>
+    </div>
+  `;
+  // 시도별 정렬 (총 표본 순)
+  const total = regions.reduce((s, r) => s + Number(r.total || 0), 0);
+  return `
+    <div class="pulse-section">
+      <h2>🗺 시도별 정치 성향 — 익명 시민 의견 (30일)</h2>
+      <p class="pulse-region-sub">"시민이 지지하는 정치인이 어느 시도 출신인가" 기준. 표본 5표 이상 시도만 표시.</p>
+      <div class="pulse-region-list">
+        ${regions.map(r => {
+          const pct = r.support_pct || 0;
+          const color = pct >= 60 ? 'var(--ok)' : pct >= 40 ? 'var(--accent)' : 'var(--danger)';
+          return `
+            <div class="pulse-region-row">
+              <div class="pulse-region-name">${escapeHtml(r.region)}</div>
+              <div class="pulse-region-bar">
+                <div class="pulse-region-fill" style="width:${pct}%; background:${color}"></div>
+              </div>
+              <div class="pulse-region-pct" style="color:${color}">${pct}%</div>
+              <div class="pulse-region-sample">${r.total}표</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="pulse-region-foot">총 ${total.toLocaleString()}표 · 막대 = 시도 출신 정치인 지지율</div>
+    </div>
+  `;
+}
+
 function renderMePage() {
   const userId = getOrCreateAnonUserId();
   const shortId = userId.slice(0, 8) + '…' + userId.slice(-4);
@@ -17696,7 +18557,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.2 · 📱 모바일 풀폭</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.3 · 🇰🇷 한국의 마음</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -17737,6 +18598,19 @@ function renderHome() {
           </div>
         `;
       })()}
+
+      <!-- 🇰🇷 V23.3 — 한국의 마음 (Korea Pulse) 진입 카드 -->
+      <a href="/pulse" class="home-pulse-card" style="text-decoration:none;color:inherit">
+        <div class="home-pulse-l">
+          <div class="home-pulse-eye">CITIZEN PULSE · LIVE</div>
+          <div class="home-pulse-title">🇰🇷 한국의 마음</div>
+          <div class="home-pulse-sub"><b>국민이 곧 국가</b> — 시민 익명 의견 라이브 집계. 정치인 평가·법안 동의·시도별 정치 성향.</div>
+          <div class="home-pulse-cta">📊 오늘의 한국 보러가기 →</div>
+        </div>
+        <div class="home-pulse-r">
+          <div class="home-pulse-flag">🇰🇷</div>
+        </div>
+      </a>
 
       <!-- 📊 V22.5 — 이번 주 인기 랭킹 (페이지뷰 기반) -->
       <div class="home-ranking-row collapsible-widget" id="home-ranking-row">
@@ -18808,6 +19682,7 @@ const ROUTE_META = {
   '/bookmarks': { title: '관심 의원 — 북마크 모아보기', desc: '관심 정치인 북마크 모아보기. 개인 관심 의원·단체장 추적 페이지.' },
   '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
   '/me': { title: '📋 내 활동 대시보드 — 북마크·평점·투표·stance 한 곳에', desc: '익명 UUID로 저장된 본인의 모든 활동 기록을 한 페이지에서 확인. 관심 의원·정치 입장·9회 공약 평점·8회 이행 투표·소셜 투표·페이지 조회 통계.' },
+  '/pulse': { title: '🇰🇷 한국의 마음 (Korea Pulse) — 시민 익명 의견 라이브 집계', desc: '국민이 곧 국가. 시민 누적 의견(지지·반대·찬성·우려)을 매일 자동 집계. 정치인 평가 Top·법안 동의도·경제 우려·17 시도별 정치 성향. patchkr.com 사용자 데이터.' },
   '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
   '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
   '/compare-cand': { title: '9회 지선 후보 비교 — 5대 공약 옆에 옆에', desc: '제9회 지방선거 후보자 최대 3명 옆에 옆에 비교. 5대 공약·약력·재산·전과 대조.' },
@@ -18965,6 +19840,39 @@ function route() {
     setupMePageEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
+    return;
+  }
+  // V23.3 — 한국의 마음 (Korea Pulse)
+  if (hash === '#/pulse') {
+    view.innerHTML = renderPulsePage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    loadKoreaPulse().then(data => {
+      if (currentRoute() !== '#/pulse') return;
+      const body = document.getElementById('pulse-body');
+      if (body) body.innerHTML = renderPulseBody(data);
+      // 공유 버튼 이벤트
+      const shareUrl = 'https://patchkr.com/pulse';
+      const shareText = `🇰🇷 한국의 마음 — 오늘의 시민 정치 의견 (patchkr.com)`;
+      document.getElementById('pulse-share-x')?.addEventListener('click', () => {
+        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+      });
+      document.getElementById('pulse-share-fb')?.addEventListener('click', () => {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+      });
+      document.getElementById('pulse-share-band')?.addEventListener('click', () => {
+        window.open(`http://band.us/plugin/share?body=${encodeURIComponent(shareText)}&route=${encodeURIComponent(shareUrl)}`, '_blank');
+      });
+      document.getElementById('pulse-share-copy')?.addEventListener('click', e => {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          const btn = e.target;
+          const orig = btn.textContent;
+          btn.textContent = '✓ 복사됨';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      });
+    });
     return;
   }
   // V20.7 — 실시간 정치 트렌드 (/today)
@@ -19835,7 +20743,18 @@ function route() {
     document.getElementById('back-btn')?.addEventListener('click', () => { nav('/'); });
     // V22.0 — 정치인 소셜 투표 활성화
     const _mem = state.members?.find(x => x.MONA_CD === memberId);
-    if (_mem) setupSocialVote('politician', memberId, _mem.HG_NM, { party: _mem.POLY_NM });
+    if (_mem) {
+      // V23.3 — 시도 매핑 추출 (pulse_region_distribution용)
+      const _region = _mem.ORIG_NM || _mem.region || _mem.area || '';
+      // 시도명만 추출 (예: "서울 종로구" → "서울")
+      const _sidoMatch = _region.match(/^(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/);
+      const _sido = _sidoMatch ? _sidoMatch[1] : null;
+      setupSocialVote('politician', memberId, _mem.HG_NM, {
+        party: _mem.POLY_NM,
+        region: _sido,
+        full_region: _region || null,
+      });
+    }
     document.getElementById('bookmark-btn')?.addEventListener('click', e => {
       e.stopPropagation();
       const btn = e.currentTarget;
