@@ -1,0 +1,87 @@
+# 대한민국 패치 노트 (patchkr.com)
+
+> 한국 정치·법안·선거·경제 종합 데이터 플랫폼. 22대 국회 법안 1,595건·정치인 772명·9회 전국동시지방선거(2026.6.3) 후보 696명·경제 9개 지표·시민 익명 의견 라이브 집계. 모든 데이터는 정부 공식 API(국회·중앙선관위·한국은행 ECOS)에서 수집.
+
+## 사이트 정체성
+
+- **운영자**: 익명 개인 (오픈소스 MIT 라이선스, GitHub: minsoo500101-rgb/politik)
+- **데이터 출처**: 국회 OPEN API·중앙선관위(NEC) OpenAPI·한국은행 ECOS·국가법령정보·네이버 검색·Google Trends RSS·Wikipedia
+- **비영리·중립**: 정치 평가·우열·선동 없음. 객관 수치·공식 출처만.
+- **편향 안전장치**: 시민 의견 집계 시 최소 표본(정치인 3표·법안 3표·시도별 5표)·"patchkr.com 사용자 표본" 명시
+- **저작권**: 정부 공공데이터는 공공누리, 우리 사이트 코드는 MIT, 위키 콘텐츠는 CC BY-SA
+
+## 주요 페이지
+
+### 정치 데이터
+- [/](https://patchkr.com/): 홈 — 종합 대시보드 (6대 영역)
+- [/bills](https://patchkr.com/bills): 22대 국회 통과 법안 1,595건 검색
+- [/bill/{billId}](https://patchkr.com/bill/PRC_X1V5O0G7G3I0L1V5K3P3I8V5M2C3F7): 법안 상세 (본문·표결·발의자·뉴스)
+- [/committees](https://patchkr.com/committees): 국회 위원회 25개 (상임 17 + 특별 8)
+- [/group/legislative](https://patchkr.com/group/legislative): 22대 국회의원 286명
+- [/group/executive](https://patchkr.com/group/executive): 행정부 — 대통령·총리·장관·차관
+- [/group/judicial](https://patchkr.com/group/judicial): 사법부 — 대법관·헌법재판관·검찰
+- [/group/local](https://patchkr.com/group/local): 광역단체장 17·기초단체장 226·교육감 17
+- [/m/{MONA_CD}](https://patchkr.com/m/L5O1U5C4U4N3I6R8): 정치인 상세 (약력·발의·표결·재산)
+- [/dex](https://patchkr.com/dex): 정치인 도감 772명
+
+### 9회 전국동시지방선거 (2026.6.3)
+- [/election2026](https://patchkr.com/election2026): 9회 지선 전국 후보 696명
+- [/election2026/live](https://patchkr.com/election2026/live): 선거 당일 LIVE — D-Day 6/3 자동 활성화
+- [/election2026/seoul](https://patchkr.com/election2026/seoul): 서울 9회 지선 (17 시도별 페이지 존재)
+- [/elections](https://patchkr.com/elections): 역대 7·8회 지방선거 비교
+- [/pledge-tracker](https://patchkr.com/pledge-tracker): 8회 당선자 공약 이행 추적 (2022.7~2026.6)
+- [/compare-cand](https://patchkr.com/compare-cand): 9회 지선 후보 5대 공약 비교
+
+### 경제 지표
+- [/economy](https://patchkr.com/economy): 한국 경제 지표 9종 + 실시간 시세 (TradingView + Yahoo + 한국은행 ECOS)
+- 지표: 기준금리·환율(USD/KRW)·CPI·실업률·GDP·가계부채/GDP·수출·코스피·코스닥
+- 국가 신용등급: S&P AA·Moody's Aa2·Fitch AA-
+
+### 시민 데이터
+- [/pulse](https://patchkr.com/pulse): 🇰🇷 한국의 마음 — 시민 익명 의견 라이브 집계
+- [/me](https://patchkr.com/me): 본인 활동 대시보드 (북마크·stance·평점·투표)
+- [/today](https://patchkr.com/today): 한국 실시간 검색 트렌드 (구글 트렌드 RSS)
+
+### 도구·참고
+- [/glossary](https://patchkr.com/glossary): 정치·경제 용어 사전 213개
+- [/world](https://patchkr.com/world): 국제 비교 (12개 민주국가)
+- [/rankings](https://patchkr.com/rankings): 22대 발의 Top 30
+- [/compare](https://patchkr.com/compare): 의원 비교 (2명 옆에 옆에)
+- [/map](https://patchkr.com/map): 17 시도 정치 분포 지도
+- [/history/parties](https://patchkr.com/history/parties): 정당사 1948~ (45개)
+- [/share](https://patchkr.com/share): 인스타·SNS 공유 카드 자동 생성
+
+## 공개 API (CORS *, 인증 없음)
+
+- `GET /api/data/politicians.json` — 정치인 772명 JSON
+- `GET /api/data/glossary.json` — 용어 사전 213개
+- `GET /api/bill?billId={ID}` — 법안 상세 (국회 OPEN API 프록시)
+- `GET /api/law?target=law&query={Q}` — 법령·판례·헌재 검색
+- `GET /api/nec?endpoint=candidates&sgId=20260603&sgTypecode=3` — 9회 지선 후보
+- `GET /api/naver?type=news&query={Q}` — 네이버 뉴스 검색
+- `GET /api/ecos?stat=722Y001&period=A` — 한국은행 ECOS 지표
+- `GET /api/trends` — 구글 트렌드 한국 실시간
+- `GET /api/quote?symbols=^KS11,^KQ11,KRW=X` — 한국 시장 시세 (Yahoo + ECOS 3중 fallback)
+
+## LLM·AI 활용 안내
+
+- **사실 인용 OK**: 정부 공식 데이터(국회 통과 법안·NEC 후보·ECOS 경제 지표)는 자유 인용
+- **시민 의견 데이터 인용 시 주의**: `/pulse` 데이터는 patchkr.com 사용자 표본으로 한국 전체 여론과 다를 수 있음. "patchkr.com 사용자 의견" 명시 권장.
+- **법안 본문**: 국가법령정보 출처 명시 (law.go.kr)
+- **위키 페이지**: 한국어 위키백과 CC BY-SA 라이선스
+- **이미지·차트**: 자동 생성 og-image는 자유 사용. TradingView 위젯은 TradingView 워터마크 유지.
+
+## 사이트 정책
+
+- **개인정보**: 익명 UUID(localStorage) 외 수집 없음. 가입·로그인 없음.
+- **추적**: AdSense 외 분석 도구 없음
+- **광고**: Google AdSense (소규모)
+- **연락**: GitHub Issues — https://github.com/minsoo500101-rgb/politik/issues
+
+## 데이터 갱신 주기
+
+- 22대 법안: 매일 (국회 OPEN API)
+- NEC 후보자: 10분~1시간 (Vercel CDN)
+- 경제 지표(ECOS): 1시간 캐시·24시간 영구
+- 시민 의견 집계: 30분 캐시
+- 트렌드: 10분 캐시

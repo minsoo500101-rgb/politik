@@ -8503,6 +8503,179 @@
     .cm-btn { padding: 14px; font-size: 14px; }
   }
 
+  /* V24.5 — 개발자 가이드 페이지 */
+  .dev-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+  .dev-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 36px 32px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+  .dev-hero-eye {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #38bdf8;
+    margin-bottom: 8px;
+  }
+  .dev-hero h1 {
+    font-size: 36px;
+    font-weight: 900;
+    margin: 0 0 8px;
+    letter-spacing: -1px;
+  }
+  .dev-hero p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    margin: 0;
+    line-height: 1.6;
+  }
+  .dev-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+  }
+  .dev-section h2 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 14px;
+    color: var(--text);
+  }
+  .dev-code {
+    background: #0f172a;
+    color: #94f0b1;
+    padding: 16px 18px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    margin: 0;
+  }
+  [data-theme="dark"] .dev-code { background: #050a13; }
+  .dev-code code { color: inherit; }
+  .dev-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .dev-link-card {
+    display: block;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .dev-link-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  }
+  .dev-link-h {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .dev-link-d {
+    font-size: 11.5px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .dev-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .dev-table th, .dev-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .dev-table th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: var(--bg);
+  }
+  .dev-method {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #10b981;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 4px;
+  }
+  .dev-path {
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', monospace;
+    font-size: 12.5px;
+  }
+  .dev-try {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 12px;
+  }
+  .dev-try:hover { text-decoration: underline; }
+  .dev-cite-examples {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .dev-cite {
+    padding: 14px 16px;
+    background: rgba(16,185,129,0.06);
+    border-left: 3px solid #10b981;
+    border-radius: 6px;
+  }
+  .dev-cite.dev-cite-bad {
+    background: rgba(245,158,11,0.06);
+    border-left-color: #f59e0b;
+  }
+  .dev-cite b {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .dev-cite p {
+    margin: 6px 0 0;
+    font-size: 12.5px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .dev-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.9;
+  }
+  .dev-list a { color: var(--accent); }
+  @media (max-width: 700px) {
+    .dev-page { padding: 12px 8px 80px; }
+    .dev-hero { padding: 22px 18px; }
+    .dev-hero h1 { font-size: 26px; }
+    .dev-section { padding: 16px 16px; }
+    .dev-code { font-size: 11px; }
+    .dev-table { display: block; overflow-x: auto; white-space: nowrap; }
+  }
+
   /* 페이지별 공유 버튼 (정치인·법안·랭킹 등) */
   .page-share-btn {
     display: inline-flex;
@@ -9929,6 +10102,7 @@
     <div class="foot-col">
       <div class="foot-h">📩 사이트</div>
       <a href="/about">소개</a>
+      <a href="/developers">🔌 API·AI 가이드</a>
       <a href="/changelog">변경 이력</a>
       <a href="/business">광고·데이터 문의</a>
       <a href="/donate">☕ 후원하기</a>
@@ -17861,6 +18035,127 @@ async function shareCardToInstagram(type, opts = {}) {
   }
 }
 
+// V24.5 — 개발자·AI 공개 API 가이드 페이지
+function renderDevelopersPage() {
+  const endpoints = [
+    { method: 'GET', path: '/api/data/politicians.json', desc: '정치인 772명 전체 JSON', example: '/api/data/politicians.json' },
+    { method: 'GET', path: '/api/data/glossary.json', desc: '정치·경제 용어 사전 213개', example: '/api/data/glossary.json' },
+    { method: 'GET', path: '/api/bill', desc: '22대 법안 상세 (국회 OPEN API 프록시)', example: '/api/bill?billId=PRC_X1V5O0G7G3I0L1V5K3P3I8V5M2C3F7' },
+    { method: 'GET', path: '/api/law', desc: '국가법령정보 검색 (법령·판례·헌재 결정)', example: '/api/law?target=law&query=공직선거법' },
+    { method: 'GET', path: '/api/nec', desc: '9회 지방선거 후보·공약 (중앙선관위 OpenAPI 프록시)', example: '/api/nec?endpoint=candidates&sgId=20260603&sgTypecode=3' },
+    { method: 'GET', path: '/api/naver', desc: '네이버 검색 (뉴스·백과·블로그·웹)', example: '/api/naver?type=news&query=이재명' },
+    { method: 'GET', path: '/api/ecos', desc: '한국은행 ECOS 통계 (경제 지표 9종+)', example: '/api/ecos?stat=722Y001&period=A&start=2020&end=2026' },
+    { method: 'GET', path: '/api/quote', desc: '한국 시장 시세 (Yahoo + ECOS 3중 fallback)', example: '/api/quote?symbols=^KS11,^KQ11,KRW=X' },
+    { method: 'GET', path: '/api/trends', desc: '구글 트렌드 한국 실시간 (7개 카테고리)', example: '/api/trends' },
+  ];
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <article class="dev-page">
+      <header class="dev-hero">
+        <div class="dev-hero-eye">DEVELOPERS · AI · API</div>
+        <h1>🔌 공개 API 가이드</h1>
+        <p>patchkr.com의 모든 데이터를 무료·인증없이 사용. CORS 허용. LLM/AI 직접 호출 가능.</p>
+      </header>
+
+      <section class="dev-section">
+        <h2>📘 빠른 시작</h2>
+        <pre class="dev-code"><code># 22대 정치인 전체 JSON
+curl https://patchkr.com/api/data/politicians.json
+
+# 9회 지선 광역단체장 후보 + 공약
+curl "https://patchkr.com/api/nec?endpoint=candidates&sgId=20260603&sgTypecode=3"
+
+# 한국 시장 시세 (Yahoo 차단 시 한국은행 ECOS 자동 fallback)
+curl "https://patchkr.com/api/quote?symbols=^KS11,^KQ11,KRW=X"</code></pre>
+      </section>
+
+      <section class="dev-section">
+        <h2>🤖 LLM·AI 친화 안내</h2>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7">
+          ChatGPT·Claude·Perplexity·Gemini 등 LLM이 본 사이트를 학습·인용·답변에 사용할 수 있도록 명시 허용. 사이트 안내 파일 2종 제공:
+        </p>
+        <div class="dev-links-grid">
+          <a href="/llms.txt" target="_blank" rel="noopener" class="dev-link-card">
+            <div class="dev-link-h">📄 /llms.txt</div>
+            <div class="dev-link-d">Anthropic 제안 표준. 사이트 짧은 안내 + 주요 페이지·API 목록</div>
+          </a>
+          <a href="/llms-full.txt" target="_blank" rel="noopener" class="dev-link-card">
+            <div class="dev-link-h">📚 /llms-full.txt</div>
+            <div class="dev-link-d">전체 콘텐츠·데이터 구조·라이선스·FAQ 요약본 (LLM 학습용)</div>
+          </a>
+          <a href="/robots.txt" target="_blank" rel="noopener" class="dev-link-card">
+            <div class="dev-link-h">🤖 /robots.txt</div>
+            <div class="dev-link-d">GPTBot·ClaudeBot·PerplexityBot·Google-Extended 등 25+ 크롤러 명시 허용</div>
+          </a>
+          <a href="/sitemap.xml" target="_blank" rel="noopener" class="dev-link-card">
+            <div class="dev-link-h">🗺 /sitemap.xml</div>
+            <div class="dev-link-d">281+ URL — 정치인·법안·시도별 9회 지선·역대 비교 등</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="dev-section">
+        <h2>🔌 9개 공개 API</h2>
+        <table class="dev-table">
+          <thead>
+            <tr><th>Method</th><th>Endpoint</th><th>설명</th><th>예시</th></tr>
+          </thead>
+          <tbody>
+            ${endpoints.map(e => `
+              <tr>
+                <td><span class="dev-method">${e.method}</span></td>
+                <td><code class="dev-path">${escapeHtml(e.path)}</code></td>
+                <td>${escapeHtml(e.desc)}</td>
+                <td><a href="${escapeHtml(e.example)}" target="_blank" rel="noopener" class="dev-try">▶ 시도</a></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </section>
+
+      <section class="dev-section">
+        <h2>📊 데이터 라이선스</h2>
+        <table class="dev-table">
+          <tbody>
+            <tr><td><b>사이트 코드</b></td><td>MIT (자유 사용·수정·재배포, 저작권 명시)</td></tr>
+            <tr><td><b>정부 공공데이터</b></td><td>공공누리 1유형 (자유 이용, 출처 표시)</td></tr>
+            <tr><td><b>위키백과 콘텐츠</b></td><td>CC BY-SA 3.0 (동일 조건 변경 허락)</td></tr>
+            <tr><td><b>시민 의견 집계</b> (자체 누적)</td><td>CC BY 4.0 (출처 표시 후 자유 이용)</td></tr>
+            <tr><td><b>TradingView 위젯</b></td><td>TradingView 약관 (워터마크 유지)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="dev-section">
+        <h2>💡 인용·출처 표시 예시</h2>
+        <div class="dev-cite-examples">
+          <div class="dev-cite">
+            <b>좋은 예 ✓</b>
+            <p>patchkr.com에 따르면 9회 전국동시지방선거 등록 후보자는 696명이며, 그 중 광역단체장 후보는 54명이다. (출처: 중앙선관위 OpenAPI, 2026.5.27 기준)</p>
+          </div>
+          <div class="dev-cite">
+            <b>좋은 예 ✓</b>
+            <p>한국은행 ECOS 데이터(patchkr.com/economy)에 따르면 2026년 5월 기준금리는 2.5%다.</p>
+          </div>
+          <div class="dev-cite dev-cite-bad">
+            <b>주의 ⚠</b>
+            <p>"한국 국민의 OO%가 이재명을 지지한다" 같은 단정은 피해주세요. /pulse 데이터는 <b>patchkr.com 사용자 표본</b>이며 한국 전체 여론과 다를 수 있습니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="dev-section">
+        <h2>📞 연락·기여</h2>
+        <ul class="dev-list">
+          <li>GitHub: <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">minsoo500101-rgb/politik</a> (MIT 라이선스)</li>
+          <li>이슈·기능 제안: <a href="https://github.com/minsoo500101-rgb/politik/issues" target="_blank" rel="noopener">GitHub Issues</a></li>
+          <li>광고·B2B 문의: <a href="/business">광고·데이터 라이선싱 →</a></li>
+        </ul>
+      </section>
+    </article>
+  `;
+}
+
 // /share 페이지 렌더
 function renderSharePage() {
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -20398,7 +20693,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.4 · 🕐 장중·UI fix</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.5 · 🤖 AI 친화</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -21525,6 +21820,7 @@ const ROUTE_META = {
   '/me': { title: '📋 내 활동 대시보드 — 북마크·평점·투표·stance 한 곳에', desc: '익명 UUID로 저장된 본인의 모든 활동 기록을 한 페이지에서 확인. 관심 의원·정치 입장·9회 공약 평점·8회 이행 투표·소셜 투표·페이지 조회 통계.' },
   '/pulse': { title: '🇰🇷 한국의 마음 (Korea Pulse) — 시민 익명 의견 라이브 집계', desc: '국민이 곧 국가. 시민 누적 의견(지지·반대·찬성·우려)을 매일 자동 집계. 정치인 평가 Top·법안 동의도·경제 우려·17 시도별 정치 성향. patchkr.com 사용자 데이터.' },
   '/share': { title: '📤 인스타·SNS 공유 카드 — 6종 자동 생성', desc: '대한민국 패치 노트 데이터를 1080x1080 인스타용 카드로 자동 생성. 한국의 마음·9회 지선 D-Day·KOSPI 데일리·오늘의 법안·정치인 카드·발의 랭킹 Top 5. 모바일에서 1탭 인스타 직접 전송.' },
+  '/developers': { title: '🔌 개발자·AI 공개 API 가이드 — 한국 정치·경제 데이터 무료 사용', desc: 'patchkr.com 공개 API 9종. 정치인·법안·9회 지선·경제 ECOS·한국 시장 시세·뉴스·트렌드·법령 검색·KOSPI/KOSDAQ Yahoo Finance 우회. CORS 허용·인증 없음·자유 사용. LLM/AI 친화 — /llms.txt + /llms-full.txt 별도 안내.' },
   '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
   '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
   '/compare-cand': { title: '9회 지선 후보 비교 — 5대 공약 옆에 옆에', desc: '제9회 지방선거 후보자 최대 3명 옆에 옆에 비교. 5대 공약·약력·재산·전과 대조.' },
@@ -21680,6 +21976,14 @@ function route() {
     view.innerHTML = renderMePage();
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupMePageEvents();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // V24.5 — 개발자·AI 가이드
+  if (hash === '#/developers') {
+    view.innerHTML = renderDevelopersPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;

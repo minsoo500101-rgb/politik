@@ -1,27 +1,134 @@
 # 대한민국 패치 노트 · Korea Patch Notes
 # https://patchkr.com/
 
-# 모든 검색엔진 — 전체 허용
+# ============================================================
+# 일반 검색엔진 — 전체 허용
+# ============================================================
 User-agent: *
 Allow: /
 Crawl-delay: 1
 
-# 네이버 봇 (Yeti) — 명시적 허용
+# ============================================================
+# 한국 검색엔진
+# ============================================================
 User-agent: Yeti
 Allow: /
 Crawl-delay: 1
 
-# 다음 봇 (Daum) — 명시적 허용
 User-agent: Daumoa
 Allow: /
 
-# 구글 봇 — 명시적 허용
+# ============================================================
+# 글로벌 검색엔진
+# ============================================================
 User-agent: Googlebot
 Allow: /
 
-# 빙 봇 — 명시적 허용
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
 User-agent: Bingbot
 Allow: /
 
-# 사이트맵 위치
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# ============================================================
+# AI 크롤러 — 명시 허용 (정부 공식 데이터 기반 사이트라 학습 OK)
+# ============================================================
+
+# OpenAI ChatGPT 학습용
+User-agent: GPTBot
+Allow: /
+
+# OpenAI ChatGPT 검색·플러그인 (real-time)
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic Claude 학습용
+User-agent: ClaudeBot
+Allow: /
+
+# Anthropic Claude 실시간 fetch
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Google AI (Gemini·Bard·AI Overview)
+User-agent: Google-Extended
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI (Llama)
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: meta-externalfetcher
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Bytedance / Doubao
+User-agent: Bytespider
+Allow: /
+
+# Amazon Alexa
+User-agent: Amazonbot
+Allow: /
+
+# Common Crawl (오픈 데이터셋 — 대부분 AI 학습 출처)
+User-agent: CCBot
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+User-agent: cohere-training-data-crawler
+Allow: /
+
+# Diffbot
+User-agent: Diffbot
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# Phind
+User-agent: PhindBot
+Allow: /
+
+# ============================================================
+# 사이트맵 + LLM 안내 (Anthropic llmstxt.org 제안 표준)
+# ============================================================
 Sitemap: https://patchkr.com/sitemap.xml
+
+# LLM 가이드:
+# /llms.txt      — 사이트 짧은 안내 + 주요 페이지·API 링크
+# /llms-full.txt — 전체 콘텐츠 요약 + FAQ + 라이선스
