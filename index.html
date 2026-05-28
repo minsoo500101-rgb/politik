@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V28.0 — llms 자동 갱신: scripts/update-llms.js 신규 + daily-sync에 통합. 매일 9시 KST에 politicians·glossary·election·economy 카운트 실측 후 AI 마크업 자동 갱신 -->
+<!-- V28.1 — 사전투표 D-1 캠페인: 홈 hero 자동분기 (D-1·진행중·종료) + /early-voting 신규 페이지 (체크리스트·7장 투표·FAQ·CTA 4종) + sitemap + llms 추가 -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -10470,6 +10470,280 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
 
   /* ═══════════════════════════════════════════════════
+     V28.1 — 사전투표 가이드 (/early-voting) 페이지
+     ═══════════════════════════════════════════════════ */
+  .ev-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--sp-4) var(--sp-5) 80px;
+  }
+  .ev-hero {
+    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand) 60%, var(--brand-soft) 100%);
+    color: #fff;
+    border-radius: var(--rd-2xl);
+    padding: var(--sp-6) var(--sp-6);
+    margin-bottom: var(--sp-4);
+    box-shadow: var(--sh-brand);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ev-hero::before {
+    content: '';
+    position: absolute;
+    inset: -50% -10% auto auto;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%);
+    pointer-events: none;
+  }
+  .ev-hero > * { position: relative; z-index: 1; }
+  .ev-hero-eye {
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: var(--fw-heavy);
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-bottom: var(--sp-2);
+  }
+  .ev-hero h1 {
+    font-size: var(--fs-display);
+    font-weight: var(--fw-heavy);
+    letter-spacing: -0.025em;
+    line-height: var(--lh-tight);
+    margin: 0 0 var(--sp-2);
+  }
+  .ev-hero-sub {
+    font-size: var(--fs-md);
+    opacity: 0.92;
+    margin: 0 0 var(--sp-3);
+  }
+  .ev-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--sp-2) var(--sp-3);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(6px);
+    border-radius: var(--rd-pill);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.3px;
+  }
+  .ev-badge-live {
+    background: #ef4444;
+    animation: patch-pulse 1.6s infinite;
+  }
+  .ev-badge-tom {
+    background: #fbbf24;
+    color: #1e293b;
+  }
+
+  .ev-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-xl);
+    padding: var(--sp-5) var(--sp-5);
+    margin-bottom: var(--sp-4);
+  }
+  .ev-section h2 {
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--sp-3);
+  }
+  .ev-section-sub {
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+    margin: -4px 0 var(--sp-3);
+  }
+
+  .ev-checklist {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .ev-checklist li {
+    display: flex;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--bg-elev);
+    border-radius: var(--rd-md);
+    border-left: 3px solid var(--brand);
+    font-size: var(--fs-md);
+    line-height: var(--lh-snug);
+    color: var(--text);
+  }
+  .ev-checklist b { color: var(--text); font-weight: var(--fw-bold); }
+  .ev-check { color: var(--ok); font-weight: var(--fw-heavy); flex-shrink: 0; }
+  .ev-link {
+    color: var(--brand);
+    font-weight: var(--fw-semi);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .ev-ballots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--sp-3);
+  }
+  .ev-ballot {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    background: var(--bg-elev);
+    border-radius: var(--rd-md);
+    border: 1px solid var(--border);
+  }
+  .ev-ballot b {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    display: block;
+  }
+  .ev-ballot em {
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+    font-style: normal;
+  }
+  .ev-ballot-color {
+    width: 36px; height: 36px;
+    border-radius: var(--rd-sm);
+    display: grid; place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .ev-ballot > div, .ev-ballot > span + b { display: block; }
+
+  .ev-compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+  }
+  .ev-compare th, .ev-compare td {
+    text-align: left;
+    padding: var(--sp-3) var(--sp-3);
+    border-bottom: 1px solid var(--border);
+  }
+  .ev-compare th {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-heavy);
+    color: var(--text-2);
+    background: var(--bg-elev);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .ev-compare td b { color: var(--brand); font-weight: var(--fw-heavy); }
+  .ev-compare td:first-child {
+    color: var(--text-2);
+    font-weight: var(--fw-semi);
+    width: 110px;
+  }
+
+  .ev-cta-section { background: var(--brand-pale); border-color: var(--brand); }
+  [data-theme="dark"] .ev-cta-section { background: rgba(129,140,248,0.08); }
+  .ev-cta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--sp-3);
+  }
+  .ev-cta-card {
+    display: block;
+    padding: var(--sp-4) var(--sp-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-lg);
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .ev-cta-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sh-md);
+    border-color: var(--brand);
+    text-decoration: none;
+  }
+  .ev-cta-icon { font-size: 28px; margin-bottom: var(--sp-1); }
+  .ev-cta-h {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-heavy);
+    margin-bottom: var(--sp-1);
+  }
+  .ev-cta-d {
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+    line-height: var(--lh-snug);
+  }
+
+  .ev-faq {
+    border-bottom: 1px solid var(--border);
+    padding: var(--sp-3) 0;
+  }
+  .ev-faq:last-of-type { border-bottom: none; }
+  .ev-faq summary {
+    cursor: pointer;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    color: var(--text);
+    list-style: none;
+    padding-right: var(--sp-4);
+    position: relative;
+    transition: color 0.15s;
+  }
+  .ev-faq summary::after {
+    content: '+';
+    position: absolute;
+    right: 0; top: 0;
+    font-size: 22px;
+    font-weight: var(--fw-heavy);
+    color: var(--brand);
+    transition: transform 0.2s;
+  }
+  .ev-faq[open] summary::after { transform: rotate(45deg); }
+  .ev-faq summary:hover { color: var(--brand); }
+  .ev-faq p {
+    margin: var(--sp-2) 0 0;
+    font-size: var(--fs-sm);
+    line-height: var(--lh-base);
+    color: var(--text-2);
+  }
+  .ev-faq p b { color: var(--text); font-weight: var(--fw-bold); }
+
+  .ev-sources {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .ev-sources li a {
+    display: block;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--bg-elev);
+    border-radius: var(--rd-md);
+    color: var(--text);
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+    font-size: var(--fs-md);
+  }
+  .ev-sources li a:hover {
+    background: var(--brand-pale);
+    transform: translateX(3px);
+  }
+  .ev-sources li a b { color: var(--brand); font-weight: var(--fw-bold); }
+
+  @media (max-width: 760px) {
+    .ev-page { padding: var(--sp-3) var(--sp-3) 80px; }
+    .ev-hero { padding: var(--sp-5) var(--sp-4); border-radius: var(--rd-xl); }
+    .ev-section { padding: var(--sp-4) var(--sp-4); }
+    .ev-section h2 { font-size: var(--fs-lg); }
+    .ev-compare { font-size: 12px; }
+    .ev-compare th, .ev-compare td { padding: var(--sp-2); }
+  }
+
+  /* ═══════════════════════════════════════════════════
      V26.5 DESIGN SYSTEM — 통일 utility & components
      ═══════════════════════════════════════════════════ */
 
@@ -17734,6 +18008,25 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V28.1', date: '2026-05-28', title: '🗳 사전투표 D-1 캠페인 — 홈 자동분기 + 신규 페이지', items: [
+    '내일(5/29) 사전투표 시작 — 트래픽 캡처 캠페인',
+    '🏠 홈 hero 시즌 자동분기 (3단계 추가)',
+    '  • 사전투표 D-1 (5/28~5/29 06:00): "🗳 내일 사전투표 시작!"',
+    '  • 사전투표 진행 중 (5/29~5/30): "🗳 사전투표 진행 중"',
+    '  • 평시 = 선거 D-N narrative',
+    '  • 헤어 버튼 3종도 시즌별 분기 (안내·후보비교·투표소찾기)',
+    '📋 /early-voting 신규 페이지',
+    '  • ev-hero brand 그라데이션 + 상황별 badge (D-1/진행중/종료)',
+    '  • ⚡ 빠른 체크리스트 5개 (신분증·시간·장소·지역제한없음·후보 미리)',
+    '  • 📋 7장 투표 시각화 (1인 7표, 색깔별)',
+    '  • 🎯 사전투표 vs 본 투표 비교 표',
+    '  • 🚀 CTA 4종 (후보비교·전국후보·8회공약이행·사전투표소찾기)',
+    '  • ❓ FAQ 5개 (전국가능·신분증·중복투표·8회사전율·비례교육감)',
+    '  • 📚 공식 출처 4종',
+    '🗺 sitemap.xml — /early-voting URL 추가 (priority 0.97)',
+    '🤖 llms.txt — AI 크롤러에 /early-voting 안내',
+    '📊 PAGE_META — /early-voting title·description (사전투표·신분증·후보 키워드)'
+  ]},
   { v: 'V28.0', date: '2026-05-28', title: '🤖 llms 자동 갱신 — AI 마크업도 매일 동기화', items: [
     '🎯 scripts/update-llms.js 신규',
     '  • politicians.json + assembly-22.json dedup 카운트 계산',
@@ -18476,6 +18769,132 @@ const CHANGELOG = [
     '17부처 장관·차관'
   ]}
 ];
+
+// V28.1 — 사전투표 가이드 페이지 (/early-voting)
+function renderEarlyVotingPage() {
+  const now = new Date();
+  const earlyStart = new Date('2026-05-29T06:00:00+09:00');
+  const earlyEnd = new Date('2026-05-30T18:00:00+09:00');
+  const eday = new Date('2026-06-03T06:00:00+09:00');
+  const isEarlyVoting = now >= earlyStart && now < earlyEnd;
+  const isPostEarly = now >= earlyEnd && now < eday;
+  const daysToEarly = Math.ceil((earlyStart - now) / 86400000);
+  const daysToMain = Math.ceil((eday - now) / 86400000);
+
+  const phaseBadge = isEarlyVoting
+    ? '<span class="ev-badge ev-badge-live">🔴 사전투표 진행 중</span>'
+    : isPostEarly
+    ? `<span class="ev-badge">사전투표 종료 · 본 투표 D-${daysToMain}</span>`
+    : daysToEarly <= 1
+    ? '<span class="ev-badge ev-badge-tom">📅 내일 사전투표 시작!</span>'
+    : `<span class="ev-badge">사전투표 D-${daysToEarly}</span>`;
+
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <article class="ev-page">
+      <header class="ev-hero">
+        <div class="ev-hero-eye">EARLY VOTING · 사전투표 안내</div>
+        <h1>🗳 사전투표 — 5월 29일(금) ~ 30일(토)</h1>
+        <p class="ev-hero-sub">전국 어디서나 신분증만 있으면 가능. 본 투표 못 가도 사전에 미리.</p>
+        ${phaseBadge}
+      </header>
+
+      <section class="ev-section">
+        <h2>⚡ 빠른 체크리스트</h2>
+        <ul class="ev-checklist">
+          <li><span class="ev-check">✅</span> <b>신분증</b> — 주민등록증·운전면허·여권·청소년증·장애인등록증 등 사진 부착 공적 신분증</li>
+          <li><span class="ev-check">✅</span> <b>시간</b> — 5/29(금) · 5/30(토) <b>06:00 ~ 18:00</b></li>
+          <li><span class="ev-check">✅</span> <b>장소</b> — <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" class="ev-link">선관위 통합선거정보 → 가까운 사전투표소 찾기 ↗</a></li>
+          <li><span class="ev-check">✅</span> <b>지역 제한 없음</b> — 주소지 외 전국 어디서나 가능 (관내·관외 모두 OK)</li>
+          <li><span class="ev-check">✅</span> <b>후보 미리 비교</b> — <a href="/compare-cand" class="ev-link">우리 사이트 후보 공약 비교 →</a></li>
+        </ul>
+      </section>
+
+      <section class="ev-section">
+        <h2>📋 7장 투표 (1인 7표)</h2>
+        <p class="ev-section-sub">9회 지방선거에서 한 사람당 받게 되는 투표용지 — 색깔별 다름.</p>
+        <div class="ev-ballots">
+          <div class="ev-ballot"><span class="ev-ballot-color" style="background:#fff;border:1px solid #ccc">⬜</span><b>광역단체장</b><em>17명 (시도지사)</em></div>
+          <div class="ev-ballot"><span class="ev-ballot-color" style="background:#fef3c7">🟨</span><b>기초단체장</b><em>226명 (시장·군수·구청장)</em></div>
+          <div class="ev-ballot"><span class="ev-ballot-color" style="background:#bfdbfe">🟦</span><b>광역의원 지역구</b><em>705석</em></div>
+          <div class="ev-ballot"><span class="ev-ballot-color" style="background:#bbf7d0">🟩</span><b>광역의원 비례</b><em>87석</em></div>
+          <div class="ev-ballot"><span class="ev-ballot-color" style="background:#fbcfe8">🌸</span><b>기초의원 지역구</b><em>2,602석</em></div>
+          <div class="ev-ballot"><span class="ev-ballot-color" style="background:#f9a8d4">🌺</span><b>기초의원 비례</b><em>386석</em></div>
+          <div class="ev-ballot"><span class="ev-ballot-color" style="background:#fff;border:1px solid #ccc">⭐</span><b>교육감</b><em>17명 (정당공천 X)</em></div>
+        </div>
+      </section>
+
+      <section class="ev-section">
+        <h2>🎯 사전투표 vs 본 투표</h2>
+        <table class="ev-compare">
+          <thead><tr><th></th><th>사전투표</th><th>본 투표</th></tr></thead>
+          <tbody>
+            <tr><td><b>날짜</b></td><td>5/29(금)·5/30(토)</td><td>6/3(수)</td></tr>
+            <tr><td><b>시간</b></td><td>06:00~18:00</td><td>06:00~18:00</td></tr>
+            <tr><td><b>장소</b></td><td><b>전국 어디서나</b></td><td>본인 주소지 지정 투표소</td></tr>
+            <tr><td><b>신분증</b></td><td>공적 사진 신분증</td><td>공적 사진 신분증</td></tr>
+            <tr><td><b>준비물 추가</b></td><td>없음</td><td>없음</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="ev-section ev-cta-section">
+        <h2>🚀 지금 바로 준비</h2>
+        <div class="ev-cta-grid">
+          <a href="/compare-cand" class="ev-cta-card">
+            <div class="ev-cta-icon">🆚</div>
+            <div class="ev-cta-h">후보 공약 비교</div>
+            <div class="ev-cta-d">최대 3명 옆에 옆에 — 5대 공약·학력·경력·재산</div>
+          </a>
+          <a href="/election2026" class="ev-cta-card">
+            <div class="ev-cta-icon">📋</div>
+            <div class="ev-cta-h">전국 697명 후보</div>
+            <div class="ev-cta-d">17 시도별 + 광역·기초·교육감</div>
+          </a>
+          <a href="/pledge-tracker" class="ev-cta-card">
+            <div class="ev-cta-icon">🔥</div>
+            <div class="ev-cta-h">8회 공약 이행 추적</div>
+            <div class="ev-cta-d">4년 전 약속 vs 지금 — 재선 도전자 검증</div>
+          </a>
+          <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" class="ev-cta-card">
+            <div class="ev-cta-icon">📍</div>
+            <div class="ev-cta-h">사전투표소 찾기 ↗</div>
+            <div class="ev-cta-d">중앙선관위 통합선거정보</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="ev-section">
+        <h2>❓ 자주 묻는 질문</h2>
+        <details class="ev-faq"><summary>주소지가 아닌 곳에서도 투표 가능한가요?</summary>
+          <p>네, <b>전국 어디서나 가능</b>합니다. 관내·관외 구분만 있을 뿐 본인의 사전투표소 외 다른 시도에서도 투표 가능합니다.</p>
+        </details>
+        <details class="ev-faq"><summary>신분증을 두고 왔으면?</summary>
+          <p>되돌아가서 가져와야 합니다. <b>운전면허·주민등록증·여권·청소년증·장애인등록증 등</b> 사진 부착 공적 신분증이 필수입니다. 학생증·사원증은 불가.</p>
+        </details>
+        <details class="ev-faq"><summary>본 투표(6/3) 가는데 사전투표도 가능한가요?</summary>
+          <p>아니요. <b>둘 중 하나만</b>. 사전투표하면 본 투표일에 다시 투표할 수 없고, 그 반대도 마찬가지.</p>
+        </details>
+        <details class="ev-faq"><summary>지난 8회(2022) 사전투표율은?</summary>
+          <p>2022년 6월 지방선거 사전투표율 <b>20.62%</b> (역대 지선 최고). 8회 전체 투표율은 50.9%.</p>
+        </details>
+        <details class="ev-faq"><summary>비례·교육감 투표지는 어떻게 다른가요?</summary>
+          <p><b>비례</b>는 후보 이름이 아닌 <b>정당</b>에 투표. <b>교육감</b>은 <b>정당 공천 없음</b> — 후보 이름 가로 배치, 무지명 투표용지.</p>
+        </details>
+      </section>
+
+      <section class="ev-section">
+        <h2>📚 공식 출처</h2>
+        <ul class="ev-sources">
+          <li><a href="https://si.nec.go.kr/" target="_blank" rel="noopener"><b>중앙선관위 통합선거정보</b> — 내 투표소 찾기 ↗</a></li>
+          <li><a href="https://policy.nec.go.kr/" target="_blank" rel="noopener"><b>정책공약마당</b> — 후보 공약 ↗</a></li>
+          <li><a href="https://info.nec.go.kr/" target="_blank" rel="noopener"><b>선거통계시스템</b> — 투표율 실시간 ↗</a></li>
+          <li><a href="https://www.nec.go.kr/" target="_blank" rel="noopener"><b>중앙선관위</b> ↗</a></li>
+        </ul>
+      </section>
+    </article>
+  `;
+}
 
 function renderChangelogPage() {
   const total = CHANGELOG.length;
@@ -21853,16 +22272,43 @@ function renderHome() {
   const _ddiff = Math.ceil((_eday - _today) / 86400000);
   const _isElectionSeason = _ddiff >= 0 && _ddiff <= 30; // D-30 ~ D-Day
   const _isElectionDay = _ddiff === 0;
-  const _heroEye = _isElectionSeason
+  // V28.1 — 사전투표 시즌 분기 (5/28~5/30)
+  const _earlyStart = new Date('2026-05-29T06:00:00+09:00');
+  const _earlyEnd = new Date('2026-05-30T18:00:00+09:00');
+  const _earlyD1Start = new Date('2026-05-28T00:00:00+09:00');
+  const _isEarlyD1 = _today >= _earlyD1Start && _today < _earlyStart;     // 5/28 사전투표 D-1
+  const _isEarlyVoting = _today >= _earlyStart && _today < _earlyEnd;     // 5/29~30 사전투표 중
+  const _isAnyEarly = _isEarlyD1 || _isEarlyVoting;
+  const _heroEye = _isEarlyVoting
+    ? `🗳 EARLY VOTING NOW · 사전투표 진행 중 · 06:00~18:00`
+    : _isEarlyD1
+    ? `🗳 D-1 EARLY VOTING · 내일 사전투표 시작 (5/29 금)`
+    : _isElectionSeason
     ? `🔴 ELECTION SEASON · D-${_ddiff === 0 ? 'Day' : _ddiff} · 9회 전국동시지방선거`
     : 'REPUBLIC OF KOREA · COMPREHENSIVE DATA';
-  const _heroSub = _isElectionSeason
+  const _heroSub = _isEarlyVoting
+    ? `<b>🗳 사전투표 진행 중</b> — 5월 29일(금)~30일(토) 06:00~18:00. <b>전국 어디서나</b> 신분증만 있으면 가능.<br>
+       697명 후보 5대 공약을 미리 비교하고 투표소에서 결정.`
+    : _isEarlyD1
+    ? `<b>🗳 내일 사전투표 시작!</b> — 5/29(금)·5/30(토) 06:00~18:00. 신분증만 있으면 <b>전국 어디서나</b> 가능.<br>
+       지금 697명 후보 5대 공약 비교 + 내 후보 결정 → 내일 투표소로.`
+    : _isElectionSeason
     ? `<b>선거 ${_isElectionDay ? '당일' : 'D-' + _ddiff}</b> — 697명 후보·공약 비교·정부 평가까지. 한국 정치·경제 데이터 한 곳에서.<br>
        22대 통과 법안 <b>${(state.bills?.length || 0).toLocaleString()}건</b> · 정치인 <b>${totalCount.toLocaleString()}명</b> · 경제 지표 9종 LIVE.`
     : `<b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
        22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.`;
-  // 시즌별 3개 헤어 버튼
-  const _heroButtons = _isElectionSeason
+  // 시즌별 헤어 버튼
+  const _heroButtons = _isEarlyVoting
+    ? `
+          <a class="hero-btn hero-btn-live" href="/early-voting">🗳 사전투표 안내·체크리스트</a>
+          <a class="hero-btn hero-btn-cmp" href="/compare-cand">🆚 후보 공약 비교</a>
+          <a class="hero-btn" href="https://si.nec.go.kr/" target="_blank" rel="noopener">📍 사전투표소 찾기 ↗</a>`
+    : _isEarlyD1
+    ? `
+          <a class="hero-btn hero-btn-live" href="/early-voting">🗳 사전투표 안내·체크리스트</a>
+          <a class="hero-btn hero-btn-cmp" href="/compare-cand">🆚 후보 공약 비교 (지금!)</a>
+          <a class="hero-btn hero-btn-econ" href="/election2026">📋 후보 명단 → 결정</a>`
+    : _isElectionSeason
     ? `
           <a class="hero-btn hero-btn-live" href="/election2026">🔴 9회 지선 <b>D-${_ddiff === 0 ? 'Day' : _ddiff}</b></a>
           <a class="hero-btn hero-btn-cmp" href="/compare-cand">🆚 후보 5대 공약 비교</a>
@@ -21877,7 +22323,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V28.0 · 🤖 llms 자동화</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V28.1 · 🗳 사전투표 D-1</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23009,6 +23455,7 @@ const ROUTE_META = {
   '/bills': { title: '22대 국회 통과 법안 1,595건 검색·필터 — 의안 처리 결과 전체', desc: '제22대 국회 본회의 통과 법안 1,595건 종합 검색. 발의자·정당·위원회·15개 분야·통과 속도. 정부안·의원안·위원장안 구분. 법안명 자동 키워드 검색. 매일 갱신.' },
   '/election2026': { title: '🔴 9회 전국동시지방선거 (2026.6.3) LIVE — 697명 후보 5대 공약', desc: '제9회 전국동시지방선거 후보자 697명 실시간 — 광역단체장 54·기초단체장 585·교육감 58 + 광역의원·기초의원. 시도지사·교육감 5대 공약 즉시 비교. 중앙선관위 공식 데이터.' },
   '/election2026/live': { title: '🔴 9회 지선 LIVE — 선거 당일 개표 실시간 (6/3 본 투표·개표)', desc: '제9회 전국동시지방선거 2026.6.3 — 본 투표(06~18시)·개표 진행 단계별 안내. 출구조사·개표방송·실시간 투표율·NEC 공식 데이터 빠른 진입. 17 시도지사·교육감·기초단체장 결과.' },
+  '/early-voting': { title: '🗳 9회 지선 사전투표 안내 — 5/29·5/30 06:00~18:00', desc: '제9회 전국동시지방선거 사전투표 (2026.5.29~5.30) 안내·체크리스트. 신분증·시간·장소·전국 어디서나·관내관외·7장 투표 색깔별 안내. 후보 공약 미리 비교. 사전투표소 검색 (중앙선관위 통합선거정보).' },
   '/committees': { title: '국회 위원회 25개 · 22대 상임위·특별위', desc: '제22대 국회 위원회 25개 (상임 17 + 특별 8). 처리 의안·위원장·간사·소속 의원.' },
   '/map': { title: '정치 분포 지도 — 17 시도 + 226 시군구 정당색', desc: '대한민국 17개 시도 + 226개 시군구 정당색 인터랙티브 지도. 단체장 정보 클릭 탐색.' },
   '/world': { title: '국제 비교 — 12개 민주국가 정치 지표', desc: '12개 민주국가 의원수·여성비율·투표율·민주주의지수·언론자유·청렴도 비교 분석.' },
@@ -23168,6 +23615,14 @@ function route() {
     view.innerHTML = renderDexPage();
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupDexEvents();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // V28.1 — 사전투표 가이드 (/early-voting)
+  if (hash === '#/early-voting') {
+    view.innerHTML = renderEarlyVotingPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
