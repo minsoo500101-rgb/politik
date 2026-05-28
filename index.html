@@ -13942,26 +13942,44 @@ function renderEconomyBody() {
   }
 
   // 정부별 평균 비교 (선택된 지표 기준 — 기본 GDP 성장률)
+  // V23.7 fix: 윤석열 탄핵·이재명 취임 반영
   function presidentAvgTable() {
+    const currentYear = new Date().getFullYear();
     const rows = [];
     for (const p of presidents) {
       if (p.acting) continue; // 권한대행 제외 (정식 대통령만 평균 계산)
       const startY = parseInt((p.start || '').slice(0, 4), 10);
-      const endY = p.end === '재임 중' ? 2025 : parseInt((p.end || '').slice(0, 4), 10);
+      const isIncumbent = p.end === '재임 중';
+      // 평균 계산용 endY — 종료월 ≤ 6월이면 그 해는 평균에서 제외 (반년 미만)
+      let endY;
+      if (isIncumbent) {
+        endY = currentYear;
+      } else {
+        const rawEndY = parseInt((p.end || '').slice(0, 4), 10);
+        const endMonth = parseInt((p.end || '').slice(5, 7), 10) || 12;
+        endY = endMonth <= 6 ? rawEndY - 1 : rawEndY;
+      }
+      // 시작월 > 6월이면 그 해는 평균에서 제외 (반년 미만)
+      const startMonth = parseInt((p.start || '').slice(5, 7), 10) || 1;
+      const avgStartY = startMonth > 6 ? startY + 1 : startY;
       const partyC = partyColor(p.party);
       const stats = {};
       for (const ind of indicators) {
-        const slice = ind.data.filter(d => d.year >= startY && d.year <= endY);
+        const slice = ind.data.filter(d => d.year >= avgStartY && d.year <= endY);
         if (slice.length) {
           stats[ind.id] = slice.reduce((s, d) => s + d.value, 0) / slice.length;
         }
       }
-      rows.push({ p, partyC, stats, startY, endY });
+      // 표시용 기간 (원본 임기)
+      const displayStart = (p.start || '').slice(0, 7); // YYYY-MM
+      const displayEnd = isIncumbent ? '현재' : (p.end || '').slice(0, 7);
+      const isImpeached = p.note && p.note.includes('탄핵');
+      rows.push({ p, partyC, stats, displayStart, displayEnd, isIncumbent, isImpeached });
     }
     if (!rows.length) return '';
     return `
       <div class="econ-section">
-        <h2>📊 정부별 평균 비교 <span style="font-size:11px;color:var(--dim);font-weight:400">· 임기 동안 연 평균</span></h2>
+        <h2>📊 정부별 평균 비교 <span style="font-size:11px;color:var(--dim);font-weight:400">· 임기 동안 연 평균 (반년 미만 해는 제외)</span></h2>
         <div class="econ-table-wrap">
           <table class="econ-table">
             <thead>
@@ -13973,9 +13991,14 @@ function renderEconomyBody() {
             </thead>
             <tbody>
               ${rows.map(r => `
-                <tr>
-                  <td><b style="color:${r.partyC}">${escapeHtml(r.p.name)}</b><br><span style="font-size:11px;color:var(--text-2)">${escapeHtml(r.p.party)}</span></td>
-                  <td><span style="font-size:11px;color:var(--text-2)">${r.startY}~${r.endY === 2025 ? '현재' : r.endY}</span></td>
+                <tr${r.isIncumbent ? ' style="background:rgba(16,185,129,0.04)"' : ''}>
+                  <td>
+                    <b style="color:${r.partyC}">${escapeHtml(r.p.name)}</b>
+                    ${r.isIncumbent ? '<span style="font-size:10px;color:var(--ok);font-weight:700;margin-left:4px">●현직</span>' : ''}
+                    ${r.isImpeached ? '<span style="font-size:10px;color:var(--danger);font-weight:700;margin-left:4px" title="탄핵">⚠탄핵</span>' : ''}
+                    <br><span style="font-size:11px;color:var(--text-2)">${escapeHtml(r.p.party)}</span>
+                  </td>
+                  <td><span style="font-size:11px;color:var(--text-2)">${r.displayStart}<br>~ ${r.displayEnd}</span></td>
                   ${indicators.map(ind => `<td class="num">${r.stats[ind.id] != null ? r.stats[ind.id].toLocaleString('ko-KR', {maximumFractionDigits: 2}) : '—'}</td>`).join('')}
                 </tr>
               `).join('')}
@@ -13983,7 +14006,7 @@ function renderEconomyBody() {
           </table>
         </div>
         <div class="econ-note">
-          ⚠ 정부 임기와 경제 지표의 인과관계는 단순 비교만으로 단정할 수 없습니다. 글로벌 경기·외부 충격·전임 정부 정책 영향이 함께 작용합니다. <b>참고용 객관 비교</b>일 뿐, 평가·우열이 아닙니다.
+          ⚠ 정부 임기와 경제 지표의 인과관계는 단순 비교만으로 단정할 수 없습니다. 글로벌 경기·외부 충격·전임 정부 정책 영향이 함께 작용합니다. 임기 1년 미만(반년 미만) 해는 평균에서 제외. <b>참고용 객관 비교</b>일 뿐, 평가·우열이 아닙니다.
         </div>
       </div>
     `;
@@ -18812,7 +18835,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.6 · 📊 KOSPI v8</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.7 · 🔧 정부 비교 fix</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
