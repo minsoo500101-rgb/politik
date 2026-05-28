@@ -4569,6 +4569,168 @@
     font-size: 11px;
   }
 
+  /* V22.7 — 시도별 9회 지선 페이지 */
+  .e26-region-page .r-cand-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+  }
+  .e26-region-page .r-cand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+  .e26-region-page .r-cand:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .e26-region-page .r-cand .e26-cand-giho {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .e26-region-page .r-cand b { font-size: 13.5px; }
+  .e26-region-page .r-cand em { font-size: 11.5px; font-weight: 700; }
+  .e26-region-page .r-cand .e26-cand-job {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--dim);
+  }
+  .r-prev-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  @media (max-width: 700px) {
+    .r-prev-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .r-prev-vs { display: none; }
+  }
+  .r-prev-card { text-align: center; }
+  .r-prev-winner { padding: 12px; background: rgba(16,185,129,0.06); border-radius: 8px; }
+  .r-prev-runner { padding: 12px; background: rgba(100,100,100,0.04); border-radius: 8px; }
+  .r-prev-label { font-size: 11px; color: var(--dim); margin-bottom: 4px; font-weight: 700; }
+  .r-prev-name b { font-size: 17px; }
+  .r-prev-party { font-size: 12px; margin-top: 2px; }
+  .r-prev-vs { font-size: 14px; color: var(--dim); font-weight: 800; }
+  .r-prev-gap { font-size: 12.5px; color: var(--text); text-align: center; font-weight: 700; }
+  .r-prev-close { background: #ef4444; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 4px; }
+  .r-prev-hl {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(245,158,11,0.08);
+    border-radius: 6px;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .r-prev-prior {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: var(--dim);
+  }
+  .r-muni-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .r-muni-card {
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .r-muni-name {
+    font-size: 13.5px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .r-muni-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--dim);
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+  .r-muni-card .r-cand { padding: 6px 8px; margin-bottom: 4px; }
+  .r-muni-card .r-cand b { font-size: 12.5px; }
+  .r-link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  .r-link {
+    display: block;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.15s;
+  }
+  .r-link:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .r-link-nec { border-color: rgba(59,130,246,0.3); }
+  .r-link-policy { border-color: rgba(168,85,247,0.3); }
+  .r-link-naver { border-color: rgba(16,185,129,0.3); }
+  .r-link-google { border-color: rgba(59,130,246,0.3); }
+  .r-link-daum { border-color: rgba(245,158,11,0.3); }
+  .r-other-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .r-other-link {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 700;
+    transition: all 0.15s;
+  }
+  .r-other-link:hover {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+  }
+  .r-other-regions { background: var(--bg); padding: 16px; border-radius: 12px; }
+
   /* V21.5 — 한국 실검 트렌드 카드 (구글 트렌드 RSS) */
   .today-trends-grid {
     display: grid;
@@ -10734,6 +10896,17 @@ function renderElection2026Page() {
         </div>
       </div>
 
+      <!-- V22.7 — 시도별 9회 지선 페이지 진입점 -->
+      <div class="e26-section">
+        <h2>🗺 시도별 9회 지선 페이지 — 17개 광역</h2>
+        <p class="e26-sub">각 시·도 광역단체장·교육감·기초단체장 후보 명단 + 8회(2022) 결과 비교. SEO 검색 진입점.</p>
+        <div class="r-other-grid" style="margin-top:0">
+          ${Object.entries(REGION_SLUG_MAP).map(([slug, info]) => `
+            <a href="/election2026/${slug}" class="r-other-link" data-region="${slug}">${escapeHtml(info.short)}</a>
+          `).join('')}
+        </div>
+      </div>
+
       ${(() => {
         const nec = state.nec2026Governors;
         if (!nec || nec._error || !(nec.governors||[]).length) return '';
@@ -10989,6 +11162,280 @@ function renderElection2026Page() {
           중앙선거관리위원회 시스템 (info.nec.go.kr, policy.nec.go.kr)은 외부 도메인 fetch를 차단(CORS)합니다.
           공식 데이터의 무결성과 권위를 위해서도, 후보·공약 정보는 NEC 직접 확인을 권장드립니다.
           본 사이트는 <b>22대 국회 의안 패치 노트</b>가 본업이며, 지방선거는 공식 사이트로 가는 빠른 진입점만 제공합니다.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// V22.7 — 시도별 9회 지선 페이지 17개 (SEO 시즌 캡처)
+// /election2026/{slug} — 서울·부산·… 등 17개 시도별 전용 페이지
+// ============================================================
+const REGION_SLUG_MAP = {
+  seoul:    { name: '서울특별시',     short: '서울', code: '11', en: 'Seoul',     keywords: '오세훈, 박원순, 강남구, 종로구, 노원구, 송파구, 25개 구청장' },
+  busan:    { name: '부산광역시',     short: '부산', code: '21', en: 'Busan',     keywords: '박형준, 가덕도 신공항, 16개 구군청장' },
+  daegu:    { name: '대구광역시',     short: '대구', code: '22', en: 'Daegu',     keywords: '홍준표 사퇴, 김선조 권한대행, TK, 9개 구군청장' },
+  incheon:  { name: '인천광역시',     short: '인천', code: '23', en: 'Incheon',   keywords: '유정복, 송도 국제도시, 10개 구군청장' },
+  gwangju:  { name: '광주광역시',     short: '광주', code: '24', en: 'Gwangju',   keywords: '강기정, 호남, 5·18, 5개 구청장' },
+  daejeon:  { name: '대전광역시',     short: '대전', code: '25', en: 'Daejeon',   keywords: '이장우, 충청, 5개 구청장' },
+  ulsan:    { name: '울산광역시',     short: '울산', code: '26', en: 'Ulsan',     keywords: '김두겸, 현대중공업, 5개 구군청장' },
+  sejong:   { name: '세종특별자치시', short: '세종', code: '29', en: 'Sejong',    keywords: '최민호, 행정수도, 단층제' },
+  gyeonggi: { name: '경기도',         short: '경기', code: '31', en: 'Gyeonggi',  keywords: '김동연, 김은혜 0.15%p, 수원, 성남, 고양, 31개 시군청장' },
+  gangwon:  { name: '강원특별자치도', short: '강원', code: '32', en: 'Gangwon',   keywords: '김진태, 18개 시군청장' },
+  chungbuk: { name: '충청북도',       short: '충북', code: '33', en: 'Chungbuk',  keywords: '김영환, 청주, 11개 시군청장' },
+  chungnam: { name: '충청남도',       short: '충남', code: '34', en: 'Chungnam',  keywords: '김태흠, 천안, 15개 시군청장' },
+  jeonbuk:  { name: '전북특별자치도', short: '전북', code: '35', en: 'Jeonbuk',   keywords: '김관영, 전주, 14개 시군청장' },
+  jeonnam:  { name: '전라남도',       short: '전남', code: '36', en: 'Jeonnam',   keywords: '김영록, 22개 시군청장' },
+  gyeongbuk:{ name: '경상북도',       short: '경북', code: '37', en: 'Gyeongbuk', keywords: '이철우, TK, 22개 시군청장' },
+  gyeongnam:{ name: '경상남도',       short: '경남', code: '38', en: 'Gyeongnam', keywords: '박완수, 창원, 18개 시군청장' },
+  jeju:     { name: '제주특별자치도', short: '제주', code: '39', en: 'Jeju',      keywords: '오영훈, 단층제' },
+};
+// 한글명 → slug 역인덱스
+const REGION_NAME_TO_SLUG = (() => {
+  const m = {};
+  for (const [slug, info] of Object.entries(REGION_SLUG_MAP)) {
+    m[info.name] = slug;
+    m[info.short] = slug;
+  }
+  return m;
+})();
+
+function regionSlugToName(slug) {
+  return REGION_SLUG_MAP[slug]?.name || null;
+}
+
+// 시도명이 NEC sdName과 일치하는지 (다양한 표기 대응)
+function matchesRegion(necSdName, regionName) {
+  if (!necSdName || !regionName) return false;
+  if (necSdName === regionName) return true;
+  const stripped = regionName.replace(/특별자치도|특별자치시|광역시|특별시/g, '');
+  if (necSdName.includes(stripped)) return true;
+  // 광주·전남 통합 케이스
+  if (necSdName === '전남광주통합특별시' && (regionName === '광주광역시' || regionName === '전라남도')) return true;
+  return false;
+}
+
+function renderElection2026RegionPage(slug) {
+  const info = REGION_SLUG_MAP[slug];
+  if (!info) return `
+    <div class="group-back" id="back-e26">← 9회 지선 전국</div>
+    <div class="loading">존재하지 않는 시도입니다. <a href="/election2026">전국 페이지로</a></div>
+  `;
+  const d = state.election2026;
+  const le = state.localElections;
+  const necData = state.nec2026Governors || {};
+
+  // 지역 메타
+  const regionMeta = d?.regions?.find(r => r.name === info.name);
+  const incumbent = regionMeta?.incumbent || '—';
+  const incumbentParty = regionMeta?.incumbent_party || '무소속';
+  const muniCount = regionMeta?.muni_count || 0;
+
+  // D-day
+  const today = new Date();
+  const eday = new Date('2026-06-03T06:00:00+09:00');
+  const dayDiff = Math.ceil((eday - today) / 86400000);
+  const dDay = dayDiff > 0 ? `D-${dayDiff}` : dayDiff === 0 ? 'D-Day' : `D+${Math.abs(dayDiff)}`;
+
+  // 후보자 필터 (이 시도의 후보)
+  const govs = (necData.governors || []).filter(c => matchesRegion(c.sdName, info.name));
+  const munis = (necData.munis || []).filter(c => matchesRegion(c.sdName, info.name));
+  const localAss = (necData.localAssembly || []).filter(c => matchesRegion(c.sdName, info.name));
+  const localAssProp = (necData.localAssemblyProp || []).filter(c => matchesRegion(c.sdName, info.name));
+  const edu = (necData.eduSupers || []).filter(c => matchesRegion(c.sdName, info.name));
+
+  // 정당별 분포 (이 시도만)
+  const allCands = [...govs, ...munis, ...localAss, ...localAssProp, ...edu];
+  const byParty = {};
+  for (const c of allCands) {
+    const p = c.jdName || '무소속';
+    byParty[p] = (byParty[p] || 0) + 1;
+  }
+  const sortedParties = Object.entries(byParty).sort((a, b) => b[1] - a[1]);
+
+  // 8회 (2022) 결과 — 해당 시도
+  const e2022 = le?.elections?.find(e => e.id.includes('2022'));
+  const e2018 = le?.elections?.find(e => e.id.includes('2018'));
+  const prev8 = e2022?.governors?.find(g => g.region === info.short);
+  const prev7 = e2018?.governors?.find(g => g.region === info.short);
+
+  // 기초단체장 시군구 그룹
+  const muniGroups = {};
+  for (const m of munis) {
+    const k = m.sggName || '?';
+    if (!muniGroups[k]) muniGroups[k] = [];
+    muniGroups[k].push(m);
+  }
+  const sortByGiho = (a, b) => parseInt(a.giho || '99', 10) - parseInt(b.giho || '99', 10);
+
+  // 후보자 카드 헬퍼
+  function candCard(c, kind) {
+    const name = c.name || c.huboNm || '—';
+    const party = c.jdName || c.partyName || (kind === 'edu' ? '무소속(교육감)' : '무소속');
+    const pc = partyColor(party);
+    const giho = c.giho || '';
+    const age = c.age ? `${c.age}세` : '';
+    const id = c.huboid || c.cnddtId || '';
+    const sgtype = kind === 'gov' ? '3' : kind === 'muni' ? '4' : kind === 'edu' ? '11' : '7';
+    const clickAttr = id ? `data-cnddt="${escapeHtml(id)}" data-sgtype="${sgtype}" data-name="${escapeHtml(name)}" data-party="${escapeHtml(party)}" data-region="${escapeHtml(info.name)}" style="cursor:pointer"` : '';
+    const cls = id ? 'e26-cand-row e26-cand-click r-cand' : 'e26-cand-row r-cand';
+    return `<div class="${cls}"${clickAttr}>
+      <span class="e26-cand-giho" style="background:${pc}">${escapeHtml(giho)}</span>
+      <b>${escapeHtml(name)}</b>
+      <em style="color:${pc}">${escapeHtml(party)}</em>
+      ${age ? `<span class="e26-cand-job">${age}</span>` : ''}
+    </div>`;
+  }
+
+  // 외부 검색 링크
+  const encQ = encodeURIComponent(`${info.short} 9회 지방선거 2026 후보`);
+  const links = {
+    nec: 'https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml',
+    policy: 'https://policy.nec.go.kr/svc/policy/PolicyContentMain.do',
+    naver: `https://search.naver.com/search.naver?query=${encQ}`,
+    google: `https://www.google.com/search?q=${encQ}`,
+    daum: `https://search.daum.net/search?q=${encQ}`,
+  };
+
+  return `
+    <div class="group-back" id="back-e26">← 9회 지선 전국</div>
+    <div class="e26-page e26-region-page">
+      <div class="e26-hero">
+        <div class="e26-hero-l">
+          <div class="e26-eye">9회 전국동시지방선거 · ${info.en.toUpperCase()} · 2026.6.3</div>
+          <h1>🗳 ${escapeHtml(info.name)} — 9회 지방선거</h1>
+          <p>광역단체장·교육감·${muniCount > 0 ? muniCount + '개 기초단체장·' : ''}광역의원 후보자 명단 + 8회(2022) 결과 비교</p>
+          <div class="e26-status">
+            <span class="e26-status-dot" style="background:${partyColor(incumbentParty)}"></span>
+            현직: <b style="margin-left:4px">${escapeHtml(incumbent)}</b> <em style="color:${partyColor(incumbentParty)};margin-left:6px">${escapeHtml(incumbentParty)}</em>
+          </div>
+        </div>
+        <div class="e26-hero-r">
+          <div class="e26-dday">${dDay}</div>
+          <div class="e26-dday-label">2026.6.3 선거일까지</div>
+        </div>
+      </div>
+
+      <div class="dash-grid" style="margin-bottom:18px">
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">광역단체장 후보</div>
+          <div class="kpi-num">${govs.length}<span class="unit">명</span></div>
+          <div class="kpi-trend">${govs.length > 0 ? sortedParties.slice(0, 3).map(([p]) => p).join(' · ') : '등록 대기'}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">기초단체장 후보</div>
+          <div class="kpi-num">${munis.length}<span class="unit">명</span></div>
+          <div class="kpi-trend">${Object.keys(muniGroups).length}개 시군구</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">광역의원 후보</div>
+          <div class="kpi-num">${(localAss.length + localAssProp.length).toLocaleString()}<span class="unit">명</span></div>
+          <div class="kpi-trend">지역 ${localAss.length} · 비례 ${localAssProp.length}</div>
+        </div>
+        <div class="dash-card col-3 kpi">
+          <div class="kpi-label">교육감 후보</div>
+          <div class="kpi-num">${edu.length}<span class="unit">명</span></div>
+          <div class="kpi-trend">정당 무관 · 무지명</div>
+        </div>
+      </div>
+
+      ${govs.length > 0 ? `
+        <div class="e26-section">
+          <h2>🏛 ${escapeHtml(info.short)} 시·도지사 후보 (${govs.length}명) <span style="font-size:11px;color:var(--dim);font-weight:400">· 클릭 → 5대 공약</span></h2>
+          <div class="r-cand-list">
+            ${govs.slice().sort(sortByGiho).map(c => candCard(c, 'gov')).join('')}
+          </div>
+        </div>
+      ` : `
+        <div class="e26-notice">
+          <div class="e26-notice-icon">⏳</div>
+          <div class="e26-notice-body">${escapeHtml(info.short)} 광역단체장 후보 데이터 등록 대기 — 선관위 동기화 중. 외부 링크는 즉시 작동.</div>
+        </div>
+      `}
+
+      ${edu.length > 0 ? `
+        <div class="e26-section">
+          <h2>🎓 ${escapeHtml(info.short)} 교육감 후보 (${edu.length}명)</h2>
+          <div class="r-cand-list">
+            ${edu.slice().sort(sortByGiho).map(c => candCard(c, 'edu')).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${prev8 ? `
+        <div class="e26-section">
+          <h2>📊 8회 (2022) ${escapeHtml(info.short)} 시·도지사 결과 — 9회 대조</h2>
+          <div class="r-prev-grid">
+            <div class="r-prev-card r-prev-winner">
+              <div class="r-prev-label">8회 당선 (현직)</div>
+              <div class="r-prev-name" style="color:${partyColor(prev8.winner_party)}"><b>${escapeHtml(prev8.winner)}</b></div>
+              <div class="r-prev-party"><em style="color:${partyColor(prev8.winner_party)}">${escapeHtml(prev8.winner_party)}</em> · ${prev8.winner_pct}%</div>
+            </div>
+            <div class="r-prev-vs">vs</div>
+            <div class="r-prev-card r-prev-runner">
+              <div class="r-prev-label">8회 차점</div>
+              <div class="r-prev-name" style="color:${partyColor(prev8.runner_up_party)}"><b>${escapeHtml(prev8.runner_up)}</b></div>
+              <div class="r-prev-party"><em style="color:${partyColor(prev8.runner_up_party)}">${escapeHtml(prev8.runner_up_party)}</em> · ${prev8.runner_up_pct}%</div>
+            </div>
+            <div class="r-prev-gap">격차 <b>${prev8.gap.toFixed(1)}%p</b>${prev8.gap < 5 ? ' <span class="r-prev-close">박빙</span>' : ''}</div>
+          </div>
+          ${prev8.highlight ? `<div class="r-prev-hl">⭐ ${escapeHtml(prev8.highlight)}</div>` : ''}
+          ${prev7 ? `<div class="r-prev-prior">7회(2018) ${escapeHtml(info.short)}: <b>${escapeHtml(prev7.winner)}</b> <em style="color:${partyColor(prev7.winner_party)}">${escapeHtml(prev7.winner_party)}</em> ${prev7.winner_pct}% vs ${escapeHtml(prev7.runner_up)} ${prev7.runner_up_pct}%</div>` : ''}
+        </div>
+      ` : ''}
+
+      ${sortedParties.length > 0 ? `
+        <div class="e26-section">
+          <h2>🎯 ${escapeHtml(info.short)} 정당별 후보자 분포 — 총 ${allCands.length}명</h2>
+          <div class="party-bars">
+            ${sortedParties.slice(0, 8).map(([p, n]) => `
+              <div class="party-bar-row">
+                <div class="pb-name"><span class="pb-dot" style="background:${partyColor(p)}"></span>${escapeHtml(p)}</div>
+                <div class="pb-bar-wrap"><div class="pb-bar" style="width:${(n / allCands.length * 100).toFixed(1)}%; background:${partyColor(p)}"></div></div>
+                <div class="pb-count">${n}</div>
+                <div class="pb-pct">${(n / allCands.length * 100).toFixed(1)}%</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${Object.keys(muniGroups).length > 0 ? `
+        <div class="e26-section">
+          <h2>🏘 ${escapeHtml(info.short)} 기초단체장 후보 — ${Object.keys(muniGroups).length}개 시군구</h2>
+          <div class="r-muni-grid">
+            ${Object.entries(muniGroups).sort((a, b) => a[0].localeCompare(b[0])).map(([sgg, list]) => `
+              <div class="r-muni-card">
+                <div class="r-muni-name">${escapeHtml(sgg.replace(new RegExp('^' + info.short + '\\\\s*'), ''))} <span class="r-muni-count">${list.length}명</span></div>
+                ${list.slice().sort(sortByGiho).slice(0, 4).map(c => candCard(c, 'muni')).join('')}
+                ${list.length > 4 ? `<div class="e26-cand-more">+${list.length - 4}명</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="e26-section">
+        <h2>🔗 ${escapeHtml(info.short)} 후보·공약 외부 검색</h2>
+        <div class="r-link-grid">
+          <a href="${links.nec}" target="_blank" rel="noopener" class="r-link r-link-nec">📊 중앙선관위 통계</a>
+          <a href="${links.policy}" target="_blank" rel="noopener" class="r-link r-link-policy">📋 정책공약마당</a>
+          <a href="${links.naver}" target="_blank" rel="noopener" class="r-link r-link-naver">🟢 네이버 검색</a>
+          <a href="${links.google}" target="_blank" rel="noopener" class="r-link r-link-google">🔵 구글 검색</a>
+          <a href="${links.daum}" target="_blank" rel="noopener" class="r-link r-link-daum">🟡 다음 검색</a>
+        </div>
+      </div>
+
+      <div class="e26-section r-other-regions">
+        <h2>🗺 다른 시도 9회 지선 페이지</h2>
+        <div class="r-other-grid">
+          ${Object.entries(REGION_SLUG_MAP).filter(([s]) => s !== slug).map(([s, info2]) => `
+            <a href="/election2026/${s}" class="r-other-link" data-region="${s}">${escapeHtml(info2.short)}</a>
+          `).join('')}
+        </div>
+        <div style="text-align:center;margin-top:12px">
+          <a href="/election2026" class="btn-out">전국 9회 지선 페이지로 →</a>
         </div>
       </div>
     </div>
@@ -16136,7 +16583,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.6 · 📋 내 활동</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.7 · 🗺 시도별 페이지</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -17294,6 +17741,15 @@ function _resolveDynamicMeta(path) {
       desc: `${cmtName} 22대 국회 위원회 소속 의원·처리 의안·위원장·간사 정보.`
     };
   }
+  // V22.7 — /election2026/{slug} — 시도별 9회 지선
+  m = path.match(/^\/election2026\/([a-z]+)$/);
+  if (m && REGION_SLUG_MAP[m[1]]) {
+    const info = REGION_SLUG_MAP[m[1]];
+    return {
+      title: `${info.name} 9회 지방선거 2026.6.3 — 시·도지사·교육감·기초단체장 후보 + 8회 결과`,
+      desc: `${info.name}(${info.short}) 제9회 전국동시지방선거(2026.6.3) 광역단체장·교육감·기초단체장·광역의원 후보자 명단. 8회(2022) 시·도지사 결과 비교. ${info.keywords}.`
+    };
+  }
   return null;
 }
 
@@ -17837,6 +18293,51 @@ function route() {
     }
     return;
   }
+  // V22.7 — 시도별 9회 지선 페이지 (/election2026/{slug})
+  const e26RegionMatch = hash.match(/^#\/election2026\/([a-z]+)$/);
+  if (e26RegionMatch) {
+    const slug = e26RegionMatch[1];
+    const renderRegion = () => {
+      view.innerHTML = renderElection2026RegionPage(slug);
+      document.getElementById('back-e26')?.addEventListener('click', () => { nav('/election2026'); });
+      // 후보 클릭 → 5대 공약 모달
+      document.querySelectorAll('.e26-cand-click').forEach(el => {
+        el.addEventListener('click', () => {
+          openPromiseModal({
+            cnddtId: el.dataset.cnddt,
+            sgTypecode: el.dataset.sgtype,
+            name: el.dataset.name,
+            party: el.dataset.party,
+            region: el.dataset.region,
+          });
+        });
+      });
+      // 다른 시도 링크
+      document.querySelectorAll('.r-other-link').forEach(el => {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          nav('/election2026/' + el.dataset.region);
+        });
+      });
+    };
+    renderRegion();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // 데이터 로딩 후 재렌더
+    loadElection2026().then(() => {
+      if (!currentRoute().startsWith('#/election2026/')) return;
+      renderRegion();
+    });
+    loadLocalElections().then(() => {
+      if (!currentRoute().startsWith('#/election2026/')) return;
+      renderRegion();
+    });
+    loadNec2026Governors().then(() => {
+      if (!currentRoute().startsWith('#/election2026/')) return;
+      renderRegion();
+    });
+    return;
+  }
   // 제9회 지방선거 (진행 중)
   if (hash === '#/election2026') {
     const renderE26 = () => {
@@ -17900,6 +18401,13 @@ function route() {
             title: `${kind} 후보자 전체`,
             filter: c => c.kind === kind,
           });
+        });
+      });
+      // V22.7 — 시도별 페이지 링크
+      document.querySelectorAll('.r-other-link').forEach(el => {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          nav('/election2026/' + el.dataset.region);
         });
       });
     };
