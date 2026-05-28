@@ -7930,6 +7930,161 @@
   }
 
   /* ============================================================
+     V23.0 — 모바일 정보 위계 재설계 (대시보드 컨셉 한계 보완)
+     ============================================================ */
+  /* collapsible 위젯 (모바일 기본 접힘) */
+  .collapsible-widget .cw-toggle { display: none; }
+  @media (max-width: 700px) {
+    .collapsible-widget .cw-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .collapsible-widget .cw-toggle:active { background: var(--bg-elev); }
+    .collapsible-widget .cw-toggle .cw-chev {
+      transition: transform 0.2s;
+      font-size: 14px;
+      color: var(--dim);
+    }
+    .collapsible-widget.cw-open .cw-toggle .cw-chev { transform: rotate(180deg); }
+    .collapsible-widget .cw-body {
+      display: none;
+      margin-top: 8px;
+    }
+    .collapsible-widget.cw-open .cw-body { display: block; }
+    /* widget의 자체 head는 모바일에서 cw-toggle에 의해 대체되므로 숨김 */
+    .collapsible-widget.cw-open .cw-body > .home-ranking-head,
+    .collapsible-widget.cw-open .cw-body > .home-trend-head,
+    .collapsible-widget.cw-open .cw-body > .econ-mini-head { display: none; }
+  }
+
+  /* 모바일 6대 영역 가로 carousel */
+  @media (max-width: 700px) {
+    .domain-grid {
+      display: flex !important;
+      grid-template-columns: none !important;
+      overflow-x: auto;
+      gap: 10px;
+      padding-bottom: 8px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      /* 스크롤바 살짝 보이게 */
+      scrollbar-width: thin;
+    }
+    .domain-grid::-webkit-scrollbar { height: 4px; }
+    .domain-grid::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+    .domain-card {
+      flex: 0 0 78%;
+      scroll-snap-align: start;
+      min-width: 0;
+    }
+    .domain-grid::after {
+      content: '';
+      flex: 0 0 4px;
+    }
+  }
+
+  /* 모바일 카드 컴팩트화 */
+  @media (max-width: 700px) {
+    .dash-card,
+    .home-ranking-row,
+    .home-trend-row,
+    .econ-mini-row,
+    .patch-feed,
+    .domain-card {
+      padding: 12px 14px;
+    }
+    .patch-row { padding: 10px 12px; }
+    .dash-card h2 { font-size: 14px; }
+    .dash-card h3 { font-size: 13px; }
+    /* hero 더 컴팩트 */
+    .dash-hero {
+      padding: 18px 16px !important;
+    }
+    .dash-hero-l h1 { font-size: 22px !important; margin-bottom: 4px; }
+    .dash-hero-l p { font-size: 12px !important; line-height: 1.45 !important; margin-bottom: 8px; }
+    .dash-hero-eye { font-size: 9.5px !important; margin-bottom: 4px; }
+    /* hero 버튼 wrap */
+    .dash-hero-r { gap: 6px !important; }
+    .hero-btn {
+      flex: 1 1 100% !important;
+      padding: 10px 12px !important;
+      font-size: 12.5px !important;
+      min-height: 44px;
+    }
+    /* 공유 바 collapse */
+    .share-bar {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .share-bar.share-bar-open {
+      max-height: 200px;
+    }
+    .share-bar-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-2);
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    /* 패치 피드 8 → 모바일 3건만 + 더보기 */
+    .patch-list .patch-row:nth-child(n+4) { display: none; }
+    .patch-list.patch-list-expanded .patch-row { display: flex; }
+    .patch-list-more {
+      display: block !important;
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      cursor: pointer;
+      text-align: center;
+    }
+  }
+  .share-bar-toggle { display: none; }
+  .patch-list-more { display: none; }
+
+  /* 시각 노이즈 제거 — 모바일 그림자 단순화 */
+  @media (max-width: 700px) {
+    .dash-card, .domain-card, .patch-feed, .home-ranking-row,
+    .home-trend-row, .econ-mini-row, .home-e26-card,
+    .me-page > div, .e26-section, .live-section {
+      box-shadow: none !important;
+    }
+    /* dash-grid (KPI 카드 6개) 2열로 */
+    .dash-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+    .dash-card.col-3 { padding: 10px 12px; }
+    .dash-card .kpi-num { font-size: 22px; }
+    .dash-card .kpi-label { font-size: 10.5px; }
+    .dash-card .kpi-trend { font-size: 10px; }
+  }
+
+  /* ============================================================
      V22.8 — 모바일 UX 정밀 보완
      ============================================================ */
   /* 모바일 하단 nav (모바일에서만 표시) */
@@ -17236,9 +17391,10 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.9 · 🔴 D-Day LIVE</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.0 · 📱 모바일 재설계</a></h1>
           <p>${_heroSub}</p>
-          <div class="share-bar">
+          <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
+          <div class="share-bar" id="share-bar">
             <span class="share-label">공유:</span>
             <a class="share-btn share-kakao" id="share-kakao" title="카카오톡에 공유">💬 카카오</a>
             <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fpatchkr.com%2F" target="_blank" rel="noopener" title="페이스북에 공유">📘 페북</a>
@@ -17278,49 +17434,58 @@ function renderHome() {
       })()}
 
       <!-- 📊 V22.5 — 이번 주 인기 랭킹 (페이지뷰 기반) -->
-      <div class="home-ranking-row" id="home-ranking-row">
-        <div class="home-ranking-head">
-          <h3>📊 이번 주 인기 — 사용자 조회 Top 5</h3>
-          <span class="econ-mini-live">🟢 LIVE</span>
-        </div>
-        <div class="home-ranking-grid">
-          <div class="home-ranking-col">
-            <div class="home-ranking-col-h">👤 정치인 Top 5</div>
-            <div id="home-rank-pol" class="home-ranking-list">
-              <div class="loading" style="padding:10px;text-align:center;font-size:11px">로딩 중...</div>
-            </div>
+      <div class="home-ranking-row collapsible-widget" id="home-ranking-row">
+        <button class="cw-toggle"><span>📊 이번 주 인기 — Top 5 <span style="color:var(--ok);font-size:11px;margin-left:4px">🟢 LIVE</span></span><span class="cw-chev">▼</span></button>
+        <div class="cw-body">
+          <div class="home-ranking-head">
+            <h3>📊 이번 주 인기 — 사용자 조회 Top 5</h3>
+            <span class="econ-mini-live">🟢 LIVE</span>
           </div>
-          <div class="home-ranking-col">
-            <div class="home-ranking-col-h">📜 법안 Top 5</div>
-            <div id="home-rank-bill" class="home-ranking-list">
-              <div class="loading" style="padding:10px;text-align:center;font-size:11px">로딩 중...</div>
+          <div class="home-ranking-grid">
+            <div class="home-ranking-col">
+              <div class="home-ranking-col-h">👤 정치인 Top 5</div>
+              <div id="home-rank-pol" class="home-ranking-list">
+                <div class="loading" style="padding:10px;text-align:center;font-size:11px">로딩 중...</div>
+              </div>
+            </div>
+            <div class="home-ranking-col">
+              <div class="home-ranking-col-h">📜 법안 Top 5</div>
+              <div id="home-rank-bill" class="home-ranking-list">
+                <div class="loading" style="padding:10px;text-align:center;font-size:11px">로딩 중...</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 🔥 V21.5 — 한국 실검 (구글 트렌드 RSS) -->
-      <div class="home-trend-row" id="home-trend-row">
-        <div class="home-trend-head">
-          <h3>🔥 한국 실시간 검색 트렌드 <span class="econ-mini-live">🟢 LIVE</span></h3>
-          <a href="/today" class="chart-link">전체 보기 →</a>
-        </div>
-        <div class="home-trend-grid" id="home-trend-tiles">
-          <div class="loading" style="padding:14px;text-align:center;grid-column:1/-1">
-            <span class="loading-spinner"></span>구글 트렌드 fetch 중…
+      <div class="home-trend-row collapsible-widget" id="home-trend-row">
+        <button class="cw-toggle"><span>🔥 한국 실시간 검색 트렌드 <span style="color:var(--ok);font-size:11px;margin-left:4px">🟢 LIVE</span></span><span class="cw-chev">▼</span></button>
+        <div class="cw-body">
+          <div class="home-trend-head">
+            <h3>🔥 한국 실시간 검색 트렌드 <span class="econ-mini-live">🟢 LIVE</span></h3>
+            <a href="/today" class="chart-link">전체 보기 →</a>
+          </div>
+          <div class="home-trend-grid" id="home-trend-tiles">
+            <div class="loading" style="padding:14px;text-align:center;grid-column:1/-1">
+              <span class="loading-spinner"></span>구글 트렌드 fetch 중…
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 💰 경제 핵심 지표 미니 위젯 — 관심도 최상위 (환율·코스피·코스닥 매일 확인) -->
-      <div class="econ-mini-row" id="home-econ-mini">
-        <div class="econ-mini-head">
-          <h3>💰 경제 핵심 지표 <span class="econ-mini-live" id="home-econ-live" style="display:none">🟢 LIVE</span></h3>
-          <a href="/economy" class="chart-link">전체 →</a>
-        </div>
-        <div class="econ-mini-grid" id="home-econ-tiles">
-          <div class="loading" style="padding:20px;text-align:center;grid-column:1/-1">
-            <span class="loading-spinner"></span>경제 지표 불러오는 중…
+      <div class="econ-mini-row collapsible-widget" id="home-econ-mini">
+        <button class="cw-toggle"><span>💰 경제 핵심 지표 <span style="color:var(--ok);font-size:11px;margin-left:4px" id="home-econ-live-mob" >🟢 LIVE</span></span><span class="cw-chev">▼</span></button>
+        <div class="cw-body">
+          <div class="econ-mini-head">
+            <h3>💰 경제 핵심 지표 <span class="econ-mini-live" id="home-econ-live" style="display:none">🟢 LIVE</span></h3>
+            <a href="/economy" class="chart-link">전체 →</a>
+          </div>
+          <div class="econ-mini-grid" id="home-econ-tiles">
+            <div class="loading" style="padding:20px;text-align:center;grid-column:1/-1">
+              <span class="loading-spinner"></span>경제 지표 불러오는 중…
+            </div>
           </div>
         </div>
       </div>
@@ -17386,9 +17551,10 @@ function renderHome() {
           `).join('')}
         </div>
         ${passedBills.length ? `
-          <div class="patch-list">
+          <div class="patch-list" id="home-patch-list">
             ${passedBills.map((b, idx) => patchRowHTML(b, idx)).join('')}
           </div>
+          <button class="patch-list-more" id="home-patch-more" type="button">+ ${Math.max(0, passedBills.length - 3)}건 더 보기</button>
         ` : `
           <div class="patch-loading">
             <span class="loading-spinner"></span>
@@ -19560,6 +19726,22 @@ function route() {
       populateHomeTrend();
       // V22.5 — 홈 인기 랭킹 위젯 (페이지뷰 기반)
       populateHomeRanking();
+      // V23.0 — 모바일 collapse 위젯 토글
+      document.querySelectorAll('.collapsible-widget .cw-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.closest('.collapsible-widget').classList.toggle('cw-open');
+        });
+      });
+      // V23.0 — 공유 바 토글 (모바일)
+      document.getElementById('share-bar-toggle')?.addEventListener('click', () => {
+        document.getElementById('share-bar')?.classList.toggle('share-bar-open');
+      });
+      // V23.0 — 패치 노트 더보기 (모바일 3건 → 전체)
+      document.getElementById('home-patch-more')?.addEventListener('click', e => {
+        const list = document.getElementById('home-patch-list');
+        list?.classList.add('patch-list-expanded');
+        e.target.style.display = 'none';
+      });
       if (filterBar) filterBar.style.display = 'none';
     }
   }
