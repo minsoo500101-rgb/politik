@@ -14024,6 +14024,131 @@ function renderEconomyPage() {
 
 // V23.5 — Yahoo Finance 위젯 (KOSPI/KOSDAQ — KRX 라이선스 우회)
 // V23.6 — v8 chart 단독 + sparkline 포함, 단일 fetch
+// V24.1 — 다중 소스 fetch (Vercel 프록시 → 직접 Yahoo → ECOS fallback)
+async function _fetchQuoteMultiSource(symbols) {
+  // 1단계: Vercel proxy (Yahoo + Stooq 다중 fallback 시도)
+  try {
+    const resp = await fetch(`/api/quote?symbols=${encodeURIComponent(symbols.join(','))}&range=1mo&interval=1d`);
+    if (resp.ok) {
+      const data = await resp.json();
+      const valid = (data.quotes || []).filter(q => q.price != null);
+      if (valid.length === symbols.length) {
+        console.log('[Quote] ✓ source: Vercel proxy');
+        return valid;
+      }
+      if (valid.length > 0) {
+        console.log('[Quote] partial: Vercel proxy (' + valid.length + '/' + symbols.length + ')');
+        // partial이라도 일부는 사용
+        const got = new Set(valid.map(q => q.symbol));
+        const missing = symbols.filter(s => !got.has(s));
+        const more = await _fetchYahooDirect(missing);
+        return [...valid, ...more];
+      }
+    }
+  } catch (e) {
+    console.warn('[Quote] Vercel proxy failed:', e.message);
+  }
+  // 2단계: 직접 Yahoo Finance v8 chart (CORS 우호적)
+  const direct = await _fetchYahooDirect(symbols);
+  if (direct.length === symbols.length) {
+    console.log('[Quote] ✓ source: Yahoo direct (CORS)');
+    return direct;
+  }
+  if (direct.length > 0) {
+    const got = new Set(direct.map(q => q.symbol));
+    const missing = symbols.filter(s => !got.has(s));
+    const ecos = await _fetchEcosFallback(missing);
+    return [...direct, ...ecos];
+  }
+  // 3단계: ECOS API (한국은행 일별 데이터 — KOSPI/KOSDAQ/USDKRW만)
+  const ecos = await _fetchEcosFallback(symbols);
+  if (ecos.length) console.log('[Quote] ✓ source: ECOS fallback');
+  return ecos;
+}
+
+async function _fetchYahooDirect(symbols) {
+  if (!symbols?.length) return [];
+  const results = await Promise.all(symbols.map(async sym => {
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1mo&interval=1d`;
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      const d = await r.json();
+      const result = d?.chart?.result?.[0];
+      if (!result) return null;
+      const meta = result.meta || {};
+      const closes = (result.indicators?.quote?.[0]?.close || []).filter(c => c != null);
+      const price = meta.regularMarketPrice;
+      const prev = meta.chartPreviousClose ?? meta.previousClose;
+      if (price == null) return null;
+      return {
+        symbol: meta.symbol || sym,
+        price,
+        previousClose: prev,
+        change: prev != null ? price - prev : 0,
+        changePercent: prev ? ((price - prev) / prev * 100) : 0,
+        currency: meta.currency,
+        marketState: meta.marketState || 'CLOSED',
+        exchangeName: meta.fullExchangeName || meta.exchangeName,
+        dayHigh: meta.regularMarketDayHigh,
+        dayLow: meta.regularMarketDayLow,
+        fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh,
+        fiftyTwoWeekLow: meta.fiftyTwoWeekLow,
+        sparkline: closes,
+        source: 'yahoo-direct',
+      };
+    } catch (e) {
+      return null;
+    }
+  }));
+  return results.filter(q => q);
+}
+
+async function _fetchEcosFallback(symbols) {
+  if (!symbols?.length) return [];
+  // ECOS 통계 코드 매핑 (확정된 코드만)
+  const ECOS_MAP = {
+    '^KS11':  { stat: '802Y001', item: '0001000', label: 'KOSPI' },     // 코스피
+    '^KQ11':  { stat: '802Y002', item: '0001000', label: 'KOSDAQ' },    // 코스닥
+    'KRW=X':  { stat: '036Y001', item: '0000001', label: 'USD/KRW' },   // 원/달러 환율
+  };
+  const today = new Date();
+  const start = new Date(today.getTime() - 35 * 86400000);
+  const fmt = d => d.toISOString().slice(0, 10).replace(/-/g, '');
+  const results = await Promise.all(symbols.map(async sym => {
+    const m = ECOS_MAP[sym];
+    if (!m) return null;
+    try {
+      const url = `/api/ecos?stat=${m.stat}&item=${m.item}&period=D&start=${fmt(start)}&end=${fmt(today)}&count=40`;
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      const d = await r.json();
+      const data = (d.data || []).filter(x => !isNaN(x.value));
+      if (!data.length) return null;
+      const sorted = data.slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+      const last = sorted[sorted.length - 1];
+      const prev = sorted.length > 1 ? sorted[sorted.length - 2] : last;
+      return {
+        symbol: sym,
+        price: last.value,
+        previousClose: prev.value,
+        change: last.value - prev.value,
+        changePercent: prev.value ? ((last.value - prev.value) / prev.value * 100) : 0,
+        currency: sym === 'KRW=X' ? 'KRW' : 'KRW',
+        marketState: 'CLOSED',
+        exchangeName: '한국은행 ECOS',
+        shortName: m.label,
+        sparkline: sorted.map(x => x.value),
+        source: 'ecos',
+        _lastDate: last.time,
+      };
+    } catch (e) {
+      return null;
+    }
+  }));
+  return results.filter(q => q);
+}
+
 async function setupYahooFinanceWidgets() {
   const widgets = document.querySelectorAll('.econ-yf-widget:not(.yf-loaded)');
   if (!widgets.length) return;
@@ -14042,21 +14167,9 @@ async function setupYahooFinanceWidgets() {
       </div>
     `;
   });
-  // 2) 일괄 fetch — 단일 호출에 quote + sparkline 다 포함
-  const symbols = [...widgets].map(el => el.dataset.yfSymbol).join(',');
-  let quotes = [];
-  try {
-    const resp = await fetch(`/api/quote?symbols=${encodeURIComponent(symbols)}&range=1mo&interval=1d`);
-    if (resp.ok) {
-      const data = await resp.json();
-      quotes = data.quotes || [];
-      if (data.errors?.length) console.warn('[YF] partial errors:', data.errors);
-    } else {
-      console.warn('[YF] proxy returned', resp.status);
-    }
-  } catch (e) {
-    console.warn('[YF] fetch failed:', e);
-  }
+  // 2) 다중 소스 fetch
+  const symbols = [...widgets].map(el => el.dataset.yfSymbol);
+  const quotes = await _fetchQuoteMultiSource(symbols);
   // 3) 카드 렌더링
   widgets.forEach(el => {
     const sym = el.dataset.yfSymbol;
@@ -14110,10 +14223,16 @@ async function setupYahooFinanceWidgets() {
                             : q.marketState === 'PRE' ? '🟡 장 전'
                             : q.marketState === 'POST' || q.marketState === 'POSTPOST' ? '🟡 시간외'
                             : '⚫ 정보 없음';
+    // V24.1 — 데이터 소스 라벨
+    const sourceLabel = q.source === 'yahoo-direct' ? 'Yahoo'
+                       : q.source === 'ecos' ? `한국은행 ${q._lastDate ? q._lastDate.slice(-4,-2)+'/'+q._lastDate.slice(-2) : ''}`
+                       : q.source === 'stooq' ? 'Stooq'
+                       : q.exchangeName?.includes('ECOS') ? '한국은행'
+                       : 'Yahoo';
     el.innerHTML = `
       <div class="econ-yf-card">
         <div class="econ-yf-head">
-          <div class="econ-yf-name">${escapeHtml(name)}</div>
+          <div class="econ-yf-name">${escapeHtml(name)} <span style="font-size:9.5px;color:var(--dim);font-weight:600;margin-left:4px">· ${escapeHtml(sourceLabel)}</span></div>
           <div class="econ-yf-state" title="시장 상태">${marketStateLabel}</div>
         </div>
         <div class="econ-yf-price-row">
@@ -19775,7 +19894,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.0 · 📤 인스타 카드</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.1 · 📊 KOSPI 3중</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
