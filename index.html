@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V26.5 — 디자인 시스템 풀패치: design tokens (spacing·typo·brand·radius·shadow), SVG 아이콘 sprite, .ds-card/.ds-btn/.skeleton 유틸, 720px breakpoint, 터치 타겟 44px, brand 인디고 #4F46E5 -->
+<!-- V26.6 — CHANGELOG 정리 + UI 통일 (region 카드 brand hover·tool-card 아이콘 그라데이션·icon 회전 효과) -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -3253,15 +3253,37 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .explore-grid .tool-card span {
     font-size: 22px;
     flex-shrink: 0;
-    width: 40px; height: 40px;
+    width: 44px; height: 44px;
     display: grid; place-items: center;
-    background: var(--bg-elev);
+    background: linear-gradient(135deg, var(--bg-elev), var(--bg-card));
+    border: 1px solid var(--border);
     border-radius: var(--rd-md);
-    transition: background 0.15s, transform 0.15s;
+    transition: background 0.15s, transform 0.2s, border-color 0.15s;
   }
   .explore-grid .tool-card:hover span {
-    background: var(--brand-pale);
-    transform: scale(1.05);
+    background: linear-gradient(135deg, var(--brand-pale), var(--bg-card));
+    border-color: var(--brand);
+    transform: scale(1.08) rotate(-3deg);
+  }
+  /* 카드 카테고리별 아이콘 hover 색조 (자연스러운 강조) */
+  .explore-grid .tool-card[href="/economy"]:hover span,
+  .explore-grid .tool-card[href*="rankings"]:hover span,
+  .explore-grid .tool-card[href*="bookmarks"]:hover span,
+  .explore-grid .tool-card[href*="dex"]:hover span,
+  .explore-grid .tool-card[href*="glossary"]:hover span,
+  .explore-grid .tool-card[href*="pledge"]:hover span,
+  .explore-grid .tool-card[href*="elections"]:hover span,
+  .explore-grid .tool-card[href*="compare"]:hover span,
+  .explore-grid .tool-card[href*="committees"]:hover span,
+  .explore-grid .tool-card[href*="world"]:hover span,
+  .explore-grid .tool-card[href*="today"]:hover span,
+  .explore-grid .tool-card[href*="stances"]:hover span,
+  .explore-grid .tool-card[href*="history"]:hover span,
+  .explore-grid .tool-card[href*="map"]:hover span {
+    background: linear-gradient(135deg, var(--brand-pale), #f0f4ff);
+  }
+  [data-theme="dark"] .explore-grid .tool-card:hover span {
+    background: linear-gradient(135deg, var(--brand-pale), rgba(129,140,248,0.10));
   }
   .explore-grid .tool-card div {
     flex: 1;
@@ -5978,10 +6000,18 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     gap: 12px;
   }
   .e26-region-card {
-    background: var(--bg-elev);
-    border-radius: 10px;
-    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-lg);
+    padding: var(--sp-3) var(--sp-4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   }
+  .e26-region-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand);
+    box-shadow: var(--sh-md);
+  }
+  [data-theme="dark"] .e26-region-card:hover { box-shadow: var(--sh-lg); }
   .e26-region-head {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 10px;
@@ -17422,8 +17452,21 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V26.6', date: '2026-05-28', title: '✨ UI 통일 라운드 — region 카드 + tool-card 아이콘 강화', items: [
+    '🧹 CHANGELOG 정리 — 사용자 코멘트 라인 6개 제거 (V26.5·V26.4·V26.3·V26.2·V26.0·V22.4)',
+    '🎴 e26-region-card (9회 지선 17 시도 카드):',
+    '  • bg-elev → bg-card + border 추가',
+    '  • hover에 brand 컬러 border + lift -2px + sh-md',
+    '  • 다크모드 hover에 sh-lg 강조',
+    '🎨 explore-grid tool-card 아이콘 (홈 13개 카드):',
+    '  • span 40 → 44px (touch target 충족)',
+    '  • 배경 그라데이션 (bg-elev → bg-card) + border 추가',
+    '  • hover에 brand-pale 그라데이션 + brand border',
+    '  • hover에 scale 1.08 + rotate -3deg (놀이감)',
+    '  • 다크모드용 brand 톤 그라데이션 분기',
+    '🏷 version-pill V26.6 brand 인디고 유지'
+  ]},
   { v: 'V26.5', date: '2026-05-28', title: '🎨 디자인 시스템 풀패치 — design tokens·SVG·통일 유틸', items: [
-    '사용자: "전력을 다해봐" — 6번 "ui 구려" 피드백 누적 해소',
     '🎨 Brand color 확정: --brand: #4F46E5 인디고 (다크 #818CF8) — 정당 빨/파와 충돌 X, 신뢰·중립 톤',
     '📐 Spacing scale: --sp-1~8 (4의 배수만: 4·8·12·16·24·32·48·64). 기존 6/10/14/20 산만함 통일',
     '🔤 Typography scale: --fs-xs~3xl + --fs-display: clamp(28px, 5vw, 48px). --fw 5단·--lh 4단',
@@ -17441,7 +17484,6 @@ const CHANGELOG = [
     '❌ 거부: Next.js·shadcn·Framer 전환 (rewrite 비용 vs 효과)'
   ]},
   { v: 'V26.4', date: '2026-05-28', title: '🗳 Stooq 제거 + 9회 지선 region 17개 데이터 보강', items: [
-    '사용자: "아니다 싶은건 없애고 지방선거 쪽 데이터 보충 할거 있으면 더 하고"',
     '🧹 api/quote.js: Stooq fallback 전부 제거 (광고 사이트는 personal-use 약관 부적합)',
     '🗳 election_2026.json 17개 region 모두에 5필드 추가:',
     '  • population·voters: 인구·유권자 (만명)',
@@ -17455,7 +17497,6 @@ const CHANGELOG = [
     '📄 /election2026/{시도} hero에도 격전지 배지·인구·유권자·광역의원 의석·race_status 메모'
   ]},
   { v: 'V26.3', date: '2026-05-28', title: '🔒 API ToS 준수 — Yahoo·Naver 프록시 Origin 화이트리스트', items: [
-    '사용자: "우리 api 제공이 api 사용 정책에 위반하지 않는지 검토해봐"',
     '⚠️ 진단: /api/quote(Yahoo Finance)·/api/naver(네이버 검색)가 CORS:*로 열려 제3자 재배포 가능 — 두 원천 모두 ToS상 재배포 금지',
     '🔐 /api/quote → Origin·Referer 화이트리스트 (patchkr.com + localhost + Vercel preview). 미허용은 403 + 안내',
     '🔐 /api/naver → 동일 패턴. 헬스체크(?action=health)는 예외',
@@ -17465,7 +17506,6 @@ const CHANGELOG = [
     '위험 등급: Yahoo·Naver 🔴 HIGH → 🟡 LOW (단순 백엔드 프록시로 격하)'
   ]},
   { v: 'V26.2', date: '2026-05-28', title: '📚 용어사전 확장 — 사이트 전용 + 데이터 API 35개', items: [
-    '사용자: "용어사전에 우리 사이트에 쓰는 단어는 다 넣어줘"',
     '✨ 213 → 248개 (+35), 카테고리 14 → 15 (data 신설)',
     '🌐 사이트 전용 (10): 패치 노트·시민 여론판·활동 점수·공약 이행률·stance·도감·북마크·정당색·정당 결속도·공약 비교',
     '🏛 국회·법안 (2): 가결률·표결',
@@ -17481,7 +17521,6 @@ const CHANGELOG = [
     '🔧 politicians.json preload → prefetch (LCP에 필수 아닌 페이지에서 warning)'
   ]},
   { v: 'V26.0', date: '2026-05-28', title: '⚡ 사이트 최적화 — DNS prefetch + Service Worker + lazy 이미지', items: [
-    '사용자: "사이트 최적화 작업 좀 해줘"',
     '🌐 DNS prefetch 12개 외부 도메인 — fonts·NEC·Yahoo·TradingView·Naver·Wikimedia·Supabase·AdSense 등',
     '👷 Service Worker (sw.js) — 정적 cache-first + /data/ network-first SWR + /api/ network-first fallback',
     '🖼 이미지 lazy loading 표준 적용 (loading="lazy" 명시)',
@@ -17547,7 +17586,6 @@ const CHANGELOG = [
     'V22.3: 용어 사전 카테고리 8→14, 60+ 신규 용어, def_long·example·history 필드 추가 (백과사전 수준)'
   ]},
   { v: 'V22.4', date: '2026-05-28', title: '🚀 SEO 최대 강화 — 9회 지선 시즌 캡처', items: [
-    '사용자: SEO 핫하게 타겟 좀',
     '🎯 <title> 핫 키워드 풍부: "9회 지방선거 후보 · 22대 국회 법안 1,595건 · 정치인 772명 · 한국 실검"',
     '📝 description 160자 풀활용 — 핫 검색어 자연 포함 (9회 지선·5대 공약·환율·코스피·실검)',
     '🏷 keywords 23 → 60+ 확장 (시도지사 후보·교육감 후보·이재명 대통령·윤석열 탄핵·구글 트렌드 한국 등)',
@@ -21320,7 +21358,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.5 · 🎨 디자인 시스템</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.6 · ✨ UI 통일</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
