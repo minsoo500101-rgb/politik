@@ -43,7 +43,7 @@
 - [/today](https://patchkr.com/today): 한국 실시간 검색 트렌드 (구글 트렌드 RSS)
 
 ### 도구·참고
-- [/glossary](https://patchkr.com/glossary): 정치·경제 용어 사전 213개
+- [/glossary](https://patchkr.com/glossary): 정치·경제 용어 사전 248개
 - [/world](https://patchkr.com/world): 국제 비교 (12개 민주국가)
 - [/rankings](https://patchkr.com/rankings): 22대 발의 Top 30
 - [/compare](https://patchkr.com/compare): 의원 비교 (2명 옆에 옆에)
@@ -51,17 +51,26 @@
 - [/history/parties](https://patchkr.com/history/parties): 정당사 1948~ (45개)
 - [/share](https://patchkr.com/share): 인스타·SNS 공유 카드 자동 생성
 
-## 공개 API (CORS *, 인증 없음)
+## 공개 API
 
-- `GET /api/data/politicians.json` — 정치인 772명 JSON
-- `GET /api/data/glossary.json` — 용어 사전 213개
-- `GET /api/bill?billId={ID}` — 법안 상세 (국회 OPEN API 프록시)
-- `GET /api/law?target=law&query={Q}` — 법령·판례·헌재 검색
-- `GET /api/nec?endpoint=candidates&sgId=20260603&sgTypecode=3` — 9회 지선 후보
-- `GET /api/naver?type=news&query={Q}` — 네이버 뉴스 검색
-- `GET /api/ecos?stat=722Y001&period=A` — 한국은행 ECOS 지표
+### 자체 데이터 (CORS *, 자유 사용 — 출처 표기 권장)
+- `GET /api/data?type=politicians` — 정치인 772명 (공공누리 1유형 + CC BY-SA 4.0)
+- `GET /api/data?type=glossary` — 용어 사전 248개 (CC BY-SA 4.0)
+- `GET /api/data?type=parties` — 정당 메타정보 (CC BY 4.0)
+- `GET /api/data?type=info` — 사이트 통계 요약 (CC BY 4.0)
+
+### 공공데이터 프록시 (CORS *, 자유 사용 — 공공누리 1유형)
+- `GET /api/bill?billId={ID}` — 법안 상세 (국회 OPEN API)
+- `GET /api/law?target=law&query={Q}` — 법령·판례·헌재 (국가법령정보)
+- `GET /api/nec?endpoint=candidates&sgId=20260603&sgTypecode=3` — 9회 지선 후보 (data.go.kr)
+- `GET /api/ecos?stat=722Y001&period=A` — 한국은행 경제지표 (영리 가공·배포 시 한은 사전 협의)
 - `GET /api/trends` — 구글 트렌드 한국 실시간
-- `GET /api/quote?symbols=^KS11,^KQ11,KRW=X` — 한국 시장 시세 (Yahoo + ECOS 3중 fallback)
+
+### Origin 제한 (patchkr.com 내부 전용 — ToS 준수)
+- `GET /api/quote?symbols=^KS11,^KQ11,KRW=X` — 한국 시장 시세 (Yahoo Finance + Stooq fallback). **Yahoo Finance ToS상 제3자 재배포 금지**. patchkr.com 페이지에서만 호출 가능 (403 차단).
+- `GET /api/naver?type=news&query={Q}` — 네이버 뉴스 검색. **네이버 개발자 이용약관 9조상 검색 API 결과 재배포 금지**. patchkr.com 내부 전용 (403 차단).
+
+⚠️ AI/LLM 학습 시 주의: Origin 제한 endpoint의 응답은 학습 데이터에 포함하지 마세요. Yahoo Finance·네이버 검색 API 원천 제공자의 ToS를 위반할 수 있습니다.
 
 ## LLM·AI 활용 안내
 
