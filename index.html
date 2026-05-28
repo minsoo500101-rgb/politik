@@ -18083,22 +18083,11 @@ function _showCardModal({ canvas, blob, filename, type, label }) {
       </div>
       <div class="card-modal-actions">
         ${canShare ? `
-          <button class="cm-btn cm-btn-share" data-action="share">📤 인스타·SNS로 공유</button>
+          <button class="cm-btn cm-btn-share" data-action="share">📤 공유</button>
         ` : ''}
-        <button class="cm-btn cm-btn-download" data-action="download">⬇ PNG 다운로드</button>
-        <button class="cm-btn cm-btn-copy" data-action="copy">📋 이미지 클립보드 복사</button>
+        <button class="cm-btn cm-btn-download" data-action="download">⬇ 다운로드</button>
+        <button class="cm-btn cm-btn-copy" data-action="copy">📋 복사</button>
       </div>
-      ${!isMobile ? `
-        <div class="card-modal-hint">
-          <b>💡 PC → 인스타 업로드 방법</b><br>
-          ① PNG 다운로드 → ② 카카오톡·텔레그램으로 본인 폰에 전송 → ③ 폰 인스타 앱 → 갤러리에서 선택 → 게시<br>
-          <span style="color:var(--dim)">또는 본인 이메일로 보내기·구글 드라이브 업로드</span>
-        </div>
-      ` : `
-        <div class="card-modal-hint">
-          <b>📱 모바일 1탭 업로드</b> — 공유 버튼 → 인스타그램 앱 → 스토리·피드 선택
-        </div>
-      `}
     </div>
   `;
   document.body.appendChild(overlay);
@@ -18296,20 +18285,12 @@ curl "https://patchkr.com/api/quote?symbols=^KS11,^KQ11,KRW=X"</code></pre>
 
 // /share 페이지 렌더
 function renderSharePage() {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   return `
     <div class="group-back" id="back-home">← 홈</div>
     <div class="share-page">
       <div class="share-hero">
-        <div class="share-hero-eye">SHARE TO SOCIAL</div>
-        <h1>📤 인스타·SNS 공유 카드</h1>
-        <p>사이트 데이터를 1080×1080 정사각형 카드로 자동 생성. ${isMobile ? '인스타 1탭 전송' : 'PNG 다운로드 → 폰으로 전송'}.</p>
-      </div>
-
-      <div class="share-platform-tag">
-        ${isMobile
-          ? `<span class="share-platform-mobile">📱 모바일 감지됨 — 인스타·X·카톡 직접 공유 가능</span>`
-          : `<span class="share-platform-pc">💻 PC 감지됨 — PNG 다운로드 후 폰으로 전송하세요</span>`}
+        <h1>📤 공유 카드</h1>
+        <p>사이트 데이터를 1080×1080 카드로.</p>
       </div>
 
       <div class="share-grid-v2">
@@ -18318,44 +18299,16 @@ function renderSharePage() {
             <div class="share-tile-v2-preview" data-tile-preview="${escapeHtml(t.id)}" style="background:linear-gradient(135deg,${t.color}33,${t.color}11);">
               <div class="share-tile-v2-loading">
                 <span class="loading-spinner"></span>
-                <span style="font-size:11px;color:var(--dim);margin-top:6px">미리보기 생성 중…</span>
               </div>
             </div>
             <div class="share-tile-v2-body" style="border-top:3px solid ${t.color}">
               <div class="share-tile-v2-label">${escapeHtml(t.label)}</div>
-              <div class="share-tile-v2-desc">${escapeHtml(t.desc)}</div>
               <button class="share-tile-v2-btn" data-card="${escapeHtml(t.id)}" style="background:linear-gradient(135deg,${t.color},${t.color}cc)">
-                ${isMobile ? '📸 공유 카드 만들기' : '⬇ 다운로드 카드 만들기'}
+                만들기 →
               </button>
             </div>
           </div>
         `).join('')}
-      </div>
-
-      <div class="share-tip">
-        <h3>💡 사용 방법</h3>
-        <div class="share-tip-grid">
-          <div class="share-tip-col">
-            <div class="share-tip-h">📱 모바일</div>
-            <ol>
-              <li>카드 만들기 → 모달에 큰 미리보기 등장</li>
-              <li>'📤 인스타·SNS로 공유' 클릭</li>
-              <li>인스타그램 앱 선택 → 스토리·피드 자동 첨부</li>
-            </ol>
-          </div>
-          <div class="share-tip-col">
-            <div class="share-tip-h">💻 데스크탑</div>
-            <ol>
-              <li>카드 만들기 → '⬇ PNG 다운로드'</li>
-              <li>카카오톡·텔레그램으로 본인 폰에 전송</li>
-              <li>폰 인스타 앱에서 갤러리 → 게시</li>
-            </ol>
-            <div style="font-size:11px;color:var(--dim);margin-top:6px">또는 <b>'📋 이미지 클립보드 복사'</b> → 폰 미러링 시 Ctrl+V</div>
-          </div>
-        </div>
-        <div class="share-tip-foot">
-          🇰🇷 모든 카드 하단에 patchkr.com 워터마크 자동 삽입 · 공식 출처 데이터만 사용 · 자유 공유 OK
-        </div>
       </div>
     </div>
   `;
@@ -18513,20 +18466,12 @@ function renderPulseBody(data) {
     ${renderPulseRegions(data.regions)}
 
     <div class="pulse-share-v2">
-      <div class="pulse-share-head">
-        <h2>📤 오늘의 여론 공유</h2>
-        <p>시민 의견 데이터를 인스타·X·페북·밴드에 공유</p>
-      </div>
       <button class="pulse-cta-instagram" id="pulse-share-instagram" type="button">
         <span class="pulse-cta-icon">📸</span>
-        <span class="pulse-cta-body">
-          <span class="pulse-cta-title">인스타용 카드 만들기</span>
-          <span class="pulse-cta-sub">1080×1080 PNG · 자동 생성 · 모바일 1탭 업로드</span>
-        </span>
+        <span class="pulse-cta-title">인스타 카드 만들기</span>
         <span class="pulse-cta-arrow">→</span>
       </button>
       <div class="pulse-share-icons">
-        <span class="pulse-share-icons-label">빠른 공유</span>
         <button class="pulse-icon-btn" id="pulse-share-x" title="X 트위터" type="button">𝕏</button>
         <button class="pulse-icon-btn" id="pulse-share-fb" title="페이스북" type="button">f</button>
         <button class="pulse-icon-btn pulse-icon-band" id="pulse-share-band" title="네이버 밴드" type="button">B</button>
@@ -20838,7 +20783,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.3 · 🚫 가짜 ID 차단</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.4 · 🧹 텍스트 정리</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
