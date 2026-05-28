@@ -4326,6 +4326,157 @@
     .insight-row { grid-template-columns: 1fr; }
   }
 
+  /* V22.6 — /me 대시보드 */
+  .me-page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+  .me-hero { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .me-eye {
+    font-size: 11px; color: var(--dim);
+    letter-spacing: 1.5px; font-weight: 700;
+    margin-bottom: 6px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+  .me-h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+  .me-sub { font-size: 13px; color: var(--text-2); margin-top: 8px; line-height: 1.6; }
+  .me-sub b { color: var(--text); font-weight: 700; }
+  .me-stats {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 800px) {
+    .me-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .me-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  .me-stat-card {
+    padding: 12px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+  }
+  .me-stat-val {
+    font-size: 22px; font-weight: 900;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .me-stat-lbl {
+    font-size: 11px; color: var(--text-2);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+  .me-loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 13px;
+  }
+  .me-section { margin-bottom: 30px; }
+  .me-section-h {
+    font-size: 16px; font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .me-count {
+    font-size: 12px; font-weight: 700;
+    padding: 2px 8px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 10px;
+  }
+  .me-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .me-card {
+    display: block;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--text-2);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.13s;
+  }
+  .me-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  }
+  [data-theme="dark"] .me-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+  .me-card-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .me-card-meta { font-size: 11.5px; font-weight: 600; margin-top: 2px; }
+  .me-card-date { font-size: 10.5px; color: var(--dim); margin-top: 6px; }
+  .me-card-stance {
+    font-size: 12px; font-weight: 800;
+    margin-top: 4px;
+  }
+  .me-list-simple { display: flex; flex-direction: column; gap: 4px; }
+  .me-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.13s;
+  }
+  .me-row:hover { background: var(--bg-elev); }
+  .me-row-main { flex: 1; min-width: 0; }
+  .me-row-name {
+    font-size: 13px; font-weight: 700;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .me-row-meta {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-2);
+    margin-left: 4px;
+  }
+  .me-row-sub {
+    font-size: 11px; color: var(--dim);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .me-row-val {
+    font-size: 12px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .me-stars {
+    color: #f59e0b;
+    font-size: 14px;
+    letter-spacing: -1px;
+  }
+  .me-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 12px;
+    background: var(--bg-elev);
+    border-radius: 8px;
+  }
+  .me-foot {
+    margin-top: 30px;
+    padding: 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    font-size: 11.5px;
+    color: var(--text-2);
+    line-height: 1.6;
+    text-align: center;
+  }
+
   /* V22.5 — 홈 인기 랭킹 (페이지뷰 기반) */
   .home-ranking-row {
     background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(217,119,6,0.03) 100%);
@@ -7541,6 +7692,7 @@
     </div>
     <div class="foot-col">
       <div class="foot-h">⭐ 내 활동</div>
+      <a href="/me">📋 내 활동 대시보드</a>
       <a href="/bookmarks">관심 의원</a>
       <a href="/stances">내 정치 입장</a>
       <a href="/play">실험실</a>
@@ -9394,6 +9546,22 @@ async function loadBookmarksFromServer() {
   try {
     return await supabaseRest(`/bookmarks?user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc`);
   } catch { return []; }
+}
+
+// V22.6 — /me 대시보드: 사용자 본인 활동 fetch
+async function loadMyActivity() {
+  const userId = getOrCreateAnonUserId();
+  const enc = encodeURIComponent(userId);
+  // 병렬 fetch 모든 사용자 데이터
+  const [bookmarks, stances, ihaengVotes, ratings, socialVotes, myPageviews] = await Promise.all([
+    supabaseRest(`/bookmarks?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
+    supabaseRest(`/user_stances?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
+    supabaseRest(`/pledge_ihaeng_votes?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
+    supabaseRest(`/pledge_ratings?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
+    supabaseRest(`/social_votes?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
+    supabaseRest(`/page_views?user_id=eq.${enc}&select=page_type,viewed_at&order=viewed_at.desc&limit=50`).catch(() => []),
+  ]);
+  return { userId, bookmarks: bookmarks || [], stances: stances || [], ihaengVotes: ihaengVotes || [], ratings: ratings || [], socialVotes: socialVotes || [], myPageviews: myPageviews || [] };
 }
 
 // stance 동기화
@@ -13863,6 +14031,184 @@ function renderBookmarksPage() {
 }
 
 // ============================================================
+// V22.6 — /me 내 활동 대시보드
+// ============================================================
+function renderMePage() {
+  const userId = getOrCreateAnonUserId();
+  const shortId = userId.slice(0, 8) + '…' + userId.slice(-4);
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="me-page">
+      <div class="me-hero">
+        <div class="me-eye">📋 익명 사용자 ID · ${escapeHtml(shortId)}</div>
+        <h1 class="me-h1">내 활동 대시보드</h1>
+        <p class="me-sub">
+          이 사이트에서 한 모든 활동을 한 곳에 모았습니다. 다른 기기에서도 동일하게 표시 (Supabase 동기화).<br>
+          <b>익명 유지</b>: 이름·이메일·전화 어떤 개인정보도 수집 안 함. UUID만으로 식별.
+        </p>
+      </div>
+      <div id="me-stats" class="me-stats">
+        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">⭐ 관심 의원</div></div>
+        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">🗳 정치 입장</div></div>
+        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">★ 공약 평점</div></div>
+        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">📋 이행 투표</div></div>
+        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">✅ 소셜 투표</div></div>
+        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">👁 누적 조회</div></div>
+      </div>
+      <div class="me-loading"><span class="loading-spinner"></span> 내 활동 불러오는 중…</div>
+      <div id="me-body" style="display:none">
+        <div class="me-section" id="me-bookmarks-section">
+          <h2 class="me-section-h">⭐ 관심 의원 <span id="me-bookmarks-count" class="me-count">0</span></h2>
+          <div id="me-bookmarks-body" class="me-grid"></div>
+        </div>
+        <div class="me-section" id="me-stances-section">
+          <h2 class="me-section-h">🗳 내 정치 입장 <span id="me-stances-count" class="me-count">0</span></h2>
+          <div id="me-stances-body" class="me-grid"></div>
+        </div>
+        <div class="me-section" id="me-ratings-section">
+          <h2 class="me-section-h">★ 9회 후보 공약 평점 <span id="me-ratings-count" class="me-count">0</span></h2>
+          <div id="me-ratings-body" class="me-list-simple"></div>
+        </div>
+        <div class="me-section" id="me-ihaeng-section">
+          <h2 class="me-section-h">📋 8회 공약 이행 투표 <span id="me-ihaeng-count" class="me-count">0</span></h2>
+          <div id="me-ihaeng-body" class="me-list-simple"></div>
+        </div>
+        <div class="me-section" id="me-social-section">
+          <h2 class="me-section-h">✅ 소셜 투표 (정치인·법안·경제) <span id="me-social-count" class="me-count">0</span></h2>
+          <div id="me-social-body" class="me-list-simple"></div>
+        </div>
+      </div>
+      <div class="me-foot">
+        🔒 모든 데이터는 익명 UUID로 저장됩니다 (Supabase). 브라우저 localStorage 삭제 시 새 UUID 발급 (이전 데이터 사라짐). 다른 기기로 ID 동기화는 미지원 — 같은 브라우저에서만 유지.
+      </div>
+    </div>
+  `;
+}
+
+async function setupMePageEvents() {
+  try {
+    const data = await loadMyActivity();
+    const body = document.getElementById('me-body');
+    const loading = document.querySelector('.me-page .me-loading');
+    if (loading) loading.style.display = 'none';
+    if (body) body.style.display = 'block';
+
+    // 통계 카드 갱신
+    const stats = [
+      data.bookmarks.length, data.stances.length, data.ratings.length,
+      data.ihaengVotes.length, data.socialVotes.length, data.myPageviews.length,
+    ];
+    document.querySelectorAll('#me-stats .me-stat-val').forEach((el, i) => {
+      el.textContent = (stats[i] || 0).toLocaleString();
+    });
+
+    // 북마크
+    document.getElementById('me-bookmarks-count').textContent = data.bookmarks.length;
+    const bmBody = document.getElementById('me-bookmarks-body');
+    if (data.bookmarks.length) {
+      bmBody.innerHTML = data.bookmarks.slice(0, 20).map(b => {
+        const m = (state.members || []).find(x => x.MONA_CD === b.item_id);
+        const partyColor_ = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+        return `
+          <a class="me-card" href="/m/${encodeURIComponent(b.item_id)}" style="border-left-color:${partyColor_}">
+            <div class="me-card-name">${escapeHtml(b.item_name || m?.HG_NM || b.item_id)}</div>
+            <div class="me-card-meta" style="color:${partyColor_}">${escapeHtml(m?.POLY_NM || m?._type_label || '—')}</div>
+            <div class="me-card-date">${new Date(b.created_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })} 추가</div>
+          </a>`;
+      }).join('');
+    } else {
+      bmBody.innerHTML = '<div class="me-empty">관심 의원 없음 — 정치인 페이지에서 ⭐ 클릭해 추가</div>';
+    }
+
+    // Stance
+    document.getElementById('me-stances-count').textContent = data.stances.length;
+    const stBody = document.getElementById('me-stances-body');
+    if (data.stances.length) {
+      stBody.innerHTML = data.stances.slice(0, 20).map(s => {
+        const m = (state.members || []).find(x => x.MONA_CD === s.politician_id);
+        const partyColor_ = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+        const stanceEmoji = s.stance === 'support' ? '👍 지지' : '👎 반대';
+        const stanceColor = s.stance === 'support' ? '#16a34a' : '#dc2626';
+        return `
+          <a class="me-card" href="/m/${encodeURIComponent(s.politician_id)}" style="border-left-color:${partyColor_}">
+            <div class="me-card-name">${escapeHtml(s.politician_name || m?.HG_NM || s.politician_id)}</div>
+            <div class="me-card-meta" style="color:${partyColor_}">${escapeHtml(m?.POLY_NM || m?._type_label || '—')}</div>
+            <div class="me-card-stance" style="color:${stanceColor}">${stanceEmoji}</div>
+          </a>`;
+      }).join('');
+    } else {
+      stBody.innerHTML = '<div class="me-empty">정치 입장 표명 없음 — 정치인 페이지에서 지지/반대 클릭</div>';
+    }
+
+    // Ratings (9회 공약)
+    document.getElementById('me-ratings-count').textContent = data.ratings.length;
+    const rtBody = document.getElementById('me-ratings-body');
+    if (data.ratings.length) {
+      rtBody.innerHTML = data.ratings.slice(0, 30).map(r => {
+        const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        return `
+          <div class="me-row">
+            <div class="me-row-main">
+              <div class="me-row-name">${escapeHtml(r.candidate_name || '')} <span class="me-row-meta">${escapeHtml(r.region || '')} · ${escapeHtml(r.party || '')}</span></div>
+              <div class="me-row-sub">${escapeHtml(r.pledge_title || '').slice(0, 60)}</div>
+            </div>
+            <div class="me-row-val me-stars">${stars}</div>
+          </div>`;
+      }).join('');
+    } else {
+      rtBody.innerHTML = '<div class="me-empty">공약 평점 없음 — 9회 후보 모달에서 ★ 클릭</div>';
+    }
+
+    // 이행 투표 (8회)
+    document.getElementById('me-ihaeng-count').textContent = data.ihaengVotes.length;
+    const ihBody = document.getElementById('me-ihaeng-body');
+    if (data.ihaengVotes.length) {
+      const voteColors = { '이행':'#16a34a', '일부이행':'#0ea5e9', '추진중':'#f59e0b', '미이행':'#dc2626' };
+      ihBody.innerHTML = data.ihaengVotes.slice(0, 30).map(v => `
+        <div class="me-row">
+          <div class="me-row-main">
+            <div class="me-row-name">${escapeHtml(v.candidate_name || '')} <span class="me-row-meta">${escapeHtml(v.region || '')} · ${escapeHtml(v.party || '')}</span></div>
+            <div class="me-row-sub">${escapeHtml(v.pledge_title || '').slice(0, 60)}</div>
+          </div>
+          <div class="me-row-val" style="color:${voteColors[v.vote] || 'var(--text-2)'};font-weight:800">${escapeHtml(v.vote || '')}</div>
+        </div>
+      `).join('');
+    } else {
+      ihBody.innerHTML = '<div class="me-empty">이행 투표 없음 — /pledge-tracker 광역단체장 카드 클릭 → 공약별 4지선다</div>';
+    }
+
+    // 소셜 투표
+    document.getElementById('me-social-count').textContent = data.socialVotes.length;
+    const svBody = document.getElementById('me-social-body');
+    if (data.socialVotes.length) {
+      const typeLabels = { politician: '🏛 정치인', bill: '📜 법안', economy: '💼 경제', pledge: '📋 공약', trend: '🔥 트렌드', news: '📰 뉴스', topic: '✅ 이슈' };
+      svBody.innerHTML = data.socialVotes.slice(0, 30).map(v => {
+        const voteColor = v.vote === 'support' ? '#16a34a' : '#dc2626';
+        const voteLabel = v.vote === 'support' ? '✓ 찬성/지지' : '✗ 반대/우려';
+        let href = '#';
+        if (v.target_type === 'politician') href = '/m/' + encodeURIComponent(v.target_id);
+        else if (v.target_type === 'bill') href = '/bill/' + encodeURIComponent(v.target_id);
+        else if (v.target_type === 'economy') href = '/economy';
+        return `
+          <a class="me-row" href="${escapeHtml(href)}">
+            <div class="me-row-main">
+              <div class="me-row-name">${escapeHtml(typeLabels[v.target_type] || v.target_type)} · ${escapeHtml(v.target_label || v.target_id)}</div>
+              <div class="me-row-sub">${new Date(v.created_at).toLocaleDateString('ko-KR')}</div>
+            </div>
+            <div class="me-row-val" style="color:${voteColor};font-weight:800">${voteLabel}</div>
+          </a>
+        `;
+      }).join('');
+    } else {
+      svBody.innerHTML = '<div class="me-empty">소셜 투표 없음 — 정치인·법안·경제 페이지에서 찬반 클릭</div>';
+    }
+  } catch (e) {
+    const loading = document.querySelector('.me-page .me-loading');
+    if (loading) loading.textContent = '오류: ' + e.message;
+  }
+}
+
+// ============================================================
 // 실험실 (/play) — 부가·재미 기능 모음
 // ============================================================
 function renderPlayPage() {
@@ -15790,7 +16136,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.5 · 📊 인기 랭킹</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.6 · 📋 내 활동</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -16875,8 +17221,9 @@ const ROUTE_META = {
   '/privacy': { title: '개인정보 처리방침', desc: '대한민국 패치 노트 개인정보 처리방침. 쿠키·로컬스토리지·외부 API 호출 안내.' },
   '/dex': { title: '정치인 도감 — 한국 정치인 772명 한눈에 (포켓몬 도감 스타일)', desc: '대한민국 정치인 772명 종합 컬렉션. 22대 국회의원 286명·대통령·국무총리·17부처 장관·차관·외청장·헌법기관장·광역단체장·기초단체장·교육감·대법관·헌법재판관·역대 대통령·총리·정당대표 등. 5개 영역 (입법·행정·사법·지방·역사) 정당 색상 분류.' },
   '/play': { title: '실험실 — 출신 분석·의원 비교·관계도', desc: '정치 데이터 부가 기능 모음. 출신 분석·의원 비교·공동발의 관계도 인터랙티브.' },
-  '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
   '/bookmarks': { title: '관심 의원 — 북마크 모아보기', desc: '관심 정치인 북마크 모아보기. 개인 관심 의원·단체장 추적 페이지.' },
+  '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
+  '/me': { title: '📋 내 활동 대시보드 — 북마크·평점·투표·stance 한 곳에', desc: '익명 UUID로 저장된 본인의 모든 활동 기록을 한 페이지에서 확인. 관심 의원·정치 입장·9회 공약 평점·8회 이행 투표·소셜 투표·페이지 조회 통계.' },
   '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
   '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
   '/compare-cand': { title: '9회 지선 후보 비교 — 5대 공약 옆에 옆에', desc: '제9회 지방선거 후보자 최대 3명 옆에 옆에 비교. 5대 공약·약력·재산·전과 대조.' },
@@ -17014,6 +17361,15 @@ function route() {
   if (hash === '#/changelog') {
     view.innerHTML = renderChangelogPage();
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    return;
+  }
+  // V22.6 — 내 활동 대시보드 (/me)
+  if (hash === '#/me') {
+    view.innerHTML = renderMePage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    setupMePageEvents();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     return;
