@@ -7929,6 +7929,80 @@
     .group-back { font-size: 12px; }
   }
 
+  /* V23.1 — TradingView 실시간 위젯 (경제 페이지) */
+  .econ-tv-section {
+    margin: 18px 0 24px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(239,68,68,0.04), rgba(220,38,38,0.02));
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 14px;
+  }
+  [data-theme="dark"] .econ-tv-section {
+    background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(220,38,38,0.04));
+    border-color: rgba(239,68,68,0.25);
+  }
+  .econ-tv-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .econ-tv-head h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .econ-tv-live {
+    font-size: 11px;
+    color: #ef4444;
+    font-weight: 800;
+    padding: 2px 8px;
+    background: rgba(239,68,68,0.12);
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+  }
+  .econ-tv-meta {
+    font-size: 11px;
+    color: var(--dim);
+    font-weight: 500;
+  }
+  .econ-tv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .econ-tv-widget {
+    min-height: 200px;
+  }
+  .econ-tv-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .econ-tv-card-name {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .tradingview-widget-container {
+    min-height: 180px;
+  }
+  @media (max-width: 700px) {
+    .econ-tv-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .econ-tv-widget { min-height: 180px; }
+  }
+
   /* ============================================================
      V23.0 — 모바일 정보 위계 재설계 (대시보드 컨셉 한계 보완)
      ============================================================ */
@@ -12704,6 +12778,10 @@ function renderEconomyPage() {
       }).catch(() => {});
     }
   });
+  // V23.1 — TradingView 위젯 자동 로드 (econ-body 외부, 재렌더링 무영향)
+  setTimeout(() => {
+    if (currentRoute().startsWith('#/economy')) setupTradingViewWidgets();
+  }, 200);
   return `
     <div class="group-back" id="back-home">← 홈</div>
     <div class="econ-page">
@@ -12712,11 +12790,68 @@ function renderEconomyPage() {
         <h1>💰 한국 경제 지표</h1>
         <p>한국은행·통계청·관세청 공식 데이터. 정부 임기와 함께 보는 경제 흐름. <span style="color:var(--dim);font-size:12px">평가·전망·예측 없음 — 공식 수치 그대로.</span></p>
       </div>
+
+      <!-- V23.1 — TradingView 실시간 위젯 (15분 지연) -->
+      <div class="econ-tv-section">
+        <div class="econ-tv-head">
+          <h2>📈 실시간 시세 <span class="econ-tv-live">🔴 LIVE</span></h2>
+          <span class="econ-tv-meta">TradingView · 약 15분 지연 · 장 중에만 변동</span>
+        </div>
+        <div class="econ-tv-grid">
+          <div class="econ-tv-widget" data-tv-symbol="KRX:KOSPI" data-tv-name="코스피"></div>
+          <div class="econ-tv-widget" data-tv-symbol="KRX:KOSDAQ" data-tv-name="코스닥"></div>
+          <div class="econ-tv-widget" data-tv-symbol="FX_IDC:USDKRW" data-tv-name="USD/KRW 환율"></div>
+          <div class="econ-tv-widget" data-tv-symbol="TVC:USOIL" data-tv-name="WTI 원유"></div>
+          <div class="econ-tv-widget" data-tv-symbol="TVC:GOLD" data-tv-name="국제 금"></div>
+          <div class="econ-tv-widget" data-tv-symbol="CRYPTO:BTCUSD" data-tv-name="비트코인"></div>
+        </div>
+      </div>
+
+      <h2 style="font-size:18px;font-weight:800;margin:24px 0 12px;padding:0 4px">📊 과거 추이 — 시계열 분석 (정부 임기·종가 기준)</h2>
       <div id="econ-body">
         <div class="loading"><span class="loading-spinner"></span>경제 지표 불러오는 중…</div>
       </div>
     </div>
   `;
+}
+
+// V23.1 — TradingView 위젯 자동 로드 (15분 지연 무료 위젯)
+function setupTradingViewWidgets() {
+  const widgets = document.querySelectorAll('.econ-tv-widget:not(.tv-loaded)');
+  if (!widgets.length) return;
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  widgets.forEach(el => {
+    el.classList.add('tv-loaded');
+    const symbol = el.dataset.tvSymbol;
+    const name = el.dataset.tvName || '';
+    // 라벨 + 위젯 컨테이너
+    el.innerHTML = `
+      <div class="econ-tv-card">
+        <div class="econ-tv-card-name">${escapeHtml(name)}</div>
+        <div class="tradingview-widget-container" data-tv-mount>
+          <div class="tradingview-widget-container__widget"></div>
+        </div>
+      </div>
+    `;
+    const mount = el.querySelector('[data-tv-mount]');
+    // TradingView mini-symbol-overview 위젯 동적 삽입
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      symbol: symbol,
+      width: "100%",
+      height: 180,
+      locale: "kr",
+      dateRange: "12M",
+      colorTheme: isDark ? "dark" : "light",
+      isTransparent: true,
+      autosize: false,
+      largeChartUrl: ""
+    });
+    mount.appendChild(script);
+  });
 }
 
 function renderEconomyBody() {
@@ -17391,7 +17526,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.0 · 📱 모바일 재설계</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.1 · 📈 실시간 시세</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -18489,7 +18624,7 @@ const ROUTE_META = {
   '/map': { title: '정치 분포 지도 — 17 시도 + 250 시군구 정당색', desc: '대한민국 17개 시도 + 250개 시군구 정당색 인터랙티브 지도. 단체장 정보 클릭 탐색.' },
   '/world': { title: '국제 비교 — 12개 민주국가 정치 지표', desc: '12개 민주국가 의원수·여성비율·투표율·민주주의지수·언론자유·청렴도 비교 분석.' },
   '/elections': { title: '역대 지방선거 7·8회 결과 비교', desc: '제7회(2018)·제8회(2022) 전국동시지방선거 시도지사·교육감 결과 정당별 비교.' },
-  '/economy': { title: '한국 경제 지표 9종 — 기준금리·환율·물가·GDP·코스피·코스닥·실업률·수출 + 신용등급', desc: '한국 경제 지표 9종 시계열 (2015~2026). 기준금리 2.5%·원달러 환율·코스피·코스닥·CPI·실업률·GDP·가계부채/GDP·수출. 한국은행 ECOS 라이브. S&P AA·Moody Aa2·Fitch AA- 국가 신용등급 포함. 정부별 임기 평균 비교.' },
+  '/economy': { title: '한국 경제 지표 9종 + 실시간 시세 — 코스피·코스닥·환율·WTI·금·BTC', desc: 'KOSPI·KOSDAQ·USD/KRW 환율·WTI 원유·금·비트코인 실시간 시세 (TradingView 약 15분 지연) + 한국은행 ECOS 9개 지표 시계열. 기준금리·CPI·실업률·GDP·수출·가계부채. S&P AA·Moody Aa2·Fitch AA- 국가 신용등급. 정부별 임기 평균.' },
   '/glossary': { title: '정치 용어 사전 — 136개 용어 8 카테고리', desc: '한국 정치·법안·선거·사법 용어 136개 일반 시민용 사전. 8개 카테고리 검색.' },
   '/about': { title: '소개 · 사이트 정보', desc: '대한민국 패치 노트 사이트 소개. 한국 정치·경제 데이터 종합 플랫폼 미션과 출처.' },
   '/business': { title: '광고·데이터 라이선싱 문의', desc: '광고·데이터 라이선싱·컨설팅 문의. 비즈니스 협업 및 기업용 데이터 API 안내.' },
