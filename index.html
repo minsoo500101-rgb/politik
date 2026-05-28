@@ -11966,21 +11966,28 @@ async function submitRating(meta, rating) {
 // ============================================================
 
 // 페이지뷰 기록 (fire-and-forget — 페이지 진입 시 호출)
-// V23.8/V25.3 — page_id 입력 검증 헬퍼 (template literal·HTML·과도한 길이 + 순수숫자 차단)
-function _isValidPageId(s) {
+// V23.8/V25.3/V25.5 — page_id 입력 검증 (page_type별 다른 규칙)
+function _isValidPageId(s, pageType) {
   if (typeof s !== 'string') return false;
   if (s.length === 0 || s.length > 100) return false;
   if (s.includes('${') || s.includes('<') || s.includes('>') || s.includes('javascript:')) return false;
   if (s.startsWith('undefined') || s.startsWith('null') || s.startsWith('[object')) return false;
-  // V25.3 — 순수 숫자(예: '12345') 거부 — 우리 ID 체계는 영문/조합 (MONA_CD·BILL_ID·kr.* 등)
-  if (/^\d+$/.test(s)) return false;
+  // V25.5 — page_type별 ID 형식 검증
+  if (pageType === 'politician' || pageType === 'bill') {
+    // 우리 정치인(MONA_CD·kr.*)·법안(PRC_*) ID는 영문 포함 — 순수 숫자 거부
+    if (/^\d+$/.test(s)) return false;
+  }
+  if (pageType === 'candidate') {
+    // NEC 후보 ID는 9자리 숫자 표준 (예: 100163128). 5자리 이하 숫자는 가짜로 간주.
+    if (/^\d{1,5}$/.test(s)) return false;
+  }
   return true;
 }
 
 function logPageView(pageType, pageId) {
   if (!pageType || !pageId) return;
-  // V23.8 — 잘못된 page_id가 DB에 저장되는 것을 차단
-  if (!_isValidPageId(String(pageId))) {
+  // V23.8/V25.5 — 잘못된 page_id가 DB에 저장되는 것을 차단 (page_type별 검증)
+  if (!_isValidPageId(String(pageId), pageType)) {
     console.warn('[logPageView] invalid pageId rejected:', pageType, pageId);
     return;
   }
@@ -20783,7 +20790,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.4 · 🧹 텍스트 정리</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.5 · 🎯 candidate ID 보호</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -23283,9 +23290,9 @@ async function populateHomeRanking() {
     loadTopByViews('politician', 7, 20),  // 5 → 20 (필터 후 5개 보장)
     loadTopByViews('bill', 7, 20),
   ]);
-  // V23.8 — 표시 sanitize: 형식 검증
-  const polValid = (polTopRaw || []).filter(r => _isValidPageId(r.page_id));
-  const billValid = (billTopRaw || []).filter(r => _isValidPageId(r.page_id));
+  // V23.8/V25.5 — 표시 sanitize: 형식 검증 (page_type별)
+  const polValid = (polTopRaw || []).filter(r => _isValidPageId(r.page_id, 'politician'));
+  const billValid = (billTopRaw || []).filter(r => _isValidPageId(r.page_id, 'bill'));
 
   // V25.3 — 실존 매치 검증 (state.members·state.bills에 있는 ID만 표시)
   const polTop = polValid
