@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V26.6 — CHANGELOG 정리 + UI 통일 (region 카드 brand hover·tool-card 아이콘 그라데이션·icon 회전 효과) -->
+<!-- V26.7 — 랭킹·법안·me 카드 brand hover 통일 + me 통계 큰 숫자 (30px) + Top 3 동메달 border -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -2079,29 +2079,34 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     grid-template-columns: 60px 1fr 80px;
     gap: 14px;
     align-items: center;
-    padding: 12px 16px 12px 14px;
+    padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-3);
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-left: 4px solid var(--text-2);
-    border-radius: 10px;
-    transition: all 0.18s;
+    border-radius: var(--rd-lg);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     position: relative;
   }
   .rank-v2:hover {
-    transform: translateX(2px);
-    box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: var(--sh-md);
+    border-color: var(--brand);
+    border-left-color: var(--brand);
   }
   [data-theme="dark"] .rank-v2:hover {
-    box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+    box-shadow: var(--sh-lg);
   }
   .rank-v2.rank-click { cursor: pointer; }
   .rank-v2:nth-child(-n+3) {
-    background: linear-gradient(135deg, rgba(251,191,36,0.04) 0%, transparent 100%);
+    background: linear-gradient(135deg, rgba(251,191,36,0.06) 0%, var(--bg-card) 60%);
+    box-shadow: var(--sh-sm);
   }
   [data-theme="dark"] .rank-v2:nth-child(-n+3) {
-    background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, transparent 100%);
+    background: linear-gradient(135deg, rgba(251,191,36,0.10) 0%, var(--bg-card) 70%);
   }
+  .rank-v2:nth-child(1) { border-left-color: #d97706; }
+  .rank-v2:nth-child(2) { border-left-color: #9ca3af; }
+  .rank-v2:nth-child(3) { border-left-color: #b45309; }
   .rank-v2-rank {
     display: flex;
     flex-direction: column;
@@ -4661,9 +4666,14 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     margin-bottom: 6px;
     font-family: ui-monospace, SFMono-Regular, monospace;
   }
-  .me-h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-  .me-sub { font-size: 13px; color: var(--text-2); margin-top: 8px; line-height: 1.6; }
-  .me-sub b { color: var(--text); font-weight: 700; }
+  .me-h1 {
+    font-size: var(--fs-display);
+    font-weight: var(--fw-heavy);
+    letter-spacing: -0.025em;
+    line-height: var(--lh-tight);
+  }
+  .me-sub { font-size: var(--fs-md); color: var(--text-2); margin-top: var(--sp-2); line-height: var(--lh-base); }
+  .me-sub b { color: var(--brand); font-weight: var(--fw-bold); }
   .me-stats {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -4677,22 +4687,33 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     .me-stats { grid-template-columns: repeat(2, 1fr); }
   }
   .me-stat-card {
-    padding: 12px 10px;
+    padding: var(--sp-3) var(--sp-2);
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--rd-lg);
     text-align: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+  .me-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sh-md);
+    border-color: var(--brand);
   }
   .me-stat-val {
-    font-size: 22px; font-weight: 900;
+    font-size: 30px;
+    font-weight: var(--fw-heavy);
     color: var(--text);
     font-variant-numeric: tabular-nums;
     line-height: 1;
+    letter-spacing: -0.02em;
   }
+  .me-stat-card:hover .me-stat-val { color: var(--brand); }
   .me-stat-lbl {
-    font-size: 11px; color: var(--text-2);
-    margin-top: 6px;
-    font-weight: 600;
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+    margin-top: var(--sp-2);
+    font-weight: var(--fw-semi);
+    letter-spacing: 0.3px;
   }
   .me-loading {
     padding: 40px;
@@ -4721,19 +4742,21 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
   .me-card {
     display: block;
-    padding: 10px 12px;
+    padding: var(--sp-3);
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-left: 3px solid var(--text-2);
-    border-radius: 8px;
+    border-radius: var(--rd-md);
     text-decoration: none;
-    transition: all 0.13s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   }
   .me-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    box-shadow: var(--sh-md);
+    border-color: var(--brand);
+    border-left-color: var(--brand);
   }
-  [data-theme="dark"] .me-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+  [data-theme="dark"] .me-card:hover { box-shadow: var(--sh-lg); }
   .me-card-name { font-size: 14px; font-weight: 700; color: var(--text); }
   .me-card-meta { font-size: 11.5px; font-weight: 600; margin-top: 2px; }
   .me-card-date { font-size: 10.5px; color: var(--dim); margin-top: 6px; }
@@ -4745,15 +4768,20 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .me-row {
     display: flex; justify-content: space-between; align-items: center;
     gap: 10px;
-    padding: 9px 12px;
+    padding: var(--sp-2) var(--sp-3);
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--rd-md);
     text-decoration: none;
     color: var(--text);
-    transition: background 0.13s;
+    transition: background 0.13s, border-color 0.13s, transform 0.13s;
+    min-height: var(--touch-min);
   }
-  .me-row:hover { background: var(--bg-elev); }
+  .me-row:hover {
+    background: var(--bg-elev);
+    border-color: var(--brand);
+    transform: translateX(2px);
+  }
   .me-row-main { flex: 1; min-width: 0; }
   .me-row-name {
     font-size: 13px; font-weight: 700;
@@ -5627,16 +5655,18 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
   .patch-list { display: flex; flex-direction: column; gap: 8px; }
   .patch-row {
-    padding: 12px 14px;
-    background: var(--bg-elev);
-    border-radius: 10px;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-lg);
     border-left: 4px solid var(--text-2);
-    transition: transform 0.13s, box-shadow 0.13s, background 0.13s;
+    transition: transform 0.13s, box-shadow 0.13s, border-color 0.13s;
   }
   .patch-row:hover {
-    transform: translateX(2px);
-    background: var(--bg-card);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+    border-color: var(--brand);
+    border-left-color: var(--brand);
+    box-shadow: var(--sh-md);
   }
   [data-theme="dark"] .patch-row:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
   .patch-row.patch-fresh {
@@ -17452,6 +17482,21 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V26.7', date: '2026-05-28', title: '🏆 랭킹·법안·/me 페이지 ds 통일 라운드', items: [
+    '🏅 랭킹 카드 (.rank-v2) — 활동 점수 페이지',
+    '  • bg-card + 1px border + 4px 왼쪽 컬러 띠',
+    '  • hover: brand 컬러 + lift -2px + sh-md',
+    '  • Top 3 동메달 border (1위 #d97706 / 2위 #9ca3af / 3위 #b45309)',
+    '  • Top 3 카드 골드 그라데이션 + sh-sm 살짝',
+    '📜 법안 row (.patch-row) — 22대 법안 리스트',
+    '  • bg-elev → bg-card + border 추가 (V26.5 ds-card 패턴)',
+    '  • hover: brand 컬러 border + lift -2px',
+    '🙋 /me 대시보드 — 본인 활동',
+    '  • me-h1: 28px → fs-display (clamp 28~48px)',
+    '  • me-sub b: text → brand 컬러 강조',
+    '  • me-stat-card: 22px → 30px 큰 숫자 + hover brand 컬러 전환',
+    '  • me-stat-card·me-card·me-row: 모두 brand hover로 통일'
+  ]},
   { v: 'V26.6', date: '2026-05-28', title: '✨ UI 통일 라운드 — region 카드 + tool-card 아이콘 강화', items: [
     '🧹 CHANGELOG 정리 — 사용자 코멘트 라인 6개 제거 (V26.5·V26.4·V26.3·V26.2·V26.0·V22.4)',
     '🎴 e26-region-card (9회 지선 17 시도 카드):',
@@ -21358,7 +21403,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.6 · ✨ UI 통일</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.7 · 🏆 랭킹 폴리시</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
