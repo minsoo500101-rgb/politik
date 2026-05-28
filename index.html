@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V26.7 — 랭킹·법안·me 카드 brand hover 통일 + me 통계 큰 숫자 (30px) + Top 3 동메달 border -->
+<!-- V26.8 — Hero 통계 strip 4개 큰 숫자 카드 (선거/평시 시즌별), brand 액센트 띠, 클릭 → 해당 페이지 -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -10516,6 +10516,76 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     border-radius: var(--rd-sm);
   }
 
+  /* ── Hero stat strip (홈 큰 숫자 4종) ── */
+  .ds-hero-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-3);
+    margin-top: var(--sp-4);
+    margin-bottom: var(--sp-3);
+  }
+  .ds-hero-stat {
+    padding: var(--sp-3) var(--sp-3);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-lg);
+    text-align: left;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .ds-hero-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sh-md);
+    border-color: var(--brand);
+    text-decoration: none;
+  }
+  .ds-hero-stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--brand), var(--brand-soft));
+    opacity: 0; transition: opacity 0.15s;
+  }
+  .ds-hero-stat:hover::before { opacity: 1; }
+  .ds-hero-stat--accent::before { opacity: 1; }
+  .ds-hero-stat-eye {
+    font-size: 10px;
+    font-weight: var(--fw-heavy);
+    color: var(--text-2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: var(--sp-1);
+  }
+  .ds-hero-stat-val {
+    font-size: 28px;
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .ds-hero-stat-val--brand { color: var(--brand); }
+  .ds-hero-stat-val--danger { color: var(--danger); }
+  .ds-hero-stat-lbl {
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+    font-weight: var(--fw-medium);
+    margin-top: var(--sp-1);
+  }
+  @media (max-width: 760px) {
+    .ds-hero-strip { grid-template-columns: repeat(2, 1fr); gap: var(--sp-2); }
+    .ds-hero-stat-val { font-size: 24px; }
+    .ds-hero-stat { padding: var(--sp-2) var(--sp-3); }
+  }
+  @media (max-width: 380px) {
+    .ds-hero-stat-val { font-size: 22px; }
+  }
+
   /* ── Section spacing 통일 ── */
   .ds-section { padding: var(--sp-6) 0; }
   .ds-section-h {
@@ -17482,6 +17552,18 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V26.8', date: '2026-05-28', title: '📊 홈 Hero 통계 strip — 4개 큰 숫자 카드', items: [
+    '🎯 .ds-hero-strip 신규 유틸 — 4개 그리드 (모바일 2x2)',
+    '🔢 시즌별 stat 자동 분기:',
+    '  • 선거 시즌 (D-30 이내): D-Day(빨강) · 후보 697명 · 22대 법안 · 인물 도감',
+    '  • 평시: 22대 법안(brand) · 인물 · 경제 9지표 · 17 시도',
+    '🎨 hero stat 디자인:',
+    '  • 28px 큰 숫자 (모바일 24px), tabular-nums, tight letter-spacing',
+    '  • hover에 brand 그라데이션 띠 상단 등장 + lift + sh-md',
+    '  • accent 카드는 띠 항상 표시',
+    '  • 시즌별 색조: D-Day는 danger, 평시 메인은 brand',
+    '📱 모바일 720px 이하 2x2 그리드 자동 전환'
+  ]},
   { v: 'V26.7', date: '2026-05-28', title: '🏆 랭킹·법안·/me 페이지 ds 통일 라운드', items: [
     '🏅 랭킹 카드 (.rank-v2) — 활동 점수 페이지',
     '  • bg-card + 1px border + 4px 왼쪽 컬러 띠',
@@ -21403,8 +21485,33 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.7 · 🏆 랭킹 폴리시</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.8 · 📊 hero 통계</a></h1>
           <p>${_heroSub}</p>
+          ${(() => {
+            // V26.8 hero stat strip — 4개 큰 숫자
+            const billsCount = (state.bills?.length || 0).toLocaleString();
+            const polCount = totalCount.toLocaleString();
+            const necTotal = state.nec2026Governors ? ((state.nec2026Governors.totalGov||0)+(state.nec2026Governors.totalMuni||0)+(state.nec2026Governors.totalEdu||0)) : 0;
+            const isElect = _isElectionSeason;
+            const dDayN = isElect ? (_ddiff === 0 ? 'Day' : _ddiff) : null;
+            const stats = isElect ? [
+              { href: '/election2026', eye: 'D-DAY', val: dDayN, lbl: '2026.6.3 9회 지선', accent: true, valClass: 'ds-hero-stat-val--danger' },
+              { href: '/election2026', eye: '후보', val: necTotal ? necTotal.toLocaleString() : '697', lbl: '광역·기초·교육감', valClass: '' },
+              { href: '/bills', eye: '법안', val: billsCount, lbl: '22대 통과', valClass: '' },
+              { href: '/dex', eye: '인물', val: polCount, lbl: '도감 + 역사', valClass: 'ds-hero-stat-val--brand' },
+            ] : [
+              { href: '/bills', eye: '법안', val: billsCount, lbl: '22대 통과', accent: true, valClass: 'ds-hero-stat-val--brand' },
+              { href: '/dex', eye: '인물', val: polCount, lbl: '도감 + 역사', valClass: '' },
+              { href: '/economy', eye: '경제', val: '9', lbl: '실시간 지표', valClass: '' },
+              { href: '/map', eye: '지역', val: '17', lbl: '시도 + 226 시군구', valClass: '' },
+            ];
+            return `<div class="ds-hero-strip">${stats.map(s => `
+              <a href="${s.href}" class="ds-hero-stat${s.accent ? ' ds-hero-stat--accent' : ''}">
+                <div class="ds-hero-stat-eye">${s.eye}</div>
+                <div class="ds-hero-stat-val ${s.valClass}">${s.val}</div>
+                <div class="ds-hero-stat-lbl">${s.lbl}</div>
+              </a>`).join('')}</div>`;
+          })()}
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
             <span class="share-label">공유:</span>
