@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V27.7 — UI 통일 마무리: bm-card(북마크) + about-stat(통계 30px) + changelog-entry(변경이력 carousel) brand -->
+<!-- V27.8 — /election2026 조잡함 정리: hero·notice·section·region-card·라이브후보·외부링크 tokens 일관 적용, 점선 → solid, 초록 → brand, 격전지 톤다운 -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -5963,77 +5963,106 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .e26-hero {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 24px; align-items: center;
+    gap: var(--sp-5); align-items: center;
     background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 26px 30px;
-    margin-bottom: 18px;
+    border-left: 4px solid #ef4444;
+    border-radius: var(--rd-xl);
+    padding: var(--sp-5) var(--sp-6);
+    margin-bottom: var(--sp-4);
     position: relative; overflow: hidden;
   }
   .e26-hero::before {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 100% 50%, rgba(239,68,68,0.10) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 100% 50%, rgba(239,68,68,0.08) 0%, transparent 60%);
     pointer-events: none;
   }
   .e26-hero-l, .e26-hero-r { position: relative; z-index: 1; }
   .e26-eye {
     font-size: 10.5px; color: var(--dim);
     letter-spacing: 2.5px; text-transform: uppercase;
-    font-weight: 700; margin-bottom: 8px;
+    font-weight: var(--fw-heavy); margin-bottom: var(--sp-2);
   }
   .e26-hero-l h1 {
-    font-size: 28px; font-weight: 800; color: var(--text);
-    letter-spacing: -0.6px; margin-bottom: 6px;
+    font-size: var(--fs-display);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    letter-spacing: -0.025em;
+    line-height: var(--lh-tight);
+    margin-bottom: var(--sp-1);
   }
-  .e26-hero-l p { font-size: 13px; color: var(--text-2); margin-bottom: 10px; }
+  .e26-hero-l p {
+    font-size: var(--fs-md);
+    color: var(--text-2);
+    line-height: var(--lh-base);
+    margin-bottom: var(--sp-3);
+  }
   .e26-status {
     display: inline-flex; align-items: center; gap: 7px;
     padding: 5px 12px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    font-size: 12px; font-weight: 700; color: var(--text);
+    border-radius: var(--rd-pill);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    color: var(--text);
   }
   .e26-status-dot { width: 8px; height: 8px; border-radius: 50%; animation: patch-pulse 1.8s infinite; }
   .e26-dday {
-    font-size: 56px; font-weight: 900;
-    color: #ef4444; letter-spacing: -2px;
-    line-height: 1; text-align: center;
+    font-size: 64px;
+    font-weight: var(--fw-heavy);
+    color: #ef4444;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-align: center;
     font-variant-numeric: tabular-nums;
   }
   .e26-dday-label {
-    margin-top: 4px;
-    font-size: 11px; color: var(--text-2);
-    font-weight: 600; text-align: center;
+    margin-top: var(--sp-1);
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+    font-weight: var(--fw-semi);
+    text-align: center;
     letter-spacing: 0.4px;
   }
 
   .e26-notice {
-    display: flex; gap: 12px;
-    padding: 14px 18px;
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.25);
-    border-left: 4px solid var(--warn);
-    border-radius: 10px;
-    margin-bottom: 18px;
-    font-size: 12.5px; line-height: 1.55;
+    display: flex; gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--brand-pale);
+    border: 1px solid var(--brand);
+    border-left: 4px solid var(--brand);
+    border-radius: var(--rd-md);
+    margin-bottom: var(--sp-4);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-base);
   }
-  [data-theme="dark"] .e26-notice { background: rgba(245,158,11,0.13); }
+  [data-theme="dark"] .e26-notice {
+    background: rgba(129,140,248,0.10);
+    border-color: var(--brand);
+  }
   .e26-notice-icon { font-size: 20px; flex-shrink: 0; }
   .e26-notice-body { color: var(--text); }
-  .e26-notice-body b { color: var(--warn); font-weight: 800; }
+  .e26-notice-body b { color: var(--brand); font-weight: var(--fw-heavy); }
 
   .e26-section {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px 24px;
-    margin-bottom: 18px;
+    border-radius: var(--rd-xl);
+    padding: var(--sp-5) var(--sp-5);
+    margin-bottom: var(--sp-4);
+    transition: border-color 0.15s;
   }
+  .e26-section:hover { border-color: var(--border-strong); }
   .e26-section h2 {
-    font-size: 16px; font-weight: 800; color: var(--text);
-    letter-spacing: -0.3px; margin-bottom: 14px;
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    letter-spacing: -0.015em;
+    margin-bottom: var(--sp-3);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
   }
   .e26-sub { font-size: 12px; color: var(--text-2); margin-bottom: 14px; }
 
@@ -6105,8 +6134,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--rd-lg);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--sp-4);
     transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
   }
   .e26-region-card:hover {
     transform: translateY(-2px);
@@ -6116,83 +6148,101 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   [data-theme="dark"] .e26-region-card:hover { box-shadow: var(--sh-lg); }
   .e26-region-head {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px;
+    gap: var(--sp-2);
   }
   .e26-region-name {
-    font-size: 13.5px; font-weight: 800; color: var(--text);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    letter-spacing: -0.01em;
   }
   .e26-region-muni {
-    font-size: 10.5px; color: var(--text-2);
-    padding: 2px 7px; border-radius: 8px;
-    background: var(--bg-card);
-    font-weight: 600;
+    font-size: 10.5px;
+    color: var(--text-2);
+    padding: 2px 7px;
+    border-radius: var(--rd-sm);
+    background: var(--bg-elev);
+    font-weight: var(--fw-semi);
   }
   .e26-region-incumbent {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0;
-    border-top: 1px dashed var(--border);
-    border-bottom: 1px dashed var(--border);
-    margin-bottom: 10px;
-    font-size: 11.5px;
+    padding: var(--sp-2) 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--fs-xs);
   }
-  .e26-region-il { color: var(--text-2); }
-  .e26-region-iv b { color: var(--text); font-weight: 700; }
+  .e26-region-il { color: var(--text-2); font-weight: var(--fw-semi); }
+  .e26-region-iv b { color: var(--text); font-weight: var(--fw-bold); }
   .e26-region-iv em {
-    font-style: normal; font-weight: 700;
+    font-style: normal;
+    font-weight: var(--fw-bold);
     font-size: 10.5px;
-    padding: 1px 5px; border-radius: 6px;
-    background: var(--bg-card);
+    padding: 1px 5px;
+    border-radius: var(--rd-sm);
+    background: var(--bg-elev);
   }
-  /* V26.4 — 8회 결과·격전지 표시 */
+  /* V26.4 — 8회 결과·격전지 표시 (V27.8 톤다운) */
   .e26-region-card.e26-region-battle {
-    border: 1.5px solid rgba(234,88,12,0.5);
-    box-shadow: 0 1px 6px rgba(234,88,12,0.12);
+    border-color: rgba(234,88,12,0.4);
+  }
+  .e26-region-card.e26-region-battle:hover {
+    border-color: #ea580c;
   }
   [data-theme="dark"] .e26-region-card.e26-region-battle {
-    border-color: rgba(251,146,60,0.5);
+    border-color: rgba(251,146,60,0.35);
   }
   .e26-battle-tag {
-    font-size: 11px;
-    padding: 1px 5px;
+    font-size: 10px;
+    padding: 1px 6px;
     background: rgba(234,88,12,0.12);
     color: #ea580c;
-    border-radius: 4px;
-    margin-left: 4px;
+    border-radius: var(--rd-sm);
+    margin-left: var(--sp-1);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.2px;
   }
   [data-theme="dark"] .e26-battle-tag { color: #fb923c; background: rgba(251,146,60,0.18); }
   .e26-region-prev {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 6px 0;
-    font-size: 11px;
-    border-bottom: 1px dashed var(--border);
-    margin-bottom: 6px;
+    padding: var(--sp-1) 0;
+    font-size: var(--fs-xs);
+    color: var(--text-2);
   }
+  .e26-region-prev .e26-region-il { font-weight: var(--fw-semi); }
   .e26-region-race {
     font-size: 11px;
     color: var(--text-2);
-    background: var(--bg-card);
-    padding: 5px 8px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    line-height: 1.4;
+    background: var(--bg-elev);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--rd-md);
+    border-left: 3px solid var(--brand);
+    line-height: var(--lh-snug);
   }
   .e26-cands {
-    background: rgba(16,185,129,0.06);
-    border-left: 3px solid var(--ok);
-    border-radius: 6px;
-    padding: 8px 10px;
-    margin-bottom: 10px;
+    background: var(--brand-pale);
+    border: 1px solid var(--brand);
+    border-radius: var(--rd-md);
+    padding: var(--sp-2) var(--sp-3);
   }
-  [data-theme="dark"] .e26-cands { background: rgba(16,185,129,0.14); }
+  [data-theme="dark"] .e26-cands {
+    background: rgba(129,140,248,0.10);
+    border-color: var(--brand);
+  }
   .e26-cands-h {
-    font-size: 10.5px; font-weight: 800; color: var(--ok);
-    letter-spacing: 0.5px; text-transform: uppercase;
-    margin-bottom: 5px;
+    font-size: 10px;
+    font-weight: var(--fw-heavy);
+    color: var(--brand);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: var(--sp-1);
   }
   .e26-cand-row {
-    font-size: 11.5px; line-height: 1.5;
-    color: var(--text); margin-bottom: 2px;
-    display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+    font-size: var(--fs-xs);
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 2px;
+    display: flex; align-items: center; gap: 5px;
+    flex-wrap: wrap;
   }
   .e26-cand-row b { font-weight: 700; }
   .e26-cand-giho {
@@ -6867,24 +6917,28 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     text-align: right;
   }
   .e26-region-links {
-    display: flex; gap: 6px; flex-wrap: wrap;
+    display: flex; gap: var(--sp-1); flex-wrap: wrap;
+    margin-top: var(--sp-1);
   }
   .e26-link {
     flex: 1; min-width: 0;
     text-align: center;
-    padding: 6px 8px;
-    background: var(--bg-card);
+    padding: var(--sp-2) var(--sp-2);
+    background: var(--bg-elev);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 10.5px; font-weight: 600;
-    color: var(--text);
+    border-radius: var(--rd-sm);
+    font-size: 10.5px;
+    font-weight: var(--fw-semi);
+    color: var(--text-2);
     text-decoration: none;
-    transition: all 0.12s;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .e26-link:hover {
-    background: var(--text); color: var(--bg-card);
-    border-color: var(--text); text-decoration: none;
+    background: var(--brand);
+    color: #fff;
+    border-color: var(--brand);
+    text-decoration: none;
   }
 
   .e26-sources {
@@ -17680,6 +17734,30 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V27.8', date: '2026-05-28', title: '🗳 /election2026 조잡함 정리', items: [
+    '진단: 한 region 카드에 8개 요소 산만 + 톤 충돌 (초록·노랑·점선·실선 혼재)',
+    '🏛 e26-hero',
+    '  • 16px → rd-xl, padding 토큰화',
+    '  • h1: 28px → fs-display (clamp 28~48px) + tight',
+    '  • 빨강 왼쪽 띠 (D-Day 정체성 유지)',
+    '  • D-Day 56px → 64px (시각 anchor)',
+    '🔔 e26-notice — 노랑 경고 → brand 안내',
+    '  • 노랑/주황(warn) → brand 인디고 + brand-pale 배경',
+    '📋 e26-section',
+    '  • rd-14 → rd-xl, padding sp-5/sp-5',
+    '  • h2: 16px → fs-lg + heavy + 아이콘 자리',
+    '🎴 e26-region-card 내부 위계 정리',
+    '  • padding/margin/gap 모두 sp-2/sp-4 토큰화',
+    '  • 점선(dashed) → 실선 통일',
+    '  • 글자 5종 → 3종 (fs-md·fs-xs·10.5px)',
+    '  • em 배경: bg-card → bg-elev 통일',
+    '🟢 e26-cands (라이브 후보 영역) 초록 → brand',
+    '  • rgba(16,185,129,...) → brand-pale + brand border',
+    '  • cands-h: ok 컬러 → brand 컬러 + uppercase tight',
+    '🔥 e26-region-battle 격전지 톤다운',
+    '  • 1.5px outline → 1px border-color (밋밋하지 않게 강조 유지)',
+    '🔗 e26-link — 호버 컬러 black → brand (다른 카드들과 통일)'
+  ]},
   { v: 'V27.7', date: '2026-05-28', title: '🎯 UI 통일 마무리 — bookmark·about·changelog', items: [
     '⭐ .bm-card (/bookmarks 북마크 카드)',
     '  • rd-lg + brand hover + sh-md (다크: sh-lg)',
@@ -21758,7 +21836,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.7 · 🎯 통일 마무리</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.8 · 🗳 지선 정리</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
