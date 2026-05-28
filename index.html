@@ -1973,6 +1973,13 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     .col-6 { grid-column: span 12; }
     .col-8 { grid-column: span 12; }
   }
+  /* V29.6 — hero 2단 grid가 701~1024px(태블릿 전 영역)에서 왼쪽 칼럼을 짓눌러
+     버튼만 우하단에 동떨어지던 문제. 1024px 이하는 세로 stack으로 전환. */
+  @media (max-width: 1024px) {
+    .dash-hero { grid-template-columns: 1fr; }
+    .dash-hero-r { flex-wrap: wrap; }
+    .hero-btn { flex: 1; justify-content: center; }
+  }
   @media (max-width: 700px) {
     .dash { padding: 16px 14px 50px; }
     .dash-hero { grid-template-columns: 1fr; padding: 22px 20px; }
@@ -11530,7 +11537,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V29.5</a>
+      <a href="/changelog" id="foot-year">V29.6</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18370,6 +18377,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V29.6', date: '2026-05-29', title: '📱 태블릿 hero 레이아웃 — 좌우 쏠림 fix', items: [
+    '홈 hero 2단(텍스트+버튼) grid가 701~1024px에서 왼쪽 칼럼을 짓눌러 버튼만 우하단에 동떨어지던 문제',
+    '1024px 이하(태블릿 전 영역) 세로 stack 전환 — 텍스트·통계·공유 풀폭 + 버튼 3등분 가로',
+    '1025px+ 데스크탑 2단 레이아웃은 그대로 유지'
+  ]},
   { v: 'V29.5', date: '2026-05-29', title: '🎨 시민 여론판 카드 — 라이트 모드 검정 글씨', items: [
     '원인: 홈 진입 카드가 라이트 모드에서도 brand 그라데이션+흰 글씨 고정 → 본문이 안 읽힘',
     '라이트: 연한 brand 배경 + 검정 본문(var(--text)) + brand eyebrow·테두리, CTA는 brand 채움 버튼',
@@ -22925,7 +22937,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.5 · 🎨 여론판 라이트 가독성</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.6 · 📱 태블릿 hero fix</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
