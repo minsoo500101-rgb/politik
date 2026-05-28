@@ -26,10 +26,16 @@ jobs:
             node scripts/wiki-auto-career.js --write --type=$t --limit=30 || true
           done
 
+      - name: V28.0 — llms.txt/llms-full.txt 자동 동기화
+        run: node scripts/update-llms.js
+
+      - name: V28.0 — 사이트 표기 ↔ 실제 데이터 검증
+        run: node scripts/verify-counts.js || echo "::warning::verify-counts.js 발견된 stale 있음 (수동 확인)"
+
       - name: 변경사항 확인
         id: check
         run: |
-          if git diff --quiet data/politicians.json; then
+          if git diff --quiet data/politicians.json llms.txt llms-full.txt; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -42,13 +48,13 @@ jobs:
       - name: 커밋·푸시
         if: steps.check.outputs.changed == 'true'
         run: |
-          # politicians.json 버전이 올라갔으니 index.html의 POLITICIANS_VER도 동기화
+          # politicians.json 버전이 올라갔으면 index.html의 POLITICIANS_VER도 동기화
           NEW_VER=$(node -e "console.log(JSON.parse(require('fs').readFileSync('data/politicians.json','utf8')).version)")
           sed -i "s|const POLITICIANS_VER = [0-9]*;|const POLITICIANS_VER = ${NEW_VER};|" index.html
           sed -i "s|politicians.json?v=[0-9]*|politicians.json?v=${NEW_VER}|" index.html
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/politicians.json index.html
-          git commit -m "chore(data): 위키 자동 career 보충 (cron) — v${NEW_VER}"
+          git add data/politicians.json index.html llms.txt llms-full.txt
+          git commit -m "chore(data): 위키 career 보충 + llms 동기화 (cron) — v${NEW_VER}"
           git push

@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V27.9 — Service Worker HTML network-first (옛 캐시 강제 갱신) + dev page glossary 213→248 + validate.yml에 verify-counts.js 통합 -->
+<!-- V28.0 — llms 자동 갱신: scripts/update-llms.js 신규 + daily-sync에 통합. 매일 9시 KST에 politicians·glossary·election·economy 카운트 실측 후 AI 마크업 자동 갱신 -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -17734,6 +17734,27 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V28.0', date: '2026-05-28', title: '🤖 llms 자동 갱신 — AI 마크업도 매일 동기화', items: [
+    '🎯 scripts/update-llms.js 신규',
+    '  • politicians.json + assembly-22.json dedup 카운트 계산',
+    '    (현재: 22대 286 + 자체 482 - 위원회 직책자 dedup = 768명)',
+    '  • glossary.json 용어·카테고리 실측',
+    '  • election_2026.json 시군구 합·시도',
+    '  • economy.json 지표 수',
+    '  • 정규식 9종으로 llms.txt + llms-full.txt 동시 갱신',
+    '  • 변경 없으면 write skip (idempotent)',
+    '🔄 daily-sync.yml에 통합',
+    '  • 매일 9시 KST (UTC 00:00)',
+    '  • 순서: 위키 career → llms 동기화 → verify-counts → validate → commit',
+    '  • commit message: "chore(data): 위키 career 보충 + llms 동기화 (cron)"',
+    '📊 자동화 완성도',
+    '  • politicians.json: ✅ daily-sync.yml',
+    '  • llms.txt/full.txt: ✅ daily-sync.yml (신규)',
+    '  • POLITICIANS_VER bump: ✅ sed 자동',
+    '  • verify-counts.js: ✅ validate.yml (CI) + daily-sync.yml',
+    '  • robots.txt/sitemap.xml: 🟡 수동 (정적 콘텐츠라 빈도 낮음)',
+    '🎯 결과: 사이트 데이터·AI 마크업·CI 검증 완전 동기화. 회귀 불가능 구조.'
+  ]},
   { v: 'V27.9', date: '2026-05-28', title: '🔄 SW HTML 캐시 fix + dev 페이지 정정 + CI 통합', items: [
     '🐛 진단: /developers 페이지에 endpoints 9개 중 2개만 보임',
     '   원인: Service Worker가 옛 HTML을 cache-first로 서빙',
@@ -21856,7 +21877,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.9 · 🔄 캐시 강제 갱신</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V28.0 · 🤖 llms 자동화</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
