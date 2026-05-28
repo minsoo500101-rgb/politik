@@ -243,7 +243,8 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<link rel="preload" as="fetch" href="data/politicians.json?v=24" crossorigin>
+<!-- V26.1 — preload → prefetch (모든 페이지 LCP 필수 아님, /m/*·/dex·홈만 필요) -->
+<link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
@@ -18938,7 +18939,7 @@ function renderGlossaryBody() {
     terms = terms.filter(t =>
       t.term.toLowerCase().includes(q) ||
       t.def.toLowerCase().includes(q) ||
-      (t.related || []).some(r => r.toLowerCase().includes(q))
+      (Array.isArray(t.related) ? t.related : []).some(r => r.toLowerCase().includes(q))
     );
   }
   // 카테고리별 그룹
@@ -18982,7 +18983,7 @@ function renderGlossaryBody() {
           ${t.def_long ? `<div class="gloss-def-long">${escapeHtml(t.def_long)}</div>` : ''}
           ${t.example ? `<div class="gloss-example"><b>예시</b> ${escapeHtml(t.example)}</div>` : ''}
           ${t.history ? `<div class="gloss-history"><b>역사</b> ${escapeHtml(t.history)}</div>` : ''}
-          ${t.related && t.related.length ? `<div class="gloss-related">관련: ${t.related.map(r => `<span class="gloss-rel-tag" data-rel="${escapeHtml(r)}">${escapeHtml(r)}</span>`).join('')}</div>` : ''}
+          ${Array.isArray(t.related) && t.related.length ? `<div class="gloss-related">관련: ${t.related.map(r => `<span class="gloss-rel-tag" data-rel="${escapeHtml(r)}">${escapeHtml(r)}</span>`).join('')}</div>` : ''}
         </div>`;
     });
     html += '</div>';
@@ -20816,7 +20817,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V26.0 · ⚡ 최적화</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V26.1 · 🐛 glossary fix</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
