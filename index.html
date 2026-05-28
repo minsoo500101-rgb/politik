@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V28.1 — 사전투표 D-1 캠페인: 홈 hero 자동분기 (D-1·진행중·종료) + /early-voting 신규 페이지 (체크리스트·7장 투표·FAQ·CTA 4종) + sitemap + llms 추가 -->
+<!-- V28.2 — 사전투표율 라이브 fetch: /api/early-vote-rate 신규 (다중 fallback: NEC API·info.nec.go.kr·수동슬롯·8회참고) + 5분 폴링 라이브 카드 (52px 누적%·8회 비교·시도별 옵션) -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -10550,6 +10550,67 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     color: var(--text);
     letter-spacing: -0.02em;
     margin: 0 0 var(--sp-3);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+  /* V28.2 — 라이브 사전투표율 카드 */
+  .ev-live-section { border-left: 4px solid var(--brand); }
+  .ev-live-dot {
+    font-size: 14px;
+    color: var(--ok);
+    animation: patch-pulse 1.6s infinite;
+  }
+  .ev-live-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: var(--sp-4);
+    padding: var(--sp-3) 0;
+  }
+  @media (max-width: 600px) {
+    .ev-live-grid { grid-template-columns: 1fr; gap: var(--sp-3); }
+  }
+  .ev-live-main, .ev-live-side {
+    padding: var(--sp-4);
+    background: var(--bg-elev);
+    border-radius: var(--rd-lg);
+  }
+  .ev-live-eye {
+    font-size: 10px;
+    font-weight: var(--fw-heavy);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: var(--sp-2);
+  }
+  .ev-live-rate {
+    font-size: 52px;
+    font-weight: var(--fw-heavy);
+    color: var(--brand);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 600px) { .ev-live-rate { font-size: 42px; } }
+  .ev-live-prev {
+    font-size: 36px;
+    font-weight: var(--fw-heavy);
+    color: var(--text-2);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .ev-live-meta {
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+    margin-top: var(--sp-2);
+  }
+  .ev-live-foot {
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+    padding-top: var(--sp-3);
+    border-top: 1px dashed var(--border);
+    margin-top: var(--sp-2);
   }
   .ev-section-sub {
     font-size: var(--fs-sm);
@@ -18008,6 +18069,25 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V28.2', date: '2026-05-28', title: '📊 사전투표율 라이브 fetch — NEC 다중 fallback', items: [
+    '/api/early-vote-rate Vercel Serverless 신규',
+    '🔁 4중 fallback chain (NEC가 어느 채널로 발표할지 모름)',
+    '  1. data.go.kr NEC API (PrelInfoInqireService 시도)',
+    '  2. info.nec.go.kr HTML scrape (서버 fetch, CORS 우회)',
+    '  3. data/early-vote-fallback.json (운영자 수동 갱신 슬롯)',
+    '  4. 8회 동시간대 참고치 (PREV_8TH_HOURLY 14개 시각)',
+    '⏱ 캐시: 사전투표 중 5분·평시 30분 (Vercel Edge SWR)',
+    '🛠 scripts/update-vote-rate.js — 운영자 수동 갱신 CLI',
+    '  • node scripts/update-vote-rate.js --rate=12.34 --region="서울:13.2,..."',
+    '📊 /early-voting 페이지 라이브 카드',
+    '  • 52px 큰 누적 % (반응형 42px)',
+    '  • 2022 8회 동시간대 비교 (회색 36px)',
+    '  • 갱신 시각·단계(1일차/2일차)·라이브 dot 펄스',
+    '  • source 라벨: 📡 NEC API·🌐 통합선거정보·📝 수동·📚 8회참고',
+    '  • 페이지 진입 즉시 fetch + 5분 폴링 (페이지 떠나면 자동 정지)',
+    '🎯 결과: NEC 공식 채널 어느 하나라도 작동하면 실시간 표시.',
+    '    모두 실패 시 8회 참고치 + NEC 공식 링크 fallback.'
+  ]},
   { v: 'V28.1', date: '2026-05-28', title: '🗳 사전투표 D-1 캠페인 — 홈 자동분기 + 신규 페이지', items: [
     '내일(5/29) 사전투표 시작 — 트래픽 캡처 캠페인',
     '🏠 홈 hero 시즌 자동분기 (3단계 추가)',
@@ -18799,6 +18879,31 @@ function renderEarlyVotingPage() {
         ${phaseBadge}
       </header>
 
+      <!-- V28.2 — 라이브 사전투표율 카드 -->
+      <section class="ev-section ev-live-section" id="ev-live-section">
+        <h2>📊 사전투표율 라이브
+          <span class="ev-live-dot" id="ev-live-dot" title="자동 갱신 중">●</span>
+        </h2>
+        <div class="ev-live-grid" id="ev-live-grid">
+          <div class="ev-live-main">
+            <div class="ev-live-eye">누적 투표율</div>
+            <div class="ev-live-rate" id="ev-live-rate">—</div>
+            <div class="ev-live-meta">
+              <span id="ev-live-phase">대기 중</span> · <span id="ev-live-time">갱신 시각 —</span>
+            </div>
+          </div>
+          <div class="ev-live-side">
+            <div class="ev-live-eye">2022 8회 동시간대</div>
+            <div class="ev-live-prev" id="ev-live-prev">—</div>
+            <div class="ev-live-meta" id="ev-live-prev-note">참고치</div>
+          </div>
+        </div>
+        <div class="ev-live-foot">
+          <span id="ev-live-source">데이터 출처: 로딩 중</span>
+          · <a href="https://info.nec.go.kr/" target="_blank" rel="noopener" class="ev-link">중앙선관위 통합선거정보 ↗</a>
+        </div>
+      </section>
+
       <section class="ev-section">
         <h2>⚡ 빠른 체크리스트</h2>
         <ul class="ev-checklist">
@@ -18894,6 +18999,66 @@ function renderEarlyVotingPage() {
       </section>
     </article>
   `;
+}
+
+// V28.2 — 사전투표율 라이브 fetch + DOM 갱신
+async function fetchEarlyVoteRate() {
+  const rateEl = document.getElementById('ev-live-rate');
+  if (!rateEl) return; // 페이지 떠난 상태
+  const dotEl = document.getElementById('ev-live-dot');
+  const phaseEl = document.getElementById('ev-live-phase');
+  const timeEl = document.getElementById('ev-live-time');
+  const prevEl = document.getElementById('ev-live-prev');
+  const prevNoteEl = document.getElementById('ev-live-prev-note');
+  const sourceEl = document.getElementById('ev-live-source');
+
+  if (dotEl) dotEl.style.color = 'var(--warn)';
+  try {
+    const r = await fetch('/api/early-vote-rate');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+
+    if (j.rate != null) {
+      rateEl.textContent = j.rate.toFixed(2) + '%';
+      rateEl.style.color = 'var(--brand)';
+    } else {
+      rateEl.textContent = '—';
+      rateEl.style.color = 'var(--text-2)';
+    }
+
+    if (phaseEl) {
+      const labelMap = { pre: '사전투표 시작 전', '1일차': '🔴 1일차 진행 중', '1일차_종료': '1일차 종료', '2일차': '🔴 2일차 진행 중', 'lcl_종료': '사전투표 종료', '종료': '사전투표 종료' };
+      phaseEl.textContent = labelMap[j.phase] || j.phase || '—';
+    }
+
+    if (timeEl) {
+      const t = j.announcedAt ? new Date(j.announcedAt) : new Date(j.generatedAt);
+      timeEl.textContent = '갱신 ' + t.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    if (prevEl && j.prev8th) {
+      prevEl.textContent = j.prev8th.rate.toFixed(2) + '%';
+    }
+    if (prevNoteEl && j.prev8th) {
+      prevNoteEl.textContent = j.prev8th.label;
+    }
+
+    if (sourceEl) {
+      const srcLabel = ({
+        'data.go.kr': '📡 NEC 공식 API',
+        'info.nec.go.kr (text)': '🌐 NEC 통합선거정보',
+        'fallback (수동 갱신)': '📝 운영자 수동 갱신',
+        'historical': '📚 8회 참고치 (NEC fetch 실패)',
+        'pending': '⏳ 사전투표 시작 전',
+      })[j.source] || ('출처: ' + (j.source || '미확인'));
+      sourceEl.textContent = srcLabel + (j.note ? ' · ' + j.note : '');
+    }
+    if (dotEl) dotEl.style.color = 'var(--ok)';
+  } catch (e) {
+    if (sourceEl) sourceEl.textContent = '⚠️ 데이터 가져오기 실패 — NEC 통합선거정보 참고';
+    if (dotEl) dotEl.style.color = 'var(--danger)';
+    console.warn('[EarlyVote] fetch failed:', e.message);
+  }
 }
 
 function renderChangelogPage() {
@@ -22323,7 +22488,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V28.1 · 🗳 사전투표 D-1</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V28.2 · 📊 투표율 라이브</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23625,6 +23790,10 @@ function route() {
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
+    // V28.2 — 라이브 사전투표율 fetch + 5분 폴링
+    fetchEarlyVoteRate();
+    if (window._evPollTimer) clearInterval(window._evPollTimer);
+    window._evPollTimer = setInterval(fetchEarlyVoteRate, 5 * 60 * 1000);
     return;
   }
   // 변경 이력 (/changelog)
