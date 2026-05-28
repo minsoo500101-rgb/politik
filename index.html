@@ -4326,6 +4326,98 @@
     .insight-row { grid-template-columns: 1fr; }
   }
 
+  /* V22.5 — 홈 인기 랭킹 (페이지뷰 기반) */
+  .home-ranking-row {
+    background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(217,119,6,0.03) 100%);
+    border: 1px solid rgba(245,158,11,0.22);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  [data-theme="dark"] .home-ranking-row {
+    background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(245,158,11,0.04) 100%);
+    border-color: rgba(251,191,36,0.28);
+  }
+  .home-ranking-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .home-ranking-head h3 {
+    font-size: 14px; font-weight: 800; margin: 0;
+    color: var(--text);
+  }
+  .home-ranking-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 700px) {
+    .home-ranking-grid { grid-template-columns: 1fr; }
+  }
+  .home-ranking-col {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .home-ranking-col-h {
+    font-size: 12px; font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .home-ranking-list {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .rank-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto auto;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 4px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    transition: background 0.1s;
+  }
+  .rank-row:hover { background: var(--bg-elev); }
+  .rank-num {
+    font-weight: 800;
+    color: var(--dim);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-row:nth-child(1) .rank-num { color: #dc2626; }
+  .rank-row:nth-child(2) .rank-num { color: #f59e0b; }
+  .rank-row:nth-child(3) .rank-num { color: #f59e0b; }
+  .rank-name {
+    font-weight: 700;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rank-meta {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .rank-views {
+    font-size: 10.5px;
+    color: var(--dim);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .rank-empty {
+    padding: 12px;
+    text-align: center;
+    color: var(--dim);
+    font-size: 11px;
+  }
+
   /* V21.5 — 한국 실검 트렌드 카드 (구글 트렌드 RSS) */
   .today-trends-grid {
     display: grid;
@@ -9176,6 +9268,20 @@ function logPageView(pageType, pageId) {
     headers: { 'Prefer': 'return=minimal' },
     body: JSON.stringify([{ page_type: pageType, page_id: pageId, user_id: userId }]),
   }).catch(() => {});
+}
+
+// V22.5 — 인기 랭킹 (페이지뷰 집계 RPC)
+async function loadTopByViews(pageType, days = 7, limit = 5) {
+  try {
+    const r = await supabaseRest('/rpc/top_pageviews', {
+      method: 'POST',
+      body: JSON.stringify({ p_page_type: pageType, p_days: days, p_limit: limit }),
+    });
+    return r || [];
+  } catch (e) {
+    console.warn('top_pageviews RPC failed:', e.message);
+    return [];
+  }
 }
 
 // 페이지뷰 카운트 조회
@@ -15684,7 +15790,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.4 · 🚀 SEO 강화</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.5 · 📊 인기 랭킹</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -15724,6 +15830,28 @@ function renderHome() {
           </div>
         `;
       })()}
+
+      <!-- 📊 V22.5 — 이번 주 인기 랭킹 (페이지뷰 기반) -->
+      <div class="home-ranking-row" id="home-ranking-row">
+        <div class="home-ranking-head">
+          <h3>📊 이번 주 인기 — 사용자 조회 Top 5</h3>
+          <span class="econ-mini-live">🟢 LIVE</span>
+        </div>
+        <div class="home-ranking-grid">
+          <div class="home-ranking-col">
+            <div class="home-ranking-col-h">👤 정치인 Top 5</div>
+            <div id="home-rank-pol" class="home-ranking-list">
+              <div class="loading" style="padding:10px;text-align:center;font-size:11px">로딩 중...</div>
+            </div>
+          </div>
+          <div class="home-ranking-col">
+            <div class="home-ranking-col-h">📜 법안 Top 5</div>
+            <div id="home-rank-bill" class="home-ranking-list">
+              <div class="loading" style="padding:10px;text-align:center;font-size:11px">로딩 중...</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- 🔥 V21.5 — 한국 실검 (구글 트렌드 RSS) -->
       <div class="home-trend-row" id="home-trend-row">
@@ -17873,7 +18001,63 @@ function route() {
       populateHomeEconMini();
       // V21.1 — 홈 정치 트렌드 위젯 (네이버 뉴스 인물 빈도)
       populateHomeTrend();
+      // V22.5 — 홈 인기 랭킹 위젯 (페이지뷰 기반)
+      populateHomeRanking();
       if (filterBar) filterBar.style.display = 'none';
+    }
+  }
+}
+
+// V22.5 — 홈 인기 랭킹 위젯 (페이지뷰 기반)
+async function populateHomeRanking() {
+  const polTarget = document.getElementById('home-rank-pol');
+  const billTarget = document.getElementById('home-rank-bill');
+  if (!polTarget && !billTarget) return;
+
+  // 병렬 fetch
+  const [polTop, billTop] = await Promise.all([
+    loadTopByViews('politician', 7, 5),
+    loadTopByViews('bill', 7, 5),
+  ]);
+
+  // 정치인 랭킹
+  if (polTarget) {
+    if (!polTop.length) {
+      polTarget.innerHTML = '<div class="rank-empty">아직 조회 데이터 부족</div>';
+    } else {
+      polTarget.innerHTML = polTop.map((r, i) => {
+        const m = (state.members || []).find(x => x.MONA_CD === r.page_id);
+        const name = m?.HG_NM || r.page_id;
+        const party = m?.POLY_NM || m?._type_label || '';
+        const pColor = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+        return `
+          <a class="rank-row" href="/m/${encodeURIComponent(r.page_id)}">
+            <span class="rank-num">${i + 1}</span>
+            <span class="rank-name">${escapeHtml(name)}</span>
+            <span class="rank-meta" style="color:${pColor}">${escapeHtml(party)}</span>
+            <span class="rank-views">👁 ${r.view_count}</span>
+          </a>`;
+      }).join('');
+    }
+  }
+
+  // 법안 랭킹
+  if (billTarget) {
+    if (!billTop.length) {
+      billTarget.innerHTML = '<div class="rank-empty">아직 조회 데이터 부족</div>';
+    } else {
+      billTarget.innerHTML = billTop.map((r, i) => {
+        const b = (state.bills || []).find(x => x.BILL_ID === r.page_id);
+        const name = b?.BILL_NAME || r.page_id;
+        const cmt = b?.CURR_COMMITTEE || '';
+        return `
+          <a class="rank-row" href="/bill/${encodeURIComponent(r.page_id)}">
+            <span class="rank-num">${i + 1}</span>
+            <span class="rank-name">${escapeHtml(name.slice(0, 30))}${name.length > 30 ? '…' : ''}</span>
+            <span class="rank-meta">${escapeHtml(cmt)}</span>
+            <span class="rank-views">👁 ${r.view_count}</span>
+          </a>`;
+      }).join('');
     }
   }
 }
