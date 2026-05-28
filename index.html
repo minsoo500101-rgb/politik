@@ -17422,6 +17422,130 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V26.5', date: '2026-05-28', title: '🎨 디자인 시스템 풀패치 — design tokens·SVG·통일 유틸', items: [
+    '사용자: "전력을 다해봐" — 6번 "ui 구려" 피드백 누적 해소',
+    '🎨 Brand color 확정: --brand: #4F46E5 인디고 (다크 #818CF8) — 정당 빨/파와 충돌 X, 신뢰·중립 톤',
+    '📐 Spacing scale: --sp-1~8 (4의 배수만: 4·8·12·16·24·32·48·64). 기존 6/10/14/20 산만함 통일',
+    '🔤 Typography scale: --fs-xs~3xl + --fs-display: clamp(28px, 5vw, 48px). --fw 5단·--lh 4단',
+    '🟦 Radius: --rd-sm~2xl + --rd-pill / Shadow: --sh-sm/md/lg/brand (다크 variant)',
+    '👆 Touch min: 44px (iOS HIG) — 모바일 button·a·tab·nav 강제 적용',
+    '⚡ Focus ring 통일 — 키보드 접근성',
+    '🧩 Utility 클래스: .ds-card / .ds-btn / .ds-display·title·h1·h2·body·cap / .ds-num-lg·xl / .ds-chip / .ds-stack-1~4',
+    '💀 .skeleton 풀세트 + @keyframes ds-shimmer (기존 sk-* 와 병존)',
+    '🎯 SVG 아이콘 12종 인라인 sprite: vote·bill·gov·region·pulse·trend·econ·search·bookmark·compare·book·globe (Lucide 영감, 자체 path)',
+    '🔄 Brand mark: "📋" → "P" 인디고 그라데이션 + sh-brand',
+    '🏷 version-pill: 초록 → brand 인디고 + pill shape',
+    '🖱 .tool-card 강화: hover lift -2px + brand border + icon scale 1.05',
+    '📱 720px breakpoint 신규 — 태블릿 사각지대(600~760px) grid 2col 강제',
+    '♿ prefers-reduced-motion 지원',
+    '❌ 거부: Next.js·shadcn·Framer 전환 (rewrite 비용 vs 효과)'
+  ]},
+  { v: 'V26.4', date: '2026-05-28', title: '🗳 Stooq 제거 + 9회 지선 region 17개 데이터 보강', items: [
+    '사용자: "아니다 싶은건 없애고 지방선거 쪽 데이터 보충 할거 있으면 더 하고"',
+    '🧹 api/quote.js: Stooq fallback 전부 제거 (광고 사이트는 personal-use 약관 부적합)',
+    '🗳 election_2026.json 17개 region 모두에 5필드 추가:',
+    '  • population·voters: 인구·유권자 (만명)',
+    '  • gov_rep_seats / gov_prop_seats: 광역의원 의석 (지역/비례)',
+    '  • prev_2022: 8회 지선 결과 (당선자·정당·득표율·2위·투표율)',
+    '  • incumbent_running: 9회 출마 여부 (true/false)',
+    '  • race_status: 9회 판세 분류 (격전지·민주당우세·보수강세 등)',
+    '🔥 자동 식별된 격전지 7곳: 인천·대전·세종·경기·충북·충남·제주 (직전 박빙 ≤ 2%p)',
+    '🚫 현직 불출마 2명: 대구(홍준표 사퇴) / 경북(이철우 3선 제한)',
+    '🎨 region 카드 UI: 🔥 격전지 오렌지 테두리·8회 결과 1줄·9회 출마 여부 라벨·유권자 표시',
+    '📄 /election2026/{시도} hero에도 격전지 배지·인구·유권자·광역의원 의석·race_status 메모'
+  ]},
+  { v: 'V26.3', date: '2026-05-28', title: '🔒 API ToS 준수 — Yahoo·Naver 프록시 Origin 화이트리스트', items: [
+    '사용자: "우리 api 제공이 api 사용 정책에 위반하지 않는지 검토해봐"',
+    '⚠️ 진단: /api/quote(Yahoo Finance)·/api/naver(네이버 검색)가 CORS:*로 열려 제3자 재배포 가능 — 두 원천 모두 ToS상 재배포 금지',
+    '🔐 /api/quote → Origin·Referer 화이트리스트 (patchkr.com + localhost + Vercel preview). 미허용은 403 + 안내',
+    '🔐 /api/naver → 동일 패턴. 헬스체크(?action=health)는 예외',
+    '📄 /api/data → 자체 편집 데이터만 공개 명시. 라이선스 표기 세분화 (politicians: 공공누리+BY-SA / glossary: BY-SA / parties·info: BY 4.0)',
+    '🤖 llms.txt — AI 크롤러용 endpoint 3분류 (자체데이터·공공프록시·Origin제한) + "Origin 제한 endpoint는 학습 데이터 포함 금지" 경고',
+    '✅ /api/ecos·/api/nec·/api/law·/api/bill: 공공누리 1유형이라 안전 유지',
+    '위험 등급: Yahoo·Naver 🔴 HIGH → 🟡 LOW (단순 백엔드 프록시로 격하)'
+  ]},
+  { v: 'V26.2', date: '2026-05-28', title: '📚 용어사전 확장 — 사이트 전용 + 데이터 API 35개', items: [
+    '사용자: "용어사전에 우리 사이트에 쓰는 단어는 다 넣어줘"',
+    '✨ 213 → 248개 (+35), 카테고리 14 → 15 (data 신설)',
+    '🌐 사이트 전용 (10): 패치 노트·시민 여론판·활동 점수·공약 이행률·stance·도감·북마크·정당색·정당 결속도·공약 비교',
+    '🏛 국회·법안 (2): 가결률·표결',
+    '🗳 선거 (5): D-Day·개표·광역의원·기초의원·권한대행',
+    '🎌 정당 (1): 비대위원장',
+    '💰 경제 (6): KOSPI·KOSDAQ·매매기준율·CPI·실업률·가계부채',
+    '🛰 데이터·API 신규 카테고리 (6): ECOS·OpenAPI·중앙선관위·NEC·data.go.kr·공공누리',
+    '⚖ 사법·법령 (5): 국가법령정보·판례·헌재 결정·시행령·자치법규'
+  ]},
+  { v: 'V26.1', date: '2026-05-28', title: '🐛 glossary related.map TypeError + preload warning fix', items: [
+    '🔥 critical: "포퓰리즘" 용어의 related가 string으로 저장돼서 .map() 호출 시 TypeError',
+    '→ 배열로 변경 + Array.isArray() 방어 코드 추가',
+    '🔧 politicians.json preload → prefetch (LCP에 필수 아닌 페이지에서 warning)'
+  ]},
+  { v: 'V26.0', date: '2026-05-28', title: '⚡ 사이트 최적화 — DNS prefetch + Service Worker + lazy 이미지', items: [
+    '사용자: "사이트 최적화 작업 좀 해줘"',
+    '🌐 DNS prefetch 12개 외부 도메인 — fonts·NEC·Yahoo·TradingView·Naver·Wikimedia·Supabase·AdSense 등',
+    '👷 Service Worker (sw.js) — 정적 cache-first + /data/ network-first SWR + /api/ network-first fallback',
+    '🖼 이미지 lazy loading 표준 적용 (loading="lazy" 명시)',
+    '📦 vercel.json: /sw.js 캐시 헤더 + Service-Worker-Allowed: /'
+  ]},
+  { v: 'V25.x', date: '2026-05-27~28', title: '🎯 데이터 정확도·시세 통합·UI polish (V25.0~V25.5)', items: [
+    'V25.5: candidate 9자리 NEC ID 보호 — page_type별 검증 분리 (politician/bill/candidate)',
+    'V25.4: 공유 섹션·카드 모달·share 페이지 조잡한 텍스트 정리',
+    'V25.3: 가짜 ID(/m/12345) 랭킹 노출 차단 — 실존 매치 + 순수숫자 거부',
+    'V25.2: 한동훈 정당 status "전 국민의힘" + 데이터 신선도 인프라',
+    'V25.1: 시세 모니터 + 시계열 차트 USDKRW 731Y001 daily로 완전 통일',
+    'V25.0: USD/KRW 평균자료 vs 말일자료 ECOS 두 값 충돌 해소'
+  ]},
+  { v: 'V24.x', date: '2026-05-27', title: '📸 인스타 공유 카드 + AI/LLM 친화 + 시세 fallback (V24.0~V24.9)', items: [
+    'V24.0: 인스타 공유 카드 6종 + /share 페이지 — html2canvas로 PNG 자동 생성',
+    'V24.1: KOSPI/KOSDAQ 3중 fallback (Vercel proxy → Yahoo CORS → ECOS)',
+    'V24.2: 카드 PC 다운로드·미리보기·모달 + 모바일 Web Share API',
+    'V24.3: KOSDAQ/USDKRW ECOS 다중 stat code 시도 + 모바일 input overflow 전수',
+    'V24.4: 장중/장마감 시간 표시 + 카드 grid 정렬',
+    'V24.5: AI/LLM 친화 마크업 (llms.txt·llms-full.txt·25+ AI 크롤러 허용·Dataset 스키마)',
+    'V24.6: KOSPI 카드 컴팩트 + Pulse 공유 UI 리디자인',
+    'V24.7: 경제 카드 컴팩트 + Pulse → "시민 여론판" 리브랜드',
+    'V24.8: 카드 빈공간 fix (auto-fill → auto-fit) + 데이터 출처 정확화',
+    'V24.9: economy.json 2025년 ECOS 동기화 + 2026 데이터 추가'
+  ]},
+  { v: 'V23.x', date: '2026-05-27', title: '📱 모바일 대수술 + Korea Pulse + Yahoo Finance 우회 (V23.0~V23.9)', items: [
+    'V23.0: 모바일 UI 대수술 — 정보 위계 재설계, collapsible 위젯, 풀폭 카드',
+    'V23.1: 경제 페이지 TradingView 실시간 위젯 (외국 주식·원자재·암호화폐)',
+    'V23.2: 모바일 풀폭화 + 패딩 누적 정리',
+    'V23.3: 한국의 마음 (Korea Pulse) /pulse — 시민 익명 의견 라이브 집계 + 7 RPC 함수',
+    'V23.5: KOSPI/KOSDAQ Yahoo Finance v8 chart 우회 (KRX 라이선스 한계 보완)',
+    'V23.8: page_id 입력 검증 + 표시 sanitize (가짜 ID 차단 1차)',
+    'V23.9: 랭킹 페이지 카드 리디자인'
+  ]},
+  { v: 'V22.9', date: '2026-05-27', title: '🔴 선거 당일 LIVE 페이지 — /election2026/live', items: [
+    'D-Day(2026.6.3) 자동 활성화 — 06:00 본투표 → 18:00 마감 → 개표 단계별 안내',
+    '실시간 투표율·NEC 공식 데이터 빠른 진입',
+    '17 시도지사·교육감·기초단체장 결과 슬롯 (개표 데이터 들어오면 자동 표시)'
+  ]},
+  { v: 'V22.8', date: '2026-05-27', title: '📱 모바일 UX 정밀 보완', items: [
+    '테이블 가로 스크롤 → 카드뷰 자동 전환',
+    '터치 타겟 확대 + 폰트 16px+ 강제 (input zoom 방지)',
+    'iPad·갤탭 사각지대 점검 (당시 미해결 → V26.5 720px breakpoint로 본격 해결)'
+  ]},
+  { v: 'V22.7', date: '2026-05-27', title: '🗺 시도별 9회 지선 페이지 17개 — /election2026/seoul·busan·…', items: [
+    '17개 시도 각각 전용 페이지 (slug: seoul·busan·daegu·incheon 등)',
+    '광역단체장·교육감·기초단체장·광역의원 후보 한 페이지에',
+    '8회(2022)·7회(2018) 결과 비교 + 정당별 분포',
+    'D-Day 카운트다운 + 현직 단체장 정보'
+  ]},
+  { v: 'V22.6', date: '2026-05-27', title: '👤 /me — 내 활동 대시보드', items: [
+    '익명 UUID로 본인의 북마크·stance·평점·투표 한 곳에',
+    '활동 통계 + 관심 주제 시각화',
+    '로그인 없이 localStorage 기반'
+  ]},
+  { v: 'V22.5', date: '2026-05-27', title: '📊 홈 인기 랭킹 위젯 — 페이지뷰 기반', items: [
+    'Supabase page_views 집계 → 정치인·법안·후보·시도 페이지뷰 Top 5',
+    '실시간 사용자 관심도 자동 반영',
+    '익명·UUID 기반 (로그인 X)'
+  ]},
+  { v: 'V22.2', date: '2026-05-28', title: '📖 트렌드 정밀 보완 + V22.3 용어 사전 백과사전화', items: [
+    'V22.2: 구글 트렌드 RSS 5분 캐시 + 정치인 매칭 정밀도',
+    'V22.3: 용어 사전 카테고리 8→14, 60+ 신규 용어, def_long·example·history 필드 추가 (백과사전 수준)'
+  ]},
   { v: 'V22.4', date: '2026-05-28', title: '🚀 SEO 최대 강화 — 9회 지선 시즌 캡처', items: [
     '사용자: SEO 핫하게 타겟 좀',
     '🎯 <title> 핫 키워드 풍부: "9회 지방선거 후보 · 22대 국회 법안 1,595건 · 정치인 772명 · 한국 실검"',
