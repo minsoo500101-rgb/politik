@@ -1,6 +1,6 @@
 # 대한민국 패치 노트 (patchkr.com)
 
-> 한국 정치·법안·선거·경제 종합 데이터 플랫폼. 22대 국회 법안 1,595건·정치인 536명·9회 전국동시지방선거(2026.6.3) 후보 697명·경제 9개 지표·시민 익명 의견 라이브 집계. 모든 데이터는 정부 공식 API(국회·중앙선관위·한국은행 ECOS)에서 수집.
+> 한국 정치·법안·선거·경제 종합 데이터 플랫폼. 22대 국회 법안 1,595건·정치인 768명 (22대 의원 286 + 자체 DB 482)·9회 전국동시지방선거(2026.6.3) 후보 697명·경제 9개 지표·시민 익명 의견 라이브 집계. 모든 데이터는 정부 공식 API(국회·중앙선관위·한국은행 ECOS)에서 수집.
 
 ## 사이트 정체성
 
@@ -17,12 +17,12 @@
 - [/bills](https://patchkr.com/bills): 22대 국회 통과 법안 1,595건 검색
 - [/bill/{billId}](https://patchkr.com/bill/PRC_X1V5O0G7G3I0L1V5K3P3I8V5M2C3F7): 법안 상세 (본문·표결·발의자·뉴스)
 - [/committees](https://patchkr.com/committees): 국회 위원회 25개 (상임 17 + 특별 8)
-- [/group/legislative](https://patchkr.com/group/legislative): 22대 국회의원 286명
+- [/group/legislative](https://patchkr.com/group/legislative): 22대 국회 핵심 직책자 54명 (의장단·위원장·간사)
 - [/group/executive](https://patchkr.com/group/executive): 행정부 — 대통령·총리·장관·차관
 - [/group/judicial](https://patchkr.com/group/judicial): 사법부 — 대법관·헌법재판관·검찰
 - [/group/local](https://patchkr.com/group/local): 광역단체장 17·기초단체장 226·교육감 17
 - [/m/{MONA_CD}](https://patchkr.com/m/L5O1U5C4U4N3I6R8): 정치인 상세 (약력·발의·표결·재산)
-- [/dex](https://patchkr.com/dex): 정치인 도감 536명
+- [/dex](https://patchkr.com/dex): 정치인 도감 768명 (22대 286 + 자체 482)
 
 ### 9회 전국동시지방선거 (2026.6.3)
 - [/election2026](https://patchkr.com/election2026): 9회 지선 전국 후보 697명
@@ -54,7 +54,7 @@
 ## 공개 API
 
 ### 자체 데이터 (CORS *, 자유 사용 — 출처 표기 권장)
-- `GET /api/data?type=politicians` — 정치인 536명 (공공누리 1유형 + CC BY-SA 4.0)
+- `GET /api/data?type=politicians` — 정치인 768명 (22대 의원 286 + 자체 DB 482) (공공누리 1유형 + CC BY-SA 4.0)
 - `GET /api/data?type=glossary` — 용어 사전 248개 (CC BY-SA 4.0)
 - `GET /api/data?type=parties` — 정당 메타정보 (CC BY 4.0)
 - `GET /api/data?type=info` — 사이트 통계 요약 (CC BY 4.0)
