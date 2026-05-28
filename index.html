@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V27.6 — UI 통일 V: pt-card(공약이행추적) + world-hero + le-hero/le-section(역대 지선) brand 왼쪽 띠·rd-xl·display 타이포 -->
+<!-- V27.7 — UI 통일 마무리: bm-card(북마크) + about-stat(통계 30px) + changelog-entry(변경이력 carousel) brand -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -2920,16 +2920,17 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     position: relative;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--rd-lg);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   }
   .bm-card:hover {
     transform: translateY(-2px);
-    border-color: var(--accent);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-color: var(--brand);
+    box-shadow: var(--sh-md);
   }
+  [data-theme="dark"] .bm-card:hover { box-shadow: var(--sh-lg); }
   .bm-card-bar {
     height: 4px;
   }
@@ -3203,23 +3204,29 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     display: flex; flex-direction: column; gap: 12px;
   }
   .changelog-entry {
-    padding: 18px 20px;
+    padding: var(--sp-4) var(--sp-5);
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    transition: border-color 0.15s;
+    border-radius: var(--rd-lg);
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
   }
-  .changelog-entry:hover { border-color: var(--accent); }
+  .changelog-entry:hover {
+    border-color: var(--brand);
+    transform: translateX(2px);
+    box-shadow: var(--sh-sm);
+  }
   .changelog-head {
     display: flex; align-items: center; gap: 10px;
-    margin-bottom: 6px;
+    margin-bottom: var(--sp-1);
   }
   .changelog-v {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; font-weight: 800;
-    color: var(--accent);
-    background: rgba(59,130,246,0.1);
-    padding: 3px 9px; border-radius: 6px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-heavy);
+    color: var(--brand);
+    background: var(--brand-pale);
+    padding: 3px 9px;
+    border-radius: var(--rd-sm);
     letter-spacing: 0.5px;
   }
   .changelog-date {
@@ -3232,9 +3239,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     letter-spacing: 0.5px;
   }
   .changelog-title {
-    font-size: 16px; font-weight: 800;
-    margin: 4px 0 8px;
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-heavy);
+    margin: var(--sp-1) 0 var(--sp-2);
     color: var(--text);
+    letter-spacing: -0.01em;
   }
   .changelog-items {
     margin: 0; padding-left: 20px;
@@ -4254,22 +4263,35 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
   .about-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: 12px;
-    margin-bottom: 32px;
-    padding: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+    padding: var(--sp-4);
     background: var(--bg-elev);
-    border-radius: 12px;
+    border-radius: var(--rd-xl);
   }
-  .about-stat { text-align: center; }
+  .about-stat {
+    text-align: center;
+    padding: var(--sp-2);
+    border-radius: var(--rd-md);
+    transition: background 0.15s;
+  }
+  .about-stat:hover { background: var(--bg-card); }
   .about-stat-n {
-    font-size: 24px; font-weight: 800;
+    font-size: 30px;
+    font-weight: var(--fw-heavy);
     color: var(--text);
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
   }
+  .about-stat:hover .about-stat-n { color: var(--brand); }
   .about-stat-l {
-    font-size: 11px; color: var(--dim);
-    margin-top: 2px;
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+    margin-top: var(--sp-1);
+    font-weight: var(--fw-semi);
+    letter-spacing: 0.3px;
   }
   .about-section {
     margin-bottom: 30px;
@@ -17658,6 +17680,20 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V27.7', date: '2026-05-28', title: '🎯 UI 통일 마무리 — bookmark·about·changelog', items: [
+    '⭐ .bm-card (/bookmarks 북마크 카드)',
+    '  • rd-lg + brand hover + sh-md (다크: sh-lg)',
+    '  • transition 명시적 3종 (성능)',
+    '📊 .about-stat (/about 운영자 통계)',
+    '  • 24px → 30px 큰 숫자 + tight letter-spacing',
+    '  • hover에 brand 컬러 전환 + bg-card 카드화',
+    '  • spacing 토큰화 (sp-2/sp-3/sp-4)',
+    '📜 .changelog-entry (/changelog 변경이력)',
+    '  • hover: brand border + translateX 2px + sh-sm',
+    '  • changelog-v 배지: accent → brand + brand-pale 배경',
+    '  • changelog-title: 16px → fs-lg + heavy + tight',
+    '🎯 design tokens 적용 페이지 누적: 18개 (사이트 거의 전 영역 통일)'
+  ]},
   { v: 'V27.6', date: '2026-05-28', title: '🌍 UI 통일 라운드 V — pt/world/le 페이지 brand', items: [
     '🔥 .pt-card (/pledge-tracker 8회 당선자 공약 이행 추적)',
     '  • rd-lg + sp-3/sp-4 토큰화',
@@ -21722,7 +21758,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.6 · 🌍 페이지 통일 V</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.7 · 🎯 통일 마무리</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
