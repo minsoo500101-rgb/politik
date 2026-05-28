@@ -8487,6 +8487,108 @@
   .pulse-empty h3 { font-size: 18px; margin: 0 0 8px; }
   .pulse-empty p { color: var(--text-2); font-size: 13.5px; line-height: 1.6; margin-bottom: 20px; }
 
+  /* V23.5 — Yahoo Finance 자체 위젯 (KOSPI/KOSDAQ — KRX 라이선스 우회) */
+  .econ-yf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .econ-yf-widget {
+    min-height: 180px;
+  }
+  .econ-yf-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .econ-yf-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .econ-yf-card.econ-yf-error {
+    border-color: rgba(239,68,68,0.3);
+    background: rgba(239,68,68,0.04);
+  }
+  .econ-yf-error-body {
+    font-size: 12px;
+    color: var(--dim);
+    line-height: 1.6;
+    padding: 8px 0;
+  }
+  .econ-yf-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .econ-yf-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-2);
+  }
+  .econ-yf-state {
+    font-size: 10.5px;
+    color: var(--dim);
+    font-weight: 600;
+  }
+  .econ-yf-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dim);
+  }
+  .econ-yf-price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .econ-yf-price {
+    font-size: 28px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .econ-yf-change {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .econ-yf-pct {
+    font-weight: 800;
+    margin-left: 2px;
+  }
+  .econ-yf-spark {
+    width: 100%;
+    height: 50px;
+    display: block;
+  }
+  .econ-yf-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 10.5px;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    flex-wrap: wrap;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .econ-yf-meta span { white-space: nowrap; }
+  @media (max-width: 700px) {
+    .econ-yf-grid { grid-template-columns: 1fr; gap: 10px; }
+    .econ-yf-card { padding: 12px 14px; }
+    .econ-yf-price { font-size: 24px; }
+  }
+
   /* V23.1 — TradingView 실시간 위젯 (경제 페이지) */
   .econ-tv-section {
     margin: 18px 0 24px;
@@ -13524,12 +13626,16 @@ function renderEconomyPage() {
       <div class="econ-tv-section">
         <div class="econ-tv-head">
           <h2>📈 실시간 시세 <span class="econ-tv-live">🔴 LIVE</span></h2>
-          <span class="econ-tv-meta">TradingView · 약 15분 지연 · 장 중에만 변동</span>
+          <span class="econ-tv-meta">Yahoo Finance + TradingView · 15~20분 지연</span>
         </div>
+        <!-- V23.5 — KOSPI/KOSDAQ은 Yahoo Finance 자체 fetch (KRX 라이선스 우회) -->
+        <div class="econ-yf-grid">
+          <div class="econ-yf-widget" data-yf-symbol="^KS11" data-yf-name="코스피 (KOSPI)" data-yf-currency="KRW"></div>
+          <div class="econ-yf-widget" data-yf-symbol="^KQ11" data-yf-name="코스닥 (KOSDAQ)" data-yf-currency="KRW"></div>
+          <div class="econ-yf-widget" data-yf-symbol="KRW=X" data-yf-name="USD/KRW 환율" data-yf-currency="KRW" data-yf-decimals="2"></div>
+        </div>
+        <!-- 환율/원자재/BTC는 TradingView (라이선스 OK) -->
         <div class="econ-tv-grid">
-          <div class="econ-tv-widget" data-tv-symbol="KRX:KOSPI" data-tv-name="코스피"></div>
-          <div class="econ-tv-widget" data-tv-symbol="KRX:KOSDAQ" data-tv-name="코스닥"></div>
-          <div class="econ-tv-widget" data-tv-symbol="FX_IDC:USDKRW" data-tv-name="USD/KRW 환율"></div>
           <div class="econ-tv-widget" data-tv-symbol="TVC:USOIL" data-tv-name="WTI 원유"></div>
           <div class="econ-tv-widget" data-tv-symbol="TVC:GOLD" data-tv-name="국제 금"></div>
           <div class="econ-tv-widget" data-tv-symbol="CRYPTO:BTCUSD" data-tv-name="비트코인"></div>
@@ -13542,6 +13648,114 @@ function renderEconomyPage() {
       </div>
     </div>
   `;
+}
+
+// V23.5 — Yahoo Finance 위젯 (KOSPI/KOSDAQ — KRX 라이선스 우회)
+async function setupYahooFinanceWidgets() {
+  const widgets = document.querySelectorAll('.econ-yf-widget:not(.yf-loaded)');
+  if (!widgets.length) return;
+  // 1) 먼저 skeleton 표시
+  widgets.forEach(el => {
+    el.classList.add('yf-loaded');
+    const name = el.dataset.yfName || el.dataset.yfSymbol;
+    el.innerHTML = `
+      <div class="econ-yf-card">
+        <div class="econ-yf-name">${escapeHtml(name)}</div>
+        <div class="econ-yf-body">
+          <span class="loading-spinner"></span>
+          <span style="font-size:11px;color:var(--dim);margin-left:6px">로딩 중…</span>
+        </div>
+      </div>
+    `;
+  });
+  // 2) 일괄 fetch
+  const symbols = [...widgets].map(el => el.dataset.yfSymbol).join(',');
+  let quotes = [];
+  let history = {};
+  try {
+    const [quoteResp, ...historyResps] = await Promise.all([
+      fetch(`/api/quote?symbols=${encodeURIComponent(symbols)}`).then(r => r.json()),
+      ...[...widgets].map(el =>
+        fetch(`/api/quote?symbols=${encodeURIComponent(el.dataset.yfSymbol)}&history=1&range=1mo&interval=1d`)
+          .then(r => r.json()).catch(() => null)
+      ),
+    ]);
+    quotes = quoteResp.quotes || [];
+    historyResps.forEach((h, i) => {
+      if (h?.history) history[widgets[i].dataset.yfSymbol] = h.history;
+    });
+  } catch (e) {
+    console.warn('[YF] fetch failed:', e);
+  }
+  // 3) 카드 렌더링
+  widgets.forEach(el => {
+    const sym = el.dataset.yfSymbol;
+    const name = el.dataset.yfName || sym;
+    const decimals = parseInt(el.dataset.yfDecimals || '2', 10);
+    const q = quotes.find(x => x.symbol === sym);
+    const h = history[sym];
+    if (!q) {
+      el.innerHTML = `
+        <div class="econ-yf-card econ-yf-error">
+          <div class="econ-yf-name">${escapeHtml(name)}</div>
+          <div class="econ-yf-error-body">
+            데이터 로딩 실패 — 잠시 후 새로고침 해주세요.<br>
+            <a href="https://finance.yahoo.com/quote/${encodeURIComponent(sym)}/" target="_blank" rel="noopener" style="color:var(--accent);font-size:11px">Yahoo Finance에서 보기 →</a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    const price = q.price;
+    const change = q.change || 0;
+    const changePct = q.changePercent || 0;
+    const up = change > 0;
+    const down = change < 0;
+    const arrow = up ? '▲' : down ? '▼' : '=';
+    const color = up ? '#ef4444' : down ? '#2563eb' : 'var(--text-2)'; // 한국 표기: 빨강=상승 파랑=하락
+    const prevClose = q.previousClose;
+    const dayHigh = q.regularMarketDayHigh;
+    const dayLow = q.regularMarketDayLow;
+    // sparkline SVG (1개월 일별 종가)
+    let sparkSvg = '';
+    if (h?.close?.length > 2) {
+      const closes = h.close.filter(c => c != null);
+      const mn = Math.min(...closes);
+      const mx = Math.max(...closes);
+      const range = mx - mn || 1;
+      const w = 280, hgt = 60;
+      const step = w / (closes.length - 1);
+      const points = closes.map((c, i) => `${(i * step).toFixed(1)},${(hgt - (c - mn) / range * hgt).toFixed(1)}`).join(' ');
+      sparkSvg = `
+        <svg viewBox="0 0 ${w} ${hgt}" preserveAspectRatio="none" class="econ-yf-spark">
+          <polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.5" />
+          <polyline points="0,${hgt} ${points} ${w},${hgt}" fill="${color}" fill-opacity="0.08" />
+        </svg>
+      `;
+    }
+    const fmtPrice = price?.toLocaleString('ko-KR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    const fmtChange = Math.abs(change)?.toLocaleString('ko-KR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    el.innerHTML = `
+      <div class="econ-yf-card">
+        <div class="econ-yf-head">
+          <div class="econ-yf-name">${escapeHtml(name)}</div>
+          <div class="econ-yf-state" title="시장 상태">${q.marketState === 'REGULAR' ? '🟢 장 중' : q.marketState === 'CLOSED' ? '⚫ 장 마감' : '🟡 시간외'}</div>
+        </div>
+        <div class="econ-yf-price-row">
+          <div class="econ-yf-price" style="color:${color}">${fmtPrice}</div>
+          <div class="econ-yf-change" style="color:${color}">
+            ${arrow} ${fmtChange} <span class="econ-yf-pct">(${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%)</span>
+          </div>
+        </div>
+        ${sparkSvg}
+        <div class="econ-yf-meta">
+          <span>전일 ${prevClose?.toLocaleString('ko-KR', { maximumFractionDigits: decimals })}</span>
+          ${dayHigh ? `<span>고 ${dayHigh.toLocaleString('ko-KR', { maximumFractionDigits: decimals })}</span>` : ''}
+          ${dayLow ? `<span>저 ${dayLow.toLocaleString('ko-KR', { maximumFractionDigits: decimals })}</span>` : ''}
+        </div>
+      </div>
+    `;
+  });
 }
 
 // V23.1 — TradingView 위젯 자동 로드 (15분 지연 무료 위젯)
@@ -18595,7 +18809,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.4 · 📈 TV fix</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.5 · 📊 KOSPI 직접</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -20555,11 +20769,18 @@ function route() {
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     // V23.4 — TradingView 위젯 다중 trigger (race condition 방지)
+    // V23.5 — Yahoo Finance 위젯도 함께 trigger (KOSPI/KOSDAQ)
     requestAnimationFrame(() => {
-      if (currentRoute() === '#/economy') setupTradingViewWidgets();
+      if (currentRoute() === '#/economy') {
+        setupTradingViewWidgets();
+        setupYahooFinanceWidgets();
+      }
     });
     setTimeout(() => {
-      if (currentRoute() === '#/economy') setupTradingViewWidgets();
+      if (currentRoute() === '#/economy') {
+        setupTradingViewWidgets();
+        setupYahooFinanceWidgets();
+      }
     }, 500);
     return;
   }
