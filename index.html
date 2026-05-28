@@ -11513,7 +11513,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V22.4</a>
+      <a href="/changelog" id="foot-year">V29.4</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -14533,13 +14533,37 @@ function renderElection2026Page() {
           <h1>🗳 ${escapeHtml(ev.name)}</h1>
           <p>${escapeHtml(ev.date)} 수요일 · ${escapeHtml(ev.voting_hours)} · 만 ${ev.voter_age}세 이상 · 1인 ${d.ballots_per_voter}표</p>
           <div class="e26-status"><span class="e26-status-dot" style="background:${phase.color}"></span>${escapeHtml(phase.tag)}</div>
-          <a href="/election2026/live" class="e26-live-cta" style="display:inline-block;margin-top:10px;padding:8px 14px;background:#ef4444;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;animation:pulse 2s ease-in-out infinite;">🔴 선거 당일 LIVE 페이지 →</a>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <a href="/early-voting" class="e26-live-cta" style="display:inline-block;padding:8px 14px;background:var(--brand);color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">🗳 사전투표 안내 (5/29·30) →</a>
+            <a href="/election2026/live" class="e26-live-cta" style="display:inline-block;padding:8px 14px;background:#ef4444;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;animation:pulse 2s ease-in-out infinite;">🔴 선거 당일 LIVE →</a>
+          </div>
         </div>
         <div class="e26-hero-r">
           <div class="e26-dday">${dDay}</div>
           <div class="e26-dday-label">${ev.date.replace(/-/g, '.')} 선거일까지</div>
         </div>
       </div>
+
+      ${(() => {
+        // V29.4 — 사전투표 기간 자동 배너 (지선 ↔ 사전투표 접점)
+        const now = today.getTime();
+        const evStart = new Date('2026-05-29T06:00:00+09:00').getTime();
+        const evEnd = new Date('2026-05-30T18:00:00+09:00').getTime();
+        const evD1 = new Date('2026-05-28T00:00:00+09:00').getTime();
+        if (now >= evD1 && now < evEnd) {
+          const live = now >= evStart;
+          return `
+            <a href="/early-voting" style="display:flex;align-items:center;gap:14px;padding:16px 20px;margin-bottom:18px;background:linear-gradient(135deg,var(--brand-deep),var(--brand));color:#fff;border-radius:var(--rd-xl);text-decoration:none;box-shadow:var(--sh-brand)">
+              <span style="font-size:36px">🗳</span>
+              <div style="flex:1">
+                <div style="font-size:18px;font-weight:800;margin-bottom:2px">${live ? '사전투표 진행 중 — 오늘·내일 18시까지' : '내일부터 사전투표 시작! (5/29 금·5/30 토)'}</div>
+                <div style="font-size:13px;opacity:0.9">전국 어디서나 신분증만 있으면 가능 · 체크리스트·투표소 찾기·후보 비교 →</div>
+              </div>
+              <span style="font-size:20px">→</span>
+            </a>`;
+        }
+        return '';
+      })()}
 
       ${(() => {
         const necData = state.nec2026Governors;
@@ -18329,6 +18353,37 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V29.4', date: '2026-05-29', title: '🐛 버그 4종 — footer 버전·지선↔사전투표 접점·pulse 캐시', items: [
+    'footer 버전 V22.4 잔존 → 동적화 (CHANGELOG 최신 자동 반영)',
+    '/election2026 ↔ /early-voting 접점 배너 (사전투표 기간 자동 표시)',
+    'pulse 흰 글자 — 옛 SW 캐시 원인 → CACHE_VERSION v29.4 강제 갱신',
+    '강원 강릉 — region 데이터는 정상, 강릉시 개별은 NEC 실시간'
+  ]},
+  { v: 'V29.2', date: '2026-05-29', title: '☀️ 라이트 모드 가독성 — 눈 피로 ↓', items: [
+    'bg #fafafa→#f7f7f5, card #ffffff→#fcfcfa (warm gray)',
+    '본문 #111827→#1f2937 (대비 17:1→13.7:1, 여전히 WCAG AA)',
+    'Linear·Notion 톤 차용 — 눈부심 ↓, 다크 모드 유지'
+  ]},
+  { v: 'V29.0', date: '2026-05-29', title: '♿ WCAG 2.1 AA 접근성 라운드', items: [
+    '색 대비 fix: dim·accent·danger·ok·warn 모두 4.5:1+ (개혁색 텍스트용 darker variant)',
+    'skip-to-content·sr-only·focus-visible 24 selector',
+    'aria-label·aria-live(사전투표율)·aria-current(모바일 nav)·aria-expanded(공유)',
+    '터치 타겟 44px 모바일 전수 + prefers-contrast 고대비 모드'
+  ]},
+  { v: 'V28.6', date: '2026-05-28', title: '🪟 hero가 sticky header 침범 fix', items: [
+    'header z-index 50→100 + isolation, main·ev-page stacking 격리'
+  ]},
+  { v: 'V28.5', date: '2026-05-28', title: '🐛 empty state placeholder 일괄 fix', items: [
+    'em-dash "—" 큰 폰트 가로 막대 버그 → .is-empty 클래스 (18px 안내 메시지)'
+  ]},
+  { v: 'V28.4', date: '2026-05-28', title: '📸 사전투표 인스타 공유 카드', items: [
+    '/share 7종으로 확장 — 사전투표 카드 1080×1080 (D-1·진행중 자동 분기)'
+  ]},
+  { v: 'V28.3', date: '2026-05-28', title: '🤖 정적 본문 풍부화 — Grok·Naver Yeti용', items: [
+    'noscript 1.5KB→5.3KB (경제 9지표·17 시도·사전투표·changelog)',
+    'JSON-LD 7→12 schema (Event 사전투표·Dataset economy/glossary·Breadcrumb)',
+    'header brand-sub "v22.0" 잔존 → 정정'
+  ]},
   { v: 'V28.2', date: '2026-05-28', title: '📊 사전투표율 라이브 fetch — NEC 다중 fallback', items: [
     '/api/early-vote-rate Vercel Serverless 신규',
     '🔁 4중 fallback chain (NEC가 어느 채널로 발표할지 모름)',
@@ -22848,7 +22903,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.2 · ☀️ 라이트 부드러움</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.4 · 🐛 버그 4종 fix</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -25930,6 +25985,11 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
 // Boot
 // ============================================================
 (async () => {
+  // V29.4 — footer 버전 동적화 (CHANGELOG 최신 버전 자동 반영, 하드코딩 방지)
+  try {
+    const fy = document.getElementById('foot-year');
+    if (fy && typeof CHANGELOG !== 'undefined' && CHANGELOG[0]) fy.textContent = CHANGELOG[0].v;
+  } catch {}
   loadPhotoCache();
   loadWikiOverrides(); // 백그라운드 — 첫 진입 시 위키 카테고리 fetch
   try {
