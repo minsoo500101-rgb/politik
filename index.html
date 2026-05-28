@@ -14531,8 +14531,8 @@ async function tryLoadLiveEconomy(onProgress) {
   let liveCount = 0;
   _liveLoadPromise = Promise.all(indicators.map(async (ind) => {
     try {
-      // KOSPI/KOSDAQ daily는 데이터 양 많아서 startYear 좁힘 (2020~)
-      const sy = (ind.id === 'kospi' || ind.id === 'kosdaq') ? 2020 : startYear;
+      // V25.1 — daily 데이터(KOSPI/KOSDAQ/USDKRW)는 양 많아서 startYear 좁힘 (2020~)
+      const sy = (ind.id === 'kospi' || ind.id === 'kosdaq' || ind.id === 'usd_krw') ? 2020 : startYear;
       const result = await fetchEcosForIndicator(ind, sy, endYear);
       if (result && result.length >= 3) {
         // 정적 + 라이브 병합: 라이브가 덮는 연도만 갱신, 그 외 정적 유지
@@ -14616,8 +14616,8 @@ function renderEconomyPage() {
 
         <!-- 한국 시장: ECOS 일 종가 (TradingView가 KRX 차단 + Yahoo가 Vercel·CORS 차단) -->
         <div class="econ-section-label">
-          <span class="econ-section-tag econ-section-daily">📅 일 종가</span>
-          <span class="econ-section-desc">한국 시장 — 한국은행 ECOS API (실시간 데이터 라이선스 제약)</span>
+          <span class="econ-section-tag econ-section-daily">📅 한국은행 일 종가</span>
+          <span class="econ-section-desc">시세 모니터 = 가장 최근 영업일 · 시계열 차트 = 연도별 마지막 영업일 (동일 데이터)</span>
         </div>
         <div class="econ-yf-grid">
           <div class="econ-yf-widget" data-yf-symbol="^KS11" data-yf-name="코스피 (KOSPI)" data-yf-currency="KRW"></div>
@@ -20836,7 +20836,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.0 · 💱 환율 통일</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.1 · 💱 데이터 통일</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
