@@ -17,16 +17,21 @@ const BASE = process.env.PATCHKR_BASE || 'https://patchkr.com';
 const LOG_FILE = path.resolve(__dirname, '../data/health-log.json');
 const MAX_LOG = 50;
 
+// 주의: SPA라 모든 경로가 동일 index.html(990KB)을 받음.
+// → 페이지별 콘텐츠 검증은 raw HTML로 불가 (JS 실행 후 생성).
+// → SPA 경로는 공통 마커(patchkr·noscript 본문)로만 "정상 로드" 확인.
+// → 정적 파일(llms·sitemap)만 고유 콘텐츠 검증.
+const SPA_MARKER = /patchkr|패치노트|9회 전국동시|정치인/;
 const PAGES = [
-  { path: '/',                     critical: true,  expect: /V29\.|patchkr|패치노트/ },
-  { path: '/early-voting',         critical: true,  expect: /사전투표|early|체크리스트/ },
-  { path: '/election2026',         critical: true,  expect: /9회|전국동시|election/ },
-  { path: '/economy',              critical: true,  expect: /economy|경제|기준금리/ },
-  { path: '/bills',                critical: false, expect: /bills|법안/ },
-  { path: '/changelog',            critical: false, expect: /V[0-9]+/ },
-  { path: '/glossary',             critical: false, expect: /용어|glossary/ },
-  { path: '/llms.txt',             critical: false, expect: /patchkr|llms/ },
-  { path: '/sitemap.xml',          critical: false, expect: /<urlset|sitemap/ },
+  { path: '/',                     critical: true,  expect: SPA_MARKER },
+  { path: '/early-voting',         critical: true,  expect: SPA_MARKER },
+  { path: '/election2026',         critical: true,  expect: SPA_MARKER },
+  { path: '/economy',              critical: true,  expect: SPA_MARKER },
+  { path: '/bills',                critical: false, expect: SPA_MARKER },
+  { path: '/changelog',            critical: false, expect: SPA_MARKER },
+  { path: '/glossary',             critical: false, expect: SPA_MARKER },
+  { path: '/llms.txt',             critical: false, expect: /patchkr|llms/ },       // 정적 파일
+  { path: '/sitemap.xml',          critical: false, expect: /<urlset|sitemap/ },     // 정적 파일
 ];
 
 const APIS = [
