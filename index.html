@@ -8004,6 +8004,176 @@
   }
 
   /* ============================================================
+     V23.2 — 모바일 풀폭화 + 패딩 정리 (좌우 공간 회수)
+     ============================================================ */
+  @media (max-width: 700px) {
+    /* 가로 스크롤 원천 차단 */
+    html, body { overflow-x: hidden; max-width: 100%; }
+    /* 메인 컨테이너 좌우 padding 8px (모바일은 풀폭) */
+    .dash {
+      padding: 12px 8px 80px !important;
+      max-width: 100%;
+    }
+    /* 모든 카드: 패딩 축소 + 둥근 모서리 약간 작게 + 폭 100% */
+    .home-ranking-row, .home-trend-row, .econ-mini-row,
+    .patch-feed, .home-e26-card,
+    .e26-section, .live-section, .me-card,
+    .trend-bar, .domain-grid,
+    .dash-grid {
+      padding: 12px 12px !important;
+      border-radius: 12px;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+    }
+    .domain-grid {
+      padding: 4px 0 12px !important;
+      border-radius: 0;
+    }
+    .dash-grid { padding: 0 !important; }
+    /* 인기 랭킹 내부 — col 사이 간격 좁히고 패딩 축소 */
+    .home-ranking-grid { gap: 8px; }
+    .home-ranking-col { padding: 8px 10px; min-width: 0; }
+    /* grid items가 shrink 가능하도록 — 가장 중요한 fix */
+    .rank-row,
+    .patch-row,
+    .me-row,
+    .e26-cand-row,
+    .r-cand,
+    .home-trend-tile {
+      min-width: 0;
+    }
+    .rank-row > *,
+    .patch-row > *,
+    .me-row > *,
+    .e26-cand-row > * {
+      min-width: 0;
+    }
+    /* 텍스트 ellipsis 강제 */
+    .rank-name,
+    .patch-name,
+    .patch-title,
+    .me-card-name,
+    .e26-cand-row b {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+    /* 보조 텍스트 작게 */
+    .rank-meta { font-size: 10px; }
+    .rank-views { font-size: 10px; }
+    .rank-row { padding: 5px 2px; gap: 5px; }
+    /* 패치 행 압축 */
+    .patch-row { padding: 8px 10px !important; }
+    .patch-feed { padding: 12px 12px !important; }
+    .patch-feed-head h2 { font-size: 15px; }
+    /* hero 풀폭 + 좌우 padding 정리 */
+    .dash-hero {
+      padding: 16px 14px !important;
+      border-radius: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    /* 9회 지선 hero */
+    .home-e26-card {
+      padding: 14px 14px !important;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+    .home-e26-l { width: 100%; }
+    .home-e26-r {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .home-e26-dday { font-size: 26px !important; }
+    .home-e26-dday-l { font-size: 11px; }
+    /* 좌우 풀폭 확실히 */
+    .dash > *,
+    .e26-page > *,
+    .me-page > *,
+    .econ-page > *,
+    .live-page > * {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    /* cw-toggle도 풀폭 */
+    .collapsible-widget .cw-toggle {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    /* 오버플로우 발생 가능 컨테이너 보호 */
+    .collapsible-widget,
+    .home-ranking-row,
+    .home-trend-row,
+    .econ-mini-row {
+      overflow: hidden;
+    }
+    .collapsible-widget.cw-open {
+      overflow: visible;
+    }
+    /* 콘텐츠가 길어도 row 자체는 풀폭 유지 */
+    .home-ranking-list {
+      width: 100%;
+      min-width: 0;
+    }
+    /* 6대 영역 가로 carousel 그림자 살짝 살려서 카드 구분 */
+    .domain-card {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+    }
+    [data-theme="dark"] .domain-card {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
+    }
+  }
+
+  /* rank-row / patch-row 그리드 모바일 압축 */
+  @media (max-width: 700px) {
+    .rank-row {
+      grid-template-columns: 16px minmax(0, 1fr) auto !important;
+      gap: 6px;
+    }
+    .rank-row .rank-views {
+      grid-column: 3;
+      font-size: 9.5px;
+      padding: 0 2px;
+    }
+    .rank-row .rank-meta {
+      grid-column: 2;
+      grid-row: 2;
+      margin-top: -2px;
+      font-size: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .rank-row .rank-name {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .rank-row {
+      align-items: center;
+    }
+  }
+
+  /* 매우 작은 화면 추가 압축 (380px 이하) */
+  @media (max-width: 380px) {
+    .dash { padding: 10px 6px 80px !important; }
+    .home-ranking-grid { grid-template-columns: 1fr !important; }
+    .home-ranking-col { padding: 8px 10px; }
+    .rank-views { display: none; }
+    .home-trend-grid { grid-template-columns: 1fr !important; }
+    /* hero 더 압축 */
+    .dash-hero { padding: 14px 12px !important; }
+    .dash-hero-l h1 { font-size: 20px !important; }
+    .dash-hero-l p { font-size: 11.5px !important; }
+    /* version pill 짧게 */
+    .version-pill { font-size: 10px !important; padding: 2px 5px; }
+  }
+
+  /* ============================================================
      V23.0 — 모바일 정보 위계 재설계 (대시보드 컨셉 한계 보완)
      ============================================================ */
   /* collapsible 위젯 (모바일 기본 접힘) */
@@ -8379,7 +8549,7 @@
 <div class="rel-tooltip" id="rel-tooltip"></div>
 
 <main id="view">
-  <div class="dash" style="max-width:1280px;margin:0 auto;padding:24px 20px">
+  <div class="dash">
     <div class="sk-card" style="margin-bottom:18px">
       <div class="sk-line lg sk-shimmer" style="width:60%;max-width:380px"></div>
       <div class="sk-line sk-shimmer" style="width:90%;max-width:560px;margin-top:14px"></div>
@@ -17526,7 +17696,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.1 · 📈 실시간 시세</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.2 · 📱 모바일 풀폭</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
