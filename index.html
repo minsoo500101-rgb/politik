@@ -228,6 +228,8 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <link rel="preload" as="fetch" href="data/politicians.json?v=23" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
+<!-- V24.0 인스타 카드 생성용 (html → PNG) -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
      crossorigin="anonymous"></script>
@@ -8115,6 +8117,174 @@
     .group-back { font-size: 12px; }
   }
 
+  /* V24.0 — /share 페이지 (인스타 공유 카드) */
+  .share-page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+  .share-hero {
+    background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%);
+    border-radius: 16px;
+    padding: 36px 32px;
+    color: #fff;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .share-hero-eye {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    opacity: 0.85;
+    margin-bottom: 8px;
+  }
+  .share-hero h1 {
+    font-size: 32px;
+    font-weight: 900;
+    margin: 0 0 10px;
+    letter-spacing: -0.5px;
+  }
+  .share-hero p {
+    font-size: 14px;
+    opacity: 0.95;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .share-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .share-card-tile {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    border-radius: 14px;
+    padding: 18px;
+    transition: all 0.2s;
+  }
+  .share-card-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+  .share-tile-label {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .share-tile-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 14px;
+  }
+  .share-tile-preview {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--bg);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .share-tile-placeholder {
+    font-size: 12px;
+    color: var(--dim);
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-direction: column;
+  }
+  .share-tile-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .share-tile-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .share-tile-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--bg-card);
+  }
+  .share-tile-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+  .share-btn-share {
+    background: linear-gradient(135deg, #f59e0b, #dc2626);
+    color: #fff;
+    border-color: transparent;
+  }
+  .share-btn-share:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(220,38,38,0.3);
+  }
+  .share-tip {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+  }
+  .share-tip h3 {
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: var(--text);
+  }
+  .share-tip ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12.5px;
+    color: var(--text-2);
+    line-height: 1.8;
+  }
+  .share-tip li b { color: var(--text); font-weight: 700; }
+  @media (max-width: 700px) {
+    .share-page { padding: 12px 8px 80px; }
+    .share-hero { padding: 24px 18px; }
+    .share-hero h1 { font-size: 24px; }
+    .share-grid { grid-template-columns: 1fr; }
+  }
+
+  /* 페이지별 공유 버튼 (정치인·법안·랭킹 등) */
+  .page-share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, #f59e0b, #dc2626);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .page-share-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(220,38,38,0.3);
+  }
+  .page-share-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
   /* V23.3 — 홈 한국의 마음 진입 카드 */
   .home-pulse-card {
     display: flex;
@@ -9436,6 +9606,7 @@
     <div class="foot-col">
       <div class="foot-h">⭐ 내 활동</div>
       <a href="/pulse">🇰🇷 한국의 마음 (Pulse)</a>
+      <a href="/share">📤 인스타 공유 카드</a>
       <a href="/me">📋 내 활동 대시보드</a>
       <a href="/bookmarks">관심 의원</a>
       <a href="/stances">내 정치 입장</a>
@@ -16631,10 +16802,533 @@ function renderBookmarksPage() {
 // ============================================================
 // V22.6 — /me 내 활동 대시보드
 // ============================================================
+
 // ============================================================
-// V23.3 — 한국의 마음 (Korea Pulse) — 시민 의견 라이브 집계
-// "국민이 곧 국가" — 익명 stance·vote·pageview를 매일 변화하는 한국의 정치 지도로
+// V24.0 — 인스타 공유 카드 시스템 (6종)
+// "사이트 데이터를 1080x1080 PNG로 → 인스타·SNS 바로 공유"
+// 기술: html2canvas (DOM → PNG) + Web Share API (모바일 인스타 직접 전송)
 // ============================================================
+const SHARE_CARD_TYPES = {
+  pulse: {
+    id: 'pulse',
+    label: '🇰🇷 오늘의 한국 마음',
+    desc: 'Pulse 데이터 — 시민 의견 Top 5',
+    color: '#cd2e3a',
+  },
+  dday: {
+    id: 'dday',
+    label: '🗳 9회 지선 D-Day',
+    desc: '선거 카운트다운 + 후보 통계',
+    color: '#ef4444',
+  },
+  kospi: {
+    id: 'kospi',
+    label: '📊 KOSPI 데일리',
+    desc: '코스피·코스닥 시세 카드',
+    color: '#0ea5e9',
+  },
+  bill: {
+    id: 'bill',
+    label: '📜 오늘의 법안',
+    desc: '최신 통과 법안 1건',
+    color: '#10b981',
+  },
+  member: {
+    id: 'member',
+    label: '👤 정치인 카드',
+    desc: '도감 스타일 인물 프로필',
+    color: '#a855f7',
+  },
+  ranking: {
+    id: 'ranking',
+    label: '🏆 발의 Top 5',
+    desc: '주간 활동 랭킹',
+    color: '#f59e0b',
+  },
+};
+
+// 카드 컨테이너 (오프스크린 렌더링용)
+function _getShareCardHost() {
+  let host = document.getElementById('share-card-host');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'share-card-host';
+    host.style.cssText = 'position:fixed;left:-9999px;top:0;width:1080px;height:1080px;pointer-events:none;z-index:-1;';
+    document.body.appendChild(host);
+  }
+  host.innerHTML = '';
+  return host;
+}
+
+// 공통 워터마크 (모든 카드 푸터)
+function _shareWatermark() {
+  const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' });
+  return `
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:24px 36px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.6));color:#fff;font-family:'Pretendard Variable',sans-serif;">
+      <div>
+        <div style="font-size:28px;font-weight:900;letter-spacing:-0.5px">🇰🇷 patchkr.com</div>
+        <div style="font-size:14px;opacity:0.85;margin-top:2px">대한민국 패치 노트 · ${escapeHtml(today)}</div>
+      </div>
+      <div style="font-size:13px;opacity:0.7;text-align:right">
+        한국 정치·법안·선거·경제<br>종합 데이터 플랫폼
+      </div>
+    </div>
+  `;
+}
+
+// 1) Pulse 카드 — 한국의 마음 Top 5
+async function buildPulseCard() {
+  const data = await loadKoreaPulse();
+  const ov = data?.overview;
+  const top = (data?.topPoliticians || []).slice(0, 5);
+  const host = _getShareCardHost();
+  host.innerHTML = `
+    <div style="width:1080px;height:1080px;background:linear-gradient(135deg,#cd2e3a 0%,#0047a0 100%);position:relative;overflow:hidden;font-family:'Pretendard Variable',-apple-system,sans-serif;color:#fff;">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.15),transparent 50%),radial-gradient(circle at 20% 80%,rgba(255,255,255,0.1),transparent 50%);"></div>
+      <div style="position:relative;z-index:1;padding:60px 60px 200px;">
+        <div style="font-size:18px;font-weight:800;letter-spacing:4px;opacity:0.85;margin-bottom:8px">REPUBLIC OF KOREA · CITIZEN PULSE</div>
+        <h1 style="font-size:68px;font-weight:900;margin:0;letter-spacing:-2px;line-height:1.05">🇰🇷 한국의 마음</h1>
+        <p style="font-size:22px;opacity:0.95;margin:14px 0 0;font-weight:600">국민이 곧 국가 — 시민 ${(ov?.unique_voters || 0).toLocaleString()}명의 익명 의견</p>
+
+        <div style="display:flex;gap:14px;margin:36px 0 28px;flex-wrap:wrap;">
+          <div style="background:rgba(255,255,255,0.16);border-radius:14px;padding:14px 22px;backdrop-filter:blur(8px);">
+            <div style="font-size:32px;font-weight:900;font-variant-numeric:tabular-nums">${(ov?.total_votes || 0).toLocaleString()}</div>
+            <div style="font-size:13px;opacity:0.85;font-weight:600">30일 투표</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.16);border-radius:14px;padding:14px 22px;">
+            <div style="font-size:32px;font-weight:900">${(ov?.voters_today || 0).toLocaleString()}</div>
+            <div style="font-size:13px;opacity:0.85;font-weight:600">오늘 참여자</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.16);border-radius:14px;padding:14px 22px;">
+            <div style="font-size:32px;font-weight:900">${(ov?.total_pageviews || 0).toLocaleString()}</div>
+            <div style="font-size:13px;opacity:0.85;font-weight:600">페이지 열람</div>
+          </div>
+        </div>
+
+        <div style="font-size:22px;font-weight:800;margin:30px 0 14px;">🌟 가장 지지받는 정치인 Top 5</div>
+        ${top.length ? top.map((p, i) => `
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 18px;background:rgba(255,255,255,0.13);border-radius:12px;margin-bottom:8px;">
+            <div style="font-size:26px;font-weight:900;width:36px;text-align:center;${i<3?'color:#fbbf24':''}">${i+1}</div>
+            <div style="flex:1;font-size:22px;font-weight:800">${escapeHtml(p.politician_name || p.politician_id)}</div>
+            <div style="font-size:22px;font-weight:900;color:#86efac;font-variant-numeric:tabular-nums;">${p.approval_pct}%</div>
+            <div style="font-size:13px;opacity:0.75;font-weight:600">표본 ${p.total}</div>
+          </div>
+        `).join('') : `
+          <div style="padding:24px;background:rgba(255,255,255,0.1);border-radius:12px;text-align:center;font-size:18px;opacity:0.85">아직 표본 누적 중 — 더 많은 시민이 참여하면 표시됩니다</div>
+        `}
+      </div>
+      ${_shareWatermark()}
+    </div>
+  `;
+  return host.firstElementChild;
+}
+
+// 2) D-Day 카드 — 9회 지선 카운트다운
+async function buildDDayCard() {
+  const today = new Date();
+  const eday = new Date('2026-06-03T06:00:00+09:00');
+  const dayDiff = Math.ceil((eday - today) / 86400000);
+  const dDay = dayDiff > 0 ? `D-${dayDiff}` : dayDiff === 0 ? 'D-Day' : `D+${Math.abs(dayDiff)}`;
+  const nec = state.nec2026Governors;
+  const total = nec ? ((nec.totalGov||0)+(nec.totalMuni||0)+(nec.totalEdu||0)+(nec.totalLocalAssembly||0)+(nec.totalLocalAssemblyProp||0)) : 0;
+  const phaseLabel = dayDiff > 14 ? '예비 후보' : dayDiff > 0 ? '선거운동 중' : dayDiff === 0 ? '🟢 투표 진행 중' : '투표 종료';
+
+  const host = _getShareCardHost();
+  host.innerHTML = `
+    <div style="width:1080px;height:1080px;background:linear-gradient(135deg,#dc2626 0%,#7c1d1d 100%);position:relative;overflow:hidden;font-family:'Pretendard Variable',-apple-system,sans-serif;color:#fff;">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,0.2),transparent 60%);"></div>
+      <div style="position:relative;z-index:1;padding:60px 60px 200px;text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:rgba(255,255,255,0.18);border-radius:30px;margin-bottom:24px;font-size:16px;font-weight:800;letter-spacing:2px">🔴 LIVE · 9회 전국동시지방선거</div>
+        <h1 style="font-size:46px;font-weight:900;margin:0;letter-spacing:-1px">2026.6.3 (수)</h1>
+        <p style="font-size:20px;opacity:0.95;margin:8px 0 36px">06:00 ~ 18:00 · 만 18세 이상 · 1인 7표</p>
+
+        <div style="font-size:280px;font-weight:900;line-height:1;margin:30px 0 20px;letter-spacing:-8px;text-shadow:0 6px 30px rgba(0,0,0,0.4);font-variant-numeric:tabular-nums;">${dDay}</div>
+        <div style="font-size:24px;font-weight:700;margin-bottom:40px;">${escapeHtml(phaseLabel)}</div>
+
+        ${total > 0 ? `
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:30px;">
+          <div style="background:rgba(255,255,255,0.16);border-radius:14px;padding:20px;">
+            <div style="font-size:42px;font-weight:900;font-variant-numeric:tabular-nums;">${total.toLocaleString()}</div>
+            <div style="font-size:15px;opacity:0.85;font-weight:600;margin-top:4px">등록 후보자</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.16);border-radius:14px;padding:20px;">
+            <div style="font-size:42px;font-weight:900;">17</div>
+            <div style="font-size:15px;opacity:0.85;font-weight:600;margin-top:4px">시·도</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.16);border-radius:14px;padding:20px;">
+            <div style="font-size:42px;font-weight:900;">${(nec?.totalGov || 0)}</div>
+            <div style="font-size:15px;opacity:0.85;font-weight:600;margin-top:4px">광역단체장</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.16);border-radius:14px;padding:20px;">
+            <div style="font-size:42px;font-weight:900;">${(nec?.totalEdu || 0)}</div>
+            <div style="font-size:15px;opacity:0.85;font-weight:600;margin-top:4px">교육감</div>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+      ${_shareWatermark()}
+    </div>
+  `;
+  return host.firstElementChild;
+}
+
+// 3) KOSPI 카드
+async function buildKospiCard() {
+  // Yahoo Finance fetch
+  let kospi = null, kosdaq = null, krw = null;
+  try {
+    const r = await fetch('/api/quote?symbols=^KS11,^KQ11,KRW=X&range=1mo&interval=1d');
+    if (r.ok) {
+      const data = await r.json();
+      const q = data.quotes || [];
+      kospi = q.find(x => x.symbol === '^KS11');
+      kosdaq = q.find(x => x.symbol === '^KQ11');
+      krw = q.find(x => x.symbol === 'KRW=X');
+    }
+  } catch {}
+
+  const fmt = (n, d = 2) => n?.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d });
+  function quoteBlock(q, label) {
+    if (!q || q.price == null) return `
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:24px;">
+        <div style="font-size:18px;opacity:0.7;font-weight:600">${escapeHtml(label)}</div>
+        <div style="font-size:42px;font-weight:900;color:#94a3b8;margin-top:6px">—</div>
+        <div style="font-size:14px;opacity:0.6;margin-top:4px">데이터 로딩 실패</div>
+      </div>
+    `;
+    const up = q.change > 0;
+    const color = up ? '#ef4444' : q.change < 0 ? '#3b82f6' : '#94a3b8';
+    const arrow = up ? '▲' : q.change < 0 ? '▼' : '=';
+    return `
+      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:24px;">
+        <div style="font-size:18px;opacity:0.85;font-weight:700">${escapeHtml(label)}</div>
+        <div style="font-size:54px;font-weight:900;color:${color};margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.05">${fmt(q.price)}</div>
+        <div style="font-size:20px;font-weight:800;color:${color};margin-top:6px">${arrow} ${fmt(Math.abs(q.change))} <span style="font-weight:700">(${q.changePercent >= 0 ? '+' : ''}${q.changePercent?.toFixed(2)}%)</span></div>
+        ${q.dayHigh && q.dayLow ? `<div style="font-size:13px;opacity:0.7;margin-top:8px">고 ${fmt(q.dayHigh)} · 저 ${fmt(q.dayLow)}</div>` : ''}
+      </div>
+    `;
+  }
+
+  const host = _getShareCardHost();
+  host.innerHTML = `
+    <div style="width:1080px;height:1080px;background:linear-gradient(180deg,#0a0e14 0%,#11161e 100%);position:relative;overflow:hidden;font-family:'Pretendard Variable',-apple-system,sans-serif;color:#fff;">
+      <div style="position:relative;z-index:1;padding:60px 60px 200px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;box-shadow:0 0 12px #ef4444"></div>
+          <div style="font-size:16px;font-weight:800;letter-spacing:3px;color:#ef4444">LIVE · 15분 지연</div>
+        </div>
+        <h1 style="font-size:60px;font-weight:900;margin:0;letter-spacing:-2px">📊 한국 시장</h1>
+        <p style="font-size:20px;opacity:0.7;margin:8px 0 36px;font-weight:500">Yahoo Finance · 일 종가 기준</p>
+
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          ${quoteBlock(kospi, '코스피 (KOSPI)')}
+          ${quoteBlock(kosdaq, '코스닥 (KOSDAQ)')}
+          ${quoteBlock(krw, 'USD / KRW 환율')}
+        </div>
+
+        <div style="margin-top:36px;padding:16px;background:rgba(255,255,255,0.04);border-radius:12px;text-align:center;font-size:15px;opacity:0.85">
+          💡 한국 표기 — <span style="color:#ef4444;font-weight:800">빨강 = 상승</span> · <span style="color:#3b82f6;font-weight:800">파랑 = 하락</span>
+        </div>
+      </div>
+      ${_shareWatermark()}
+    </div>
+  `;
+  return host.firstElementChild;
+}
+
+// 4) Bill 카드 — 최신 통과 법안
+async function buildBillCard(billId) {
+  let bill;
+  if (billId) {
+    bill = (state.bills || []).find(b => b.BILL_ID === billId);
+  }
+  if (!bill && state.bills?.length) {
+    const passed = state.bills.filter(b => /가결/.test(b.PROC_RESULT_CD || ''))
+                              .sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+    bill = passed[0];
+  }
+  if (!bill) {
+    const host = _getShareCardHost();
+    host.innerHTML = `<div style="width:1080px;height:1080px;background:#11161e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px">법안 데이터 로딩 실패</div>`;
+    return host.firstElementChild;
+  }
+  const info = getBillProposerInfo(bill);
+  const topic = getBillTopic(bill);
+  const partyC = info.party ? partyColor(info.party) : '#475569';
+  const proposerLabel = info.kind === 'gov' ? '⚖ 정부' : info.kind === 'chair' ? `🏢 ${info.name || ''} (위원장)` : info.name ? `👤 ${info.name}${info.count > 1 ? ` 외 ${info.count - 1}명` : ''}` : '발의자 정보 준비 중';
+
+  const host = _getShareCardHost();
+  host.innerHTML = `
+    <div style="width:1080px;height:1080px;background:linear-gradient(180deg,#f8fafc 0%,#e2e8f0 100%);position:relative;overflow:hidden;font-family:'Pretendard Variable',-apple-system,sans-serif;color:#0f172a;border-left:24px solid ${partyC};">
+      <div style="position:relative;z-index:1;padding:60px 60px 200px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+          <span style="display:inline-block;padding:6px 14px;border-radius:20px;background:#10b981;color:#fff;font-size:14px;font-weight:800;letter-spacing:1px">PASSED</span>
+          <span style="display:inline-block;padding:6px 14px;border-radius:20px;background:${topic.color};color:#fff;font-size:14px;font-weight:800">${topic.icon} ${escapeHtml(topic.label)}</span>
+          <span style="font-size:14px;color:#64748b;font-weight:600">${escapeHtml((bill.PROC_DT || '').slice(0,10))} 처리</span>
+        </div>
+
+        <div style="font-size:18px;font-weight:800;color:#64748b;letter-spacing:2px;margin-bottom:6px">📜 22대 국회 통과 법안</div>
+        <h1 style="font-size:48px;font-weight:900;margin:0;letter-spacing:-1.5px;line-height:1.25;color:#0f172a">${escapeHtml((bill.BILL_NAME || '').slice(0, 110))}${(bill.BILL_NAME || '').length > 110 ? '…' : ''}</h1>
+
+        <div style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px;flex:1;min-width:240px">
+            <div style="font-size:13px;color:#64748b;font-weight:700;letter-spacing:1px;margin-bottom:4px">발의자</div>
+            <div style="font-size:22px;font-weight:800;color:#0f172a">${escapeHtml(proposerLabel)}</div>
+            ${info.party ? `<div style="font-size:14px;color:${partyC};font-weight:800;margin-top:4px">${escapeHtml(info.party)}</div>` : ''}
+          </div>
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px;flex:1;min-width:240px">
+            <div style="font-size:13px;color:#64748b;font-weight:700;letter-spacing:1px;margin-bottom:4px">위원회</div>
+            <div style="font-size:22px;font-weight:800;color:#0f172a">${escapeHtml(bill.CURR_COMMITTEE || '—')}</div>
+            <div style="font-size:14px;color:#94a3b8;font-weight:700;margin-top:4px">#${escapeHtml(bill.BILL_NO || '—')}</div>
+          </div>
+        </div>
+
+        ${bill.YES_TCNT ? `
+        <div style="margin-top:20px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px;">
+          <div style="font-size:13px;color:#64748b;font-weight:700;letter-spacing:1px;margin-bottom:12px">본회의 표결 결과</div>
+          <div style="display:flex;gap:32px;font-size:22px;font-weight:800">
+            <div><span style="color:#10b981;font-size:32px">${bill.YES_TCNT}</span> <span style="font-size:14px;color:#64748b">찬성</span></div>
+            <div><span style="color:#ef4444;font-size:32px">${bill.NO_TCNT}</span> <span style="font-size:14px;color:#64748b">반대</span></div>
+            <div><span style="color:#94a3b8;font-size:32px">${bill.BLANK_TCNT || 0}</span> <span style="font-size:14px;color:#64748b">기권</span></div>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:24px 36px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,transparent,rgba(15,23,42,0.7));color:#fff;">
+        <div>
+          <div style="font-size:28px;font-weight:900;letter-spacing:-0.5px">🇰🇷 patchkr.com</div>
+          <div style="font-size:14px;opacity:0.85;margin-top:2px">대한민국 패치 노트 · ${escapeHtml(new Date().toLocaleDateString('ko-KR'))}</div>
+        </div>
+        <div style="font-size:13px;opacity:0.85;text-align:right">법안 본문·표결 기록·뉴스<br>patchkr.com/bill/${escapeHtml(bill.BILL_ID || '')}</div>
+      </div>
+    </div>
+  `;
+  return host.firstElementChild;
+}
+
+// 5) Member 카드 — 정치인 도감
+async function buildMemberCard(memberId) {
+  const m = (state.members || []).find(x => x.MONA_CD === memberId);
+  if (!m) {
+    const host = _getShareCardHost();
+    host.innerHTML = `<div style="width:1080px;height:1080px;background:#11161e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px">정치인 데이터 없음</div>`;
+    return host.firstElementChild;
+  }
+  const partyC = partyColor(m.POLY_NM || '무소속');
+  const photo = state.photos.get(m.MONA_CD);
+  const score = computeMpScore(m.HG_NM);
+  const stats = computeMpStats(m.HG_NM);
+
+  const host = _getShareCardHost();
+  host.innerHTML = `
+    <div style="width:1080px;height:1080px;background:linear-gradient(180deg,${partyC} 0%,${partyC}dd 40%,#0f172a 100%);position:relative;overflow:hidden;font-family:'Pretendard Variable',-apple-system,sans-serif;color:#fff;">
+      <div style="position:absolute;top:0;right:0;font-size:280px;opacity:0.07;font-weight:900;line-height:1;padding:30px 60px;">#${escapeHtml(String(m.MONA_CD || '').slice(-3))}</div>
+      <div style="position:relative;z-index:1;padding:60px 60px 200px;">
+        <div style="display:flex;gap:36px;align-items:center;margin-bottom:36px">
+          <div style="width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.2);overflow:hidden;border:6px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:80px;font-weight:900;flex-shrink:0;">
+            ${photo?.thumb ? `<img src="${escapeHtml(photo.thumb)}" style="width:100%;height:100%;object-fit:cover" crossorigin="anonymous">` : escapeHtml(m.HG_NM.charAt(0))}
+          </div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:800;letter-spacing:3px;opacity:0.85;margin-bottom:4px">POLITICIAN PROFILE</div>
+            <h1 style="font-size:64px;font-weight:900;margin:0;letter-spacing:-2px;line-height:1">${escapeHtml(m.HG_NM)}</h1>
+            <div style="font-size:24px;margin-top:10px;font-weight:700;background:rgba(255,255,255,0.2);display:inline-block;padding:4px 16px;border-radius:20px">${escapeHtml(m.POLY_NM || '무소속')}</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+          <div style="background:rgba(255,255,255,0.13);border-radius:14px;padding:20px">
+            <div style="font-size:13px;opacity:0.8;font-weight:700;letter-spacing:1px;margin-bottom:4px">소속</div>
+            <div style="font-size:22px;font-weight:800">${escapeHtml(m.POLY_NM || '무소속')}</div>
+            ${m.REELE_GBN_NM ? `<div style="font-size:14px;opacity:0.75;margin-top:4px">${escapeHtml(m.REELE_GBN_NM)}</div>` : ''}
+          </div>
+          <div style="background:rgba(255,255,255,0.13);border-radius:14px;padding:20px">
+            <div style="font-size:13px;opacity:0.8;font-weight:700;letter-spacing:1px;margin-bottom:4px">지역구</div>
+            <div style="font-size:22px;font-weight:800">${escapeHtml(m.ORIG_NM || m._type_label || '—')}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.13);border-radius:14px;padding:20px">
+            <div style="font-size:13px;opacity:0.8;font-weight:700;letter-spacing:1px;margin-bottom:4px">대표발의</div>
+            <div style="font-size:34px;font-weight:900;font-variant-numeric:tabular-nums">${(stats?.total || 0).toLocaleString()}건</div>
+            ${stats?.passRate >= 0 ? `<div style="font-size:14px;opacity:0.8;margin-top:4px">통과율 ${stats.passRate.toFixed(0)}%</div>` : ''}
+          </div>
+          <div style="background:rgba(255,255,255,0.13);border-radius:14px;padding:20px">
+            <div style="font-size:13px;opacity:0.8;font-weight:700;letter-spacing:1px;margin-bottom:4px">활동 점수</div>
+            <div style="font-size:34px;font-weight:900;font-variant-numeric:tabular-nums">${score?.total ? `${score.total}/100` : '—'}</div>
+            ${score?.total >= 80 ? '<div style="font-size:14px;opacity:0.8;margin-top:4px">🏆 S등급</div>' : score?.total >= 65 ? '<div style="font-size:14px;opacity:0.8;margin-top:4px">A등급</div>' : ''}
+          </div>
+        </div>
+      </div>
+      ${_shareWatermark()}
+    </div>
+  `;
+  return host.firstElementChild;
+}
+
+// 6) Ranking 카드 — Top 5 발의 의원
+async function buildRankingCard() {
+  // 대표발의 Top 5 계산
+  const stats = new Map();
+  for (const b of (state.bills || [])) {
+    const info = getBillProposerInfo(b);
+    if (info.kind === 'mp' && info.name) {
+      const key = info.name;
+      if (!stats.has(key)) stats.set(key, { name: key, party: info.party, count: 0, passCount: 0, mid: info.member?.MONA_CD });
+      const s = stats.get(key);
+      s.count++;
+      if (/가결/.test(b.PROC_RESULT_CD || '')) s.passCount++;
+    }
+  }
+  const top = [...stats.values()].sort((a, b) => b.count - a.count).slice(0, 5);
+
+  const host = _getShareCardHost();
+  host.innerHTML = `
+    <div style="width:1080px;height:1080px;background:linear-gradient(135deg,#f59e0b 0%,#dc2626 100%);position:relative;overflow:hidden;font-family:'Pretendard Variable',-apple-system,sans-serif;color:#fff;">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,0.15),transparent 60%);"></div>
+      <div style="position:relative;z-index:1;padding:60px 60px 200px;">
+        <div style="font-size:18px;font-weight:800;letter-spacing:4px;opacity:0.9;margin-bottom:8px">22대 국회 · 활동 랭킹</div>
+        <h1 style="font-size:60px;font-weight:900;margin:0;letter-spacing:-2px">🏆 발의 Top 5</h1>
+        <p style="font-size:20px;opacity:0.95;margin:10px 0 36px;font-weight:600">국회 본회의 처리 의안 ${(state.bills || []).length.toLocaleString()}건 기준</p>
+
+        ${top.map((p, i) => {
+          const partyC = partyColor(p.party || '무소속');
+          const medals = ['🥇', '🥈', '🥉', '4', '5'];
+          const passRate = p.count ? (p.passCount / p.count * 100) : 0;
+          return `
+            <div style="display:flex;align-items:center;gap:16px;padding:18px 22px;background:rgba(255,255,255,0.16);border-radius:14px;margin-bottom:10px;border-left:6px solid ${partyC}">
+              <div style="font-size:${i<3?42:32}px;font-weight:900;width:60px;text-align:center;">${medals[i]}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:28px;font-weight:900;letter-spacing:-0.5px">${escapeHtml(p.name)}</div>
+                <div style="font-size:15px;font-weight:700;margin-top:4px;display:flex;gap:12px;opacity:0.95">
+                  <span style="background:${partyC};padding:2px 10px;border-radius:10px;color:#fff">${escapeHtml(p.party || '무소속')}</span>
+                  <span>✓ 통과 ${passRate.toFixed(0)}%</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:42px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1">${p.count}</div>
+                <div style="font-size:14px;opacity:0.85;font-weight:600">건</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      ${_shareWatermark()}
+    </div>
+  `;
+  return host.firstElementChild;
+}
+
+// 메인 빌더 dispatcher
+async function buildShareCard(type, opts = {}) {
+  switch (type) {
+    case 'pulse': return buildPulseCard();
+    case 'dday': return buildDDayCard();
+    case 'kospi': return buildKospiCard();
+    case 'bill': return buildBillCard(opts.billId);
+    case 'member': return buildMemberCard(opts.memberId);
+    case 'ranking': return buildRankingCard();
+    default: throw new Error('Unknown card type: ' + type);
+  }
+}
+
+// PNG 캡처 + 공유/다운로드
+async function captureAndShare(element, filename = 'patchkr-card.png') {
+  if (typeof html2canvas !== 'function') {
+    alert('카드 생성 라이브러리 로딩 중. 잠시 후 다시 시도해주세요.');
+    return null;
+  }
+  try {
+    const canvas = await html2canvas(element, {
+      width: 1080,
+      height: 1080,
+      scale: 1,
+      backgroundColor: null,
+      useCORS: true,
+      logging: false,
+      allowTaint: false,
+    });
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png', 0.95));
+    if (!blob) throw new Error('PNG 변환 실패');
+    return { canvas, blob };
+  } catch (e) {
+    console.error('[ShareCard] capture failed:', e);
+    alert('카드 생성 실패: ' + e.message);
+    return null;
+  }
+}
+
+async function shareCardToInstagram(type, opts = {}) {
+  const element = await buildShareCard(type, opts);
+  if (!element) return;
+  // 사진 로딩 대기 (1초)
+  await new Promise(r => setTimeout(r, 800));
+  const result = await captureAndShare(element);
+  if (!result) return;
+  const { blob } = result;
+  const filename = `patchkr-${type}-${new Date().toISOString().slice(0,10)}.png`;
+  const file = new File([blob], filename, { type: 'image/png' });
+
+  // Web Share API (모바일 인스타 앱 직접 전송 가능)
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: '대한민국 패치 노트',
+        text: 'patchkr.com — 한국 정치·경제 종합 데이터',
+      });
+      return 'shared';
+    } catch (e) {
+      if (e.name !== 'AbortError') console.warn('[Share] failed:', e);
+    }
+  }
+  // Fallback: 다운로드
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return 'downloaded';
+}
+
+// /share 페이지 렌더
+function renderSharePage() {
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div class="share-page">
+      <div class="share-hero">
+        <div class="share-hero-eye">SHARE TO SOCIAL</div>
+        <h1>📤 인스타·SNS 공유 카드</h1>
+        <p>사이트 데이터를 1080x1080 정사각형 카드로 자동 생성. 다운로드 또는 모바일에서 인스타로 1탭 전송.</p>
+      </div>
+      <div class="share-grid">
+        ${Object.values(SHARE_CARD_TYPES).map(t => `
+          <div class="share-card-tile" data-card-type="${escapeHtml(t.id)}" style="border-top-color:${t.color}">
+            <div class="share-tile-label">${escapeHtml(t.label)}</div>
+            <div class="share-tile-desc">${escapeHtml(t.desc)}</div>
+            <div class="share-tile-preview" id="preview-${escapeHtml(t.id)}">
+              <div class="share-tile-placeholder">미리보기 생성</div>
+            </div>
+            <div class="share-tile-actions">
+              <button class="share-tile-btn share-btn-preview" data-card="${escapeHtml(t.id)}">👁 미리보기</button>
+              <button class="share-tile-btn share-btn-share" data-card="${escapeHtml(t.id)}">📤 공유/다운로드</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="share-tip">
+        <h3>💡 사용 방법</h3>
+        <ul>
+          <li><b>모바일</b> — '공유/다운로드' 버튼 → 인스타그램 앱 선택 → 스토리·피드에 바로 첨부</li>
+          <li><b>데스크탑</b> — PNG 다운로드 → 휴대폰에 전송 → 인스타 업로드</li>
+          <li><b>워터마크</b> — 모든 카드 하단에 patchkr.com 자동 삽입</li>
+          <li><b>저작권</b> — 공식 출처 데이터만 사용 (자유 공유 OK, 상업적 재배포는 문의)</li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
 
 // 일 단위 캐시 (매일 11시 갱신 효과)
 const PULSE_CACHE = { ts: 0, data: null };
@@ -16766,6 +17460,9 @@ function renderPulseBody(data) {
     <div class="pulse-share-section">
       <h2>📤 한국의 마음 공유</h2>
       <p class="pulse-share-sub">"국민이 곧 국가" — 오늘의 한국 정치 데이터를 SNS에 공유하세요.</p>
+      <div class="pulse-share-btns">
+        <button class="page-share-btn" id="pulse-share-instagram" style="margin-bottom:10px">📸 인스타용 카드 (1080×1080)</button>
+      </div>
       <div class="pulse-share-btns">
         <button class="pulse-share-btn pulse-share-x" id="pulse-share-x">𝕏 트위터 공유</button>
         <button class="pulse-share-btn pulse-share-fb" id="pulse-share-fb">📘 페이스북</button>
@@ -19078,7 +19775,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.9 · 🏆 랭킹 풍부화</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.0 · 📤 인스타 카드</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -20204,6 +20901,7 @@ const ROUTE_META = {
   '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
   '/me': { title: '📋 내 활동 대시보드 — 북마크·평점·투표·stance 한 곳에', desc: '익명 UUID로 저장된 본인의 모든 활동 기록을 한 페이지에서 확인. 관심 의원·정치 입장·9회 공약 평점·8회 이행 투표·소셜 투표·페이지 조회 통계.' },
   '/pulse': { title: '🇰🇷 한국의 마음 (Korea Pulse) — 시민 익명 의견 라이브 집계', desc: '국민이 곧 국가. 시민 누적 의견(지지·반대·찬성·우려)을 매일 자동 집계. 정치인 평가 Top·법안 동의도·경제 우려·17 시도별 정치 성향. patchkr.com 사용자 데이터.' },
+  '/share': { title: '📤 인스타·SNS 공유 카드 — 6종 자동 생성', desc: '대한민국 패치 노트 데이터를 1080x1080 인스타용 카드로 자동 생성. 한국의 마음·9회 지선 D-Day·KOSPI 데일리·오늘의 법안·정치인 카드·발의 랭킹 Top 5. 모바일에서 1탭 인스타 직접 전송.' },
   '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
   '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
   '/compare-cand': { title: '9회 지선 후보 비교 — 5대 공약 옆에 옆에', desc: '제9회 지방선거 후보자 최대 3명 옆에 옆에 비교. 5대 공약·약력·재산·전과 대조.' },
@@ -20363,6 +21061,53 @@ function route() {
     window.scrollTo(0, 0);
     return;
   }
+  // V24.0 — 인스타 공유 카드 시스템
+  if (hash === '#/share') {
+    view.innerHTML = renderSharePage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // 미리보기 버튼
+    document.querySelectorAll('.share-btn-preview').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const type = btn.dataset.card;
+        const preview = document.getElementById('preview-' + type);
+        if (!preview) return;
+        preview.innerHTML = '<div class="share-tile-placeholder"><span class="loading-spinner"></span> 미리보기 생성 중…</div>';
+        try {
+          const el = await buildShareCard(type);
+          if (!el) return;
+          await new Promise(r => setTimeout(r, 500));
+          if (typeof html2canvas !== 'function') {
+            preview.innerHTML = '<div class="share-tile-placeholder">라이브러리 로딩 중…</div>';
+            return;
+          }
+          const canvas = await html2canvas(el, { width: 1080, height: 1080, scale: 0.3, useCORS: true, logging: false, backgroundColor: null });
+          const dataUrl = canvas.toDataURL('image/png');
+          preview.innerHTML = `<img src="${dataUrl}" alt="preview" style="width:100%;border-radius:8px;display:block;">`;
+        } catch (e) {
+          preview.innerHTML = `<div class="share-tile-placeholder" style="color:var(--danger)">생성 실패: ${escapeHtml(e.message || 'error')}</div>`;
+        }
+      });
+    });
+    // 공유/다운로드 버튼
+    document.querySelectorAll('.share-btn-share').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const type = btn.dataset.card;
+        const orig = btn.textContent;
+        btn.textContent = '⏳ 생성 중…';
+        btn.disabled = true;
+        try {
+          const result = await shareCardToInstagram(type);
+          btn.textContent = result === 'shared' ? '✓ 공유됨' : result === 'downloaded' ? '✓ 다운로드' : '❌ 실패';
+        } catch (e) {
+          btn.textContent = '❌ 실패';
+        }
+        setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1800);
+      });
+    });
+    return;
+  }
   // V23.3 — 한국의 마음 (Korea Pulse)
   if (hash === '#/pulse') {
     view.innerHTML = renderPulsePage();
@@ -20392,6 +21137,18 @@ function route() {
           btn.textContent = '✓ 복사됨';
           setTimeout(() => { btn.textContent = orig; }, 1500);
         });
+      });
+      // V24.0 — 인스타 카드 공유
+      document.getElementById('pulse-share-instagram')?.addEventListener('click', async e => {
+        const btn = e.currentTarget;
+        const orig = btn.textContent;
+        btn.textContent = '⏳ 생성 중…';
+        btn.disabled = true;
+        try {
+          const result = await shareCardToInstagram('pulse');
+          btn.textContent = result === 'shared' ? '✓ 공유됨' : '✓ 다운로드';
+        } catch { btn.textContent = '❌ 실패'; }
+        setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
       });
     });
     return;
