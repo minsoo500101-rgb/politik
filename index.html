@@ -7747,6 +7747,160 @@
     .ph-hero h1, .bills-hero h1 { font-size: 20px; }
     .group-back { font-size: 12px; }
   }
+
+  /* ============================================================
+     V22.8 — 모바일 UX 정밀 보완
+     ============================================================ */
+  /* 모바일 하단 nav (모바일에서만 표시) */
+  .mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 90;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-strong);
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+    justify-content: space-around;
+    align-items: stretch;
+  }
+  [data-theme="dark"] .mobile-bottom-nav {
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
+  }
+  .mbn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 6px;
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
+    color: var(--text-2);
+    font-size: 11px;
+    font-weight: 600;
+    transition: color 0.15s;
+    min-height: 44px;
+    border-radius: 8px;
+  }
+  .mbn-item:active { background: var(--bg-elev); }
+  .mbn-item.active {
+    color: var(--accent);
+  }
+  .mbn-icon {
+    font-size: 20px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .mbn-label {
+    font-size: 10.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: center;
+  }
+  .mbn-pulse .mbn-icon::after {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    background: #ef4444;
+    border-radius: 50%;
+    margin-left: 14px;
+    margin-top: -2px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .mbn-pulse {
+    position: relative;
+  }
+  @media (max-width: 600px) {
+    .mobile-bottom-nav { display: flex; }
+    /* 하단 nav 공간 확보 */
+    body { padding-bottom: 70px; }
+    footer { margin-bottom: 70px; }
+  }
+
+  /* 위로가기 버튼 */
+  .scroll-top-btn {
+    position: fixed;
+    bottom: calc(84px + env(safe-area-inset-bottom));
+    right: 16px;
+    z-index: 89;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .scroll-top-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .scroll-top-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  [data-theme="dark"] .scroll-top-btn { box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+  @media (min-width: 601px) {
+    .scroll-top-btn {
+      bottom: 24px;
+    }
+  }
+
+  /* 모바일 터치 타깃 안전 (44x44 최소) */
+  @media (max-width: 600px) {
+    button, .btn, a.btn, .pill-btn, .e26-link, .r-link, .me-card,
+    .stance-btn, .vote-btn, .pg-btn, .pg-num {
+      min-height: 44px;
+    }
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+    }
+    /* 본문 패딩 살짝 더 빡빡하게 */
+    .dash, .e26-page, .me-page, .bd-content {
+      padding-left: 14px !important;
+      padding-right: 14px !important;
+    }
+    /* 모달 풀스크린 */
+    .promise-modal,
+    .candidate-list-modal,
+    .cand-detail-modal {
+      max-width: 100% !important;
+      width: 100% !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+    }
+    /* 테이블 가로 스크롤 */
+    .e26-sd-table-wrap,
+    .ranking-table-wrap,
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    /* 폰트 사이즈 안전 마진 */
+    body { font-size: 14px; }
+    /* 입력창 줌인 방지 (iOS) */
+    input[type="text"], input[type="search"], textarea, select {
+      font-size: 16px !important;
+    }
+  }
+
+  /* 매우 작은 화면 (350px 이하) */
+  @media (max-width: 360px) {
+    .mbn-label { font-size: 9.5px; }
+    .mbn-icon { font-size: 18px; }
+    .brand { font-size: 15px; }
+    header { padding: 8px 10px; }
+  }
 </style>
 </head>
 <body>
@@ -7894,6 +8048,33 @@
     </div>
   </div>
 </footer>
+
+<!-- V22.8 — 모바일 하단 nav (mobile only) -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="모바일 주요 페이지">
+  <a href="/" class="mbn-item" data-path="/" aria-label="홈">
+    <span class="mbn-icon">🏠</span>
+    <span class="mbn-label">홈</span>
+  </a>
+  <a href="/bills" class="mbn-item" data-path="/bills" aria-label="법안">
+    <span class="mbn-icon">📜</span>
+    <span class="mbn-label">법안</span>
+  </a>
+  <a href="/election2026" class="mbn-item mbn-pulse" data-path="/election2026" aria-label="9회 지선">
+    <span class="mbn-icon">🗳</span>
+    <span class="mbn-label">9회 지선</span>
+  </a>
+  <a href="/today" class="mbn-item" data-path="/today" aria-label="실검">
+    <span class="mbn-icon">🔥</span>
+    <span class="mbn-label">실검</span>
+  </a>
+  <a href="/me" class="mbn-item" data-path="/me" aria-label="내 활동">
+    <span class="mbn-icon">📋</span>
+    <span class="mbn-label">내 활동</span>
+  </a>
+</nav>
+
+<!-- V22.8 — 위로가기 버튼 (스크롤 시 표시) -->
+<button class="scroll-top-btn" id="scroll-top-btn" aria-label="맨 위로" title="맨 위로">↑</button>
 
 <script>
 'use strict';
@@ -16583,7 +16764,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.7 · 🗺 시도별 페이지</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.8 · 📱 모바일 보완</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -17629,6 +17810,18 @@ function nav(target) {
   if (_drop) _drop.classList.remove('open');
   route();
   window.scrollTo(0, 0);
+  // V22.8 — 모바일 하단 nav 활성 상태 갱신
+  updateMobileBottomNav();
+}
+
+// V22.8 — 모바일 하단 nav 활성 표시
+function updateMobileBottomNav() {
+  const path = currentPath();
+  document.querySelectorAll('.mbn-item').forEach(el => {
+    const itemPath = el.dataset.path;
+    const isActive = itemPath === '/' ? path === '/' : path.startsWith(itemPath);
+    el.classList.toggle('active', isActive);
+  });
 }
 // 구 해쉬 URL (#/path) 자동 마이그레이션 — 북마크·외부 링크 호환
 (function migrateHashUrl() {
@@ -19051,6 +19244,27 @@ document.getElementById('brand').addEventListener('click', () => {
     nav('/');
   }
 });
+
+// V22.8 — 모바일 하단 nav 초기화 (이미 click 인터셉터가 nav() 처리)
+updateMobileBottomNav();
+
+// V22.8 — 위로가기 버튼 (스크롤 50% 이상 시 표시)
+(function setupScrollTopBtn() {
+  const btn = document.getElementById('scroll-top-btn');
+  if (!btn) return;
+  let scrollTicking = false;
+  function onScroll() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      const sy = window.scrollY || document.documentElement.scrollTop;
+      btn.classList.toggle('visible', sy > 400);
+      scrollTicking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+})();
 
 // ============================================================
 // Autocomplete (search dropdown)
