@@ -145,7 +145,7 @@
     {
       "@type": "Dataset",
       "name": "한국 정치인 종합 데이터베이스",
-      "description": "대통령·국무총리·17부처 장관·차관·외청장·헌법기관장·국회 의장단·위원장·간사·대법관·헌법재판관·광역단체장·기초단체장·광역의회 의장·교육감·역대 대통령·총리·정당대표·사법부 수장 등 536명.",
+      "description": "현직 + 역대 핵심 인사 536명: 22대 국회 의장단·위원장·간사 54명, 행정부 80명(대통령·총리·장관·차관·외청장·헌법기관장), 사법부 22명(대법관·헌법재판관), 지방 278명(광역·기초단체장·교육감·광역의회 의장), 역사 102명(역대 대통령 13·총리 13·정당대표 13·사법부 수장 9·검찰총장 7·국회의장 8).",
       "url": "https://patchkr.com/",
       "creator": { "@id": "https://patchkr.com/#organization" },
       "isAccessibleForFree": true,
@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V27.2 — 위젯/메타 숫자 실측 동기화 (정치인 772→536·용어 136→248·8→15카·시군구 250→226·후보 696→697) -->
+<!-- V27.3 — 정밀 검토 후 거짓 표기 수정 (about 744→536·시군구 250→226·22대 의원 286 표현 정확화: 핵심 직책자 54명 + 일반의원 미보유 명시) -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -10698,7 +10698,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     <li><b>🏛 정치 (Politics)</b> — 대통령·국무총리·17부처 장관/차관·외청장·헌법기관장 27명, 대통령실 4명</li>
     <li><b>📜 법안 (Bills)</b> — 22대 국회 본회의 통과 의안 1,595건, 발의자·정당·위원회·15개 분야·통과 속도 패치 노트</li>
     <li><b>🗳 선거 (Elections)</b> — 9회 전국동시지방선거(2026.6.3) 후보자 697명 실시간 (5대 공약 포함), 역대 7·8회 결과 비교</li>
-    <li><b>👥 인물 (People)</b> — 총 744명: 22대 의원 286명, 단체장 244명, 광역의회 의장 17명, 교육감 17명, 사법부 22명, 검찰 6명, 역대 대통령 13명·총리 12명·정당대표·사법부 수장</li>
+    <li><b>👥 인물 (People)</b> — 총 536명: 입법부 핵심 직책자 54명(의장단·위원장·간사), 행정부 80명(대통령·총리·17부처 장관·차관·외청장·헌법기관장), 사법부 22명(대법관·헌법재판관), 지방 278명(광역·기초단체장·교육감·광역의회 의장), 역사 102명(역대 대통령 13·총리 13·정당대표 13·사법부 수장 9·검찰총장 7·국회의장 8·기타)</li>
     <li><b>📚 역사 (History)</b> — 1948~현재 정당사 45개, 역대 광역단체장 23명, 역대 사법부 수장 13명</li>
   </ul>
 
@@ -17200,10 +17200,10 @@ function renderAboutPage() {
       <p class="about-lead">한국의 모든 것을 데이터로 — 정치·법안·선거·인물·역사 종합 데이터 플랫폼.</p>
 
       <div class="about-stats">
-        <div class="about-stat"><div class="about-stat-n">744</div><div class="about-stat-l">등록 인물</div></div>
+        <div class="about-stat"><div class="about-stat-n">536</div><div class="about-stat-l">등록 인물</div></div>
         <div class="about-stat"><div class="about-stat-n">1,595</div><div class="about-stat-l">22대 통과 법안</div></div>
         <div class="about-stat"><div class="about-stat-n">697</div><div class="about-stat-l">9회 지선 후보자</div></div>
-        <div class="about-stat"><div class="about-stat-n">250</div><div class="about-stat-l">시군구 매핑</div></div>
+        <div class="about-stat"><div class="about-stat-n">226</div><div class="about-stat-l">시군구 매핑</div></div>
         <div class="about-stat"><div class="about-stat-n">12</div><div class="about-stat-l">국가 비교</div></div>
         <div class="about-stat"><div class="about-stat-n">11</div><div class="about-stat-l">통합 데이터 출처</div></div>
       </div>
@@ -17268,7 +17268,7 @@ function renderBusinessPage() {
         <ul class="about-ul">
           <li><b>의원 활동 데이터 피드</b> — 발의·표결 일일 업데이트, JSON/CSV API</li>
           <li><b>법안 모니터링</b> — 키워드 기반 알림, 영향 분석 리포트</li>
-          <li><b>인물 DB 라이선스</b> — 744명+ 인물 정보, 학술/언론 활용</li>
+          <li><b>인물 DB 라이선스</b> — 536명 인물 정보, 학술/언론 활용</li>
           <li><b>선거 분석 (시즌)</b> — 9회 지선 등 종합 리포트</li>
           <li><b>커스텀 데이터 추출</b> — 특정 시기·정당·위원회 등 맞춤 추출</li>
         </ul>
@@ -17610,6 +17610,27 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V27.3', date: '2026-05-28', title: '🔍 데이터 정밀 검토 — 거짓 표기 정정', items: [
+    'V27.2 후속 정밀 검토 — politicians.json 깊이 분석',
+    '🔴 발견: "22대 의원 286명" 표기 = 거짓 광고',
+    '  실제: legislative 54명 = 의장단 3 + 상임위원장 17 + 위원회 간사 34',
+    '  22대 일반 국회의원 286명 풀데이터는 미보유',
+    '🟡 단체장 244명 → 광역 17 + 기초 226 + 광역의회 의장 17 + 교육감 17 + 일부 역대 = 278명',
+    '🟡 사법부 수장 13명 → 실제 9명 (대법원장·헌재소장 역대)',
+    '🟡 정당대표 30+ → 실제 13명',
+    '🔴 about 통계 표기 (744) → 536',
+    '🔴 about 통계 시군구 250 → 226',
+    '📝 동기화 6곳:',
+    '  • noscript 인물 분류 풀 갱신',
+    '  • /group/legislative meta: "286명" → "핵심 직책자 54명"',
+    '  • dex schema description 5개 영역 정확화',
+    '  • PAGE_META /dex 분류 정확',
+    '  • about 통계 4개 카드 (등록 인물 + 시군구)',
+    '  • llms-full.txt 1. 정치 섹션 + 도감 구성 풀 갱신',
+    '✅ 위원회 25개 (상임 17 + 특별 8): 한국 국회 실제 25개 외부 사실 기준 유지',
+    '✅ 경제 9개 지표: economy.json indicators 검증 일치',
+    '🎯 데이터 신뢰성 회복 — 외부 인용 시 정확'
+  ]},
   { v: 'V27.2', date: '2026-05-28', title: '🔢 위젯·SEO 메타 숫자 실측 동기화', items: [
     '🔍 점검: 사이트 곳곳 숫자 vs 실제 데이터 불일치 발견',
     '🔴 정치인: 노출 "772명" → 실제 politicians.json 536명 (-236명 오차)',
@@ -21603,7 +21624,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.2 · 🔢 숫자 실측</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.3 · 🔍 정밀 점검</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -22748,7 +22769,7 @@ const ROUTE_META = {
   '/today': { title: '🔴 한국 실시간 검색 트렌드 — 구글 트렌드 한국 + 정치·경제·연예 카테고리', desc: '한국 실시간 검색 급상승 키워드. 구글 트렌드 RSS 직접 fetch. 7개 카테고리 자동 분류 (정치·경제·연예·스포츠·사회·IT·국제). 관련 뉴스 3개씩 자동 첨부. 정치인 매칭 시 인물 상세 페이지 즉시 이동.' },
   '/donate': { title: '후원하기 — Ko-fi 응원', desc: '대한민국 패치 노트 서버 운영비·API 사용료 후원. Ko-fi·GitHub Star로 응원하기.' },
   '/privacy': { title: '개인정보 처리방침', desc: '대한민국 패치 노트 개인정보 처리방침. 쿠키·로컬스토리지·외부 API 호출 안내.' },
-  '/dex': { title: '정치인 도감 — 한국 정치인 536명 한눈에 (포켓몬 도감 스타일)', desc: '대한민국 정치인 536명 종합 컬렉션. 대통령·국무총리·17부처 장관·차관·외청장·헌법기관장·광역단체장·기초단체장·교육감·대법관·헌법재판관·역대 대통령·총리·정당대표 등. 5개 영역 (입법·행정·사법·지방·역사) 정당 색상 분류.' },
+  '/dex': { title: '정치인 도감 — 한국 정치인 536명 (포켓몬 도감 스타일)', desc: '대한민국 정치인 536명 종합 컬렉션. 22대 국회 의장단·위원장·간사 54명, 행정부(대통령·총리·장관·차관·외청장·헌법기관장) 80명, 사법부(대법관·헌법재판관) 22명, 지방(광역단체장·기초단체장·교육감·광역의회 의장) 278명, 역사(역대 대통령 13·총리 13·정당대표 13·사법부 수장 9) 102명. 정당 색상 분류.' },
   '/play': { title: '실험실 — 출신 분석·의원 비교·관계도', desc: '정치 데이터 부가 기능 모음. 출신 분석·의원 비교·공동발의 관계도 인터랙티브.' },
   '/bookmarks': { title: '관심 의원 — 북마크 모아보기', desc: '관심 정치인 북마크 모아보기. 개인 관심 의원·단체장 추적 페이지.' },
   '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
@@ -22762,7 +22783,7 @@ const ROUTE_META = {
   '/insights': { title: '출신 분석 — 22대 의원 출신·학력·직업', desc: '제22대 국회의원 출신 지역·대학·전직 분포 분석. 정당별·연령별 통계.' },
   '/relations': { title: '관계도 — 공동발의 네트워크', desc: '제22대 국회의원 공동발의 관계 d3 네트워크 그래프. 정당 결속도·교차 협력 시각화.' },
   '/history/parties': { title: '정당사 1948~현재 — 45개 정당 타임라인', desc: '대한민국 정당사 1948년~현재 45개 정당 시각 타임라인. 창당·합당·해산 흐름.' },
-  '/group/legislative': { title: '입법부 — 22대 국회의원 286명', desc: '제22대 국회의원 286명 정당별 분포. 지역구·비례·위원회 정보.' },
+  '/group/legislative': { title: '입법부 — 22대 국회 핵심 직책자 54명 (의장단·위원장·간사)', desc: '제22대 국회 의장단 3명 + 상임위원장 17명 + 위원회 간사 34명. 정당별 분포·위원회 정보.' },
   '/group/executive': { title: '행정부 — 대통령·총리·17부처 장관', desc: '대통령·국무총리·17개 부처 장관 및 차관·외청장·헌법기관장 종합.' },
   '/group/judicial': { title: '사법부 — 대법관·헌법재판관·검찰', desc: '대법원장·대법관·헌법재판관·검찰총장 등 사법부 핵심 인사 종합.' },
   '/group/local': { title: '지방 — 광역·기초단체장·교육감', desc: '17개 광역단체장·226개 기초단체장·17개 교육감 정보.' },
