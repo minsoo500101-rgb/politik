@@ -1963,6 +1963,192 @@
     .rank-name em { display: none; }
   }
 
+  /* V23.9 — 풍부 랭킹 카드 (rank-v2) */
+  .rank-list-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .rank-v2 {
+    display: grid;
+    grid-template-columns: 60px 1fr 80px;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 16px 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--text-2);
+    border-radius: 10px;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .rank-v2:hover {
+    transform: translateX(2px);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    border-color: var(--border-strong);
+  }
+  [data-theme="dark"] .rank-v2:hover {
+    box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+  }
+  .rank-v2.rank-click { cursor: pointer; }
+  .rank-v2:nth-child(-n+3) {
+    background: linear-gradient(135deg, rgba(251,191,36,0.04) 0%, transparent 100%);
+  }
+  [data-theme="dark"] .rank-v2:nth-child(-n+3) {
+    background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, transparent 100%);
+  }
+  .rank-v2-rank {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .rank-v2-medal {
+    font-size: 24px;
+    line-height: 1;
+  }
+  .rank-v2-num {
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-v2:nth-child(1) .rank-v2-num { font-size: 18px; color: #d97706; }
+  .rank-v2:nth-child(2) .rank-v2-num { font-size: 16px; color: #6b7280; }
+  .rank-v2:nth-child(3) .rank-v2-num { font-size: 15px; color: #b45309; }
+  .rank-v2-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .rank-v2-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .rank-v2-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .rank-v2-party {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+  .rank-v2-grade {
+    font-size: 11px;
+    font-weight: 900;
+    color: #fff;
+    padding: 2px 9px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', sans-serif;
+  }
+  .rank-v2-bar-wrap {
+    height: 8px;
+    background: var(--bg-elev);
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100%;
+  }
+  [data-theme="dark"] .rank-v2-bar-wrap { background: rgba(0,0,0,0.35); }
+  .rank-v2-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .rank-v2-stats {
+    display: flex;
+    gap: 14px;
+    font-size: 11.5px;
+    color: var(--text-2);
+    flex-wrap: wrap;
+  }
+  .rank-v2-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .rank-v2-stat b {
+    color: var(--text);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .rv-icon {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  .rank-v2-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .rank-v2-big {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-v2-big-l {
+    font-size: 11px;
+    color: var(--dim);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .rank-v2-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .rank-v2-legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--text-2);
+    align-items: center;
+  }
+  .rank-v2-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  @media (max-width: 700px) {
+    .rank-v2 {
+      grid-template-columns: 44px 1fr 60px;
+      padding: 10px 12px 10px 10px;
+      gap: 10px;
+    }
+    .rank-v2-name { font-size: 14px; }
+    .rank-v2-medal { font-size: 20px; }
+    .rank-v2-big { font-size: 22px; }
+    .rank-v2-stats { gap: 10px; font-size: 11px; }
+    .rank-v2-foot { font-size: 10.5px; }
+    .rank-v2-legend { gap: 6px; }
+  }
+  @media (max-width: 480px) {
+    .rank-v2 { grid-template-columns: 36px 1fr 50px; padding: 10px; }
+    .rank-v2-medal { display: none; }
+    .rank-v2-stats { font-size: 10.5px; gap: 8px; }
+    .rank-v2-grade { font-size: 10px; padding: 1px 6px; }
+    .rank-v2-party { font-size: 9.5px; padding: 1px 6px; }
+  }
+
   /* 법안 상세 페이지 */
   .bill-detail {
     max-width: 920px; margin: 0 auto; padding: 8px 24px 60px;
@@ -17827,26 +18013,68 @@ function renderRankingsPage() {
       <div class="dash-grid">
         ${renderActivityScoreTop()}
 
-        <!-- 발의 Top 30 -->
+        <!-- 발의 Top 30 — V23.9 풍부 카드 리디자인 -->
         <div class="dash-card col-12 chart-card">
-          <div class="chart-head"><h3>🏆 대표발의 Top 30 (가결률 + 활동 점수)</h3></div>
-          <div class="rank-list">
+          <div class="chart-head">
+            <h3>🏆 대표발의 Top 30</h3>
+            <span style="font-size:11px;color:var(--dim);font-weight:600">가결률 + 활동 점수 종합 · 22대 ${state.bills.length.toLocaleString()}건 기준</span>
+          </div>
+          <div class="rank-list-v2">
             ${topProposers.map((p, i) => {
               const score = computeMpScore(p.name);
-              const scoreBadge = score ? `<span class="rank-score-badge" title="활동 종합 점수 ${score.total}/100" style="background:${score.total>=80?'var(--ok)':score.total>=65?'#10b981':score.total>=50?'var(--warn)':score.total>=35?'#f97316':'#dc2626'}">${score.total}</span>` : '';
+              const partyC = partyColor(p.party);
+              // 점수 등급 환산
+              let gradeLabel = '—', gradeColor = '#94a3b8';
+              if (score) {
+                if (score.total >= 80) { gradeLabel = 'S'; gradeColor = '#10b981'; }
+                else if (score.total >= 65) { gradeLabel = 'A'; gradeColor = '#14b8a6'; }
+                else if (score.total >= 50) { gradeLabel = 'B'; gradeColor = '#f59e0b'; }
+                else if (score.total >= 35) { gradeLabel = 'C'; gradeColor = '#f97316'; }
+                else { gradeLabel = 'D'; gradeColor = '#dc2626'; }
+              }
+              // 메달 (1·2·3등)
+              const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+              const barPct = (p.count / maxLead * 100).toFixed(1);
+              const passPct = p.passRate.toFixed(0);
               return `
-                <div class="rank-row ${p.mid ? 'rank-click' : ''}" ${p.mid ? `data-mid="${escapeHtml(p.mid)}"` : ''}>
-                  <div class="rank-num">${i + 1}</div>
-                  <div class="rank-name"><b>${escapeHtml(p.name)}</b> <em style="color:${partyColor(p.party)}">${escapeHtml(p.party || '무소속')}</em></div>
-                  <div class="rank-bar-wrap"><div class="rank-bar" style="width:${(p.count/maxLead*100).toFixed(1)}%; background:${partyColor(p.party)}"></div></div>
-                  <div class="rank-count">${p.count}건</div>
-                  <div class="rank-pass">${p.passRate.toFixed(0)}% 통과</div>
-                  <div class="rank-score">${scoreBadge}</div>
+                <div class="rank-v2 ${p.mid ? 'rank-click' : ''}" ${p.mid ? `data-mid="${escapeHtml(p.mid)}"` : ''} style="border-left-color:${partyC}">
+                  <div class="rank-v2-rank">
+                    ${medal ? `<div class="rank-v2-medal">${medal}</div>` : ''}
+                    <div class="rank-v2-num">${i + 1}</div>
+                  </div>
+                  <div class="rank-v2-body">
+                    <div class="rank-v2-head">
+                      <span class="rank-v2-name">${escapeHtml(p.name)}</span>
+                      <span class="rank-v2-party" style="background:${partyC}">${escapeHtml(p.party || '무소속')}</span>
+                      ${score ? `<span class="rank-v2-grade" style="background:${gradeColor}" title="활동 종합 점수 ${score.total}/100">${gradeLabel}</span>` : ''}
+                    </div>
+                    <div class="rank-v2-bar-wrap">
+                      <div class="rank-v2-bar" style="width:${barPct}%; background:linear-gradient(90deg,${partyC},${partyC}dd)"></div>
+                    </div>
+                    <div class="rank-v2-stats">
+                      <span class="rank-v2-stat"><span class="rv-icon">📜</span> 발의 <b>${p.count}</b>건</span>
+                      <span class="rank-v2-stat" style="color:${passPct >= 80 ? 'var(--ok)' : passPct >= 50 ? 'var(--warn)' : 'var(--text-2)'}"><span class="rv-icon">✓</span> 통과 <b>${passPct}%</b></span>
+                      ${score ? `<span class="rank-v2-stat"><span class="rv-icon">🏆</span> 점수 <b>${score.total}</b>/100</span>` : ''}
+                    </div>
+                  </div>
+                  <div class="rank-v2-right">
+                    <div class="rank-v2-big">${p.count}</div>
+                    <div class="rank-v2-big-l">건</div>
+                  </div>
                 </div>
               `;
             }).join('')}
           </div>
-          <p style="font-size:11px;color:var(--dim);margin-top:8px">🏆 점수 = 발의활동도(40) + 통과율(30) + 분야다양성(15) + 위원회직책(15) — 객관 공식</p>
+          <div class="rank-v2-foot">
+            <div class="rank-v2-legend">
+              <span><b style="background:#10b981;padding:1px 7px;border-radius:8px;color:#fff;font-size:11px">S</b> 80+</span>
+              <span><b style="background:#14b8a6;padding:1px 7px;border-radius:8px;color:#fff;font-size:11px">A</b> 65~79</span>
+              <span><b style="background:#f59e0b;padding:1px 7px;border-radius:8px;color:#fff;font-size:11px">B</b> 50~64</span>
+              <span><b style="background:#f97316;padding:1px 7px;border-radius:8px;color:#fff;font-size:11px">C</b> 35~49</span>
+              <span><b style="background:#dc2626;padding:1px 7px;border-radius:8px;color:#fff;font-size:11px">D</b> ~34</span>
+            </div>
+            <span style="font-size:11px;color:var(--dim)">🏆 발의활동도(40) + 통과율(30) + 분야다양성(15) + 위원회직책(15)</span>
+          </div>
         </div>
 
         <!-- 정당 × 분야 매트릭스 (top 6 정당, top 8 분야) -->
@@ -18850,7 +19078,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.8 · 🛡 page_id 검증</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.9 · 🏆 랭킹 풍부화</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
