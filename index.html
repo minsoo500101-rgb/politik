@@ -9263,6 +9263,62 @@
   }
 
   /* ============================================================
+     V24.3 — 모바일 input/검색창 overflow 전수 차단
+     ============================================================ */
+  @media (max-width: 700px) {
+    /* 모든 input/textarea/select 기본 안전 */
+    input, textarea, select {
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+    /* 사이트 전반 검색·입력창 전수 fix */
+    .search,
+    .e26-search-input,
+    .dex-search,
+    .gloss-search,
+    .cmp-slot-input,
+    .pf-search {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* flex/grid 컨테이너 안의 input wrap 허용 */
+    .e26-search-wrap,
+    .search-wrap {
+      flex-wrap: wrap;
+      min-width: 0;
+      max-width: 100%;
+      gap: 6px !important;
+    }
+    .e26-search-wrap > input,
+    .search-wrap > input {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+    /* 검색 결과·자동완성 풀폭 */
+    .e26-search-results,
+    .ac-dropdown,
+    .dex-list,
+    .gloss-list,
+    .cmp-slot-list {
+      max-width: 100% !important;
+      box-sizing: border-box;
+    }
+    /* hint 텍스트 모바일에서 줄바꿈 허용 */
+    .e26-search-hint {
+      white-space: normal !important;
+      flex-basis: 100%;
+      margin-top: 4px;
+    }
+    /* 비교 슬롯 안의 input wrap */
+    .cmp-slot {
+      min-width: 0;
+      max-width: 100%;
+    }
+  }
+
+  /* ============================================================
      V23.2 — 모바일 풀폭화 + 패딩 정리 (좌우 공간 회수)
      ============================================================ */
   @media (max-width: 700px) {
@@ -14349,24 +14405,36 @@ async function _fetchYahooDirect(symbols) {
 
 async function _fetchEcosFallback(symbols) {
   if (!symbols?.length) return [];
-  // ECOS 통계 코드 매핑 (확정된 코드만)
-  const ECOS_MAP = {
-    '^KS11':  { stat: '802Y001', item: '0001000', label: 'KOSPI' },     // 코스피
-    '^KQ11':  { stat: '802Y002', item: '0001000', label: 'KOSDAQ' },    // 코스닥
-    'KRW=X':  { stat: '036Y001', item: '0000001', label: 'USD/KRW' },   // 원/달러 환율
+  // V24.3 — 다중 stat 코드 시도 (ECOS 코드 버전 차이 대응)
+  const ECOS_CANDIDATES = {
+    '^KS11': [
+      { stat: '802Y001', item: '0001000', label: 'KOSPI' },
+    ],
+    '^KQ11': [
+      { stat: '802Y001', item: '1001000', label: 'KOSDAQ' },
+      { stat: '802Y001', item: '0089000', label: 'KOSDAQ' },
+      { stat: '802Y002', item: '0001000', label: 'KOSDAQ' },
+      { stat: '802Y001', item: '0002000', label: 'KOSDAQ' },
+      { stat: '802Y002', item: '0089000', label: 'KOSDAQ' },
+    ],
+    'KRW=X': [
+      { stat: '731Y001', item: '0000001', label: 'USD/KRW' },     // 일일환율(매매기준율)
+      { stat: '036Y001', item: '0000001', label: 'USD/KRW' },     // 환율 일별 (월별만 가능 가능성)
+      { stat: '731Y004', item: '0000001', label: 'USD/KRW' },
+      { stat: '036Y004', item: '0000001', label: 'USD/KRW' },
+    ],
   };
   const today = new Date();
   const start = new Date(today.getTime() - 35 * 86400000);
   const fmt = d => d.toISOString().slice(0, 10).replace(/-/g, '');
-  const results = await Promise.all(symbols.map(async sym => {
-    const m = ECOS_MAP[sym];
-    if (!m) return null;
+
+  async function tryOne(sym, m) {
     try {
       const url = `/api/ecos?stat=${m.stat}&item=${m.item}&period=D&start=${fmt(start)}&end=${fmt(today)}&count=40`;
       const r = await fetch(url);
       if (!r.ok) return null;
       const d = await r.json();
-      const data = (d.data || []).filter(x => !isNaN(x.value));
+      const data = (d.data || []).filter(x => !isNaN(x.value) && x.value > 0);
       if (!data.length) return null;
       const sorted = data.slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
       const last = sorted[sorted.length - 1];
@@ -14377,17 +14445,31 @@ async function _fetchEcosFallback(symbols) {
         previousClose: prev.value,
         change: last.value - prev.value,
         changePercent: prev.value ? ((last.value - prev.value) / prev.value * 100) : 0,
-        currency: sym === 'KRW=X' ? 'KRW' : 'KRW',
+        currency: 'KRW',
         marketState: 'CLOSED',
         exchangeName: '한국은행 ECOS',
         shortName: m.label,
         sparkline: sorted.map(x => x.value),
         source: 'ecos',
         _lastDate: last.time,
+        _statCode: m.stat + ':' + m.item,
       };
     } catch (e) {
       return null;
     }
+  }
+
+  const results = await Promise.all(symbols.map(async sym => {
+    const candidates = ECOS_CANDIDATES[sym] || [];
+    for (const c of candidates) {
+      const result = await tryOne(sym, c);
+      if (result) {
+        console.log('[ECOS] ✓', sym, 'via', c.stat + ':' + c.item);
+        return result;
+      }
+    }
+    console.warn('[ECOS] ✗', sym, '— all stat codes failed');
+    return null;
   }));
   return results.filter(q => q);
 }
@@ -20269,7 +20351,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.2 · 🎴 카드 모달</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.3 · 🔧 ECOS+input fix</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
