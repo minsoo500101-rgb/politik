@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V26.9 — economy·glossary·today 카드 ds 통일 (rd-xl·brand hover·sh-md, KOSPI 시세 26px 큰 숫자) -->
+<!-- V27.0 — 위원회 카드 + Pulse 히어로 brand 그라데이션 통일 (cmt-card 통계 22px, home-pulse brand 그라데이션) -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -5818,19 +5818,19 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .cmt-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 14px 12px;
+    border-radius: var(--rd-lg);
+    padding: var(--sp-3) var(--sp-3) var(--sp-3);
     cursor: pointer;
-    transition: all 0.15s;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
     display: flex; flex-direction: column;
-    gap: 9px;
+    gap: var(--sp-2);
   }
   .cmt-card:hover {
-    border-color: var(--border-strong);
+    border-color: var(--brand);
     transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    box-shadow: var(--sh-md);
   }
-  [data-theme="dark"] .cmt-card:hover { box-shadow: 0 8px 18px rgba(0,0,0,0.45); }
+  [data-theme="dark"] .cmt-card:hover { box-shadow: var(--sh-lg); }
   .cmt-card-head {
     display: flex; justify-content: space-between; align-items: flex-start;
     gap: 8px;
@@ -5854,11 +5854,15 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     display: flex; align-items: baseline; gap: 3px;
   }
   .cmt-card-stats b {
-    font-size: 18px; font-weight: 800; color: var(--text);
+    font-size: 22px;
+    font-weight: var(--fw-heavy);
+    color: var(--text);
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
   }
+  .cmt-card:hover .cmt-card-stats b { color: var(--brand); }
   .cmt-card-stats span {
-    font-size: 11px; color: var(--text-2);
+    font-size: var(--fs-xs); color: var(--text-2);
   }
   .cmt-card-chair {
     font-size: 11px; color: var(--text-2);
@@ -8936,10 +8940,10 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .home-pulse-card {
     display: flex;
     align-items: stretch;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%);
-    border-radius: 14px;
-    padding: 18px 22px;
-    margin-bottom: 18px;
+    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand) 50%, var(--brand-soft) 100%);
+    border-radius: var(--rd-xl);
+    padding: var(--sp-4) var(--sp-5);
+    margin-bottom: var(--sp-4);
     color: #fff;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -8956,7 +8960,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .home-pulse-card > * { position: relative; z-index: 1; }
   .home-pulse-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(59,130,246,0.35);
+    box-shadow: var(--sh-brand), 0 8px 24px rgba(79,70,229,0.25);
   }
   .home-pulse-l { flex: 1; min-width: 0; }
   .home-pulse-r {
@@ -17574,6 +17578,18 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V27.0', date: '2026-05-28', title: '🎯 통일 마무리 — 위원회·Pulse 히어로 brand', items: [
+    '🏢 .cmt-card (/committees 25개 위원회)',
+    '  • rd-lg + sp-3 패딩 토큰화',
+    '  • hover: brand border + lift -2px + sh-md (다크: sh-lg)',
+    '  • cmt-card-stats b: 18px → 22px (의원수 강조), tabular-nums tight',
+    '  • hover에 통계 숫자 brand 컬러 전환',
+    '🇰🇷 .home-pulse-card (시민 여론판 hero)',
+    '  • 하드코드 파랑 그라데이션 → brand 그라데이션 (deep → brand → soft)',
+    '  • rd-14 → rd-xl, padding sp-4/sp-5',
+    '  • hover: sh-brand variable + 부드러운 lift',
+    '주요 페이지 brand 통일 완료: 홈·9회지선·rankings·bills·me·economy·glossary·today·committees·pulse = 10개'
+  ]},
   { v: 'V26.9', date: '2026-05-28', title: '💰 economy·glossary·today 3페이지 ds 통일', items: [
     '💰 .econ-card (/economy 시세·시계열)',
     '  • rd-14 → rd-xl, padding sp-4/sp-5',
@@ -21523,7 +21539,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V26.9 · 💰 시세·용어 폴리시</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.0 · 🎯 통일 마무리</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
