@@ -8260,6 +8260,249 @@
     .share-grid { grid-template-columns: 1fr; }
   }
 
+  /* V24.2 — /share 페이지 개선 (썸네일 + 카드 모달) */
+  .share-platform-tag {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .share-platform-mobile,
+  .share-platform-pc {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .share-platform-mobile { background: rgba(16,185,129,0.12); color: var(--ok); border: 1px solid rgba(16,185,129,0.3); }
+  .share-platform-pc { background: rgba(59,130,246,0.1); color: var(--accent); border: 1px solid rgba(59,130,246,0.25); }
+  [data-theme="dark"] .share-platform-mobile { color: #34d399; }
+
+  .share-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .share-tile-v2 {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .share-tile-v2:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border-color: var(--border-strong);
+  }
+  [data-theme="dark"] .share-tile-v2:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .share-tile-v2-preview {
+    aspect-ratio: 1;
+    width: 100%;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .share-tile-v2-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .share-tile-v2-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .share-tile-v2-body {
+    padding: 16px 16px 18px;
+  }
+  .share-tile-v2-label {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .share-tile-v2-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  .share-tile-v2-btn {
+    width: 100%;
+    padding: 12px;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .share-tile-v2-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .share-tile-v2-btn:disabled { opacity: 0.6; cursor: wait; }
+
+  .share-tip-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 700px) {
+    .share-tip-grid { grid-template-columns: 1fr; }
+  }
+  .share-tip-col { background: var(--bg); border-radius: 10px; padding: 14px 16px; }
+  .share-tip-h { font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+  .share-tip-col ol { margin: 0; padding-left: 20px; font-size: 12.5px; color: var(--text-2); line-height: 1.8; }
+  .share-tip-foot {
+    text-align: center;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    font-size: 11.5px;
+    color: var(--dim);
+  }
+
+  /* V24.2 — 카드 미리보기 모달 */
+  .card-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    animation: cmFadeIn 0.2s ease;
+  }
+  @keyframes cmFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .card-modal {
+    background: var(--bg-card);
+    border-radius: 16px;
+    max-width: 580px;
+    width: 100%;
+    padding: 24px 28px 28px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: cmSlideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes cmSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .card-modal h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 16px;
+    color: var(--text);
+    padding-right: 40px;
+  }
+  .card-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .card-modal-close:hover {
+    background: var(--bg-elev);
+    color: var(--text);
+  }
+  .card-modal-preview {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg);
+    margin-bottom: 12px;
+  }
+  .card-modal-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .card-modal-info {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 16px;
+  }
+  .card-modal-info b { color: var(--text); font-weight: 700; }
+  .card-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .cm-btn {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cm-btn:hover:not(:disabled) {
+    background: var(--bg-elev);
+    transform: translateY(-1px);
+  }
+  .cm-btn-share {
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+    color: #fff;
+    border-color: transparent;
+    font-size: 15px;
+  }
+  .cm-btn-download {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    border-color: transparent;
+  }
+  .cm-btn-copy {
+    background: var(--bg);
+    color: var(--text);
+  }
+  .card-modal-hint {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .card-modal-hint b { color: var(--text); font-weight: 700; }
+  @media (max-width: 700px) {
+    .card-modal { padding: 20px; }
+    .card-modal h3 { font-size: 16px; }
+    .cm-btn { padding: 14px; font-size: 14px; }
+  }
+
   /* 페이지별 공유 버튼 (정치인·법안·랭킹 등) */
   .page-share-btn {
     display: inline-flex;
@@ -17348,104 +17591,236 @@ async function buildShareCard(type, opts = {}) {
   }
 }
 
-// PNG 캡처 + 공유/다운로드
-async function captureAndShare(element, filename = 'patchkr-card.png') {
+// PNG 캡처 (큰 캔버스 반환)
+async function _captureToCanvas(element) {
   if (typeof html2canvas !== 'function') {
-    alert('카드 생성 라이브러리 로딩 중. 잠시 후 다시 시도해주세요.');
-    return null;
+    throw new Error('html2canvas 로딩 중. 잠시 후 다시 시도해주세요.');
   }
-  try {
-    const canvas = await html2canvas(element, {
-      width: 1080,
-      height: 1080,
-      scale: 1,
-      backgroundColor: null,
-      useCORS: true,
-      logging: false,
-      allowTaint: false,
-    });
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/png', 0.95));
-    if (!blob) throw new Error('PNG 변환 실패');
-    return { canvas, blob };
-  } catch (e) {
-    console.error('[ShareCard] capture failed:', e);
-    alert('카드 생성 실패: ' + e.message);
-    return null;
-  }
+  return await html2canvas(element, {
+    width: 1080,
+    height: 1080,
+    scale: 1,
+    backgroundColor: null,
+    useCORS: true,
+    allowTaint: true,
+    logging: false,
+    imageTimeout: 5000,
+  });
 }
 
-async function shareCardToInstagram(type, opts = {}) {
-  const element = await buildShareCard(type, opts);
-  if (!element) return;
-  // 사진 로딩 대기 (1초)
-  await new Promise(r => setTimeout(r, 800));
-  const result = await captureAndShare(element);
-  if (!result) return;
-  const { blob } = result;
-  const filename = `patchkr-${type}-${new Date().toISOString().slice(0,10)}.png`;
-  const file = new File([blob], filename, { type: 'image/png' });
-
-  // Web Share API (모바일 인스타 앱 직접 전송 가능)
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({
-        files: [file],
-        title: '대한민국 패치 노트',
-        text: 'patchkr.com — 한국 정치·경제 종합 데이터',
-      });
-      return 'shared';
-    } catch (e) {
-      if (e.name !== 'AbortError') console.warn('[Share] failed:', e);
-    }
-  }
-  // Fallback: 다운로드
+// PC 다운로드 트리거 (확실하게 작동)
+function _triggerDownload(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  return 'downloaded';
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 200);
+}
+
+// V24.2 — 큰 카드 모달 (미리보기 + 다운로드/공유 옵션)
+function _showCardModal({ canvas, blob, filename, type, label }) {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const canShare = navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] });
+  const cardUrl = `https://patchkr.com/share`;
+  const overlay = document.createElement('div');
+  overlay.className = 'card-modal-overlay';
+  overlay.innerHTML = `
+    <div class="card-modal" role="dialog" aria-labelledby="cm-title">
+      <button class="card-modal-close" aria-label="닫기">✕</button>
+      <h3 id="cm-title">${escapeHtml(label || '카드 생성 완료')}</h3>
+      <div class="card-modal-preview">
+        <img src="${canvas.toDataURL('image/png')}" alt="card preview" />
+      </div>
+      <div class="card-modal-info">
+        <b>1080×1080 PNG</b> · ${Math.round(blob.size / 1024)}KB · 인스타 정사각형 권장 사이즈
+      </div>
+      <div class="card-modal-actions">
+        ${canShare ? `
+          <button class="cm-btn cm-btn-share" data-action="share">📤 인스타·SNS로 공유</button>
+        ` : ''}
+        <button class="cm-btn cm-btn-download" data-action="download">⬇ PNG 다운로드</button>
+        <button class="cm-btn cm-btn-copy" data-action="copy">📋 이미지 클립보드 복사</button>
+      </div>
+      ${!isMobile ? `
+        <div class="card-modal-hint">
+          <b>💡 PC → 인스타 업로드 방법</b><br>
+          ① PNG 다운로드 → ② 카카오톡·텔레그램으로 본인 폰에 전송 → ③ 폰 인스타 앱 → 갤러리에서 선택 → 게시<br>
+          <span style="color:var(--dim)">또는 본인 이메일로 보내기·구글 드라이브 업로드</span>
+        </div>
+      ` : `
+        <div class="card-modal-hint">
+          <b>📱 모바일 1탭 업로드</b> — 공유 버튼 → 인스타그램 앱 → 스토리·피드 선택
+        </div>
+      `}
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  const close = () => {
+    overlay.remove();
+    document.body.style.overflow = '';
+  };
+  overlay.querySelector('.card-modal-close').addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  // 액션 핸들러
+  overlay.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const action = btn.dataset.action;
+      const orig = btn.textContent;
+      try {
+        if (action === 'download') {
+          _triggerDownload(blob, filename);
+          btn.textContent = '✓ 다운로드 시작됨';
+          setTimeout(() => { btn.textContent = orig; }, 2000);
+        } else if (action === 'share') {
+          const file = new File([blob], filename, { type: 'image/png' });
+          await navigator.share({
+            files: [file],
+            title: '대한민국 패치 노트',
+            text: 'patchkr.com — 한국 정치·경제 종합 데이터',
+          });
+          close();
+        } else if (action === 'copy') {
+          if (navigator.clipboard?.write && window.ClipboardItem) {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            btn.textContent = '✓ 클립보드 복사됨 (Ctrl+V로 붙여넣기)';
+            setTimeout(() => { btn.textContent = orig; }, 2500);
+          } else {
+            btn.textContent = '❌ 이 브라우저는 미지원';
+            setTimeout(() => { btn.textContent = orig; }, 2000);
+          }
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') {
+          btn.textContent = '❌ 실패';
+          setTimeout(() => { btn.textContent = orig; }, 2000);
+        }
+      }
+    });
+  });
+  // ESC 닫기
+  const escHandler = e => { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', escHandler); } };
+  document.addEventListener('keydown', escHandler);
+}
+
+// 카드 생성 → 모달 표시 (PC·모바일 통합)
+async function shareCardToInstagram(type, opts = {}) {
+  try {
+    const element = await buildShareCard(type, opts);
+    if (!element) return 'failed';
+    // 사진 로딩 대기
+    await new Promise(r => setTimeout(r, 800));
+    const canvas = await _captureToCanvas(element);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png', 0.95));
+    if (!blob) throw new Error('PNG 변환 실패');
+    const filename = `patchkr-${type}-${new Date().toISOString().slice(0,10)}.png`;
+    const label = SHARE_CARD_TYPES[type]?.label || '카드 생성 완료';
+    _showCardModal({ canvas, blob, filename, type, label });
+    return 'modal-shown';
+  } catch (e) {
+    console.error('[ShareCard] failed:', e);
+    alert('카드 생성 실패: ' + (e.message || e));
+    return 'failed';
+  }
 }
 
 // /share 페이지 렌더
 function renderSharePage() {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   return `
     <div class="group-back" id="back-home">← 홈</div>
     <div class="share-page">
       <div class="share-hero">
         <div class="share-hero-eye">SHARE TO SOCIAL</div>
         <h1>📤 인스타·SNS 공유 카드</h1>
-        <p>사이트 데이터를 1080x1080 정사각형 카드로 자동 생성. 다운로드 또는 모바일에서 인스타로 1탭 전송.</p>
+        <p>사이트 데이터를 1080×1080 정사각형 카드로 자동 생성. ${isMobile ? '인스타 1탭 전송' : 'PNG 다운로드 → 폰으로 전송'}.</p>
       </div>
-      <div class="share-grid">
+
+      <div class="share-platform-tag">
+        ${isMobile
+          ? `<span class="share-platform-mobile">📱 모바일 감지됨 — 인스타·X·카톡 직접 공유 가능</span>`
+          : `<span class="share-platform-pc">💻 PC 감지됨 — PNG 다운로드 후 폰으로 전송하세요</span>`}
+      </div>
+
+      <div class="share-grid-v2">
         ${Object.values(SHARE_CARD_TYPES).map(t => `
-          <div class="share-card-tile" data-card-type="${escapeHtml(t.id)}" style="border-top-color:${t.color}">
-            <div class="share-tile-label">${escapeHtml(t.label)}</div>
-            <div class="share-tile-desc">${escapeHtml(t.desc)}</div>
-            <div class="share-tile-preview" id="preview-${escapeHtml(t.id)}">
-              <div class="share-tile-placeholder">미리보기 생성</div>
+          <div class="share-tile-v2" data-card-type="${escapeHtml(t.id)}">
+            <div class="share-tile-v2-preview" data-tile-preview="${escapeHtml(t.id)}" style="background:linear-gradient(135deg,${t.color}33,${t.color}11);">
+              <div class="share-tile-v2-loading">
+                <span class="loading-spinner"></span>
+                <span style="font-size:11px;color:var(--dim);margin-top:6px">미리보기 생성 중…</span>
+              </div>
             </div>
-            <div class="share-tile-actions">
-              <button class="share-tile-btn share-btn-preview" data-card="${escapeHtml(t.id)}">👁 미리보기</button>
-              <button class="share-tile-btn share-btn-share" data-card="${escapeHtml(t.id)}">📤 공유/다운로드</button>
+            <div class="share-tile-v2-body" style="border-top:3px solid ${t.color}">
+              <div class="share-tile-v2-label">${escapeHtml(t.label)}</div>
+              <div class="share-tile-v2-desc">${escapeHtml(t.desc)}</div>
+              <button class="share-tile-v2-btn" data-card="${escapeHtml(t.id)}" style="background:linear-gradient(135deg,${t.color},${t.color}cc)">
+                ${isMobile ? '📸 공유 카드 만들기' : '⬇ 다운로드 카드 만들기'}
+              </button>
             </div>
           </div>
         `).join('')}
       </div>
+
       <div class="share-tip">
         <h3>💡 사용 방법</h3>
-        <ul>
-          <li><b>모바일</b> — '공유/다운로드' 버튼 → 인스타그램 앱 선택 → 스토리·피드에 바로 첨부</li>
-          <li><b>데스크탑</b> — PNG 다운로드 → 휴대폰에 전송 → 인스타 업로드</li>
-          <li><b>워터마크</b> — 모든 카드 하단에 patchkr.com 자동 삽입</li>
-          <li><b>저작권</b> — 공식 출처 데이터만 사용 (자유 공유 OK, 상업적 재배포는 문의)</li>
-        </ul>
+        <div class="share-tip-grid">
+          <div class="share-tip-col">
+            <div class="share-tip-h">📱 모바일</div>
+            <ol>
+              <li>카드 만들기 → 모달에 큰 미리보기 등장</li>
+              <li>'📤 인스타·SNS로 공유' 클릭</li>
+              <li>인스타그램 앱 선택 → 스토리·피드 자동 첨부</li>
+            </ol>
+          </div>
+          <div class="share-tip-col">
+            <div class="share-tip-h">💻 데스크탑</div>
+            <ol>
+              <li>카드 만들기 → '⬇ PNG 다운로드'</li>
+              <li>카카오톡·텔레그램으로 본인 폰에 전송</li>
+              <li>폰 인스타 앱에서 갤러리 → 게시</li>
+            </ol>
+            <div style="font-size:11px;color:var(--dim);margin-top:6px">또는 <b>'📋 이미지 클립보드 복사'</b> → 폰 미러링 시 Ctrl+V</div>
+          </div>
+        </div>
+        <div class="share-tip-foot">
+          🇰🇷 모든 카드 하단에 patchkr.com 워터마크 자동 삽입 · 공식 출처 데이터만 사용 · 자유 공유 OK
+        </div>
       </div>
     </div>
   `;
+}
+
+// 작은 썸네일 미리보기 생성 (페이지 진입 시 백그라운드 순차)
+async function _generateSharePreview(type) {
+  const target = document.querySelector(`[data-tile-preview="${type}"]`);
+  if (!target) return;
+  try {
+    const element = await buildShareCard(type);
+    if (!element) return;
+    await new Promise(r => setTimeout(r, 400));
+    if (typeof html2canvas !== 'function') {
+      target.innerHTML = `<div style="font-size:11px;color:var(--dim);padding:20px;text-align:center">html2canvas 로딩 중</div>`;
+      return;
+    }
+    const canvas = await html2canvas(element, {
+      width: 1080, height: 1080, scale: 0.25,
+      useCORS: true, allowTaint: true, logging: false,
+      backgroundColor: null, imageTimeout: 4000,
+    });
+    target.innerHTML = `<img src="${canvas.toDataURL('image/png')}" alt="${escapeHtml(type)} preview" style="width:100%;height:100%;object-fit:cover;display:block">`;
+  } catch (e) {
+    console.warn('[Share preview]', type, 'failed:', e.message);
+    target.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;color:var(--dim);padding:20px;text-align:center">미리보기 준비 중<br><span style="font-size:10px;opacity:0.7">버튼 눌러서 직접 생성</span></div>`;
+  }
 }
 
 
@@ -19894,7 +20269,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.1 · 📊 KOSPI 3중</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.2 · 🎴 카드 모달</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -21180,49 +21555,40 @@ function route() {
     window.scrollTo(0, 0);
     return;
   }
-  // V24.0 — 인스타 공유 카드 시스템
+  // V24.0/V24.2 — 인스타 공유 카드 시스템
   if (hash === '#/share') {
     view.innerHTML = renderSharePage();
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
-    // 미리보기 버튼
-    document.querySelectorAll('.share-btn-preview').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const type = btn.dataset.card;
-        const preview = document.getElementById('preview-' + type);
-        if (!preview) return;
-        preview.innerHTML = '<div class="share-tile-placeholder"><span class="loading-spinner"></span> 미리보기 생성 중…</div>';
-        try {
-          const el = await buildShareCard(type);
-          if (!el) return;
-          await new Promise(r => setTimeout(r, 500));
-          if (typeof html2canvas !== 'function') {
-            preview.innerHTML = '<div class="share-tile-placeholder">라이브러리 로딩 중…</div>';
-            return;
-          }
-          const canvas = await html2canvas(el, { width: 1080, height: 1080, scale: 0.3, useCORS: true, logging: false, backgroundColor: null });
-          const dataUrl = canvas.toDataURL('image/png');
-          preview.innerHTML = `<img src="${dataUrl}" alt="preview" style="width:100%;border-radius:8px;display:block;">`;
-        } catch (e) {
-          preview.innerHTML = `<div class="share-tile-placeholder" style="color:var(--danger)">생성 실패: ${escapeHtml(e.message || 'error')}</div>`;
-        }
-      });
-    });
-    // 공유/다운로드 버튼
-    document.querySelectorAll('.share-btn-share').forEach(btn => {
+
+    // V24.2 — 백그라운드 자동 썸네일 생성 (순차)
+    (async () => {
+      const types = Object.keys(SHARE_CARD_TYPES);
+      // html2canvas 로딩 대기
+      for (let attempt = 0; attempt < 20; attempt++) {
+        if (typeof html2canvas === 'function') break;
+        await new Promise(r => setTimeout(r, 200));
+      }
+      for (const type of types) {
+        if (currentRoute() !== '#/share') return;
+        await _generateSharePreview(type);
+        await new Promise(r => setTimeout(r, 100));
+      }
+    })();
+
+    // 카드 만들기 버튼 (모달 열림)
+    document.querySelectorAll('.share-tile-v2-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const type = btn.dataset.card;
         const orig = btn.textContent;
         btn.textContent = '⏳ 생성 중…';
         btn.disabled = true;
         try {
-          const result = await shareCardToInstagram(type);
-          btn.textContent = result === 'shared' ? '✓ 공유됨' : result === 'downloaded' ? '✓ 다운로드' : '❌ 실패';
-        } catch (e) {
-          btn.textContent = '❌ 실패';
-        }
-        setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1800);
+          await shareCardToInstagram(type);
+        } catch (e) {}
+        btn.textContent = orig;
+        btn.disabled = false;
       });
     });
     return;
