@@ -11966,12 +11966,14 @@ async function submitRating(meta, rating) {
 // ============================================================
 
 // 페이지뷰 기록 (fire-and-forget — 페이지 진입 시 호출)
-// V23.8 — page_id 입력 검증 헬퍼 (template literal·HTML·과도한 길이 차단)
+// V23.8/V25.3 — page_id 입력 검증 헬퍼 (template literal·HTML·과도한 길이 + 순수숫자 차단)
 function _isValidPageId(s) {
   if (typeof s !== 'string') return false;
   if (s.length === 0 || s.length > 100) return false;
   if (s.includes('${') || s.includes('<') || s.includes('>') || s.includes('javascript:')) return false;
   if (s.startsWith('undefined') || s.startsWith('null') || s.startsWith('[object')) return false;
+  // V25.3 — 순수 숫자(예: '12345') 거부 — 우리 ID 체계는 영문/조합 (MONA_CD·BILL_ID·kr.* 등)
+  if (/^\d+$/.test(s)) return false;
   return true;
 }
 
@@ -20836,7 +20838,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.2 · 📝 데이터 갱신</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.3 · 🚫 가짜 ID 차단</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -23331,13 +23333,22 @@ async function populateHomeRanking() {
   if (!polTarget && !billTarget) return;
 
   // 병렬 fetch
+  // V25.3 — 매치 안 되는 ID 미리 필터링하기 위해 우선 더 많이 fetch
   const [polTopRaw, billTopRaw] = await Promise.all([
-    loadTopByViews('politician', 7, 5),
-    loadTopByViews('bill', 7, 5),
+    loadTopByViews('politician', 7, 20),  // 5 → 20 (필터 후 5개 보장)
+    loadTopByViews('bill', 7, 20),
   ]);
-  // V23.8 — 표시 sanitize: 잘못된 page_id (template literal·HTML·과도 길이) 필터링
-  const polTop = (polTopRaw || []).filter(r => _isValidPageId(r.page_id));
-  const billTop = (billTopRaw || []).filter(r => _isValidPageId(r.page_id));
+  // V23.8 — 표시 sanitize: 형식 검증
+  const polValid = (polTopRaw || []).filter(r => _isValidPageId(r.page_id));
+  const billValid = (billTopRaw || []).filter(r => _isValidPageId(r.page_id));
+
+  // V25.3 — 실존 매치 검증 (state.members·state.bills에 있는 ID만 표시)
+  const polTop = polValid
+    .filter(r => (state.members || []).some(x => x.MONA_CD === r.page_id))
+    .slice(0, 5);
+  const billTop = billValid
+    .filter(r => (state.bills || []).some(x => x.BILL_ID === r.page_id))
+    .slice(0, 5);
 
   // 정치인 랭킹
   if (polTarget) {
@@ -23346,11 +23357,9 @@ async function populateHomeRanking() {
     } else {
       polTarget.innerHTML = polTop.map((r, i) => {
         const m = (state.members || []).find(x => x.MONA_CD === r.page_id);
-        // V23.8 — name이 page_id로 fallback되면 의미 없는 ID가 그대로 노출되니 차단
-        const isKnown = !!m;
-        const name = isKnown ? m.HG_NM : '(이름 미상)';
-        const party = m?.POLY_NM || m?._type_label || '';
-        const pColor = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
+        const name = m.HG_NM;
+        const party = m.POLY_NM || m._type_label || '';
+        const pColor = m.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
         return `
           <a class="rank-row" href="/m/${encodeURIComponent(r.page_id)}">
             <span class="rank-num">${i + 1}</span>
@@ -23369,8 +23378,8 @@ async function populateHomeRanking() {
     } else {
       billTarget.innerHTML = billTop.map((r, i) => {
         const b = (state.bills || []).find(x => x.BILL_ID === r.page_id);
-        const name = b?.BILL_NAME || '(법안 미상)';
-        const cmt = b?.CURR_COMMITTEE || '';
+        const name = b.BILL_NAME || '';
+        const cmt = b.CURR_COMMITTEE || '';
         return `
           <a class="rank-row" href="/bill/${encodeURIComponent(r.page_id)}">
             <span class="rank-num">${i + 1}</span>

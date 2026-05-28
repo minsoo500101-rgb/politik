@@ -7,6 +7,7 @@
 -- 기존 누적된 쓰레기 데이터는 직접 삭제 필요.
 
 -- 1) 영향받는 row 먼저 확인 (DELETE 전 확인)
+-- V25.3 추가: 순수 숫자 page_id (예: '12345') 같은 가짜 URL 트래픽 차단
 select id, page_type, page_id, viewed_at, user_id
 from page_views
 where
@@ -19,6 +20,7 @@ where
   or page_id like '[object%'
   or length(page_id) > 100
   or length(page_id) = 0
+  or page_id ~ '^\d+$'  -- V25.3 순수 숫자
 order by viewed_at desc
 limit 100;
 
@@ -35,7 +37,8 @@ where
   or page_id like 'null%'
   or page_id like '[object%'
   or length(page_id) > 100
-  or length(page_id) = 0;
+  or length(page_id) = 0
+  or page_id ~ '^\d+$';  -- V25.3 순수 숫자 (가짜 URL 트래픽)
 */
 
 -- 3) 정리 후 캐시 무효화 — 다음 RPC 호출 시 자동 재계산되므로 별도 작업 불필요
