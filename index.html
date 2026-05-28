@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V26.3 — API ToS 준수: /api/quote(Yahoo)·/api/naver Origin 화이트리스트, /api/data 라이선스 명시 강화 -->
+<!-- V26.4 — Stooq fallback 제거 + 9회 지선 17개 region에 8회 결과·인구·유권자·격전지·9회 출마 여부 보강 -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -5921,6 +5921,39 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     font-size: 10.5px;
     padding: 1px 5px; border-radius: 6px;
     background: var(--bg-card);
+  }
+  /* V26.4 — 8회 결과·격전지 표시 */
+  .e26-region-card.e26-region-battle {
+    border: 1.5px solid rgba(234,88,12,0.5);
+    box-shadow: 0 1px 6px rgba(234,88,12,0.12);
+  }
+  [data-theme="dark"] .e26-region-card.e26-region-battle {
+    border-color: rgba(251,146,60,0.5);
+  }
+  .e26-battle-tag {
+    font-size: 11px;
+    padding: 1px 5px;
+    background: rgba(234,88,12,0.12);
+    color: #ea580c;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+  [data-theme="dark"] .e26-battle-tag { color: #fb923c; background: rgba(251,146,60,0.18); }
+  .e26-region-prev {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    font-size: 11px;
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 6px;
+  }
+  .e26-region-race {
+    font-size: 11px;
+    color: var(--text-2);
+    background: var(--bg-card);
+    padding: 5px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    line-height: 1.4;
   }
   .e26-cands {
     background: rgba(16,185,129,0.06);
@@ -13574,16 +13607,33 @@ function renderElection2026Page() {
                 ` : ''}
               </div>
             ` : '';
+            // V26.4 — 8회 결과·격전지·인구·유권자 표시
+            const isBattle = r.race_status && /격전|박빙/.test(r.race_status);
+            const incumbentRunning = r.incumbent_running;
+            const prev = r.prev_2022;
+            const voters = r.voters ? (r.voters/10000).toFixed(0) + '만' : '';
+            const prevHtml = prev ? `
+              <div class="e26-region-prev">
+                <div class="e26-region-il">8회 (2022)</div>
+                <div class="e26-region-iv" style="font-size:0.88em">
+                  <b>${escapeHtml(prev.winner)}</b> <em style="color:${partyColor(prev.party)}">${escapeHtml(prev.party)}</em>
+                  <span style="color:var(--text-soft)">${prev.vote_pct}%</span>
+                  ${prev.runner_pct ? `<span style="color:var(--text-soft);font-size:0.9em"> · vs ${prev.runner_pct}%</span>` : ''}
+                </div>
+              </div>
+            ` : '';
             return `
-              <div class="e26-region-card">
+              <div class="e26-region-card${isBattle ? ' e26-region-battle' : ''}">
                 <div class="e26-region-head">
-                  <div class="e26-region-name">${escapeHtml(r.name)}</div>
-                  <span class="e26-region-muni">${r.muni_count > 0 ? `${r.muni_count}개 기초` : '단층제'}</span>
+                  <div class="e26-region-name">${escapeHtml(r.name)}${isBattle ? ' <span class="e26-battle-tag" title="격전지">🔥</span>' : ''}</div>
+                  <span class="e26-region-muni">${r.muni_count > 0 ? `${r.muni_count}개 기초` : '단층제'}${voters ? ` · 유권자 ${voters}` : ''}</span>
                 </div>
                 <div class="e26-region-incumbent">
-                  <div class="e26-region-il">현직 (~2026.6.30)</div>
+                  <div class="e26-region-il">현직 (~2026.6.30)${incumbentRunning === false ? ' · <span style="color:#dc2626">불출마</span>' : incumbentRunning === true ? ' · <span style="color:#059669">9회 출마</span>' : ''}</div>
                   <div class="e26-region-iv"><b>${escapeHtml(r.incumbent)}</b> <em style="color:${partyC}">${escapeHtml(r.incumbent_party)}</em></div>
                 </div>
+                ${prevHtml}
+                ${r.race_status ? `<div class="e26-region-race" title="9회 지선 판세">${escapeHtml(r.race_status)}</div>` : ''}
                 ${liveHtml}
                 <div class="e26-region-links">
                   <a href="${links.nec}" target="_blank" rel="noopener" class="e26-link e26-link-nec">📊 NEC 통계</a>
@@ -13749,12 +13799,15 @@ function renderElection2026RegionPage(slug) {
       <div class="e26-hero">
         <div class="e26-hero-l">
           <div class="e26-eye">9회 전국동시지방선거 · ${info.en.toUpperCase()} · 2026.6.3</div>
-          <h1>🗳 ${escapeHtml(info.name)} — 9회 지방선거</h1>
+          <h1>🗳 ${escapeHtml(info.name)} — 9회 지방선거${regionMeta?.race_status && /격전|박빙/.test(regionMeta.race_status) ? ' <span style="font-size:0.6em;padding:3px 7px;background:rgba(234,88,12,0.15);color:#ea580c;border-radius:5px;font-weight:700">🔥 격전지</span>' : ''}</h1>
           <p>광역단체장·교육감·${muniCount > 0 ? muniCount + '개 기초단체장·' : ''}광역의원 후보자 명단 + 8회(2022) 결과 비교</p>
+          ${regionMeta?.voters ? `<p style="font-size:12px;color:var(--text-2);margin-top:-4px">유권자 약 ${(regionMeta.voters/10000).toFixed(0)}만명${regionMeta.population ? ` · 인구 ${(regionMeta.population/10000).toFixed(0)}만명` : ''}${regionMeta.gov_rep_seats ? ` · 광역의원 ${regionMeta.gov_rep_seats}석(지역) + ${regionMeta.gov_prop_seats}석(비례)` : ''}</p>` : ''}
           <div class="e26-status">
             <span class="e26-status-dot" style="background:${partyColor(incumbentParty)}"></span>
             현직: <b style="margin-left:4px">${escapeHtml(incumbent)}</b> <em style="color:${partyColor(incumbentParty)};margin-left:6px">${escapeHtml(incumbentParty)}</em>
+            ${regionMeta?.incumbent_running === true ? ' <span style="margin-left:6px;font-size:11px;padding:2px 6px;background:rgba(16,185,129,0.15);color:#059669;border-radius:4px;font-weight:700">9회 출마</span>' : regionMeta?.incumbent_running === false ? ' <span style="margin-left:6px;font-size:11px;padding:2px 6px;background:rgba(220,38,38,0.15);color:#dc2626;border-radius:4px;font-weight:700">불출마</span>' : ''}
           </div>
+          ${regionMeta?.race_status ? `<div class="e26-status" style="background:var(--bg-card);margin-top:6px;padding:8px 10px;border-radius:6px;font-size:12px;color:var(--text-2);line-height:1.5">💡 ${escapeHtml(regionMeta.race_status)}</div>` : ''}
         </div>
         <div class="e26-hero-r">
           <div class="e26-dday">${dDay}</div>
@@ -20817,7 +20870,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V26.3 · 🔒 API 정책 준수</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V26.4 · 🗳 9회 지선 보강</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">

@@ -1,6 +1,6 @@
 {
-  "_meta": "제9회 전국동시지방선거 (2026-06-03) 안내. 후보자 데이터는 중앙선관위 CORS 제약으로 직접 fetch 불가 — 공식 사이트 링크 제공.",
-  "syncedAt": "2026-05-22",
+  "_meta": "제9회 전국동시지방선거 (2026-06-03) 안내. V26.4 — 17개 시도 region에 8회 지선 결과·인구·유권자·9회 출마 여부·격전지 분류 추가. 후보자 실시간 데이터는 NEC OpenAPI 호출.",
+  "syncedAt": "2026-05-28",
   "election": {
     "id": "kr.election.2026.local.9",
     "name": "제9회 전국동시지방선거",
@@ -26,23 +26,90 @@
   "total_seats": 4040,
   "ballots_per_voter": 7,
   "regions": [
-    { "code":"11", "name":"서울특별시",       "incumbent":"오세훈",     "incumbent_party":"국민의힘",     "muni_count": 25 },
-    { "code":"21", "name":"부산광역시",       "incumbent":"박형준",     "incumbent_party":"국민의힘",     "muni_count": 16 },
-    { "code":"22", "name":"대구광역시",       "incumbent":"홍준표 (사퇴)·김선조 권한대행", "incumbent_party":"국민의힘", "muni_count": 9 },
-    { "code":"23", "name":"인천광역시",       "incumbent":"유정복",     "incumbent_party":"국민의힘",     "muni_count": 10 },
-    { "code":"24", "name":"광주광역시",       "incumbent":"강기정",     "incumbent_party":"더불어민주당", "muni_count": 5 },
-    { "code":"25", "name":"대전광역시",       "incumbent":"이장우",     "incumbent_party":"국민의힘",     "muni_count": 5 },
-    { "code":"26", "name":"울산광역시",       "incumbent":"김두겸",     "incumbent_party":"국민의힘",     "muni_count": 5 },
-    { "code":"29", "name":"세종특별자치시",   "incumbent":"최민호",     "incumbent_party":"국민의힘",     "muni_count": 0 },
-    { "code":"31", "name":"경기도",           "incumbent":"김동연",     "incumbent_party":"더불어민주당", "muni_count": 31 },
-    { "code":"32", "name":"강원특별자치도",   "incumbent":"김진태",     "incumbent_party":"국민의힘",     "muni_count": 18 },
-    { "code":"33", "name":"충청북도",         "incumbent":"김영환",     "incumbent_party":"국민의힘",     "muni_count": 11 },
-    { "code":"34", "name":"충청남도",         "incumbent":"김태흠",     "incumbent_party":"국민의힘",     "muni_count": 15 },
-    { "code":"35", "name":"전북특별자치도",   "incumbent":"김관영",     "incumbent_party":"더불어민주당", "muni_count": 14 },
-    { "code":"36", "name":"전라남도",         "incumbent":"김영록",     "incumbent_party":"더불어민주당", "muni_count": 22 },
-    { "code":"37", "name":"경상북도",         "incumbent":"이철우",     "incumbent_party":"국민의힘",     "muni_count": 22 },
-    { "code":"38", "name":"경상남도",         "incumbent":"박완수",     "incumbent_party":"국민의힘",     "muni_count": 18 },
-    { "code":"39", "name":"제주특별자치도",   "incumbent":"오영훈",     "incumbent_party":"더불어민주당", "muni_count": 0 }
+    { "code":"11", "name":"서울특별시", "incumbent":"오세훈", "incumbent_party":"국민의힘", "muni_count": 25,
+      "population": 9385000, "voters": 8261000, "gov_rep_seats": 101, "gov_prop_seats": 11,
+      "prev_2022": { "winner":"오세훈", "party":"국민의힘", "vote_pct": 59.05, "runner_up":"송영길 (민주당)", "runner_pct": 39.23, "turnout": 53.20 },
+      "incumbent_running": true, "race_status": "현직 3선 도전 (재선)" },
+
+    { "code":"21", "name":"부산광역시", "incumbent":"박형준", "incumbent_party":"국민의힘", "muni_count": 16,
+      "population": 3274000, "voters": 2884000, "gov_rep_seats": 42, "gov_prop_seats": 5,
+      "prev_2022": { "winner":"박형준", "party":"국민의힘", "vote_pct": 66.40, "runner_up":"변성완 (민주당)", "runner_pct": 33.60, "turnout": 49.10 },
+      "incumbent_running": true, "race_status": "현직 재선 도전" },
+
+    { "code":"22", "name":"대구광역시", "incumbent":"홍준표 (사퇴)·김선조 권한대행", "incumbent_party":"국민의힘", "muni_count": 9,
+      "population": 2364000, "voters": 2079000, "gov_rep_seats": 29, "gov_prop_seats": 4,
+      "prev_2022": { "winner":"홍준표", "party":"국민의힘", "vote_pct": 78.75, "runner_up":"서재헌 (민주당)", "runner_pct": 17.96, "turnout": 43.20 },
+      "incumbent_running": false, "race_status": "현직 사퇴 — 신규 경쟁 (보수 강세 지역)" },
+
+    { "code":"23", "name":"인천광역시", "incumbent":"유정복", "incumbent_party":"국민의힘", "muni_count": 10,
+      "population": 3001000, "voters": 2618000, "gov_rep_seats": 36, "gov_prop_seats": 4,
+      "prev_2022": { "winner":"유정복", "party":"국민의힘", "vote_pct": 51.79, "runner_up":"박남춘 (민주당)", "runner_pct": 44.59, "turnout": 48.90 },
+      "incumbent_running": true, "race_status": "격전지 — 직전 7%p 차" },
+
+    { "code":"24", "name":"광주광역시", "incumbent":"강기정", "incumbent_party":"더불어민주당", "muni_count": 5,
+      "population": 1438000, "voters": 1235000, "gov_rep_seats": 20, "gov_prop_seats": 3,
+      "prev_2022": { "winner":"강기정", "party":"더불어민주당", "vote_pct": 60.30, "runner_up":"주기환 (국민의힘)", "runner_pct": 15.94, "turnout": 37.70 },
+      "incumbent_running": true, "race_status": "민주당 우세 (전통 지지층)" },
+
+    { "code":"25", "name":"대전광역시", "incumbent":"이장우", "incumbent_party":"국민의힘", "muni_count": 5,
+      "population": 1442000, "voters": 1262000, "gov_rep_seats": 19, "gov_prop_seats": 3,
+      "prev_2022": { "winner":"이장우", "party":"국민의힘", "vote_pct": 51.19, "runner_up":"허태정 (민주당)", "runner_pct": 48.81, "turnout": 49.70 },
+      "incumbent_running": true, "race_status": "격전지 — 직전 2.4%p 박빙" },
+
+    { "code":"26", "name":"울산광역시", "incumbent":"김두겸", "incumbent_party":"국민의힘", "muni_count": 5,
+      "population": 1101000, "voters": 953000, "gov_rep_seats": 19, "gov_prop_seats": 3,
+      "prev_2022": { "winner":"김두겸", "party":"국민의힘", "vote_pct": 59.78, "runner_up":"송철호 (민주당)", "runner_pct": 40.22, "turnout": 52.30 },
+      "incumbent_running": true, "race_status": "현직 재선 도전 (조선·중공업 노동자 표심 변수)" },
+
+    { "code":"29", "name":"세종특별자치시", "incumbent":"최민호", "incumbent_party":"국민의힘", "muni_count": 0,
+      "population": 388000, "voters": 309000, "gov_rep_seats": 20, "gov_prop_seats": 2,
+      "prev_2022": { "winner":"최민호", "party":"국민의힘", "vote_pct": 52.83, "runner_up":"이춘희 (민주당)", "runner_pct": 47.17, "turnout": 51.20 },
+      "incumbent_running": true, "race_status": "격전지 — 행정수도 이슈" },
+
+    { "code":"31", "name":"경기도", "incumbent":"김동연", "incumbent_party":"더불어민주당", "muni_count": 31,
+      "population": 13631000, "voters": 11536000, "gov_rep_seats": 141, "gov_prop_seats": 15,
+      "prev_2022": { "winner":"김동연", "party":"더불어민주당", "vote_pct": 49.06, "runner_up":"김은혜 (국민의힘)", "runner_pct": 48.93, "turnout": 50.60 },
+      "incumbent_running": true, "race_status": "최대 격전지 — 직전 0.13%p 초박빙 (8,913표 차)" },
+
+    { "code":"32", "name":"강원특별자치도", "incumbent":"김진태", "incumbent_party":"국민의힘", "muni_count": 18,
+      "population": 1538000, "voters": 1366000, "gov_rep_seats": 46, "gov_prop_seats": 3,
+      "prev_2022": { "winner":"김진태", "party":"국민의힘", "vote_pct": 54.07, "runner_up":"이광재 (민주당)", "runner_pct": 45.93, "turnout": 57.80 },
+      "incumbent_running": true, "race_status": "보수 우세 (춘천·원주 변수)" },
+
+    { "code":"33", "name":"충청북도", "incumbent":"김영환", "incumbent_party":"국민의힘", "muni_count": 11,
+      "population": 1592000, "voters": 1399000, "gov_rep_seats": 32, "gov_prop_seats": 3,
+      "prev_2022": { "winner":"김영환", "party":"국민의힘", "vote_pct": 58.19, "runner_up":"노영민 (민주당)", "runner_pct": 41.81, "turnout": 51.20 },
+      "incumbent_running": true, "race_status": "보수 강세 — 청주 격전" },
+
+    { "code":"34", "name":"충청남도", "incumbent":"김태흠", "incumbent_party":"국민의힘", "muni_count": 15,
+      "population": 2123000, "voters": 1862000, "gov_rep_seats": 42, "gov_prop_seats": 4,
+      "prev_2022": { "winner":"김태흠", "party":"국민의힘", "vote_pct": 53.85, "runner_up":"양승조 (민주당)", "runner_pct": 46.15, "turnout": 52.30 },
+      "incumbent_running": true, "race_status": "격전지 — 천안·아산 진보·보수 혼재" },
+
+    { "code":"35", "name":"전북특별자치도", "incumbent":"김관영", "incumbent_party":"더불어민주당", "muni_count": 14,
+      "population": 1747000, "voters": 1561000, "gov_rep_seats": 36, "gov_prop_seats": 4,
+      "prev_2022": { "winner":"김관영", "party":"더불어민주당", "vote_pct": 82.32, "runner_up":"조배숙 (국민의힘)", "runner_pct": 17.68, "turnout": 48.70 },
+      "incumbent_running": true, "race_status": "민주당 우세 (전통 지지층)" },
+
+    { "code":"36", "name":"전라남도", "incumbent":"김영록", "incumbent_party":"더불어민주당", "muni_count": 22,
+      "population": 1782000, "voters": 1584000, "gov_rep_seats": 55, "gov_prop_seats": 3,
+      "prev_2022": { "winner":"김영록", "party":"더불어민주당", "vote_pct": 75.84, "runner_up":"이정현 (국민의힘)", "runner_pct": 18.81, "turnout": 58.50 },
+      "incumbent_running": true, "race_status": "민주당 우세 — 현직 3선 도전" },
+
+    { "code":"37", "name":"경상북도", "incumbent":"이철우", "incumbent_party":"국민의힘", "muni_count": 22,
+      "population": 2554000, "voters": 2284000, "gov_rep_seats": 55, "gov_prop_seats": 5,
+      "prev_2022": { "winner":"이철우", "party":"국민의힘", "vote_pct": 78.27, "runner_up":"임미애 (민주당)", "runner_pct": 21.73, "turnout": 60.70 },
+      "incumbent_running": false, "race_status": "현직 3선 제한 — 보수 신규 경쟁" },
+
+    { "code":"38", "name":"경상남도", "incumbent":"박완수", "incumbent_party":"국민의힘", "muni_count": 18,
+      "population": 3247000, "voters": 2884000, "gov_rep_seats": 58, "gov_prop_seats": 6,
+      "prev_2022": { "winner":"박완수", "party":"국민의힘", "vote_pct": 58.91, "runner_up":"양문석 (민주당)", "runner_pct": 41.09, "turnout": 53.40 },
+      "incumbent_running": true, "race_status": "보수 우세 — 창원·김해 변수" },
+
+    { "code":"39", "name":"제주특별자치도", "incumbent":"오영훈", "incumbent_party":"더불어민주당", "muni_count": 0,
+      "population": 670000, "voters": 562000, "gov_rep_seats": 32, "gov_prop_seats": 6,
+      "prev_2022": { "winner":"오영훈", "party":"더불어민주당", "vote_pct": 55.10, "runner_up":"허향진 (국민의힘)", "runner_pct": 44.90, "turnout": 54.10 },
+      "incumbent_running": true, "race_status": "격전지 — 직전 10%p 차, 보수 도전" }
   ],
   "sources": [
     { "label":"중앙선거관리위원회 선거통계시스템",     "url":"https://info.nec.go.kr/" },
