@@ -8701,11 +8701,11 @@
     cursor: wait;
   }
 
-  /* V23.3 — 홈 한국의 마음 진입 카드 */
+  /* V23.3/V24.7 — 홈 시민 여론판 진입 카드 (그라데이션 차분하게) */
   .home-pulse-card {
     display: flex;
     align-items: stretch;
-    background: linear-gradient(135deg, #cd2e3a 0%, #0047a0 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%);
     border-radius: 14px;
     padding: 18px 22px;
     margin-bottom: 18px;
@@ -8719,13 +8719,13 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15), transparent 60%);
+    background: radial-gradient(circle at 85% 30%, rgba(255,255,255,0.18), transparent 60%);
     pointer-events: none;
   }
   .home-pulse-card > * { position: relative; z-index: 1; }
   .home-pulse-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(205,46,58,0.3);
+    box-shadow: 0 8px 24px rgba(59,130,246,0.35);
   }
   .home-pulse-l { flex: 1; min-width: 0; }
   .home-pulse-r {
@@ -8781,55 +8781,63 @@
     margin: 0 auto;
     padding: 24px 20px 60px;
   }
-  .pulse-hero {
-    background: linear-gradient(135deg, #cd2e3a 0%, #0047a0 50%, #cd2e3a 100%);
-    background-size: 200% 200%;
-    animation: pulseHero 12s ease infinite;
-    color: #fff;
-    border-radius: 16px;
-    padding: 36px 32px;
-    text-align: center;
-    margin-bottom: 24px;
+  /* V24.7 — 시민 여론판 hero 톤다운 (그라데이션 부드럽게) */
+  .pulse-hero,
+  .pulse-hero-v2 {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    text-align: left;
+    margin-bottom: 18px;
     position: relative;
     overflow: hidden;
+    color: var(--text);
   }
-  @keyframes pulseHero {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-  .pulse-hero::after {
+  .pulse-hero-v2::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12), transparent 50%),
-                radial-gradient(circle at 70% 50%, rgba(255,255,255,0.08), transparent 50%);
+    top: 0; right: 0;
+    width: 200px; height: 100%;
+    background: radial-gradient(circle at 100% 50%, rgba(59,130,246,0.12), transparent 70%);
     pointer-events: none;
   }
-  .pulse-hero > * { position: relative; z-index: 1; }
+  [data-theme="dark"] .pulse-hero-v2::before {
+    background: radial-gradient(circle at 100% 50%, rgba(96,165,250,0.18), transparent 70%);
+  }
+  .pulse-hero-v2 > * { position: relative; z-index: 1; }
   .pulse-hero-eye {
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.85);
-    margin-bottom: 8px;
+    letter-spacing: 2.5px;
+    color: var(--accent);
+    margin-bottom: 6px;
   }
   .pulse-hero h1 {
-    font-size: 38px;
+    font-size: 32px;
     font-weight: 900;
     margin: 0 0 8px;
     letter-spacing: -1px;
+    color: var(--text);
+  }
+  .pulse-tagline {
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 0;
+    line-height: 1.55;
+    max-width: 560px;
   }
   .pulse-date {
     font-size: 15px;
     margin: 0 0 8px;
-    color: rgba(255,255,255,0.95);
+    color: var(--text);
   }
   .pulse-date b { font-weight: 800; }
   .pulse-sub {
     font-size: 12.5px;
-    color: rgba(255,255,255,0.78);
+    color: var(--text-2);
     max-width: 560px;
-    margin: 0 auto;
+    margin: 0;
     line-height: 1.55;
   }
   /* 종합 통계 카드 */
@@ -9342,15 +9350,15 @@
   .pulse-empty h3 { font-size: 18px; margin: 0 0 8px; }
   .pulse-empty p { color: var(--text-2); font-size: 13.5px; line-height: 1.6; margin-bottom: 20px; }
 
-  /* V23.5 — Yahoo Finance 자체 위젯 (KOSPI/KOSDAQ — KRX 라이선스 우회) */
+  /* V23.5/V24.7 — Yahoo Finance 자체 위젯 (KOSPI/KOSDAQ — KRX 라이선스 우회) */
   .econ-yf-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 10px;
   }
   .econ-yf-widget {
-    min-height: 180px;
+    min-height: 0;
   }
   /* V24.4/V24.6 — 카드 강제 정렬 (TradingView 높이와 비슷하게 컴팩트) */
   .econ-yf-card {
@@ -9436,7 +9444,7 @@
   }
   .econ-yf-spark {
     width: 100%;
-    height: 56px;
+    height: 42px;
     display: block;
     align-self: end;
   }
@@ -9458,10 +9466,10 @@
     .econ-yf-price { font-size: 26px; }
   }
 
-  /* V23.1 — TradingView 실시간 위젯 (경제 페이지) */
+  /* V23.1/V24.7 — TradingView 실시간 위젯 (경제 페이지) */
   .econ-tv-section {
-    margin: 18px 0 24px;
-    padding: 16px 20px;
+    margin: 12px 0 16px;
+    padding: 12px 16px;
     background: linear-gradient(135deg, rgba(239,68,68,0.04), rgba(220,38,38,0.02));
     border: 1px solid rgba(239,68,68,0.2);
     border-radius: 14px;
@@ -9474,7 +9482,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
     gap: 8px;
   }
@@ -10174,7 +10182,7 @@
     </div>
     <div class="foot-col">
       <div class="foot-h">⭐ 내 활동</div>
-      <a href="/pulse">🇰🇷 한국의 마음 (Pulse)</a>
+      <a href="/pulse">📊 시민 여론판</a>
       <a href="/share">📤 인스타 공유 카드</a>
       <a href="/me">📋 내 활동 대시보드</a>
       <a href="/bookmarks">관심 의원</a>
@@ -17559,9 +17567,9 @@ function renderBookmarksPage() {
 const SHARE_CARD_TYPES = {
   pulse: {
     id: 'pulse',
-    label: '🇰🇷 오늘의 한국 마음',
-    desc: 'Pulse 데이터 — 시민 의견 Top 5',
-    color: '#cd2e3a',
+    label: '📊 오늘의 시민 여론',
+    desc: '여론판 데이터 — 정치인 평가 Top 5',
+    color: '#3b82f6',
   },
   dday: {
     id: 'dday',
@@ -17624,7 +17632,7 @@ function _shareWatermark() {
   `;
 }
 
-// 1) Pulse 카드 — 한국의 마음 Top 5
+// 1) Pulse 카드 — 시민 여론판 Top 5
 async function buildPulseCard() {
   const data = await loadKoreaPulse();
   const ov = data?.overview;
@@ -17634,8 +17642,8 @@ async function buildPulseCard() {
     <div style="width:1080px;height:1080px;background:linear-gradient(135deg,#cd2e3a 0%,#0047a0 100%);position:relative;overflow:hidden;font-family:'Pretendard Variable',-apple-system,sans-serif;color:#fff;">
       <div style="position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.15),transparent 50%),radial-gradient(circle at 20% 80%,rgba(255,255,255,0.1),transparent 50%);"></div>
       <div style="position:relative;z-index:1;padding:60px 60px 200px;">
-        <div style="font-size:18px;font-weight:800;letter-spacing:4px;opacity:0.85;margin-bottom:8px">REPUBLIC OF KOREA · CITIZEN PULSE</div>
-        <h1 style="font-size:68px;font-weight:900;margin:0;letter-spacing:-2px;line-height:1.05">🇰🇷 한국의 마음</h1>
+        <div style="font-size:18px;font-weight:800;letter-spacing:4px;opacity:0.85;margin-bottom:8px">PUBLIC OPINION · LIVE</div>
+        <h1 style="font-size:64px;font-weight:900;margin:0;letter-spacing:-2px;line-height:1.05">📊 시민 여론판</h1>
         <p style="font-size:22px;opacity:0.95;margin:14px 0 0;font-weight:600">국민이 곧 국가 — 시민 ${(ov?.unique_voters || 0).toLocaleString()}명의 익명 의견</p>
 
         <div style="display:flex;gap:14px;margin:36px 0 28px;flex-wrap:wrap;">
@@ -18393,15 +18401,14 @@ function renderPulsePage() {
   return `
     <div class="group-back" id="back-home">← 홈</div>
     <div class="pulse-page">
-      <div class="pulse-hero">
-        <div class="pulse-hero-eye">REPUBLIC OF KOREA · CITIZEN PULSE</div>
-        <h1>🇰🇷 한국의 마음</h1>
-        <p class="pulse-date">${escapeHtml(dateStr)} · <b>국민이 곧 국가</b></p>
-        <p class="pulse-sub">시민이 누른 익명 지지·반대·동의·우려를 매일 집계. 정치인 평가는 사용자 누적 의견 기반. 표본 부족 항목은 표시되지 않음.</p>
+      <div class="pulse-hero pulse-hero-v2">
+        <div class="pulse-hero-eye">PUBLIC OPINION · ${escapeHtml(dateStr)}</div>
+        <h1>📊 시민 여론판</h1>
+        <p class="pulse-tagline">"국민이 곧 국가" — 익명 시민들이 누른 정치 의견의 라이브 집계.</p>
       </div>
 
       <div id="pulse-body">
-        <div class="loading"><span class="loading-spinner"></span>한국의 마음 집계 중…</div>
+        <div class="loading"><span class="loading-spinner"></span>여론 집계 중…</div>
       </div>
     </div>
   `;
@@ -18413,7 +18420,7 @@ function renderPulseBody(data) {
       <div class="pulse-empty">
         <div class="pulse-empty-icon">📭</div>
         <h3>아직 데이터가 부족합니다</h3>
-        <p>사용자들이 정치인 지지·법안 찬반·경제 동의 등을 누적하면<br>매일 자동으로 한국의 마음이 시각화됩니다.</p>
+        <p>시민들이 정치인 지지·법안 찬반·경제 동의 등을 누적하면<br>매일 자동으로 여론이 시각화됩니다.</p>
         <a href="/" class="btn-out">홈으로 돌아가기</a>
       </div>
     `;
@@ -18460,8 +18467,8 @@ function renderPulseBody(data) {
 
     <div class="pulse-share-v2">
       <div class="pulse-share-head">
-        <h2>📤 오늘의 한국 마음 공유</h2>
-        <p>"국민이 곧 국가" — 시민 의견 데이터를 SNS에 공유</p>
+        <h2>📤 오늘의 여론 공유</h2>
+        <p>시민 의견 데이터를 인스타·X·페북·밴드에 공유</p>
       </div>
       <button class="pulse-cta-instagram" id="pulse-share-instagram" type="button">
         <span class="pulse-cta-icon">📸</span>
@@ -20784,7 +20791,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.6 · 🎨 UI 정리</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V24.7 · 📊 시민 여론판</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -20826,16 +20833,16 @@ function renderHome() {
         `;
       })()}
 
-      <!-- 🇰🇷 V23.3 — 한국의 마음 (Korea Pulse) 진입 카드 -->
+      <!-- 📊 V23.3/V24.7 — 시민 여론판 진입 카드 -->
       <a href="/pulse" class="home-pulse-card" style="text-decoration:none;color:inherit">
         <div class="home-pulse-l">
-          <div class="home-pulse-eye">CITIZEN PULSE · LIVE</div>
-          <div class="home-pulse-title">🇰🇷 한국의 마음</div>
-          <div class="home-pulse-sub"><b>국민이 곧 국가</b> — 시민 익명 의견 라이브 집계. 정치인 평가·법안 동의·시도별 정치 성향.</div>
-          <div class="home-pulse-cta">📊 오늘의 한국 보러가기 →</div>
+          <div class="home-pulse-eye">PUBLIC OPINION · LIVE</div>
+          <div class="home-pulse-title">📊 시민 여론판</div>
+          <div class="home-pulse-sub"><b>국민이 곧 국가</b> — 익명 시민들의 정치 의견 라이브 집계. 정치인 평가 Top·법안 동의도·시도별 성향.</div>
+          <div class="home-pulse-cta">오늘의 여론 보러가기 →</div>
         </div>
         <div class="home-pulse-r">
-          <div class="home-pulse-flag">🇰🇷</div>
+          <div class="home-pulse-flag">🗳</div>
         </div>
       </a>
 
@@ -21909,8 +21916,8 @@ const ROUTE_META = {
   '/bookmarks': { title: '관심 의원 — 북마크 모아보기', desc: '관심 정치인 북마크 모아보기. 개인 관심 의원·단체장 추적 페이지.' },
   '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
   '/me': { title: '📋 내 활동 대시보드 — 북마크·평점·투표·stance 한 곳에', desc: '익명 UUID로 저장된 본인의 모든 활동 기록을 한 페이지에서 확인. 관심 의원·정치 입장·9회 공약 평점·8회 이행 투표·소셜 투표·페이지 조회 통계.' },
-  '/pulse': { title: '🇰🇷 한국의 마음 (Korea Pulse) — 시민 익명 의견 라이브 집계', desc: '국민이 곧 국가. 시민 누적 의견(지지·반대·찬성·우려)을 매일 자동 집계. 정치인 평가 Top·법안 동의도·경제 우려·17 시도별 정치 성향. patchkr.com 사용자 데이터.' },
-  '/share': { title: '📤 인스타·SNS 공유 카드 — 6종 자동 생성', desc: '대한민국 패치 노트 데이터를 1080x1080 인스타용 카드로 자동 생성. 한국의 마음·9회 지선 D-Day·KOSPI 데일리·오늘의 법안·정치인 카드·발의 랭킹 Top 5. 모바일에서 1탭 인스타 직접 전송.' },
+  '/pulse': { title: '📊 시민 여론판 — 익명 시민 정치 의견 라이브 집계 (Korea Public Opinion)', desc: '국민이 곧 국가. 시민 누적 의견(지지·반대·찬성·우려)을 매일 자동 집계. 정치인 평가 Top·법안 동의도·경제 우려·17 시도별 정치 성향. patchkr.com 사용자 데이터.' },
+  '/share': { title: '📤 인스타·SNS 공유 카드 — 6종 자동 생성', desc: '대한민국 패치 노트 데이터를 1080x1080 인스타용 카드로 자동 생성. 시민 여론판·9회 지선 D-Day·KOSPI 데일리·오늘의 법안·정치인 카드·발의 랭킹 Top 5. 모바일에서 1탭 인스타 직접 전송.' },
   '/developers': { title: '🔌 개발자·AI 공개 API 가이드 — 한국 정치·경제 데이터 무료 사용', desc: 'patchkr.com 공개 API 9종. 정치인·법안·9회 지선·경제 ECOS·한국 시장 시세·뉴스·트렌드·법령 검색·KOSPI/KOSDAQ Yahoo Finance 우회. CORS 허용·인증 없음·자유 사용. LLM/AI 친화 — /llms.txt + /llms-full.txt 별도 안내.' },
   '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
   '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
@@ -22129,7 +22136,7 @@ function route() {
       if (body) body.innerHTML = renderPulseBody(data);
       // 공유 버튼 이벤트
       const shareUrl = 'https://patchkr.com/pulse';
-      const shareText = `🇰🇷 한국의 마음 — 오늘의 시민 정치 의견 (patchkr.com)`;
+      const shareText = `📊 시민 여론판 — 오늘의 한국 정치 의견 (patchkr.com)`;
       document.getElementById('pulse-share-x')?.addEventListener('click', () => {
         window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
       });
