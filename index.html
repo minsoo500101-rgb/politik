@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V27.0 — 위원회 카드 + Pulse 히어로 brand 그라데이션 통일 (cmt-card 통계 22px, home-pulse brand 그라데이션) -->
+<!-- V27.1 — 법안 상세 + 정치인 detail 통일 (bd-hero brand 왼쪽 띠·bd-title fs-2xl·d-stat 카드화·d-section h2 brand 밑줄) -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -1423,25 +1423,42 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     margin-top: 16px;
   }
   .d-stat {
-    background: var(--bg-elev);
-    border-radius: 8px;
-    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-md);
+    padding: var(--sp-3) var(--sp-3);
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .d-stat:hover {
+    border-color: var(--brand);
+    transform: translateY(-1px);
   }
   .d-stat-label {
     font-size: 10px; color: var(--dim);
     letter-spacing: 0.5px; text-transform: uppercase;
-    margin-bottom: 2px;
+    margin-bottom: var(--sp-1);
+    font-weight: var(--fw-semi);
   }
   .d-stat-value {
-    font-size: 15px; font-weight: 600; color: var(--text);
+    font-size: 20px;
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
   }
   .d-body { padding: 28px 32px; }
-  .d-section { margin-bottom: 32px; }
+  .d-section { margin-bottom: var(--sp-6); }
   .d-section h2 {
-    font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
-    color: var(--dim); font-weight: 600;
-    padding-bottom: 8px; margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+    font-size: var(--fs-sm);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-2);
+    font-weight: var(--fw-heavy);
+    padding-bottom: var(--sp-2);
+    margin-bottom: var(--sp-3);
+    border-bottom: 2px solid var(--brand);
+    display: inline-block;
+    width: 100%;
   }
   .d-list { display: grid; gap: 8px; font-size: 13px; }
   .d-row { display: grid; grid-template-columns: 100px 1fr; gap: 16px; }
@@ -2266,10 +2283,10 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .bd-hero {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px 26px 20px;
-    margin-bottom: 14px;
-    padding-left: 22px;
+    border-radius: var(--rd-xl);
+    padding: var(--sp-5) var(--sp-5) var(--sp-4);
+    margin-bottom: var(--sp-3);
+    border-left: 4px solid var(--brand);
   }
   .bd-meta-row {
     display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
@@ -2283,21 +2300,29 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     font-variant-numeric: tabular-nums;
   }
   .bd-title {
-    font-size: 22px; font-weight: 800; color: var(--text);
-    line-height: 1.3; margin: 8px 0 14px;
-    letter-spacing: -0.3px;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    line-height: var(--lh-tight);
+    margin: var(--sp-2) 0 var(--sp-3);
+    letter-spacing: -0.025em;
   }
   .bd-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 22px;
-    margin-bottom: 12px;
+    border-radius: var(--rd-lg);
+    padding: var(--sp-4) var(--sp-5);
+    margin-bottom: var(--sp-3);
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
+  .bd-card:hover { border-color: var(--border-strong); }
   .bd-card h3 {
-    font-size: 13px; font-weight: 800; color: var(--text);
-    margin-bottom: 12px;
-    letter-spacing: -0.2px;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    margin-bottom: var(--sp-3);
+    letter-spacing: -0.01em;
+    display: flex; align-items: center; gap: var(--sp-2);
   }
   .loading-inline {
     padding: 16px 0; text-align: center;
@@ -2316,8 +2341,15 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     padding: 10px 12px;
     text-align: center;
   }
-  .bd-vote b { font-size: 22px; font-weight: 800; display: block; line-height: 1; }
-  .bd-vote span { font-size: 11px; color: var(--text-2); }
+  .bd-vote b {
+    font-size: 26px;
+    font-weight: var(--fw-heavy);
+    display: block;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .bd-vote span { font-size: var(--fs-xs); color: var(--text-2); font-weight: var(--fw-semi); }
   .bd-vote-y b { color: var(--ok); }
   .bd-vote-n b { color: #dc2626; }
   .bd-vote-bl b { color: var(--text-2); }
@@ -17578,6 +17610,20 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V27.1', date: '2026-05-28', title: '📑 법안 상세 + 정치인 detail ds 통일', items: [
+    '📜 법안 상세 (/bill/{ID}) — bd-hero·bd-card·bd-vote',
+    '  • bd-hero: rd-xl + brand 왼쪽 4px 띠 (시각 anchor)',
+    '  • bd-title: 22px → fs-2xl (26px), tight letter-spacing',
+    '  • bd-card: rd-lg + sp-4/sp-5 + border-strong hover',
+    '  • bd-card h3: fs-md + heavy + flex gap (아이콘 자리)',
+    '  • bd-vote 큰 숫자: 22px → 26px, tabular tight',
+    '👤 정치인 detail 페이지 — d-hero·d-stat·d-section',
+    '  • d-stat: bg-elev → bg-card + border 추가 → 카드화',
+    '  • d-stat hover: brand border + lift -1px',
+    '  • d-stat-value: 15px → 20px (heavy, tabular)',
+    '  • d-section h2: dim → brand 밑줄 2px (섹션 anchor 강조)',
+    '  • spacing 토큰화 (sp-3·sp-6)'
+  ]},
   { v: 'V27.0', date: '2026-05-28', title: '🎯 통일 마무리 — 위원회·Pulse 히어로 brand', items: [
     '🏢 .cmt-card (/committees 25개 위원회)',
     '  • rd-lg + sp-3 패딩 토큰화',
@@ -21539,7 +21585,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.0 · 🎯 통일 마무리</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.1 · 📑 detail 페이지</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
