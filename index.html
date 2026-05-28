@@ -10996,8 +10996,23 @@ async function submitRating(meta, rating) {
 // ============================================================
 
 // 페이지뷰 기록 (fire-and-forget — 페이지 진입 시 호출)
+// V23.8 — page_id 입력 검증 헬퍼 (template literal·HTML·과도한 길이 차단)
+function _isValidPageId(s) {
+  if (typeof s !== 'string') return false;
+  if (s.length === 0 || s.length > 100) return false;
+  if (s.includes('${') || s.includes('<') || s.includes('>') || s.includes('javascript:')) return false;
+  if (s.startsWith('undefined') || s.startsWith('null') || s.startsWith('[object')) return false;
+  return true;
+}
+
 function logPageView(pageType, pageId) {
   if (!pageType || !pageId) return;
+  // V23.8 — 잘못된 page_id가 DB에 저장되는 것을 차단
+  if (!_isValidPageId(String(pageId))) {
+    console.warn('[logPageView] invalid pageId rejected:', pageType, pageId);
+    return;
+  }
+  if (!['politician', 'bill', 'candidate', 'pledge', 'topic'].includes(pageType)) return;
   const userId = getOrCreateAnonUserId();
   // 비동기 + silent fail (분석용이라 실패해도 UX 영향 없음)
   supabaseRest('/page_views', {
@@ -18835,7 +18850,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.7 · 🔧 정부 비교 fix</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V23.8 · 🛡 page_id 검증</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
@@ -21270,10 +21285,13 @@ async function populateHomeRanking() {
   if (!polTarget && !billTarget) return;
 
   // 병렬 fetch
-  const [polTop, billTop] = await Promise.all([
+  const [polTopRaw, billTopRaw] = await Promise.all([
     loadTopByViews('politician', 7, 5),
     loadTopByViews('bill', 7, 5),
   ]);
+  // V23.8 — 표시 sanitize: 잘못된 page_id (template literal·HTML·과도 길이) 필터링
+  const polTop = (polTopRaw || []).filter(r => _isValidPageId(r.page_id));
+  const billTop = (billTopRaw || []).filter(r => _isValidPageId(r.page_id));
 
   // 정치인 랭킹
   if (polTarget) {
@@ -21282,7 +21300,9 @@ async function populateHomeRanking() {
     } else {
       polTarget.innerHTML = polTop.map((r, i) => {
         const m = (state.members || []).find(x => x.MONA_CD === r.page_id);
-        const name = m?.HG_NM || r.page_id;
+        // V23.8 — name이 page_id로 fallback되면 의미 없는 ID가 그대로 노출되니 차단
+        const isKnown = !!m;
+        const name = isKnown ? m.HG_NM : '(이름 미상)';
         const party = m?.POLY_NM || m?._type_label || '';
         const pColor = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
         return `
@@ -21303,7 +21323,7 @@ async function populateHomeRanking() {
     } else {
       billTarget.innerHTML = billTop.map((r, i) => {
         const b = (state.bills || []).find(x => x.BILL_ID === r.page_id);
-        const name = b?.BILL_NAME || r.page_id;
+        const name = b?.BILL_NAME || '(법안 미상)';
         const cmt = b?.CURR_COMMITTEE || '';
         return `
           <a class="rank-row" href="/bill/${encodeURIComponent(r.page_id)}">
