@@ -243,7 +243,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<!-- V27.5 — 브랜드 표기 통일: "패치 노트" → "패치노트" (구글·네이버·인스타 검색 결과 표시용 띄어쓰기 제거, 11개 파일 일괄) -->
+<!-- V27.6 — UI 통일 V: pt-card(공약이행추적) + world-hero + le-hero/le-section(역대 지선) brand 왼쪽 띠·rd-xl·display 타이포 -->
 <link rel="prefetch" as="fetch" href="/data/politicians.json?v=24" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
@@ -3632,17 +3632,17 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .pt-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
+    border-radius: var(--rd-lg);
+    padding: var(--sp-3) var(--sp-4);
     cursor: pointer;
-    transition: all 0.15s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   }
   .pt-card:hover {
-    border-color: var(--accent);
+    border-color: var(--brand);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    box-shadow: var(--sh-md);
   }
-  [data-theme="dark"] .pt-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+  [data-theme="dark"] .pt-card:hover { box-shadow: var(--sh-lg); }
   .pt-card-h {
     display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
     margin-bottom: 6px;
@@ -3669,9 +3669,10 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     margin-bottom: 8px;
   }
   .pt-card-cta {
-    font-size: 12px; color: var(--accent);
-    font-weight: 600;
-    padding-top: 8px;
+    font-size: var(--fs-sm);
+    color: var(--brand);
+    font-weight: var(--fw-semi);
+    padding-top: var(--sp-2);
     border-top: 1px solid var(--border);
   }
   .pt-card-body { display: none; margin-top: 10px; }
@@ -7000,31 +7001,41 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .le-hero {
     background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
+    border-left: 4px solid var(--brand);
+    border-radius: var(--rd-xl);
+    padding: var(--sp-5) var(--sp-6);
+    margin-bottom: var(--sp-4);
   }
   .le-hero-eye {
     font-size: 10.5px; color: var(--dim);
     letter-spacing: 2.5px; text-transform: uppercase;
-    font-weight: 700; margin-bottom: 8px;
+    font-weight: var(--fw-heavy); margin-bottom: var(--sp-2);
   }
   .le-hero h1 {
-    font-size: 26px; font-weight: 800; color: var(--text);
-    letter-spacing: -0.6px; margin-bottom: 6px;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    letter-spacing: -0.025em;
+    line-height: var(--lh-tight);
+    margin-bottom: var(--sp-1);
   }
-  .le-hero p { font-size: 13px; color: var(--text-2); }
+  .le-hero p { font-size: var(--fs-md); color: var(--text-2); }
 
   .le-section {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px 24px;
-    margin-bottom: 18px;
+    border-radius: var(--rd-xl);
+    padding: var(--sp-5) var(--sp-5);
+    margin-bottom: var(--sp-3);
+    transition: border-color 0.15s;
   }
+  .le-section:hover { border-color: var(--border-strong); }
   .le-section h2 {
-    font-size: 18px; font-weight: 800; color: var(--text);
-    letter-spacing: -0.3px; margin-bottom: 6px;
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    letter-spacing: -0.015em;
+    margin-bottom: var(--sp-1);
   }
   .le-summary {
     font-size: 12.5px; color: var(--text-2);
@@ -7533,20 +7544,25 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .world-hero {
     background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
+    border-left: 4px solid var(--brand);
+    border-radius: var(--rd-xl);
+    padding: var(--sp-5) var(--sp-6);
+    margin-bottom: var(--sp-4);
   }
   .world-hero-eye {
     font-size: 10.5px; color: var(--dim);
     letter-spacing: 2.5px; text-transform: uppercase;
-    font-weight: 700; margin-bottom: 8px;
+    font-weight: 700; margin-bottom: var(--sp-2);
   }
   .world-hero h1 {
-    font-size: 26px; font-weight: 800; color: var(--text);
-    letter-spacing: -0.6px; margin-bottom: 6px;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-heavy);
+    color: var(--text);
+    letter-spacing: -0.025em;
+    line-height: var(--lh-tight);
+    margin-bottom: var(--sp-1);
   }
-  .world-hero p { font-size: 13px; color: var(--text-2); }
+  .world-hero p { font-size: var(--fs-md); color: var(--text-2); }
 
   .kpi-pill {
     display: inline-block;
@@ -17642,6 +17658,22 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V27.6', date: '2026-05-28', title: '🌍 UI 통일 라운드 V — pt/world/le 페이지 brand', items: [
+    '🔥 .pt-card (/pledge-tracker 8회 당선자 공약 이행 추적)',
+    '  • rd-lg + sp-3/sp-4 토큰화',
+    '  • hover: brand border + lift -2px + sh-md (다크: sh-lg)',
+    '  • CTA: accent → brand 컬러',
+    '🌍 .world-hero (/world 국제 비교 12개국)',
+    '  • brand 왼쪽 4px 띠 + rd-xl',
+    '  • h1: 26px → fs-2xl + tight letter-spacing + tight line',
+    '🗳 .le-hero / .le-section (/elections 역대 지선)',
+    '  • le-hero: brand 왼쪽 띠 + rd-xl + display 타이포',
+    '  • le-section: rd-xl + border hover',
+    '  • h2: 18px → fs-lg + heavy',
+    'design tokens 적용 페이지 누적: 15개',
+    '  (홈·9회지선·rankings·bills·me·economy·glossary·today·committees·pulse',
+    '  + 법안상세·정치인detail·pledge-tracker·world·elections)'
+  ]},
   { v: 'V27.5', date: '2026-05-28', title: '🏷 브랜드 표기 통일 — "패치 노트" → "패치노트"', items: [
     '🔍 발견: 구글 검색결과·인스타 OG에 "대한민국 패치 노트"로 띄어쓰기 표시',
     '🎯 11개 파일 일괄 정정 (~55곳):',
@@ -21690,7 +21722,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.5 · 🏷 브랜드 통일</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V27.6 · 🌍 페이지 통일 V</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
