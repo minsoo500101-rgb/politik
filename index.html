@@ -4569,6 +4569,187 @@
     font-size: 11px;
   }
 
+  /* V22.9 — 선거 당일 개표 페이지 */
+  .live-page .live-hero { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; }
+  .live-page .live-hero .e26-eye { color: rgba(255,255,255,0.85); }
+  .live-page .live-hero h1 { color: #fff; }
+  .live-page .live-hero p { color: rgba(255,255,255,0.92); }
+  .live-page .live-hero .e26-dday { color: #fff; }
+  .live-page .live-hero .e26-dday-label { color: rgba(255,255,255,0.85); }
+  .live-section {
+    margin-top: 18px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .live-section h2 {
+    font-size: 16px;
+    font-weight: 800;
+    margin: 0 0 12px;
+  }
+  .live-section-active { border-color: #3b82f6; background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(59,130,246,0.02)); }
+  .live-section-live { border-color: #ef4444; background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02)); }
+  .live-section-counting { border-color: #f59e0b; background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(245,158,11,0.02)); }
+  .live-section-done { border-color: #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(16,185,129,0.02)); }
+
+  .live-checklist {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+  .live-check-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: 10px;
+    align-items: flex-start;
+  }
+  .live-check-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .live-check-body b { font-size: 13.5px; }
+  .live-check-sub { font-size: 11.5px; color: var(--dim); }
+  .live-link-inline {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: rgba(59,130,246,0.3);
+    text-underline-offset: 2px;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .live-link-inline:hover { text-decoration-color: var(--accent); }
+  .live-banner {
+    padding: 14px 18px;
+    background: var(--bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    font-size: 13.5px;
+    margin-bottom: 14px;
+  }
+  .live-pulse-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(239,68,68,0.08);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .live-pulse-dot {
+    width: 10px; height: 10px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 1.4s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .live-progress-wrap { padding: 8px 0; }
+  .live-progress-label {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .live-progress-bar {
+    height: 18px;
+    background: var(--bg);
+    border-radius: 9px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .live-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    transition: width 1s ease;
+  }
+  .live-progress-marks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: var(--dim);
+    margin-top: 4px;
+    padding: 0 2px;
+  }
+  .live-info-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .live-info-card {
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: 8px;
+    text-align: center;
+  }
+  .live-info-label {
+    font-size: 11px;
+    color: var(--dim);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .live-info-val {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .live-info-val.live-link {
+    color: var(--accent);
+    text-decoration: none;
+    display: block;
+  }
+  .live-info-val.live-link:hover { text-decoration: underline; }
+  .live-info-sub {
+    font-size: 10.5px;
+    color: var(--dim);
+    margin-top: 2px;
+  }
+  .live-clock {
+    color: #ef4444;
+    font-variant-numeric: tabular-nums;
+  }
+  .live-broadcast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .live-broadcast {
+    display: block;
+    padding: 14px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .live-broadcast:hover {
+    border-color: #ef4444;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(239,68,68,0.15);
+  }
+  .live-bc-name {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+  .live-bc-sub {
+    font-size: 11px;
+    color: var(--dim);
+  }
+  .live-sub {
+    font-size: 12px;
+    color: var(--dim);
+    margin: 0 0 10px;
+  }
+
   /* V22.7 — 시도별 9회 지선 페이지 */
   .e26-region-page .r-cand-list {
     display: grid;
@@ -7992,6 +8173,7 @@
       <div class="foot-h">📊 데이터</div>
       <a href="/bills">22대 법안 1,595건</a>
       <a href="/election2026">🔴 9회 지선 LIVE</a>
+      <a href="/election2026/live">🔴 선거 당일 개표</a>
       <a href="/economy">경제 지표</a>
       <a href="/dex">정치인 도감 772명</a>
       <a href="/map">정치 분포 지도</a>
@@ -11004,6 +11186,7 @@ function renderElection2026Page() {
           <h1>🗳 ${escapeHtml(ev.name)}</h1>
           <p>${escapeHtml(ev.date)} 수요일 · ${escapeHtml(ev.voting_hours)} · 만 ${ev.voter_age}세 이상 · 1인 ${d.ballots_per_voter}표</p>
           <div class="e26-status"><span class="e26-status-dot" style="background:${phase.color}"></span>${escapeHtml(phase.tag)}</div>
+          <a href="/election2026/live" class="e26-live-cta" style="display:inline-block;margin-top:10px;padding:8px 14px;background:#ef4444;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;animation:pulse 2s ease-in-out infinite;">🔴 선거 당일 LIVE 페이지 →</a>
         </div>
         <div class="e26-hero-r">
           <div class="e26-dday">${dDay}</div>
@@ -11617,6 +11800,295 @@ function renderElection2026RegionPage(slug) {
         </div>
         <div style="text-align:center;margin-top:12px">
           <a href="/election2026" class="btn-out">전국 9회 지선 페이지로 →</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// V22.9 — 선거 당일 개표 페이지 (/election2026/live)
+// D-Day 6/3 18시 트래픽 스파이크 대비 — 단계별 콘텐츠 활성화
+// ============================================================
+function _electionStage() {
+  const now = new Date();
+  const eday = new Date('2026-06-03T00:00:00+09:00');
+  const earlyStart = new Date('2026-05-29T06:00:00+09:00');
+  const earlyEnd = new Date('2026-05-30T18:00:00+09:00');
+  const voteStart = new Date('2026-06-03T06:00:00+09:00');
+  const voteEnd = new Date('2026-06-03T18:00:00+09:00');
+  const cutoff = new Date('2026-06-04T12:00:00+09:00');
+
+  if (now < earlyStart) return { stage: 'pre',         label: '선거 전 (정보 안내)', emoji: '📋' };
+  if (now < earlyEnd)   return { stage: 'early',       label: '사전투표 진행 중',     emoji: '🗳' };
+  if (now < voteStart)  return { stage: 'early_done',  label: '사전투표 종료 · 본 투표 대기', emoji: '⏳' };
+  if (now < voteEnd)    return { stage: 'voting',      label: '본 투표 진행 중',       emoji: '🟢' };
+  if (now < cutoff)     return { stage: 'counting',    label: '개표 진행 중',          emoji: '🔥' };
+  return                       { stage: 'done',        label: '개표 완료 · 최종 결과', emoji: '✅' };
+}
+
+function renderElectionLivePage() {
+  const stage = _electionStage();
+  const now = new Date();
+  const eday = new Date('2026-06-03T06:00:00+09:00');
+  const dayDiff = Math.ceil((eday - now) / 86400000);
+  const dDay = dayDiff > 0 ? `D-${dayDiff}` : dayDiff === 0 ? 'D-Day' : `D+${Math.abs(dayDiff)}`;
+
+  // 시각 표시 (KST)
+  const hhmm = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Seoul' });
+  const ymd = now.toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' });
+
+  // 투표 진행 시각 시각화 (06~18)
+  let votingProgress = 0;
+  if (stage.stage === 'voting') {
+    const start = new Date('2026-06-03T06:00:00+09:00').getTime();
+    const end = new Date('2026-06-03T18:00:00+09:00').getTime();
+    votingProgress = Math.round((now.getTime() - start) / (end - start) * 100);
+  } else if (stage.stage === 'counting' || stage.stage === 'done') {
+    votingProgress = 100;
+  }
+
+  // 단계별 콘텐츠
+  function stageContent() {
+    if (stage.stage === 'pre' || stage.stage === 'early_done') {
+      return `
+        <div class="live-section">
+          <h2>📋 9회 지방선거 안내 — 투표 전 체크리스트</h2>
+          <div class="live-checklist">
+            <div class="live-check-item">
+              <div class="live-check-icon">🆔</div>
+              <div class="live-check-body">
+                <b>신분증 지참 필수</b><br>
+                <span class="live-check-sub">주민등록증·운전면허증·여권·청소년증·장애인등록증 등 정부 발급 사진 신분증</span>
+              </div>
+            </div>
+            <div class="live-check-item">
+              <div class="live-check-icon">📍</div>
+              <div class="live-check-body">
+                <b>본인 투표소 확인</b><br>
+                <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" class="live-link-inline">중앙선관위 통합선거정보 → 내 투표소 찾기 ↗</a>
+              </div>
+            </div>
+            <div class="live-check-item">
+              <div class="live-check-icon">🕒</div>
+              <div class="live-check-body">
+                <b>투표 시간 — 6월 3일 (수) 06:00 ~ 18:00</b><br>
+                <span class="live-check-sub">법정 공휴일. 사전투표는 5/29~30 (금·토) 06:00~18:00 전국 어디서나.</span>
+              </div>
+            </div>
+            <div class="live-check-item">
+              <div class="live-check-icon">🗳</div>
+              <div class="live-check-body">
+                <b>1인 7표</b><br>
+                <span class="live-check-sub">광역단체장 · 교육감 · 기초단체장 · 광역의원(지역) · 광역의원(비례) · 기초의원(지역) · 기초의원(비례)</span>
+              </div>
+            </div>
+            <div class="live-check-item">
+              <div class="live-check-icon">📚</div>
+              <div class="live-check-body">
+                <b>공약 미리 확인</b><br>
+                <a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" class="live-link-inline">정책공약마당 → 지역별 후보 공약 비교 ↗</a> · <a href="/election2026" class="live-link-inline">우리 사이트 시도별 페이지 →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (stage.stage === 'early') {
+      return `
+        <div class="live-section live-section-active">
+          <h2>🗳 사전투표 진행 중 — 5월 29일(금) ~ 30일(토) 06:00~18:00</h2>
+          <div class="live-banner">
+            <b>전국 어디서나 가능</b> — 본인 신분증만 있으면 ID 등록된 주소지 외 어디서든 사전투표 가능.
+            <br><a href="https://si.nec.go.kr/" target="_blank" rel="noopener" class="live-link-inline">선관위 통합선거정보 → 가까운 사전투표소 찾기 ↗</a>
+          </div>
+          <div class="live-info-row">
+            <div class="live-info-card">
+              <div class="live-info-label">사전투표율 (실시간)</div>
+              <div class="live-info-val">실시간은 NEC →</div>
+              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-link-inline">중앙선관위 통계 ↗</a>
+            </div>
+            <div class="live-info-card">
+              <div class="live-info-label">현재 시각 (KST)</div>
+              <div class="live-info-val live-clock" id="live-clock">${hhmm}</div>
+              <div class="live-info-sub">${escapeHtml(ymd)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (stage.stage === 'voting') {
+      return `
+        <div class="live-section live-section-live">
+          <div class="live-pulse-banner">
+            <span class="live-pulse-dot"></span>
+            <b>본 투표 진행 중</b> — 6월 3일 (수) · 06:00 ~ 18:00 · 신분증 지참
+          </div>
+          <div class="live-progress-wrap">
+            <div class="live-progress-label">투표 시간 진행률 — <b>${votingProgress}%</b></div>
+            <div class="live-progress-bar"><div class="live-progress-fill" style="width:${votingProgress}%"></div></div>
+            <div class="live-progress-marks">
+              <span>06:00</span><span>09</span><span>12</span><span>15</span><span>18:00 마감</span>
+            </div>
+          </div>
+          <div class="live-info-row">
+            <div class="live-info-card">
+              <div class="live-info-label">현재 시각 (KST)</div>
+              <div class="live-info-val live-clock" id="live-clock">${hhmm}</div>
+            </div>
+            <div class="live-info-card">
+              <div class="live-info-label">실시간 투표율</div>
+              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 라이브 ↗</a>
+            </div>
+            <div class="live-info-card">
+              <div class="live-info-label">개표 시작 (예상)</div>
+              <div class="live-info-val">18:00 (마감 직후)</div>
+              <div class="live-info-sub">출구조사 18시 발표</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="live-section">
+          <h2>📺 개표 방송 (18시 시작)</h2>
+          <div class="live-broadcast-grid">
+            <a href="https://www.kbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
+              <div class="live-bc-name">KBS</div>
+              <div class="live-bc-sub">개표방송</div>
+            </a>
+            <a href="https://imnews.imbc.com/" target="_blank" rel="noopener" class="live-broadcast">
+              <div class="live-bc-name">MBC</div>
+              <div class="live-bc-sub">선택 2026</div>
+            </a>
+            <a href="https://news.sbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
+              <div class="live-bc-name">SBS</div>
+              <div class="live-bc-sub">2026 국민의 선택</div>
+            </a>
+            <a href="https://news.jtbc.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
+              <div class="live-bc-name">JTBC</div>
+              <div class="live-bc-sub">우리의 선택</div>
+            </a>
+            <a href="https://news.ytn.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
+              <div class="live-bc-name">YTN</div>
+              <div class="live-bc-sub">24시간 개표</div>
+            </a>
+            <a href="https://www.yna.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
+              <div class="live-bc-name">연합뉴스TV</div>
+              <div class="live-bc-sub">실시간 개표</div>
+            </a>
+          </div>
+        </div>
+      `;
+    }
+    if (stage.stage === 'counting') {
+      return `
+        <div class="live-section live-section-counting">
+          <div class="live-pulse-banner">
+            <span class="live-pulse-dot"></span>
+            <b>개표 진행 중</b> — 18시 종료 직후 시작 · 새벽까지 진행 · 정확한 결과는 NEC 공식 발표
+          </div>
+          <div class="live-info-row">
+            <div class="live-info-card">
+              <div class="live-info-label">최종 투표율</div>
+              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 통계 ↗</a>
+            </div>
+            <div class="live-info-card">
+              <div class="live-info-label">실시간 개표</div>
+              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 결과 ↗</a>
+            </div>
+            <div class="live-info-card">
+              <div class="live-info-label">출구조사</div>
+              <div class="live-info-val">방송 3사</div>
+              <div class="live-info-sub">KBS·MBC·SBS 공동</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="live-section">
+          <h2>📊 17 시도지사 개표 현황 — 실시간</h2>
+          <p class="live-sub">선관위 공식 데이터 직접 확인을 권장. 사이트는 외부 링크 제공.</p>
+          <div class="r-other-grid" style="margin-top:0">
+            ${Object.entries(REGION_SLUG_MAP).map(([slug, info]) => `
+              <a href="/election2026/${slug}" class="r-other-link" data-region="${slug}">${escapeHtml(info.short)}</a>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="live-section">
+          <h2>📺 실시간 개표 방송</h2>
+          <div class="live-broadcast-grid">
+            <a href="https://www.kbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">KBS</div><div class="live-bc-sub">개표방송</div></a>
+            <a href="https://imnews.imbc.com/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">MBC</div><div class="live-bc-sub">선택 2026</div></a>
+            <a href="https://news.sbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">SBS</div><div class="live-bc-sub">2026</div></a>
+            <a href="https://news.jtbc.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">JTBC</div><div class="live-bc-sub">우리의 선택</div></a>
+            <a href="https://news.ytn.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">YTN</div><div class="live-bc-sub">24시간</div></a>
+            <a href="https://www.yna.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">연합뉴스TV</div><div class="live-bc-sub">실시간</div></a>
+          </div>
+        </div>
+      `;
+    }
+    if (stage.stage === 'done') {
+      return `
+        <div class="live-section live-section-done">
+          <div class="live-banner">
+            <b>✅ 개표 완료</b> — 9회 전국동시지방선거 최종 결과 확정. 당선자는 2026.7.1 취임.
+          </div>
+          <div class="live-info-row">
+            <div class="live-info-card">
+              <div class="live-info-label">최종 결과</div>
+              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 ↗</a>
+            </div>
+            <div class="live-info-card">
+              <div class="live-info-label">우리 사이트 9회 페이지</div>
+              <a href="/election2026" class="live-info-val live-link">전국 →</a>
+            </div>
+            <div class="live-info-card">
+              <div class="live-info-label">8회 (2022) 비교</div>
+              <a href="/elections" class="live-info-val live-link">역대 →</a>
+            </div>
+          </div>
+        </div>
+        <div class="live-section">
+          <h2>📊 17 시도지사 — 시도별 결과</h2>
+          <div class="r-other-grid" style="margin-top:0">
+            ${Object.entries(REGION_SLUG_MAP).map(([slug, info]) => `
+              <a href="/election2026/${slug}" class="r-other-link" data-region="${slug}">${escapeHtml(info.short)}</a>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+    return '';
+  }
+
+  return `
+    <div class="group-back" id="back-e26">← 9회 지선 전국</div>
+    <div class="e26-page live-page">
+      <div class="e26-hero live-hero">
+        <div class="e26-hero-l">
+          <div class="e26-eye">9회 전국동시지방선거 · 선거 당일 LIVE</div>
+          <h1>${stage.emoji} ${escapeHtml(stage.label)}</h1>
+          <p>2026년 6월 3일 (수) · 6시~18시 · 만 18세 이상 · 1인 7표 · 광역 17 + 기초 226 + 교육감 17 + 광역의원·기초의원</p>
+        </div>
+        <div class="e26-hero-r">
+          <div class="e26-dday">${dDay}</div>
+          <div class="e26-dday-label">${dayDiff > 0 ? '선거일까지' : dayDiff === 0 ? '오늘' : '선거일 지남'}</div>
+        </div>
+      </div>
+
+      ${stageContent()}
+
+      <div class="live-section live-section-sources">
+        <h2>📚 공식 출처</h2>
+        <ul class="e26-sources">
+          <li><a href="https://www.nec.go.kr/" target="_blank" rel="noopener"><b>중앙선거관리위원회 (NEC)</b> →</a></li>
+          <li><a href="https://si.nec.go.kr/" target="_blank" rel="noopener"><b>통합선거정보 — 내 투표소 찾기</b> →</a></li>
+          <li><a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener"><b>실시간 선거 통계</b> →</a></li>
+          <li><a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener"><b>정책공약마당</b> →</a></li>
+        </ul>
+        <div class="e26-foot">
+          <b>실시간 데이터 안내</b><br>
+          개표 결과는 중앙선관위 공식 데이터가 가장 정확합니다. 본 사이트는 후보·공약·역대 결과 정보 + 가이드 + 빠른 진입점을 제공합니다.
+          실시간 개표 결과는 위 NEC 공식 링크나 방송 3사를 통해 확인해 주세요.
         </div>
       </div>
     </div>
@@ -16764,7 +17236,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.8 · 📱 모바일 보완</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V22.9 · 🔴 D-Day LIVE</a></h1>
           <p>${_heroSub}</p>
           <div class="share-bar">
             <span class="share-label">공유:</span>
@@ -17846,6 +18318,7 @@ const ROUTE_META = {
   '/': { title: '대한민국 패치 노트 — 정치·법안·선거·경제 종합 플랫폼', desc: SITE_DESC_FALLBACK },
   '/bills': { title: '22대 국회 통과 법안 1,595건 검색·필터 — 의안 처리 결과 전체', desc: '제22대 국회 본회의 통과 법안 1,595건 종합 검색. 발의자·정당·위원회·15개 분야·통과 속도. 정부안·의원안·위원장안 구분. 법안명 자동 키워드 검색. 매일 갱신.' },
   '/election2026': { title: '🔴 9회 전국동시지방선거 (2026.6.3) LIVE — 696명 후보 5대 공약', desc: '제9회 전국동시지방선거 후보자 696명 실시간 — 광역단체장 54·기초단체장 585·교육감 58 + 광역의원·기초의원. 시도지사·교육감 5대 공약 즉시 비교. 중앙선관위 공식 데이터.' },
+  '/election2026/live': { title: '🔴 9회 지선 LIVE — 선거 당일 개표 실시간 (6/3 본 투표·개표)', desc: '제9회 전국동시지방선거 2026.6.3 — 본 투표(06~18시)·개표 진행 단계별 안내. 출구조사·개표방송·실시간 투표율·NEC 공식 데이터 빠른 진입. 17 시도지사·교육감·기초단체장 결과.' },
   '/committees': { title: '국회 위원회 25개 · 22대 상임위·특별위', desc: '제22대 국회 위원회 25개 (상임 17 + 특별 8). 처리 의안·위원장·간사·소속 의원.' },
   '/map': { title: '정치 분포 지도 — 17 시도 + 250 시군구 정당색', desc: '대한민국 17개 시도 + 250개 시군구 정당색 인터랙티브 지도. 단체장 정보 클릭 탐색.' },
   '/world': { title: '국제 비교 — 12개 민주국가 정치 지표', desc: '12개 민주국가 의원수·여성비율·투표율·민주주의지수·언론자유·청렴도 비교 분석.' },
@@ -18484,6 +18957,33 @@ function route() {
         }
       });
     }
+    return;
+  }
+  // V22.9 — 선거 당일 개표 페이지 (/election2026/live)
+  if (hash === '#/election2026/live') {
+    const renderLive = () => {
+      view.innerHTML = renderElectionLivePage();
+      document.getElementById('back-e26')?.addEventListener('click', () => { nav('/election2026'); });
+      // 시도 칩 클릭
+      document.querySelectorAll('.r-other-link').forEach(el => {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          nav('/election2026/' + el.dataset.region);
+        });
+      });
+    };
+    renderLive();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
+    // 60초마다 자동 갱신 (시계·진행률·단계)
+    clearInterval(window._liveRefreshTimer);
+    window._liveRefreshTimer = setInterval(() => {
+      if (currentRoute() !== '#/election2026/live') {
+        clearInterval(window._liveRefreshTimer);
+        return;
+      }
+      renderLive();
+    }, 60000);
     return;
   }
   // V22.7 — 시도별 9회 지선 페이지 (/election2026/{slug})
