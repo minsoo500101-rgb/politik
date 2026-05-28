@@ -51,6 +51,23 @@
 <link rel="alternate" type="application/rss+xml" title="대한민국 패치 노트 — 최신 통과 법안" href="https://patchkr.com/feed.xml">
 <link rel="sitemap" type="application/xml" title="Sitemap" href="https://patchkr.com/sitemap.xml">
 <link rel="manifest" href="/manifest.json">
+
+<!-- V26.0 — 외부 도메인 DNS prefetch + preconnect (초기 로딩 속도) -->
+<link rel="preconnect" href="https://oaivxaniwvxclzigiswr.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://query1.finance.yahoo.com">
+<link rel="dns-prefetch" href="https://ko.wikipedia.org">
+<link rel="dns-prefetch" href="https://wikimedia.org">
+<link rel="dns-prefetch" href="https://s3.tradingview.com">
+<link rel="dns-prefetch" href="https://ecos.bok.or.kr">
+<link rel="dns-prefetch" href="https://apis.data.go.kr">
+<link rel="dns-prefetch" href="https://openapi.assembly.go.kr">
+<link rel="dns-prefetch" href="https://open.assembly.go.kr">
+<link rel="dns-prefetch" href="https://trends.google.com">
+<link rel="dns-prefetch" href="https://openapi.naver.com">
+<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E📋%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23111827' rx='30'/%3E%3Ctext y='140' x='90' text-anchor='middle' font-size='120'%3E📋%3C/text%3E%3C/svg%3E">
 
@@ -230,6 +247,15 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+
+<!-- V26.0 — Service Worker 등록 (재방문 시 즉시 로드 + 오프라인 지원) -->
+<script>
+if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
      crossorigin="anonymous"></script>
@@ -20668,7 +20694,7 @@ function renderHome() {
           ${previews.map(m => {
             const photo = state.photos.get(m.MONA_CD);
             const initial = (m.HG_NM||'?').charAt(0);
-            return `<div class="org-preview-avatar" title="${escapeHtml(m.HG_NM)}">${photo?.thumb ? `<img src="${escapeHtml(photo.thumb)}" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">` : escapeHtml(initial)}</div>`;
+            return `<div class="org-preview-avatar" title="${escapeHtml(m.HG_NM)}">${photo?.thumb ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" decoding="async" alt="${escapeHtml(m.HG_NM)}" onerror="this.replaceWith(document.createTextNode('${escapeHtml(initial)}'))">` : escapeHtml(initial)}</div>`;
           }).join('')}
         </div>
       </div>
@@ -20790,7 +20816,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V25.5 · 🎯 candidate ID 보호</a></h1>
+          <h1>대한민국 패치 노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer" title="변경 이력 보기">V26.0 · ⚡ 최적화</a></h1>
           <p>${_heroSub}</p>
           <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
           <div class="share-bar" id="share-bar">
