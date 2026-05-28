@@ -1,0 +1,80 @@
+name: Site health check
+
+on:
+  schedule:
+    # 매 시간 정시 (0분)
+    - cron: '0 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 사이트 + API health check
+        id: check
+        run: node scripts/health-check.js
+        continue-on-error: true # critical fail 있어도 commit은 함
+
+      - name: 결과 commit (변경 있을 때만)
+        run: |
+          if git diff --quiet data/health-log.json; then
+            echo "변경 없음"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/health-log.json
+            git commit -m "chore(health): $(date -u +%H:%M)Z auto check"
+            git push
+          fi
+
+      - name: Critical 실패 시 issue 자동 생성
+        if: steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = JSON.parse(fs.readFileSync('data/health-log.json', 'utf8'));
+            const latest = log[0];
+            const fails = latest.critical_fail || [];
+            if (fails.length === 0) return;
+
+            // 같은 시간대 issue 이미 있으면 skip
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'health-check,critical',
+              state: 'open',
+            });
+            const recent = issues.data.find(i =>
+              Date.now() - new Date(i.created_at).getTime() < 2 * 3600 * 1000
+            );
+            if (recent) {
+              console.log('Recent issue exists:', recent.html_url);
+              return;
+            }
+
+            const body = `**시간**: ${latest.timestamp_kst}
+            **사이트 버전 감지**: ${latest.site_version || '미감지'}
+            **평균 응답**: ${latest.avg_response_ms}ms
+
+            ### Critical 실패 목록
+            ${fails.map(f => `- \`${f.url}\` → status ${f.status || 'ERR'} ${f.error || ''}`).join('\n')}
+
+            전체 로그: [data/health-log.json](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/data/health-log.json)
+            `;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 사이트 health check 실패 — ${latest.timestamp_kst}`,
+              body,
+              labels: ['health-check', 'critical'],
+            });

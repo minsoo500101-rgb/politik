@@ -180,6 +180,67 @@
       "inLanguage": "ko"
     },
     {
+      "@type": "Event",
+      "@id": "https://patchkr.com/early-voting#event",
+      "name": "제9회 전국동시지방선거 사전투표",
+      "alternateName": "9회 지선 사전투표 · 2026 사전투표",
+      "startDate": "2026-05-29T06:00:00+09:00",
+      "endDate": "2026-05-30T18:00:00+09:00",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "location": {
+        "@type": "Country",
+        "name": "대한민국",
+        "address": {"@type": "PostalAddress", "addressCountry": "KR"}
+      },
+      "description": "제9회 전국동시지방선거 사전투표. 5/29(금)·5/30(토) 06:00~18:00. 전국 어디서나 신분증만 있으면 가능 (관내·관외 모두 OK). 본 투표(6/3) 불참 예상 시 사전투표 활용.",
+      "url": "https://patchkr.com/early-voting",
+      "organizer": {"@type": "Organization", "name": "중앙선거관리위원회", "url": "https://www.nec.go.kr"},
+      "image": "https://patchkr.com/og-image.png",
+      "isAccessibleForFree": true,
+      "inLanguage": "ko"
+    },
+    {
+      "@type": "Dataset",
+      "name": "한국 경제 9개 지표 시계열 (2015~2026)",
+      "description": "기준금리·원/달러 환율·소비자물가 상승률·실업률·GDP 성장률·코스피·코스닥 종가·가계부채/GDP·수출액. 한국은행 ECOS + 통계청 + 관세청 출처. 국가 신용등급(S&P AA·Moody's Aa2·Fitch AA-) 포함. 정부별 임기 비교(박근혜·문재인·윤석열·이재명).",
+      "url": "https://patchkr.com/economy",
+      "creator": {"@id": "https://patchkr.com/#organization"},
+      "isAccessibleForFree": true,
+      "inLanguage": "ko",
+      "temporalCoverage": "2015/2026",
+      "keywords": "기준금리·환율·물가·실업·GDP·코스피·코스닥·가계부채·수출·신용등급",
+      "variableMeasured": [
+        {"@type": "PropertyValue", "name": "기준금리", "unitText": "%"},
+        {"@type": "PropertyValue", "name": "원/달러 환율", "unitText": "원"},
+        {"@type": "PropertyValue", "name": "CPI", "unitText": "%"},
+        {"@type": "PropertyValue", "name": "실업률", "unitText": "%"},
+        {"@type": "PropertyValue", "name": "GDP 성장률", "unitText": "%"},
+        {"@type": "PropertyValue", "name": "코스피 종가", "unitText": "pt"},
+        {"@type": "PropertyValue", "name": "코스닥 종가", "unitText": "pt"},
+        {"@type": "PropertyValue", "name": "가계부채/GDP", "unitText": "%"},
+        {"@type": "PropertyValue", "name": "수출액", "unitText": "억$"}
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "name": "한국 정치 용어 사전",
+      "description": "한국 정치·경제·법안·선거·헌법·국제·미디어·시민·정치학·데이터(API) 등 248개 용어, 15 카테고리. 일반 시민용 짧은 정의 + 백과사전 수준 상세 설명·예시·역사적 배경.",
+      "url": "https://patchkr.com/glossary",
+      "creator": {"@id": "https://patchkr.com/#organization"},
+      "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "isAccessibleForFree": true,
+      "inLanguage": "ko"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "홈", "item": "https://patchkr.com/"},
+        {"@type": "ListItem", "position": 2, "name": "9회 지방선거 (2026.6.3)", "item": "https://patchkr.com/election2026"},
+        {"@type": "ListItem", "position": 3, "name": "사전투표 (5/29~5/30)", "item": "https://patchkr.com/early-voting"}
+      ]
+    },
+    {
       "@type": "FAQPage",
       "mainEntity": [
         {
@@ -262,30 +323,37 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
      crossorigin="anonymous"></script>
 <style>
   :root {
-    --bg: #fafafa;
-    --bg-card: #ffffff;
-    --bg-elev: #f4f5f7;
-    --border: #e5e7eb;
-    --border-strong: #d1d5db;
-    --text: #111827;
-    --text-2: #4b5563;
-    --dim: #9ca3af;
-    --accent: #2563eb;
-    --accent-strong: #1d4ed8;
-    --danger: #dc2626;
+    /* V29.2 — 라이트 모드 가독성 fix (눈부심 ↓, 따뜻한 톤)
+       이전: bg #fafafa·card #ffffff·text #111827 (17:1, 너무 강한 대비로 눈 피로)
+       이후: warm-gray 톤 + 본문 살짝 부드럽게 (12~14:1, 여전히 WCAG AA 충분히 통과) */
+    --bg: #f7f7f5;           /* 따뜻한 회색 (Linear 풍) */
+    --bg-card: #fcfcfa;      /* 카드 — 미세하게 따뜻, 순백 아님 */
+    --bg-elev: #f0efec;      /* 한 단계 더 어둡게, 깊이감 */
+    --border: #e7e5e0;       /* warm gray border */
+    --border-strong: #d1cfc8;
+    --text: #1f2937;         /* 본문 — 12.5:1 (충분), 검정 너무 진해 보이는 느낌 ↓ */
+    --text-2: #4b5563;       /* 보조 — 그대로 (이미 7:1) */
+    --dim: #6b7280;          /* V29.0 WCAG: 9ca3af 2.43 → 6b7280 3.94 (큰 글자 통과) */
+    --accent: #4F46E5;       /* V29.1 brand alias — 53곳 자동 통일 (이전 #1d4ed8 파랑) */
+    --accent-strong: #4338CA;
+    --danger: #b91c1c;       /* V29.0 WCAG: dc2626 4.63 → b91c1c 6.06 */
     --link: #1e40af;
-    --ok: #059669;
-    --warn: #d97706;
+    --ok: #047857;           /* V29.0 WCAG: 059669 3.61 → 047857 5.06 */
+    --warn: #B45309;         /* V29.0 WCAG: d97706 3.05 → B45309 5.78 */
 
-    /* 정당 색 */
+    /* 정당 색 (브랜드 정체성 유지, 그러나 흰글자용 a11y variant 별도) */
     --party-민주: #004EA2;
     --party-국힘: #E61E2B;
     --party-조국: #082B5C;
-    --party-개혁: #FF7920;
+    --party-개혁: #FF7920;     /* 정체성 유지 */
+    --party-개혁-text: #B45309; /* V29.0 WCAG: 흰글자/작은 텍스트용 darker 5.78:1 */
     --party-진보: #D6001C;
     --party-미래: #00B5E2;
+    --party-미래-text: #006B91; /* V29.0 WCAG: darker variant */
     --party-기사자: #FED73B;
+    --party-기사자-text: #854D0E; /* V29.0 WCAG: 노랑은 가독성 위해 매우 darker */
     --party-사회민주: #43A5DC;
+    --party-사회민주-text: #1E5D80; /* V29.0 WCAG */
     --party-기타: #6b7280;
     --party-무소속: #6b7280;
 
@@ -363,11 +431,13 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
   /* ============ Header ============ */
   header {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(255,255,255,0.92);
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,247,245,0.92);   /* V29.2 — bg(#f7f7f5) 톤 매칭 (이전 흰색 255,255,255) */
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
     padding: 14px 24px;
+    isolation: isolate;
   }
   .h-inner {
     max-width: 1280px; margin: 0 auto;
@@ -556,8 +626,8 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     --text: #e6edf3;
     --text-2: #b8c1cc;
     --dim: #7d858f;
-    --accent: #58a6ff;
-    --accent-strong: #79b8ff;
+    --accent: #818CF8;       /* V29.1 brand-soft alias — 다크 통일 */
+    --accent-strong: #A5B4FC;
     --danger: #f85149;
     --link: #6cb8ff;
     --ok: #3fb950;
@@ -651,7 +721,13 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .chip.active .cnt { color: rgba(255,255,255,0.6); }
 
   /* ============ Main ============ */
-  main { max-width: 1280px; margin: 0 auto; padding: 20px 24px 80px; }
+  main {
+    max-width: 1280px; margin: 0 auto; padding: 20px 24px 80px;
+    /* V28.6 — 모든 페이지 hero/카드가 sticky header 침범 방지 (stacking context 격리) */
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+  }
   .result-meta {
     color: var(--dim); font-size: 12px;
     margin: 6px 0 18px; letter-spacing: 0.3px;
@@ -3103,22 +3179,22 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
   .play-card {
     display: block;
-    padding: 22px 20px;
+    padding: var(--sp-5) var(--sp-4);
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--rd-lg);
     text-decoration: none !important;
     color: var(--text);
-    transition: all 0.18s;
+    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
     position: relative;
     overflow: hidden;
   }
   .play-card:hover {
-    border-color: var(--accent);
+    border-color: var(--brand);
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    box-shadow: var(--sh-md);
   }
-  [data-theme="dark"] .play-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  [data-theme="dark"] .play-card:hover { box-shadow: var(--sh-lg); }
   .play-icon {
     font-size: 36px;
     margin-bottom: 8px;
@@ -4768,6 +4844,8 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     line-height: 1;
     letter-spacing: -0.02em;
   }
+  /* V28.5 — empty state: 회색 톤 (큰 0이 활성 데이터처럼 보이지 않게) */
+  .me-stat-val.is-empty { color: var(--dim); }
   .me-stat-card:hover .me-stat-val { color: var(--brand); }
   .me-stat-lbl {
     font-size: var(--fs-xs);
@@ -10476,6 +10554,10 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     max-width: 1080px;
     margin: 0 auto;
     padding: var(--sp-4) var(--sp-5) 80px;
+    /* V28.6 — stacking context 격리 (hero가 sticky header 침범 차단) */
+    isolation: isolate;
+    position: relative;
+    z-index: 0;
   }
   .ev-hero {
     background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand) 60%, var(--brand-soft) 100%);
@@ -10487,6 +10569,8 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     text-align: center;
     position: relative;
     overflow: hidden;
+    /* V28.6 — header(z-index 100) 아래에 안전 격리 */
+    z-index: 0;
   }
   .ev-hero::before {
     content: '';
@@ -10590,6 +10674,16 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     letter-spacing: -0.04em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
+  }
+  /* V28.5 — null/empty 상태 일괄 처리 (큰 숫자 placeholder가 가로 막대처럼 보이는 버그) */
+  .ev-live-rate.is-empty,
+  .ev-live-prev.is-empty {
+    font-size: 18px;
+    font-weight: var(--fw-semi);
+    color: var(--text-2);
+    letter-spacing: 0;
+    line-height: var(--lh-snug);
+    padding-top: var(--sp-3);
   }
   @media (max-width: 600px) { .ev-live-rate { font-size: 42px; } }
   .ev-live-prev {
@@ -11094,9 +11188,121 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* ═══════════════════════════════════════════════════
+     V29.0 — Accessibility (WCAG 2.1 AA)
+     ═══════════════════════════════════════════════════ */
+
+  /* Skip to content — 키보드 사용자용 */
+  .skip-to-content {
+    position: absolute;
+    top: -100px; left: 0;
+    background: var(--brand);
+    color: #fff;
+    padding: var(--sp-3) var(--sp-4);
+    font-weight: var(--fw-heavy);
+    text-decoration: none;
+    border-radius: 0 0 var(--rd-md) 0;
+    z-index: 10000;
+    transition: top 0.15s;
+  }
+  .skip-to-content:focus {
+    top: 0;
+    outline: 3px solid #fff;
+    outline-offset: -3px;
+  }
+
+  /* Screen reader only (시각 숨김, SR 읽음) */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Focus visible 전역 강화 — V26.5 design system 보완 */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible,
+  [role="button"]:focus-visible,
+  .tool-card:focus-visible,
+  .e26-region-card:focus-visible,
+  .e26-link:focus-visible,
+  .me-card:focus-visible,
+  .me-row:focus-visible,
+  .me-stat-card:focus-visible,
+  .bm-card:focus-visible,
+  .rank-v2:focus-visible,
+  .patch-row:focus-visible,
+  .cmt-card:focus-visible,
+  .ev-cta-card:focus-visible,
+  .gloss-card:focus-visible,
+  .trend-card:focus-visible,
+  .changelog-entry:focus-visible,
+  .pt-card:focus-visible,
+  .econ-card:focus-visible {
+    outline: 3px solid var(--brand);
+    outline-offset: 2px;
+    box-shadow: var(--ring);
+    border-radius: var(--rd-sm);
+  }
+  /* 다크 모드 focus ring 더 밝게 */
+  [data-theme="dark"] a:focus-visible,
+  [data-theme="dark"] button:focus-visible,
+  [data-theme="dark"] input:focus-visible {
+    outline-color: var(--brand-soft);
+  }
+
+  /* 터치 타겟 확대 (모바일 — 44px 미달 요소 일괄 보호) */
+  @media (max-width: 760px) {
+    button, [role="button"],
+    .mbn-item, .tool-card, .e26-link, .ds-btn,
+    .nav-item, .tab, .chip,
+    a.touch, .ev-cta-card,
+    .share-btn, .hero-btn,
+    .me-card, .bm-card,
+    input, select {
+      min-height: var(--touch-min);
+    }
+    /* 작은 아이콘 버튼 (테마 토글·검색 등) */
+    .theme-toggle, .share-bar-toggle {
+      min-width: var(--touch-min);
+      min-height: var(--touch-min);
+    }
+  }
+
+  /* High contrast mode 호환 */
+  @media (prefers-contrast: more) {
+    :root {
+      --border: #6b7280;
+      --border-strong: #374151;
+    }
+    [data-theme="dark"] {
+      --border: #b8c1cc;
+      --border-strong: #d1d5db;
+    }
+  }
 </style>
 </head>
 <body>
+
+<!-- V29.0 — 키보드 사용자용 본문 바로가기 -->
+<a href="#view" class="skip-to-content">본문 바로가기</a>
 
 <!-- V26.5 — SVG 아이콘 sprite (디자인 시스템) -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -11114,19 +11320,51 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
 </svg>
 
-<!-- 검색엔진·JS 비활성 사용자용 정적 콘텐츠 (시각적으로 숨김, 봇은 읽음) -->
+<!-- V28.3 — 정적 콘텐츠 (JS 비활성·lightweight crawler·Naver Yeti·Grok용) -->
 <noscript>
 <div style="max-width:900px;margin:40px auto;padding:30px;font-family:'Pretendard Variable','Inter',sans-serif">
   <h1 style="font-size:32px">대한민국 패치노트 — 한국의 모든 것 한 곳에</h1>
-  <p style="font-size:17px;color:#374151;line-height:1.6"><b>정치·법안·선거·인물·역사</b>를 데이터로 — 한국 종합 정치 데이터 플랫폼. JavaScript를 활성화하면 인터랙티브 데이터를 보실 수 있습니다.</p>
+  <p style="font-size:17px;color:#374151;line-height:1.6"><b>정치·법안·선거·인물·역사·경제</b>를 데이터로 — 한국 종합 정치 데이터 플랫폼. JavaScript를 활성화하면 인터랙티브 데이터를 보실 수 있습니다.</p>
+
+  <h2 style="margin-top:24px">🗳 9회 전국동시지방선거 — 2026.6.3 (수)</h2>
+  <ul style="line-height:1.8">
+    <li><b>사전투표</b>: 2026.5.29(금) · 5.30(토) 06:00~18:00 — 전국 어디서나 신분증만 있으면 가능 → <a href="https://patchkr.com/early-voting">사전투표 가이드</a></li>
+    <li><b>본 투표</b>: 2026.6.3(수) 06:00~18:00 → <a href="https://patchkr.com/election2026/live">선거 당일 LIVE</a></li>
+    <li><b>등록 후보</b>: 697명 — 광역단체장 54·기초단체장 585·교육감 58 + 광역의원·기초의원 → <a href="https://patchkr.com/election2026">9회 지선 전국</a></li>
+    <li><b>총 의석</b>: 4,040석 (1인 7표) — 광역단체장 17·기초단체장 226·광역의원 705+87(비례)·기초의원 2,602+386(비례)·교육감 17</li>
+    <li><b>2022 8회 사전투표율</b>: 20.62% (역대 지선 최고)</li>
+  </ul>
+
+  <h2 style="margin-top:24px">💰 한국 경제 9개 지표 (2025년 기준)</h2>
+  <ul style="line-height:1.8">
+    <li><b>기준금리</b> 2.50% (한국은행)</li>
+    <li><b>원/달러 환율</b> 1,460원 (말일 기준)</li>
+    <li><b>소비자물가 상승률</b> 2.0%</li>
+    <li><b>실업률</b> 2.9%</li>
+    <li><b>GDP 성장률</b> 1.8%</li>
+    <li><b>코스피 종가</b> 8,150pt 권 (장중 실시간)</li>
+    <li><b>코스닥 종가</b> 1,130pt 권</li>
+    <li><b>가계부채/GDP</b> 91.2%</li>
+    <li><b>수출액</b> 6,838억$ (연간)</li>
+    <li><b>국가 신용등급</b>: S&P AA · Moody's Aa2 · Fitch AA-</li>
+  </ul>
+  <p style="font-size:13px;color:#6b7280">출처: 한국은행 ECOS·통계청·관세청·OECD · → <a href="https://patchkr.com/economy">전체 시계열 2015~2026 보기</a></p>
 
   <h2 style="margin-top:24px">📊 5대 데이터 영역</h2>
   <ul style="line-height:1.8">
-    <li><b>🏛 정치 (Politics)</b> — 대통령·국무총리·17부처 장관/차관·외청장·헌법기관장 27명, 대통령실 4명</li>
-    <li><b>📜 법안 (Bills)</b> — 22대 국회 본회의 통과 의안 1,595건, 발의자·정당·위원회·15개 분야·통과 속도 패치노트</li>
-    <li><b>🗳 선거 (Elections)</b> — 9회 전국동시지방선거(2026.6.3) 후보자 697명 실시간 (5대 공약 포함), 역대 7·8회 결과 비교</li>
-    <li><b>👥 인물 (People)</b> — 22대 국회의원 286명 (국회 OpenAPI 라이브) + 자체 DB 482명(행정 80·사법 22·지방 278·역사 102) = 약 768명. 의장단·위원장·간사 직책자 54명은 22대 의원과 병합 표시.</li>
-    <li><b>📚 역사 (History)</b> — 1948~현재 정당사 45개, 역대 광역단체장 23명, 역대 사법부 수장 13명</li>
+    <li><b>🏛 정치 (Politics)</b> — 행정부 80명(대통령·총리·17부처 장관/차관·외청장·헌법기관장)</li>
+    <li><b>📜 법안 (Bills)</b> — 22대 국회 본회의 통과 의안 1,595건, 발의자·정당·위원회·15개 분야 패치노트</li>
+    <li><b>🗳 선거 (Elections)</b> — 9회 지선 697명 + 역대 7·8회 결과 + 8회 공약 이행 추적</li>
+    <li><b>👥 인물 (People)</b> — 22대 국회의원 286명 (국회 OpenAPI 라이브) + 자체 DB 482명 = 약 768명</li>
+    <li><b>📚 역사 (History)</b> — 1948~현재 정당사 45개, 역대 대통령 13·총리 13·정당대표 13·사법부 수장 9</li>
+  </ul>
+
+  <h2 style="margin-top:24px">🗺 17개 시도 광역단체장 (현직, 2022.7~2026.6.30)</h2>
+  <ul style="line-height:1.8">
+    <li><b>서울</b> 오세훈(국민의힘) · <b>부산</b> 박형준(국민의힘) · <b>대구</b> 홍준표 사퇴(국민의힘) · <b>인천</b> 유정복(국민의힘) · <b>광주</b> 강기정(더불어민주당) · <b>대전</b> 이장우(국민의힘)</li>
+    <li><b>울산</b> 김두겸(국민의힘) · <b>세종</b> 최민호(국민의힘) · <b>경기</b> 김동연(더불어민주당) · <b>강원</b> 김진태(국민의힘) · <b>충북</b> 김영환(국민의힘) · <b>충남</b> 김태흠(국민의힘)</li>
+    <li><b>전북</b> 김관영(더불어민주당) · <b>전남</b> 김영록(더불어민주당) · <b>경북</b> 이철우(국민의힘) · <b>경남</b> 박완수(국민의힘) · <b>제주</b> 오영훈(더불어민주당)</li>
+    <li><b>9회 격전지 (8회 박빙 기준)</b>: 인천(7.2%p)·대전(2.4%p)·세종(5.7%p)·경기(<b>0.13%p, 8,913표</b>)·충북·충남·제주</li>
   </ul>
 
   <h2 style="margin-top:24px">🌐 부가 데이터</h2>
@@ -11134,22 +11372,43 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     <li><b>국제 비교</b> — 12개 민주국가 (의원수·여성비율·투표율·민주주의지수·언론자유·청렴도)</li>
     <li><b>정치 분포 지도</b> — 17 시도 + 226 시군구 정당색 인터랙티브</li>
     <li><b>위원회</b> — 22대 국회 상임위 17 + 특별위 8 = 25개</li>
+    <li><b>용어 사전</b> — 정치·경제·데이터 248개 (15 카테고리)</li>
+    <li><b>시민 의견 집계</b> — /pulse 한국의 마음 — 정치인 지지율·법안 동의도·지역 분포 (patchkr.com 사용자 표본)</li>
+  </ul>
+
+  <h2 style="margin-top:24px">📝 최근 변경 이력 (CHANGELOG 발췌)</h2>
+  <ul style="line-height:1.8">
+    <li><b>V28.3</b> — noscript 본문 풍부화 + JSON-LD Dataset/Event (AI 크롤러용)</li>
+    <li><b>V28.2</b> — 사전투표율 라이브 fetch (API + 수동 갱신 fallback)</li>
+    <li><b>V28.1</b> — 사전투표 D-1 캠페인 + /early-voting 신규 페이지</li>
+    <li><b>V28.0</b> — llms 자동 갱신 cron (매일 9시 KST)</li>
+    <li><b>V27.0~V27.9</b> — 디자인 시스템 풀패치 (18개 페이지 brand 통일)</li>
+    <li>→ <a href="https://patchkr.com/changelog">전체 80+ 라운드 변경 이력</a></li>
   </ul>
 
   <h2 style="margin-top:24px">🔗 핵심 페이지</h2>
   <ul style="line-height:1.8">
     <li><a href="https://patchkr.com/">홈 — 최신 패치노트 피드</a></li>
+    <li><a href="https://patchkr.com/early-voting">🗳 사전투표 안내 (5/29·5/30)</a></li>
     <li><a href="https://patchkr.com/election2026">🔴 9회 지방선거 LIVE (697명 후보)</a></li>
+    <li><a href="https://patchkr.com/election2026/live">🔴 선거 당일 (6/3)</a></li>
     <li><a href="https://patchkr.com/bills">의안 통계 — 1,595건 필터·검색</a></li>
+    <li><a href="https://patchkr.com/economy">경제 지표 9종 라이브 (시계열 2015~2026)</a></li>
+    <li><a href="https://patchkr.com/dex">정치인 도감 768명</a></li>
     <li><a href="https://patchkr.com/committees">국회 위원회 25개</a></li>
-    <li><a href="https://patchkr.com/map">정치 분포 지도 (17×250)</a></li>
+    <li><a href="https://patchkr.com/map">정치 분포 지도 (17 시도 + 226 시군구)</a></li>
+    <li><a href="https://patchkr.com/glossary">용어 사전 248개</a></li>
     <li><a href="https://patchkr.com/elections">역대 지방선거 (7·8회)</a></li>
     <li><a href="https://patchkr.com/world">국제 비교 12개국</a></li>
+    <li><a href="https://patchkr.com/pulse">한국의 마음 (시민 의견 집계)</a></li>
+    <li><a href="https://patchkr.com/changelog">변경 이력</a></li>
+    <li><a href="https://patchkr.com/developers">개발자·AI API 가이드</a></li>
   </ul>
 
   <p style="font-size:13px;color:#6b7280;margin-top:30px;padding-top:20px;border-top:1px solid #e5e7eb">
-    <b>출처</b>: 국회 OPEN API · 중앙선거관리위원회 (data.go.kr) · 위키미디어 · IPU Parline · EIU · RSF · TI · OECD<br>
-    <b>라이선스</b>: 공공누리 1유형 · CC BY-SA 4.0 (위키) · MIT (사이트 코드)
+    <b>출처</b>: 국회 OPEN API · 중앙선거관리위원회 (data.go.kr) · 한국은행 ECOS · 국가법령정보 · 위키미디어 · IPU Parline · EIU · RSF · TI · OECD<br>
+    <b>라이선스</b>: 공공누리 1유형 · CC BY-SA 4.0 (위키) · MIT (사이트 코드)<br>
+    <b>AI 친화</b>: <a href="https://patchkr.com/llms.txt">/llms.txt</a> · <a href="https://patchkr.com/llms-full.txt">/llms-full.txt</a> · <a href="https://patchkr.com/sitemap.xml">/sitemap.xml</a> (288 URL)
   </p>
 </div>
 </noscript>
@@ -11160,24 +11419,25 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="brand-logo" aria-label="patchkr 로고">P</span>
       <div>
         대한민국 패치노트
-        <div class="brand-sub">Korea Patch Notes · v22.0</div>
+        <div class="brand-sub">Korea Patch Notes · 정치·법안·선거·경제</div>
       </div>
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input class="search" id="search" placeholder="정치인·법안·9회 지선 후보·용어 통합 검색 (Ctrl+K)" autocomplete="off">
+      <input class="search" id="search" type="search" role="searchbox" aria-label="정치인·법안·9회 지선 후보·용어 통합 검색" aria-describedby="search-hint" placeholder="정치인·법안·9회 지선 후보·용어 통합 검색 (Ctrl+K)" autocomplete="off">
+      <span id="search-hint" class="sr-only">Ctrl+K 단축키로 빠른 열기. 검색 결과는 아래 드롭다운에 표시됩니다.</span>
       <div class="ac-dropdown" id="ac-dropdown" role="listbox" aria-label="검색 자동완성"></div>
     </div>
     <div class="nav-stats">
       <span class="freshness-badge" id="h-fresh" title="데이터 실시간 갱신 (국회 OPEN API · 중앙선관위)"></span>
-      <button class="theme-toggle" id="theme-toggle" title="다크 모드 전환">🌙</button>
+      <button class="theme-toggle" id="theme-toggle" type="button" title="다크 모드 전환" aria-label="다크 모드 토글" aria-pressed="false">🌙</button>
     </div>
   </div>
 </header>
 <div class="filter-bar" id="filter-bar"></div>
 <div class="rel-tooltip" id="rel-tooltip"></div>
 
-<main id="view">
+<main id="view" role="main" aria-label="본문 콘텐츠">
   <div class="dash">
     <div class="sk-card" style="margin-bottom:18px">
       <div class="sk-line lg sk-shimmer" style="width:60%;max-width:380px"></div>
@@ -18879,28 +19139,29 @@ function renderEarlyVotingPage() {
         ${phaseBadge}
       </header>
 
-      <!-- V28.2 — 라이브 사전투표율 카드 -->
-      <section class="ev-section ev-live-section" id="ev-live-section">
-        <h2>📊 사전투표율 라이브
-          <span class="ev-live-dot" id="ev-live-dot" title="자동 갱신 중">●</span>
+      <!-- V28.2 — 라이브 사전투표율 카드 (V29.0 aria-live 적용) -->
+      <section class="ev-section ev-live-section" id="ev-live-section" aria-labelledby="ev-live-heading">
+        <h2 id="ev-live-heading">📊 사전투표율 라이브
+          <span class="ev-live-dot" id="ev-live-dot" title="자동 갱신 중" aria-hidden="true">●</span>
+          <span class="sr-only">자동 갱신 중</span>
         </h2>
-        <div class="ev-live-grid" id="ev-live-grid">
+        <div class="ev-live-grid" id="ev-live-grid" aria-live="polite" aria-atomic="true">
           <div class="ev-live-main">
             <div class="ev-live-eye">누적 투표율</div>
-            <div class="ev-live-rate" id="ev-live-rate">—</div>
+            <div class="ev-live-rate" id="ev-live-rate" aria-label="현재 사전투표율 누적 값">—</div>
             <div class="ev-live-meta">
               <span id="ev-live-phase">대기 중</span> · <span id="ev-live-time">갱신 시각 —</span>
             </div>
           </div>
           <div class="ev-live-side">
             <div class="ev-live-eye">2022 8회 동시간대</div>
-            <div class="ev-live-prev" id="ev-live-prev">—</div>
+            <div class="ev-live-prev" id="ev-live-prev" aria-label="2022년 8회 지선 동시간대 참고치">—</div>
             <div class="ev-live-meta" id="ev-live-prev-note">참고치</div>
           </div>
         </div>
         <div class="ev-live-foot">
           <span id="ev-live-source">데이터 출처: 로딩 중</span>
-          · <a href="https://info.nec.go.kr/" target="_blank" rel="noopener" class="ev-link">중앙선관위 통합선거정보 ↗</a>
+          · <a href="https://info.nec.go.kr/" target="_blank" rel="noopener" class="ev-link" aria-label="중앙선관위 통합선거정보 사이트 새 탭에서 열기">중앙선관위 통합선거정보 ↗</a>
         </div>
       </section>
 
@@ -19020,10 +19281,15 @@ async function fetchEarlyVoteRate() {
 
     if (j.rate != null) {
       rateEl.textContent = j.rate.toFixed(2) + '%';
-      rateEl.style.color = 'var(--brand)';
+      rateEl.classList.remove('is-empty');
     } else {
-      rateEl.textContent = '—';
-      rateEl.style.color = 'var(--text-2)';
+      // V28.5 — empty 상태: 큰 dash 대신 작은 안내 메시지
+      const emptyLabel = j.phase === 'pre' ? '5/29 06:00 시작' :
+                         j.phase === '종료' ? '집계 종료' :
+                         j.phase === '1일차_종료' ? '1일차 종료, 2일차 06:00 재개' :
+                         '데이터 대기';
+      rateEl.textContent = emptyLabel;
+      rateEl.classList.add('is-empty');
     }
 
     if (phaseEl) {
@@ -19036,8 +19302,14 @@ async function fetchEarlyVoteRate() {
       timeEl.textContent = '갱신 ' + t.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     }
 
-    if (prevEl && j.prev8th) {
-      prevEl.textContent = j.prev8th.rate.toFixed(2) + '%';
+    if (prevEl) {
+      if (j.prev8th && j.prev8th.rate != null) {
+        prevEl.textContent = j.prev8th.rate.toFixed(2) + '%';
+        prevEl.classList.remove('is-empty');
+      } else {
+        prevEl.textContent = '참고치 없음';
+        prevEl.classList.add('is-empty');
+      }
     }
     if (prevNoteEl && j.prev8th) {
       prevNoteEl.textContent = j.prev8th.label;
@@ -19290,6 +19562,12 @@ function renderBookmarksPage() {
 // 기술: html2canvas (DOM → PNG) + Web Share API (모바일 인스타 직접 전송)
 // ============================================================
 const SHARE_CARD_TYPES = {
+  earlyvote: {
+    id: 'earlyvote',
+    label: '🗳 사전투표 잊지마세요',
+    desc: '5/29·5/30 사전투표 안내 (전국 어디서나)',
+    color: '#4F46E5',
+  },
   pulse: {
     id: 'pulse',
     label: '📊 오늘의 시민 여론',
@@ -19473,8 +19751,8 @@ async function buildKospiCard() {
     if (!q || q.price == null) return `
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:24px;">
         <div style="font-size:18px;opacity:0.7;font-weight:600">${escapeHtml(label)}</div>
-        <div style="font-size:42px;font-weight:900;color:#94a3b8;margin-top:6px">—</div>
-        <div style="font-size:14px;opacity:0.6;margin-top:4px">데이터 로딩 실패</div>
+        <div style="font-size:18px;font-weight:600;color:#94a3b8;margin-top:10px">데이터 없음</div>
+        <div style="font-size:14px;opacity:0.6;margin-top:4px">잠시 후 다시 시도</div>
       </div>
     `;
     const up = q.change > 0;
@@ -19700,6 +19978,7 @@ async function buildRankingCard() {
 // 메인 빌더 dispatcher
 async function buildShareCard(type, opts = {}) {
   switch (type) {
+    case 'earlyvote': return buildEarlyVoteCard();
     case 'pulse': return buildPulseCard();
     case 'dday': return buildDDayCard();
     case 'kospi': return buildKospiCard();
@@ -19708,6 +19987,87 @@ async function buildShareCard(type, opts = {}) {
     case 'ranking': return buildRankingCard();
     default: throw new Error('Unknown card type: ' + type);
   }
+}
+
+// V28.4 — 사전투표 인스타 카드 (1080×1080)
+async function buildEarlyVoteCard() {
+  const host = _getShareCardHost();
+  const card = document.createElement('div');
+  card.style.cssText = `
+    width: 1080px; height: 1080px;
+    background: linear-gradient(135deg, #3730A3 0%, #4F46E5 45%, #6366F1 100%);
+    color: #fff;
+    font-family: 'Pretendard Variable', 'Apple SD Gothic Neo', system-ui, sans-serif;
+    padding: 80px 70px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  `;
+  // 빛 효과
+  const halo = document.createElement('div');
+  halo.style.cssText = `
+    position: absolute; top: -250px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 60%);
+    pointer-events: none;
+  `;
+  card.appendChild(halo);
+
+  // 사전투표일까지 카운트
+  const now = new Date();
+  const earlyStart = new Date('2026-05-29T06:00:00+09:00');
+  const earlyEnd = new Date('2026-05-30T18:00:00+09:00');
+  const isLive = now >= earlyStart && now < earlyEnd;
+  const hours = Math.floor((earlyStart - now) / 3600000);
+  const isD1 = !isLive && now < earlyStart && hours <= 36;
+  const headline = isLive ? '🗳 사전투표 진행 중' : isD1 ? '🗳 내일 사전투표!' : '🗳 사전투표 안내';
+  const subline = isLive ? `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} 현재 진행 중` : isD1 ? `${hours}시간 뒤 시작 (5/29 06:00)` : '5/29(금) · 5/30(토) 06:00~18:00';
+
+  card.innerHTML += `
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%">
+      <div style="font-size:24px;letter-spacing:4px;font-weight:800;opacity:0.85;text-transform:uppercase;margin-bottom:24px">
+        EARLY VOTING · 9TH LOCAL ELECTION
+      </div>
+
+      <div style="font-size:90px;font-weight:900;letter-spacing:-3px;line-height:1.05;margin-bottom:18px">
+        ${headline}
+      </div>
+
+      <div style="font-size:32px;font-weight:600;opacity:0.92;margin-bottom:60px">
+        ${subline}
+      </div>
+
+      <div style="background:rgba(255,255,255,0.14);backdrop-filter:blur(8px);border-radius:24px;padding:36px 40px;margin-bottom:30px">
+        <div style="font-size:18px;font-weight:800;letter-spacing:2px;opacity:0.8;margin-bottom:18px">⚡ 체크리스트</div>
+        <div style="font-size:30px;font-weight:700;line-height:1.55">
+          ✅ <b>신분증</b> 주민증·운전면허·여권 등<br>
+          ✅ <b>전국 어디서나</b> 가능 (관내·관외)<br>
+          ✅ <b>시간</b> 06:00 ~ 18:00<br>
+          ✅ <b>본 투표</b> 6/3(수)
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:22px 28px;margin-bottom:auto">
+        <div style="font-size:22px;font-weight:600;opacity:0.85;letter-spacing:0.5px">
+          📍 가까운 투표소: <b>si.nec.go.kr</b><br>
+          📊 후보 비교: <b>patchkr.com/early-voting</b>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:end;padding-top:30px;border-top:1px solid rgba(255,255,255,0.25)">
+        <div>
+          <div style="font-size:34px;font-weight:900;letter-spacing:-1px">patchkr.com</div>
+          <div style="font-size:18px;opacity:0.75;margin-top:6px">대한민국 패치노트 · Korea Patch Notes</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:80px;line-height:1">🗳</div>
+          <div style="font-size:18px;font-weight:700;opacity:0.85;margin-top:4px">9회 지방선거</div>
+        </div>
+      </div>
+    </div>
+  `;
+  host.appendChild(card);
+  return card;
 }
 
 // PNG 캡처 (큰 캔버스 반환)
@@ -20331,12 +20691,12 @@ function renderMePage() {
         </p>
       </div>
       <div id="me-stats" class="me-stats">
-        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">⭐ 관심 의원</div></div>
-        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">🗳 정치 입장</div></div>
-        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">★ 공약 평점</div></div>
-        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">📋 이행 투표</div></div>
-        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">✅ 소셜 투표</div></div>
-        <div class="me-stat-card"><div class="me-stat-val">—</div><div class="me-stat-lbl">👁 누적 조회</div></div>
+        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">⭐ 관심 의원</div></div>
+        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">🗳 정치 입장</div></div>
+        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">★ 공약 평점</div></div>
+        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">📋 이행 투표</div></div>
+        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">✅ 소셜 투표</div></div>
+        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">👁 누적 조회</div></div>
       </div>
       <div class="me-loading"><span class="loading-spinner"></span> 내 활동 불러오는 중…</div>
       <div id="me-body" style="display:none">
@@ -22488,7 +22848,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V28.2 · 📊 투표율 라이브</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.2 · ☀️ 라이트 부드러움</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -22515,7 +22875,7 @@ function renderHome() {
                 <div class="ds-hero-stat-lbl">${s.lbl}</div>
               </a>`).join('')}</div>`;
           })()}
-          <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 보기">📤 공유 <span style="margin-left:4px">▼</span></button>
+          <button class="share-bar-toggle" id="share-bar-toggle" type="button" aria-label="공유 버튼 펼치기" aria-expanded="false" aria-controls="share-bar">📤 공유 <span style="margin-left:4px" aria-hidden="true">▼</span></button>
           <div class="share-bar" id="share-bar">
             <span class="share-label">공유:</span>
             <a class="share-btn share-kakao" id="share-kakao" title="카카오톡에 공유">💬 카카오</a>
@@ -23587,13 +23947,15 @@ function nav(target) {
   updateMobileBottomNav();
 }
 
-// V22.8 — 모바일 하단 nav 활성 표시
+// V22.8 — 모바일 하단 nav 활성 표시 (V29.0 — aria-current 동기화)
 function updateMobileBottomNav() {
   const path = currentPath();
   document.querySelectorAll('.mbn-item').forEach(el => {
     const itemPath = el.dataset.path;
     const isActive = itemPath === '/' ? path === '/' : path.startsWith(itemPath);
     el.classList.toggle('active', isActive);
+    if (isActive) el.setAttribute('aria-current', 'page');
+    else el.removeAttribute('aria-current');
   });
 }
 // 구 해쉬 URL (#/path) 자동 마이그레이션 — 북마크·외부 링크 호환
@@ -24999,9 +25361,14 @@ function route() {
           btn.closest('.collapsible-widget').classList.toggle('cw-open');
         });
       });
-      // V23.0 — 공유 바 토글 (모바일)
-      document.getElementById('share-bar-toggle')?.addEventListener('click', () => {
-        document.getElementById('share-bar')?.classList.toggle('share-bar-open');
+      // V23.0 — 공유 바 토글 (모바일) — V29.0 aria-expanded 동기화
+      document.getElementById('share-bar-toggle')?.addEventListener('click', (e) => {
+        const bar = document.getElementById('share-bar');
+        const btn = e.currentTarget;
+        bar?.classList.toggle('share-bar-open');
+        const open = bar?.classList.contains('share-bar-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? '공유 버튼 접기' : '공유 버튼 펼치기');
       });
       // V23.0 — 패치노트 더보기 (모바일 3건 → 전체)
       document.getElementById('home-patch-more')?.addEventListener('click', e => {
@@ -25537,11 +25904,16 @@ const AC = (() => {
   return { close };
 })();
 
-// 다크 모드 토글
+// 다크 모드 토글 (V29.0 — aria-pressed 동기화)
 const THEME_KEY = 'politik:theme';
 function applyTheme(name) {
   document.documentElement.setAttribute('data-theme', name);
-  document.getElementById('theme-toggle').textContent = name === 'dark' ? '☀' : '🌙';
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    btn.textContent = name === 'dark' ? '☀' : '🌙';
+    btn.setAttribute('aria-pressed', name === 'dark' ? 'true' : 'false');
+    btn.setAttribute('aria-label', name === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
+  }
   localStorage.setItem(THEME_KEY, name);
 }
 (function initTheme() {
