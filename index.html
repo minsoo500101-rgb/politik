@@ -9142,11 +9142,12 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .home-pulse-card {
     display: flex;
     align-items: stretch;
-    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand) 50%, var(--brand-soft) 100%);
+    background: linear-gradient(135deg, var(--brand-pale) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--brand-soft);
     border-radius: var(--rd-xl);
     padding: var(--sp-4) var(--sp-5);
     margin-bottom: var(--sp-4);
-    color: #fff;
+    color: var(--text);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     overflow: hidden;
@@ -9156,7 +9157,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 85% 30%, rgba(255,255,255,0.18), transparent 60%);
+    background: radial-gradient(circle at 85% 30%, rgba(99,102,241,0.10), transparent 60%);
     pointer-events: none;
   }
   .home-pulse-card > * { position: relative; z-index: 1; }
@@ -9179,25 +9180,27 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 2px;
-    color: rgba(255,255,255,0.85);
+    color: var(--accent);
     margin-bottom: 6px;
   }
   .home-pulse-title {
     font-size: 22px;
     font-weight: 900;
     margin-bottom: 6px;
+    color: var(--text);
   }
   .home-pulse-sub {
     font-size: 12.5px;
-    color: rgba(255,255,255,0.92);
+    color: var(--text);
     line-height: 1.5;
     margin-bottom: 10px;
   }
-  .home-pulse-sub b { font-weight: 800; }
+  .home-pulse-sub b { font-weight: 800; color: var(--accent); }
   .home-pulse-cta {
     font-size: 12px;
     font-weight: 800;
-    background: rgba(255,255,255,0.18);
+    background: var(--brand);
+    color: #fff;
     padding: 6px 12px;
     border-radius: 20px;
     display: inline-block;
@@ -9208,6 +9211,20 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     .home-pulse-sub { font-size: 11.5px; }
     .home-pulse-flag { font-size: 40px; }
   }
+  /* V29.5 — 다크모드에서는 기존 brand 그라데이션 + 흰 글씨 유지 (대비 양호) */
+  [data-theme="dark"] .home-pulse-card {
+    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand) 50%, var(--brand-soft) 100%);
+    border-color: transparent;
+    color: #fff;
+  }
+  [data-theme="dark"] .home-pulse-card::before {
+    background: radial-gradient(circle at 85% 30%, rgba(255,255,255,0.18), transparent 60%);
+  }
+  [data-theme="dark"] .home-pulse-eye { color: rgba(255,255,255,0.85); }
+  [data-theme="dark"] .home-pulse-title { color: #fff; }
+  [data-theme="dark"] .home-pulse-sub { color: rgba(255,255,255,0.92); }
+  [data-theme="dark"] .home-pulse-sub b { color: #fff; }
+  [data-theme="dark"] .home-pulse-cta { background: rgba(255,255,255,0.18); color: #fff; }
 
   /* ============================================================
      V23.3 — 한국의 마음 (Korea Pulse)
@@ -11513,7 +11530,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V29.4</a>
+      <a href="/changelog" id="foot-year">V29.5</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18353,6 +18370,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V29.5', date: '2026-05-29', title: '🎨 시민 여론판 카드 — 라이트 모드 검정 글씨', items: [
+    '원인: 홈 진입 카드가 라이트 모드에서도 brand 그라데이션+흰 글씨 고정 → 본문이 안 읽힘',
+    '라이트: 연한 brand 배경 + 검정 본문(var(--text)) + brand eyebrow·테두리, CTA는 brand 채움 버튼',
+    '다크 모드는 기존 brand 그라데이션+흰 글씨 그대로 유지 (대비 양호)'
+  ]},
   { v: 'V29.4', date: '2026-05-29', title: '🐛 버그 4종 — footer 버전·지선↔사전투표 접점·pulse 캐시', items: [
     'footer 버전 V22.4 잔존 → 동적화 (CHANGELOG 최신 자동 반영)',
     '/election2026 ↔ /early-voting 접점 배너 (사전투표 기간 자동 표시)',
@@ -22903,7 +22925,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.4 · 🐛 버그 4종 fix</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.5 · 🎨 여론판 라이트 가독성</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
