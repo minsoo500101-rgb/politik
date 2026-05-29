@@ -11537,7 +11537,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V29.10</a>
+      <a href="/changelog" id="foot-year">V30.0</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18386,6 +18386,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.0', date: '2026-05-29', title: '🤖 사전투표율 무인 자동 갱신 (NEC headless)', items: [
+    'GitHub Actions가 매시 :55 NEC 통계페이지를 헤드리스 크로미움으로 크롤 → 합계+17시도 자동 반영',
+    '봇차단(302)을 실제 브라우저로 우회 — 수동 복붙 불필요',
+    '기간·범위·단조증가 가드로 오파싱 방어, 사전투표 종료 후엔 공식 API 최종치 자동'
+  ]},
   { v: 'V29.10', date: '2026-05-29', title: '🗺 사전투표율 시·도별 막대 추가', items: [
     '사전투표 페이지에 17 시·도별 투표율 막대(높은 순) 표시',
     'API byRegion 렌더 — 최고/최저 색 강조, 짧은 지역명',
@@ -23009,7 +23014,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.10 · 🗺 시도별 투표율</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.0 · 🤖 사전투표율 자동화</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
