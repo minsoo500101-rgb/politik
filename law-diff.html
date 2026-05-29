@@ -53,14 +53,14 @@
 </style></head>
 <body><div class="wrap">
   <div class="top">
-    <div><h1>📋 법령 신구비교</h1><div class="sub">법령·시행령·시행규칙 개정 신·구조문 대비 · 출처 법제처 국가법령정보</div></div>
+    <div><h1>📋 법령 신구비교</h1><div class="sub">철도 법령 바스켓 개정 신·구조문 모니터링 · 출처 법제처 국가법령정보</div></div>
     <a class="home-link" href="/">← 패치노트 홈</a>
   </div>
 
   <div class="panel">
     <div class="row">
-      <input type="text" id="q" placeholder="법령명 검색 (예: 철도안전법)" value="철도안전법">
-      <button class="pri" id="searchBtn">검색</button>
+      <input type="text" id="q" placeholder="법령명 필터 (예: 철도안전법)" value="">
+      <button class="pri" id="searchBtn">필터</button>
     </div>
     <div class="row" style="margin-top:10px">
       <label>개정일(공포) 기간</label>
@@ -71,18 +71,17 @@
       <label>후 색 <input type="color" id="colIns" value="#1d4ed8"></label>
     </div>
     <div class="chips" id="basket"></div>
-    <div class="hint">바스켓을 누르면 검색어가 채워져요. 기간 필터는 개정 공포일 기준. 복사 시 색 정보도 함께 복사돼요(워드·한글에 붙여넣기 가능).</div>
+    <div class="hint"><span id="updated">불러오는 중…</span> · 복사 시 색 정보도 함께 복사돼요(워드·한글에 붙여넣기 가능). 모니터링 바스켓 외 법령은 추가 요청.</div>
   </div>
 
   <div id="results"></div>
   <div id="compare"></div>
 
-  <footer>본 자료는 정보 제공용이며 법률 자문이 아닙니다. 적용 판단은 원문·전문가 확인을 권장합니다. · 출처: 법제처 국가법령정보 (신구조문대비표)</footer>
+  <footer>본 자료는 정보 제공용이며 법률 자문이 아닙니다. 적용 판단은 원문·전문가 확인을 권장합니다. · 출처: 법제처 국가법령정보 (신구조문대비표) · 자동 갱신</footer>
 </div>
 <script>
-const EP = { list:q=>'/api/law-singu?action=list&q='+encodeURIComponent(q), body:mst=>'/api/law-singu?action=body&mst='+encodeURIComponent(mst) };
-const BASKET = ['철도안전법','철도사업법','도시철도법','철도산업발전기본법','산업안전보건법','중대재해 처벌 등에 관한 법률','시설물의 안전 및 유지관리에 관한 특별법','개인정보 보호법'];
-let ARTS = [];
+let MANIFEST = [], ARTS = [];
+const BODY = mst => '/data/law/body/'+encodeURIComponent(mst)+'.json';
 const $ = s => document.querySelector(s);
 const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const stripTags = s => String(s??'').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').trim();
@@ -118,21 +117,21 @@ async function copyRich(html,plain,btn){
   }catch(e){ try{ await navigator.clipboard.writeText(plain); toast(btn);}catch(_){ alert('복사 실패: '+e.message); } }
 }
 
-function renderBasket(){ $('#basket').innerHTML = BASKET.map(n=>`<span class="chip" data-n="${esc(n)}">${esc(n)}</span>`).join(''); }
-async function api(url){ const r=await fetch(url); const j=await r.json(); if(j&&j.error)throw new Error(j.error+(j.cause?(' ('+j.cause+')'):'')); return j; }
+function renderBasket(){
+  const groups=[...new Set(MANIFEST.map(it=>it.group))];
+  $('#basket').innerHTML = groups.map(n=>`<span class="chip" data-n="${esc(n)}">${esc(n)}</span>`).join('');
+}
 
-async function search(){
-  const q=$('#q').value.trim(); if(!q)return;
-  $('#results').innerHTML='<div class="loading">검색 중…</div>'; $('#compare').innerHTML=''; ARTS=[];
-  let items=[];
-  try{ items=await api(EP.list(q)); }
-  catch(e){ $('#results').innerHTML='<div class="empty">조회 실패: '+esc(e.message)+'</div>'; return; }
-  if(!Array.isArray(items)||!items.length){ $('#results').innerHTML='<div class="empty">신구표 결과 없음 (개정 이력이 없거나 명칭 불일치)</div>'; return; }
+function search(){
+  const q=$('#q').value.trim();
+  $('#compare').innerHTML=''; ARTS=[];
+  let items=MANIFEST.slice();
+  if(q) items=items.filter(it=>(it.name||'').includes(q)||(it.group||'').includes(q));
   if($('#rangeOn').checked){
     const f=ymd($('#from').value), t=ymd($('#to').value);
     items=items.filter(it=>{ const p=ymd(it.pub); return (!f||p>=f)&&(!t||p<=t); });
   }
-  if(!items.length){ $('#results').innerHTML='<div class="empty">선택 기간에 개정된 항목이 없습니다.</div>'; return; }
+  if(!items.length){ $('#results').innerHTML='<div class="empty">해당 조건의 신구표가 없습니다. (모니터링 바스켓 외 법령은 추가 요청)</div>'; return; }
   $('#results').innerHTML = `<div class="li-meta" style="margin:4px 2px 8px">${items.length}건 — 클릭하면 신구비교</div>` + items.map(it=>`
     <div class="list-item" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}">
       <span class="badge ${it.kind==='법률'?'':'rule'}">${esc(it.kind)}</span>
@@ -144,7 +143,7 @@ async function search(){
 async function showCompare(mst,name){
   const box=$('#compare'); box.innerHTML='<div class="loading">신구조문 불러오는 중…</div>';
   box.scrollIntoView({behavior:'smooth',block:'start'});
-  let d; try{ d=await api(EP.body(mst)); }
+  let d; try{ d=await (await fetch(BODY(mst))).json(); }
   catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
   const oldByNo=new Map((d.old||[]).map(a=>[String(a.no),a.content]));
   ARTS=(d.new||[]).filter(a=>!isUnchanged(a.content)).map(a=>{
@@ -165,12 +164,15 @@ async function showCompare(mst,name){
     ${rows||'<div class="empty">변경 조문 없음</div>'}`;
 }
 
-renderBasket();
 const today=new Date(), y2=new Date(); y2.setFullYear(today.getFullYear()-2);
 $('#to').value=today.toISOString().slice(0,10); $('#from').value=y2.toISOString().slice(0,10);
 applyColors();
 $('#searchBtn').onclick=search;
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')search();});
+$('#q').addEventListener('input',search);
+$('#rangeOn').addEventListener('change',search);
+$('#from').addEventListener('change',()=>{if($('#rangeOn').checked)search();});
+$('#to').addEventListener('change',()=>{if($('#rangeOn').checked)search();});
 $('#colDel').addEventListener('input',applyColors); $('#colIns').addEventListener('input',applyColors);
 $('#basket').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){$('#q').value=c.dataset.n;search();}});
 $('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it)showCompare(it.dataset.mst,it.dataset.name);});
@@ -181,6 +183,14 @@ $('#compare').addEventListener('click',e=>{
   const parts=side==='old'?a.oldParts:a.newParts;
   copyRich('<div>'+partsToHtml(parts,color)+'</div>', partsToPlain(parts), b);
 });
-search();
+
+(async function init(){
+  try{
+    MANIFEST = await (await fetch('/data/law/index.json',{cache:'no-cache'})).json();
+    try{ const m=await (await fetch('/data/law/meta.json',{cache:'no-cache'})).json(); if(m?.generatedAt) $('#updated').textContent='마지막 갱신: '+new Date(m.generatedAt).toLocaleString('ko-KR'); }catch(_){}
+  }catch(e){ $('#results').innerHTML='<div class="empty">데이터를 불러올 수 없어요 (자동 수집 전이거나 일시 오류).</div>'; $('#updated').textContent=''; return; }
+  renderBasket();
+  search();
+})();
 </script>
 </body></html>
