@@ -16,3 +16,10 @@ jobs:
           curl -s -m 25 -H "Referer: https://patchkr.com" -w "\napi_code=%{http_code}\n" \
             "https://www.law.go.kr/DRF/lawSearch.do?OC=test&target=oldAndNew&type=json&query=%EC%B2%A0%EB%8F%84%EC%95%88%EC%A0%84%EB%B2%95" \
             | head -c 500 || echo "API FAILED exit=$?"
+      - name: DRF with REAL OC (secret) — 데이터 오면 파이프라인 확정
+        env:
+          LAW_OC: ${{ secrets.LAW_OC }}
+        run: |
+          curl -s -m 25 -H "Referer: https://patchkr.com" -w "\nreal_code=%{http_code}\n" \
+            "https://www.law.go.kr/DRF/lawSearch.do?OC=${LAW_OC}&target=oldAndNew&type=json&query=%EC%B2%A0%EB%8F%84%EC%95%88%EC%A0%84%EB%B2%95" \
+            | head -c 400
