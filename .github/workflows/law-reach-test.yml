@@ -1,0 +1,18 @@
+name: law-reach-test
+# GitHub Actions(클라우드 IP)에서 law.go.kr 도달 가능한지 1회성 테스트
+on:
+  workflow_dispatch: {}
+jobs:
+  reach:
+    runs-on: ubuntu-latest
+    steps:
+      - name: runner egress IP
+        run: curl -s -m 15 https://api.ipify.org; echo ""
+      - name: plain HEAD law.go.kr
+        run: |
+          curl -s -m 20 -o /dev/null -w "head_code=%{http_code} time=%{time_total}s\n" https://www.law.go.kr/ || echo "HEAD FAILED exit=$?"
+      - name: DRF API reachability (OC=test, 인증실패라도 연결되면 OK)
+        run: |
+          curl -s -m 25 -H "Referer: https://patchkr.com" -w "\napi_code=%{http_code}\n" \
+            "https://www.law.go.kr/DRF/lawSearch.do?OC=test&target=oldAndNew&type=json&query=%EC%B2%A0%EB%8F%84%EC%95%88%EC%A0%84%EB%B2%95" \
+            | head -c 500 || echo "API FAILED exit=$?"
