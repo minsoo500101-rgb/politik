@@ -11539,7 +11539,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.1</a>
+      <a href="/changelog" id="foot-year">V30.2</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -15988,8 +15988,8 @@ function renderEconomyPage() {
 
         <!-- 한국 시장: ECOS 일 종가 (TradingView가 KRX 차단 + Yahoo가 Vercel·CORS 차단) -->
         <div class="econ-section-label">
-          <span class="econ-section-tag econ-section-daily">📅 한국은행 일 종가</span>
-          <span class="econ-section-desc">시세 모니터 = 가장 최근 영업일 · 시계열 차트 = 연도별 마지막 영업일 (동일 데이터)</span>
+          <span class="econ-section-tag econ-section-daily">📅 가장 최근 영업일 종가</span>
+          <span class="econ-section-desc">코스피·코스닥·환율 현재값은 이 시세 모니터가 기준 (아래 과거추이엔 중복 표시 안 함)</span>
         </div>
         <div class="econ-yf-grid">
           <div class="econ-yf-widget" data-yf-symbol="^KS11" data-yf-name="코스피 (KOSPI)" data-yf-currency="KRW"></div>
@@ -16395,7 +16395,8 @@ function setupTradingViewWidgets() {
 function renderEconomyBody() {
   const d = economyState.data;
   if (!d) return '<div class="empty">경제 데이터를 불러올 수 없습니다.</div>';
-  const indicators = d.indicators || [];
+  // V30.2 — 코스피·코스닥은 상단 시세 모니터(실시간)가 기준값 → 과거추이 카드/표에서 제외 (숫자 혼동 방지)
+  const indicators = (d.indicators || []).filter(i => !['kospi', 'kosdaq'].includes(i.id));
   const presidents = d.presidents || [];
 
   // 정부 임기 시점 (year 단위)
@@ -18388,6 +18389,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.2', date: '2026-05-29', title: '📉 경제 — 코스피·코스닥 중복 숫자 정리', items: [
+    '코스피·코스닥 현재값은 상단 실시간 시세 모니터 단일 기준으로 통일',
+    '과거추이 시계열에서 코스피·코스닥 카드 제거 (같은 지수 두 숫자 혼동 해소)'
+  ]},
   { v: 'V30.1', date: '2026-05-29', title: '🔍 SEO 정비 — 사전투표소 노출 강화', items: [
     'sitemap에 /polling·/rankings·/me 추가 + 핵심 페이지 lastmod 갱신',
     '홈 hero "사전투표소 찾기" 버튼 외부(선관위)→내부 /polling 연결',
@@ -23021,7 +23026,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.1 · 🔍 SEO 정비</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.2 · 📉 코스피 중복 정리</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
