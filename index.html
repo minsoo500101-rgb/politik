@@ -11718,7 +11718,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.4</a>
+      <a href="/changelog" id="foot-year">V31.5</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18641,6 +18641,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.5', date: '2026-05-30', title: '⚖ 법령 신구비교 도구 (신·구조문 대비)', items: [
+    '법령·시행령·시행규칙 개정 신구조문대비표를 자동 생성 (/law-diff.html) — 법제처 국가법령정보 공식 데이터',
+    '법령 검색·기간(개정일) 필터·조별 복사 + 변경부분 빨강(삭제)/파랑(추가) 단어 단위 색구분',
+    '프록시(api/law-singu)가 OC를 숨기고 등록 도메인으로 호출 — 사이드바 법안 메뉴에서 접근'
+  ]},
   { v: 'V31.4', date: '2026-05-29', title: '📂 사이드바 메뉴 버튼 헤더 좌측으로', items: [
     '전체 페이지 메뉴(☰)를 헤더 우측 → 좌측(로고 앞)으로 이동 — 일반적인 내비게이션 위치'
   ]},
@@ -23389,7 +23394,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.4 · 📂 사이드바 버튼 좌측</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.5 · ⚖ 법령 신구비교 도구</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23692,6 +23697,7 @@ function renderHome() {
         </div>
         <div class="goal-more">
           <span class="goal-more-lbl">더보기</span>
+          <a class="goal-chip" href="/law-diff.html" target="_blank" rel="noopener">⚖ 법령 신구비교</a>
           <a class="goal-chip" href="/glossary">📖 용어 사전</a>
           <a class="goal-chip" href="/committees">🏢 위원회 25</a>
           <a class="goal-chip" href="/history/parties">📚 정당사 1948~</a>
@@ -26292,6 +26298,7 @@ const NAV_TREE = [
   ]},
   { label: '법안', icon: '📜', children: [
     { label: '22대 통과 법안', href: '/bills' },
+    { label: '⚖ 법령 신구비교', href: '/law-diff.html', blank: true },
   ]},
   { label: '경제', icon: '💰', children: [
     { label: '경제 지표', href: '/economy' },
@@ -26332,7 +26339,7 @@ function renderNavTree() {
     }
     const hasActive = node.children.some(c => c.href === cur);
     const items = node.children.map(c =>
-      `<a class="sd-leaf${c.href === cur ? ' sd-active' : ''}" href="${c.href}">${escapeHtml(c.label)}</a>`
+      `<a class="sd-leaf${c.href === cur ? ' sd-active' : ''}" href="${c.href}"${c.blank ? ' target="_blank" rel="noopener"' : ''}>${escapeHtml(c.label)}</a>`
     ).join('');
     return `
       <div class="sd-branch sd-open">

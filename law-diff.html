@@ -1,0 +1,160 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>법령 신구비교 · 대한민국 패치노트</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{--bd:#d9d9d9;--bd2:#eee;--tx:#1a1a1a;--dim:#6b7280;--bg:#f6f6f4;--card:#fff;--accent:#4F46E5;--del:#dc2626;--ins:#1d4ed8;--rd:6px}
+  *{box-sizing:border-box}
+  body{font-family:'Pretendard','Malgun Gothic',-apple-system,system-ui,sans-serif;color:var(--tx);background:var(--bg);margin:0;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 20px 60px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  h1{font-size:20px;margin:0 0 2px;letter-spacing:-.5px}
+  .sub{font-size:12.5px;color:var(--dim)}
+  .home-link{font-size:12.5px;color:var(--accent);text-decoration:none}
+  .panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--rd);padding:14px 16px;margin-bottom:16px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  label{font-size:12px;color:var(--dim);font-weight:600}
+  input[type=text],input[type=date]{font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--bd);border-radius:var(--rd);background:#fff}
+  input[type=text]{flex:1;min-width:200px}
+  button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:#fff;border-radius:var(--rd);padding:8px 12px;font-size:13px;font-weight:600}
+  button.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button:hover{border-color:var(--accent)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-size:12px;padding:5px 10px;border-radius:999px;background:#f1f1ef;border:1px solid var(--bd2);color:#333;cursor:pointer}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+  .hint{font-size:11.5px;color:var(--dim);margin-top:8px}
+  .list-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--bd);border-radius:var(--rd);background:#fff;margin-bottom:8px;cursor:pointer}
+  .list-item:hover{border-color:var(--accent);box-shadow:0 1px 6px rgba(0,0,0,.06)}
+  .li-name{font-weight:700;font-size:14px}
+  .li-meta{font-size:11.5px;color:var(--dim);margin-top:1px}
+  .badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:#eef;color:#3338b8;white-space:nowrap}
+  .badge.rule{background:#efe;color:#2a8a2a}
+  .li-date{margin-left:auto;text-align:right;font-size:11.5px;color:#444;white-space:nowrap}
+  .li-date b{color:var(--accent)}
+  .cmp-head{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--tx);padding-bottom:8px;margin:18px 0 4px}
+  .cmp-head h2{font-size:17px;margin:0}
+  .cmp-meta{font-size:12px;color:var(--dim)}
+  .count{display:inline-block;background:var(--tx);color:#fff;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:4px;margin:10px 0}
+  .art{border:1px solid var(--bd);border-radius:var(--rd);margin-bottom:12px;overflow:hidden;background:#fff}
+  .art-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#fafafa;border-bottom:1px solid var(--bd2)}
+  .art-no{font-size:11px;color:var(--dim);font-weight:700}
+  .copy-btn{font-size:11px;padding:3px 9px}
+  .art-grid{display:grid;grid-template-columns:1fr 1fr}
+  .art-col{padding:10px 12px;font-size:13px}
+  .art-col.old{border-right:1px solid var(--bd2);background:#fffafa}
+  .col-label{font-size:10.5px;font-weight:700;color:var(--dim);margin-bottom:4px;letter-spacing:.5px}
+  del{color:var(--del);text-decoration:line-through;background:#fde8e8}
+  ins{color:var(--ins);text-decoration:none;background:#e6edfd;font-weight:600}
+  .legend{font-size:11.5px;color:var(--dim);margin-bottom:8px}
+  .legend del,.legend ins{padding:0 3px}
+  .empty,.loading{color:var(--dim);font-size:13px;padding:16px;text-align:center}
+  footer{margin-top:24px;font-size:11px;color:#999;border-top:1px solid var(--bd2);padding-top:10px}
+  @media(max-width:680px){.art-grid{grid-template-columns:1fr}.art-col.old{border-right:0;border-bottom:1px solid var(--bd2)}}
+</style></head>
+<body><div class="wrap">
+  <div class="top">
+    <div><h1>📋 법령 신구비교</h1><div class="sub">법령·시행령·시행규칙 개정 신·구조문 대비 · 출처 법제처 국가법령정보</div></div>
+    <a class="home-link" href="/">← 패치노트 홈</a>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <input type="text" id="q" placeholder="법령명 검색 (예: 철도안전법)" value="철도안전법">
+      <button class="pri" id="searchBtn">검색</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label>개정일(공포) 기간</label>
+      <input type="date" id="from"><span style="color:var(--dim)">~</span><input type="date" id="to">
+      <label style="margin-left:6px"><input type="checkbox" id="rangeOn"> 기간 필터 적용</label>
+    </div>
+    <div class="chips" id="basket"></div>
+    <div class="hint">바스켓을 누르면 검색어가 채워져요. 기간 필터는 개정 공포일 기준입니다.</div>
+  </div>
+
+  <div id="results"></div>
+  <div id="compare"></div>
+
+  <footer>본 자료는 정보 제공용이며 법률 자문이 아닙니다. 적용 판단은 원문·전문가 확인을 권장합니다. · 출처: 법제처 국가법령정보 (신구조문대비표)</footer>
+</div>
+<script>
+const BASKET = ['철도안전법','철도사업법','도시철도법','철도산업발전기본법','산업안전보건법','중대재해 처벌 등에 관한 법률','시설물의 안전 및 유지관리에 관한 특별법','개인정보 보호법'];
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const stripTags = s => String(s??'').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').trim();
+const ymd = s => String(s||'').replace(/-/g,'');
+const fmtDate = s => s && s.length===8 ? `${s.slice(0,4)}.${s.slice(4,6)}.${s.slice(6,8)}` : (s||'-');
+const isUnchanged = s => /현행과\s*같음/.test(String(s??''));
+
+function tokenize(s){ return stripTags(s).split(/(\s+|[,.·ㆍ()「」『』<>\/])/).filter(x=>x!==''); }
+function wordDiff(oldS,newS){
+  const o=tokenize(oldS),n=tokenize(newS),m=o.length,k=n.length;
+  const dp=Array.from({length:m+1},()=>new Int32Array(k+1));
+  for(let i=m-1;i>=0;i--)for(let j=k-1;j>=0;j--)dp[i][j]=o[i]===n[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+  let oa='',na='',i=0,j=0;
+  while(i<m&&j<k){ if(o[i]===n[j]){oa+=esc(o[i]);na+=esc(n[j]);i++;j++;}
+    else if(dp[i+1][j]>=dp[i][j+1]){oa+='<del>'+esc(o[i])+'</del>';i++;}
+    else {na+='<ins>'+esc(n[j])+'</ins>';j++;} }
+  while(i<m){oa+='<del>'+esc(o[i])+'</del>';i++;}
+  while(j<k){na+='<ins>'+esc(n[j])+'</ins>';j++;}
+  return {old:oa,new:na};
+}
+
+function renderBasket(){ $('#basket').innerHTML = BASKET.map(n=>`<span class="chip" data-n="${esc(n)}">${esc(n)}</span>`).join(''); }
+
+async function api(qs){ const r=await fetch('/api/law-singu?'+qs); const j=await r.json(); if(j&&j.error)throw new Error(j.error); return j; }
+
+async function search(){
+  const q=$('#q').value.trim(); if(!q)return;
+  $('#results').innerHTML='<div class="loading">검색 중…</div>'; $('#compare').innerHTML='';
+  let items=[];
+  try{ items=await api('action=list&q='+encodeURIComponent(q)); }
+  catch(e){ $('#results').innerHTML='<div class="empty">조회 실패: '+esc(e.message)+'</div>'; return; }
+  if(!Array.isArray(items)||!items.length){ $('#results').innerHTML='<div class="empty">신구표 결과 없음 (개정 이력이 없거나 명칭 불일치)</div>'; return; }
+  if($('#rangeOn').checked){
+    const f=ymd($('#from').value), t=ymd($('#to').value);
+    items=items.filter(it=>{ const p=ymd(it.pub); return (!f||p>=f)&&(!t||p<=t); });
+  }
+  if(!items.length){ $('#results').innerHTML='<div class="empty">선택 기간에 개정된 항목이 없습니다.</div>'; return; }
+  $('#results').innerHTML = `<div class="li-meta" style="margin:4px 2px 8px">${items.length}건 — 클릭하면 신구비교</div>` + items.map(it=>`
+    <div class="list-item" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}">
+      <span class="badge ${it.kind==='법률'?'':'rule'}">${esc(it.kind)}</span>
+      <div><div class="li-name">${esc(it.name)}</div><div class="li-meta">${esc(it.rev||'')} · 소관 ${esc(it.dept||'')}</div></div>
+      <div class="li-date">시행 <b>${fmtDate(it.ef)}</b><br>공포 ${fmtDate(it.pub)} 제${esc(it.pubNo||'')}호</div>
+    </div>`).join('');
+}
+
+async function showCompare(mst,name){
+  const box=$('#compare'); box.innerHTML='<div class="loading">신구조문 불러오는 중…</div>';
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+  let d; try{ d=await api('action=body&mst='+encodeURIComponent(mst)); }
+  catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
+  const oldByNo=new Map((d.old||[]).map(a=>[String(a.no),a.content]));
+  const changed=(d.new||[]).filter(a=>!isUnchanged(a.content)).map(a=>({no:String(a.no),oldC:oldByNo.get(String(a.no))||'',newC:a.content}));
+  const rows=changed.map(c=>{
+    const df=wordDiff(c.oldC,c.newC); const plainNew=stripTags(c.newC);
+    return `<div class="art">
+      <div class="art-bar"><span class="art-no">No.${esc(c.no)}</span>
+        <button class="copy-btn" data-copy="${esc(plainNew)}">📋 신조문 복사</button></div>
+      <div class="art-grid">
+        <div class="art-col old"><div class="col-label">구 (개정 전)</div>${stripTags(c.oldC)?df.old:'<span style="color:#aaa">(신설)</span>'}</div>
+        <div class="art-col new"><div class="col-label">신 (개정 후)</div>${df.new}</div>
+      </div></div>`;
+  }).join('');
+  box.innerHTML = `
+    <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)}</span></div>
+    <span class="count">변경 ${changed.length}건 / 전체 ${(d.new||[]).length}조</span>
+    <div class="legend">표시: <del>삭제(구)</del> <ins>추가(신)</ins></div>
+    ${rows||'<div class="empty">변경 조문 없음</div>'}`;
+}
+
+renderBasket();
+const today=new Date(), y2=new Date(); y2.setFullYear(today.getFullYear()-2);
+$('#to').value=today.toISOString().slice(0,10); $('#from').value=y2.toISOString().slice(0,10);
+$('#searchBtn').onclick=search;
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')search();});
+$('#basket').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){$('#q').value=c.dataset.n;search();}});
+$('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it)showCompare(it.dataset.mst,it.dataset.name);});
+$('#compare').addEventListener('click',e=>{const b=e.target.closest('.copy-btn');if(b){navigator.clipboard.writeText(b.dataset.copy).then(()=>{const o=b.textContent;b.textContent='✓ 복사됨';setTimeout(()=>b.textContent=o,1200);});}});
+search();
+</script>
+</body></html>
