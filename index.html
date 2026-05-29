@@ -11537,7 +11537,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V29.8</a>
+      <a href="/changelog" id="foot-year">V29.9</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18386,6 +18386,12 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V29.9', date: '2026-05-29', title: '📍 사전투표소 찾기 신규 (/polling) — 선관위 공식 API', items: [
+    '시·도 → 구·시·군으로 가까운 사전투표소 검색 (이름·장소·주소·층 + 지도 링크)',
+    '중앙선관위 공식 data.go.kr API(PolplcInfoInqireService2) 연동, 서버 프록시 + XML 파싱',
+    '사전투표 안내(/early-voting) 페이지에 진입 카드 추가',
+    'API 키는 Vercel env DATA_GO_KR_KEY (사전투표율과 동일 키)'
+  ]},
   { v: 'V29.8', date: '2026-05-29', title: '📈 시세모니터 장중 오표기 fix (KST 재판정)', items: [
     'Yahoo의 KRX marketState가 장중에도 CLOSED/누락 → "장 마감" 오표기되던 문제',
     'KOSPI·KOSDAQ·환율은 KST 기준(_getKoreaMarketStatus)으로 재판정 후 표시',
@@ -19247,6 +19253,15 @@ function renderEarlyVotingPage() {
         <p class="ev-hero-sub">전국 어디서나 신분증만 있으면 가능. 본 투표 못 가도 사전에 미리.</p>
         ${phaseBadge}
       </header>
+
+      <!-- V29.9 — 사전투표소 찾기 진입 -->
+      <a href="/polling" class="ev-find-cta" style="display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:14px 18px;background:linear-gradient(135deg,var(--brand-deep),var(--brand));color:#fff;border-radius:var(--rd-xl);text-decoration:none;box-shadow:var(--sh-brand)">
+        <span style="font-size:30px" aria-hidden="true">📍</span>
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-size:15px;font-weight:800">내 사전투표소 찾기</span>
+          <span style="display:block;font-size:12px;opacity:0.92;margin-top:2px">시·도 → 구·시·군으로 가까운 사전투표소 검색 →</span>
+        </span>
+      </a>
 
       <!-- V28.2 — 라이브 사전투표율 카드 (V29.0 aria-live 적용) -->
       <section class="ev-section ev-live-section" id="ev-live-section" aria-labelledby="ev-live-heading">
@@ -22957,7 +22972,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.8 · 📈 시세 장중 fix</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.9 · 📍 사전투표소 찾기</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -24092,6 +24107,7 @@ const ROUTE_META = {
   '/election2026': { title: '🔴 9회 전국동시지방선거 (2026.6.3) LIVE — 697명 후보 5대 공약', desc: '제9회 전국동시지방선거 후보자 697명 실시간 — 광역단체장 54·기초단체장 585·교육감 58 + 광역의원·기초의원. 시도지사·교육감 5대 공약 즉시 비교. 중앙선관위 공식 데이터.' },
   '/election2026/live': { title: '🔴 9회 지선 LIVE — 선거 당일 개표 실시간 (6/3 본 투표·개표)', desc: '제9회 전국동시지방선거 2026.6.3 — 본 투표(06~18시)·개표 진행 단계별 안내. 출구조사·개표방송·실시간 투표율·NEC 공식 데이터 빠른 진입. 17 시도지사·교육감·기초단체장 결과.' },
   '/early-voting': { title: '🗳 9회 지선 사전투표 안내 — 5/29·5/30 06:00~18:00', desc: '제9회 전국동시지방선거 사전투표 (2026.5.29~5.30) 안내·체크리스트. 신분증·시간·장소·전국 어디서나·관내관외·7장 투표 색깔별 안내. 후보 공약 미리 비교. 사전투표소 검색 (중앙선관위 통합선거정보).' },
+  '/polling': { title: '📍 사전투표소 찾기 — 9회 지선 (5/29·30)', desc: '제9회 전국동시지방선거 사전투표소 위치 검색. 시도·구시군별 사전투표소 이름·장소·주소 + 지도 연결. 사전투표는 5/29~30 전국 어디서나 가능. 출처: 중앙선거관리위원회 공식 API.' },
   '/committees': { title: '국회 위원회 25개 · 22대 상임위·특별위', desc: '제22대 국회 위원회 25개 (상임 17 + 특별 8). 처리 의안·위원장·간사·소속 의원.' },
   '/map': { title: '정치 분포 지도 — 17 시도 + 226 시군구 정당색', desc: '대한민국 17개 시도 + 226개 시군구 정당색 인터랙티브 지도. 단체장 정보 클릭 탐색.' },
   '/world': { title: '국제 비교 — 12개 민주국가 정치 지표', desc: '12개 민주국가 의원수·여성비율·투표율·민주주의지수·언론자유·청렴도 비교 분석.' },
@@ -24219,6 +24235,91 @@ function updateMeta() {
   _setLinkHref('link[rel="canonical"]', fullUrl);
 }
 
+// V29.9 — 사전투표소 찾기 (/polling) — data.go.kr 중앙선관위 사전투표소 API
+const PS_SIDO = ['서울특별시','부산광역시','대구광역시','인천광역시','광주광역시','대전광역시','울산광역시','세종특별자치시','경기도','강원특별자치도','충청북도','충청남도','전북특별자치도','전라남도','경상북도','경상남도','제주특별자치도'];
+
+function renderPollingStationPage() {
+  return `
+    <div class="group-back" id="back-home">← 홈</div>
+    <div style="max-width:880px;margin:0 auto;padding:8px 4px 60px">
+      <div style="margin-bottom:18px">
+        <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-bottom:6px">POLLING STATION · 5/29·30</div>
+        <h1 style="font-size:26px;font-weight:900;color:var(--text);margin:0 0 8px;letter-spacing:-0.5px">📍 내 사전투표소 찾기</h1>
+        <p style="font-size:13.5px;color:var(--text-2);line-height:1.6;margin:0">
+          제9회 지방선거 <b>사전투표는 5/29(금)·30(토) 06:00~18:00, 전국 어디서나</b> 신분증만 있으면 됩니다.
+          지역을 골라 가까운 사전투표소를 확인하세요. <span style="color:var(--dim)">출처: 중앙선거관리위원회</span>
+        </p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <select id="ps-sido" aria-label="시도 선택" style="flex:1;min-width:150px;padding:11px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;font-weight:600">
+          <option value="">시 · 도 선택</option>
+          ${PS_SIDO.map(s => `<option value="${s}">${s}</option>`).join('')}
+        </select>
+        <select id="ps-gu" aria-label="구시군 선택" disabled style="flex:1;min-width:150px;padding:11px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;font-weight:600">
+          <option value="">구 · 시 · 군</option>
+        </select>
+      </div>
+      <input id="ps-search" type="search" placeholder="🔍 동 · 투표소 · 주소로 검색" aria-label="사전투표소 검색" style="width:100%;padding:11px 13px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;margin-bottom:16px;box-sizing:border-box" />
+      <div id="ps-results" aria-live="polite" style="min-height:120px"></div>
+    </div>
+  `;
+}
+
+function setupPollingStationEvents() {
+  const sido = document.getElementById('ps-sido');
+  const gu = document.getElementById('ps-gu');
+  const search = document.getElementById('ps-search');
+  const results = document.getElementById('ps-results');
+  if (!sido || !gu || !search || !results) return;
+  let stations = [];
+  const esc = (s) => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const msg = (t) => `<div style="text-align:center;color:var(--dim);padding:32px 12px;font-size:13.5px;line-height:1.6">${t}</div>`;
+
+  function renderList() {
+    if (!stations.length) { results.innerHTML = ''; return; }
+    const guVal = gu.value, q = (search.value || '').trim();
+    if (!guVal && !q) { results.innerHTML = msg(`구·시·군을 선택하거나 검색해보세요.<br>이 지역 사전투표소 <b style="color:var(--text)">${stations.length}</b>곳`); return; }
+    let list = stations;
+    if (guVal) list = list.filter(s => s.wiw === guVal);
+    if (q) list = list.filter(s => (s.emd || '').includes(q) || (s.ps || '').includes(q) || (s.place || '').includes(q) || (s.addr || '').includes(q));
+    if (!list.length) { results.innerHTML = msg('조건에 맞는 사전투표소가 없어요.'); return; }
+    results.innerHTML = `<div style="font-size:12.5px;color:var(--dim);margin-bottom:10px">${list.length}곳</div>`
+      + list.map(s => {
+        const mapQ = encodeURIComponent(((s.addr || '') + ' ' + (s.place || '')).trim());
+        return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:var(--bg-card)">
+          <div style="font-weight:800;font-size:14.5px;color:var(--text);margin-bottom:4px">${esc(s.place || s.ps)}</div>
+          <div style="font-size:12px;color:var(--text-2);margin-bottom:3px">${esc(s.wiw)} ${esc(s.emd)} · ${esc(s.ps)}${s.floor ? ' · ' + esc(s.floor) : ''}</div>
+          <div style="font-size:12.5px;color:var(--dim);margin-bottom:9px">${esc(s.addr)}</div>
+          <a href="https://map.naver.com/p/search/${mapQ}" target="_blank" rel="noopener" style="display:inline-block;font-size:12px;font-weight:700;color:var(--accent);text-decoration:none">🗺 지도에서 보기 →</a>
+        </div>`;
+      }).join('');
+  }
+
+  async function loadSido(sd) {
+    gu.disabled = true; gu.innerHTML = '<option value="">구 · 시 · 군</option>'; stations = []; search.value = '';
+    results.innerHTML = msg('불러오는 중…');
+    try {
+      const r = await fetch(`/api/polling-station?sd=${encodeURIComponent(sd)}`);
+      const d = await r.json();
+      stations = d.stations || [];
+      if (!stations.length) { results.innerHTML = msg(`사전투표소 데이터를 불러오지 못했어요.${d.note ? '<br><span style="font-size:11.5px">(' + esc(d.note) + ')</span>' : ''}`); return; }
+      const gus = [...new Set(stations.map(s => s.wiw).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ko'));
+      gu.innerHTML = `<option value="">전체 (${stations.length}곳)</option>` + gus.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
+      gu.disabled = false;
+      renderList();
+    } catch (e) {
+      results.innerHTML = msg('오류로 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
+    }
+  }
+
+  sido.addEventListener('change', () => {
+    if (sido.value) loadSido(sido.value);
+    else { stations = []; gu.disabled = true; gu.innerHTML = '<option value="">구 · 시 · 군</option>'; results.innerHTML = ''; }
+  });
+  gu.addEventListener('change', renderList);
+  search.addEventListener('input', renderList);
+}
+
 function route() {
   const view = document.getElementById('view');
   const hash = currentRoute();
@@ -24265,6 +24366,15 @@ function route() {
     fetchEarlyVoteRate();
     if (window._evPollTimer) clearInterval(window._evPollTimer);
     window._evPollTimer = setInterval(fetchEarlyVoteRate, 5 * 60 * 1000);
+    return;
+  }
+  // V29.9 — 사전투표소 찾기 (/polling)
+  if (hash === '#/polling') {
+    view.innerHTML = renderPollingStationPage();
+    document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
+    setupPollingStationEvents();
+    if (filterBar) filterBar.style.display = 'none';
+    window.scrollTo(0, 0);
     return;
   }
   // 변경 이력 (/changelog)
