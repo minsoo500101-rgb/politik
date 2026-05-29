@@ -16061,12 +16061,9 @@ function renderEconomyPage() {
         <!-- 원자재·암호화폐: TradingView 실시간 -->
         <div class="econ-section-label" style="margin-top:14px">
           <span class="econ-section-tag econ-section-live">🔴 LIVE · 15~20분 지연</span>
-          <span class="econ-section-desc">글로벌 지수·원자재·암호화폐 — TradingView 임베드 위젯</span>
+          <span class="econ-section-desc">원자재·암호화폐 — TradingView 임베드 위젯</span>
         </div>
         <div class="econ-tv-grid">
-          <div class="econ-tv-widget" data-tv-symbol="FOREXCOM:SPXUSD" data-tv-name="S&P 500"></div>
-          <div class="econ-tv-widget" data-tv-symbol="TVC:NI225" data-tv-name="니케이 225"></div>
-          <div class="econ-tv-widget" data-tv-symbol="TVC:DXY" data-tv-name="달러인덱스"></div>
           <div class="econ-tv-widget" data-tv-symbol="TVC:USOIL" data-tv-name="WTI 원유"></div>
           <div class="econ-tv-widget" data-tv-symbol="TVC:GOLD" data-tv-name="국제 금"></div>
           <div class="econ-tv-widget" data-tv-symbol="CRYPTO:BTCUSD" data-tv-name="비트코인"></div>
@@ -18455,9 +18452,8 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
-  { v: 'V30.5', date: '2026-05-29', title: '🌍 경제 섹션 확장 — 세계 비교 + 글로벌 시세', items: [
+  { v: 'V30.5', date: '2026-05-29', title: '🌍 경제 섹션 확장 — 세계 속 한국 경제 (World Bank)', items: [
     '"세계 속 한국 경제" 신규 — World Bank 무료 API로 주요 8개국 1인당GDP·GDP규모·성장률·물가·실업률 비교 (한국 순위 표시)',
-    '시세 모니터에 글로벌 지수 추가 — S&P500·니케이225·달러인덱스',
     'World Bank는 키·프록시 불필요(CORS) — 매년 자동 최신, 추측 0'
   ]},
   { v: 'V30.4', date: '2026-05-29', title: '🔗 경제 코스피·코스닥·환율 단일 기준 통일', items: [
