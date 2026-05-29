@@ -5740,6 +5740,8 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
   .home-bento > * { margin-bottom: 0 !important; }
   .home-bento .home-bento-wide { grid-column: 1 / -1; }
+  /* 실검은 반칸 셀에서 세로 1열 리스트로 (6열 그리드 overflow 잘림 방지) */
+  .home-bento .home-trend-grid { grid-template-columns: 1fr; gap: 6px; }
   @media (max-width: 760px) {
     .home-bento { grid-template-columns: 1fr; gap: 12px; }
   }
@@ -11594,7 +11596,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.8</a>
+      <a href="/changelog" id="foot-year">V30.9</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18507,6 +18509,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.9', date: '2026-05-29', title: '🧹 실검 레이아웃 정리 + 법안 추이 바 제거', items: [
+    '한국 실시간 검색 트렌드를 세로 Top 리스트로 — 벤토 반칸에서 6열 그리드가 잘리던 문제 해결 (5번까지 표시)',
+    '"이번 주 처리·최근 30일·주간 가결률" 추이 바 제거 — 법안은 저빈도라 무의미, 최신 패치 피드가 신규 법안 노출'
+  ]},
   { v: 'V30.8', date: '2026-05-29', title: '🧩 홈 중간 카드 벤토 그리드 — 세로 나열 → 2단 타일', items: [
     '시민 여론판·이번 주 인기·한국 실검·경제 핵심지표를 2단 벤토 그리드로 묶음 (스크롤 단축, 모던 레이아웃)',
     '여론판·경제는 전체 폭, 인기·실검은 2열 나란히 — 데스크탑 2열, 모바일 1열 자동',
@@ -23219,7 +23225,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.8 · 🧩 홈 벤토 그리드</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.9 · 🧹 실검 정리 + 군더더기 제거</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23358,52 +23364,6 @@ function renderHome() {
         </div>
       </div>
       </div><!-- /home-bento -->
-
-      ${(() => {
-        // 이번 주 트렌드 (최근 7일 처리 의안)
-        if (!state.bills?.length) return '';
-        const now = Date.now();
-        const weekAgo = now - 7 * 86400000;
-        const monthAgo = now - 30 * 86400000;
-        const weekBills = state.bills.filter(b => {
-          const d = new Date(b.PROC_DT).getTime();
-          return d >= weekAgo && d <= now;
-        });
-        const monthBills = state.bills.filter(b => {
-          const d = new Date(b.PROC_DT).getTime();
-          return d >= monthAgo && d <= now;
-        });
-        // 핫 분야 (이번 주)
-        const weekTopics = {};
-        for (const b of weekBills) {
-          const t = getBillTopic(b).id;
-          weekTopics[t] = (weekTopics[t] || 0) + 1;
-        }
-        const hotTopic = Object.entries(weekTopics).filter(([id]) => id !== 'misc').sort((a,b)=>b[1]-a[1])[0];
-        const hotTopicInfo = hotTopic ? BILL_TOPICS.find(t => t.id === hotTopic[0]) : null;
-        // 가결률
-        const weekPassed = weekBills.filter(b => /가결/.test(b.PROC_RESULT_CD||'')).length;
-        const weekRate = weekBills.length ? (weekPassed/weekBills.length*100).toFixed(0) : '—';
-        return `
-          <div class="trend-bar">
-            <div class="trend-item">
-              <div class="trend-num">${weekBills.length}</div>
-              <div class="trend-lbl">이번 주 처리</div>
-            </div>
-            <div class="trend-item">
-              <div class="trend-num">${monthBills.length}</div>
-              <div class="trend-lbl">최근 30일</div>
-            </div>
-            <div class="trend-item">
-              <div class="trend-num" style="color:var(--ok)">${weekRate}%</div>
-              <div class="trend-lbl">주간 가결률</div>
-            </div>
-            <div class="trend-item trend-hot">
-              ${hotTopicInfo ? `<div class="trend-num" style="color:${hotTopicInfo.color}">${hotTopicInfo.icon}</div><div class="trend-lbl"><b>${escapeHtml(hotTopicInfo.label)}</b> ${hotTopic[1]}건 — 이번 주 핫</div>` : '<div class="trend-num">—</div><div class="trend-lbl">데이터 부족</div>'}
-            </div>
-          </div>
-        `;
-      })()}
 
       <!-- 패치노트 피드 — 가장 위 -->
       <div class="patch-feed">
