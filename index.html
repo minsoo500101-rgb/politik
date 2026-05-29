@@ -397,12 +397,12 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     --lh-base:  1.55;
     --lh-relax: 1.7;
 
-    /* Border radius scale */
-    --rd-sm: 4px;
-    --rd-md: 8px;
-    --rd-lg: 12px;
-    --rd-xl: 16px;
-    --rd-2xl: 24px;
+    /* Border radius scale — V31.1 축소 (둥글둥글 → 서류/전문가 느낌) */
+    --rd-sm: 2px;
+    --rd-md: 4px;
+    --rd-lg: 6px;
+    --rd-xl: 8px;
+    --rd-2xl: 12px;
     --rd-pill: 999px;
 
     /* Shadow scale */
@@ -3349,7 +3349,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     padding: 18px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--rd-lg);
   }
   .explore-h-row {
     display: flex; align-items: baseline; justify-content: space-between;
@@ -3457,7 +3457,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .goal-group {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--rd-lg);
     padding: 16px;
   }
   .goal-head {
@@ -3468,14 +3468,14 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .goal-ic {
     font-size: 20px; width: 40px; height: 40px; flex: 0 0 auto;
     display: flex; align-items: center; justify-content: center;
-    background: var(--brand-pale); border-radius: 10px;
+    background: var(--brand-pale); border-radius: var(--rd-md);
   }
   .goal-head b { font-size: 14px; font-weight: 800; color: var(--text); display: block; }
   .goal-head em { font-size: 11.5px; color: var(--dim); font-style: normal; }
   .goal-tool {
     display: block; padding: 9px 11px; margin-top: 6px;
     background: var(--bg-elev); border: 1px solid transparent;
-    border-radius: 9px; font-size: 13px; font-weight: 600;
+    border-radius: var(--rd-md); font-size: 13px; font-weight: 600;
     color: var(--text); text-decoration: none;
     transition: border-color .13s ease, background .13s ease;
   }
@@ -5036,15 +5036,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
   /* V22.5 — 홈 인기 랭킹 (페이지뷰 기반) */
   .home-ranking-row {
-    background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(217,119,6,0.03) 100%);
-    border: 1px solid rgba(245,158,11,0.22);
-    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-lg);
     padding: 14px 16px;
     margin-bottom: 18px;
-  }
-  [data-theme="dark"] .home-ranking-row {
-    background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(245,158,11,0.04) 100%);
-    border-color: rgba(251,191,36,0.28);
   }
   .home-ranking-head {
     display: flex; justify-content: space-between; align-items: center;
@@ -5063,9 +5059,9 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     .home-ranking-grid { grid-template-columns: 1fr; }
   }
   .home-ranking-col {
-    background: var(--bg-card);
+    background: var(--bg-elev);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--rd-md);
     padding: 10px 12px;
   }
   .home-ranking-col-h {
@@ -5084,7 +5080,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     align-items: center;
     gap: 6px;
     padding: 5px 4px;
-    border-radius: 6px;
+    border-radius: var(--rd-sm);
     text-decoration: none;
     font-size: 12px;
     transition: background 0.1s;
@@ -5096,9 +5092,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     text-align: center;
     font-variant-numeric: tabular-nums;
   }
-  .rank-row:nth-child(1) .rank-num { color: #dc2626; }
-  .rank-row:nth-child(2) .rank-num { color: #f59e0b; }
-  .rank-row:nth-child(3) .rank-num { color: #f59e0b; }
+  .rank-row:nth-child(1) .rank-num { color: var(--accent); }
   .rank-name {
     font-weight: 700;
     color: var(--text);
@@ -5597,16 +5591,12 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
   /* V21.1 — 홈 정치 트렌드 위젯 */
   .home-trend-row {
-    background: linear-gradient(135deg, rgba(239,68,68,0.06) 0%, rgba(220,38,38,0.03) 100%);
-    border: 1px solid rgba(239,68,68,0.25);
-    border-radius: 14px;
-    padding: 16px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rd-lg);
+    padding: 14px 16px;
     margin-bottom: 18px;
-    position: relative; overflow: hidden;
-  }
-  [data-theme="dark"] .home-trend-row {
-    background: linear-gradient(135deg, rgba(248,113,113,0.08) 0%, rgba(220,38,38,0.04) 100%);
-    border-color: rgba(248,113,113,0.3);
+    position: relative;
   }
   .home-trend-head {
     display: flex; justify-content: space-between; align-items: center;
@@ -5646,9 +5636,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     text-align: center;
     flex-shrink: 0;
   }
-  .home-trend-tile:nth-child(1) .home-trend-rank { color: #dc2626; }
-  .home-trend-tile:nth-child(2) .home-trend-rank,
-  .home-trend-tile:nth-child(3) .home-trend-rank { color: #f59e0b; }
+  .home-trend-tile:nth-child(1) .home-trend-rank { color: var(--accent); }
   .home-trend-body { flex: 1; min-width: 0; }
   .home-trend-name {
     font-size: 12.5px; font-weight: 700;
@@ -5668,9 +5656,9 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
   /* 홈 경제 미니 위젯 */
   .econ-mini-row {
-    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elev) 100%);
+    background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--rd-lg);
     padding: 16px 18px;
     margin-bottom: 18px;
     position: relative; overflow: hidden;
@@ -5757,7 +5745,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     display: block;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--rd-md);
     padding: 11px 13px;
     text-decoration: none;
     color: inherit;
@@ -5797,8 +5785,14 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
   .home-bento > * { margin-bottom: 0 !important; }
   .home-bento .home-bento-wide { grid-column: 1 / -1; }
-  /* 실검은 반칸 셀에서 세로 1열 리스트로 (6열 그리드 overflow 잘림 방지) */
-  .home-bento .home-trend-grid { grid-template-columns: 1fr; gap: 6px; }
+  /* 실검: 반칸 셀에서 평평한 구분선 행 (인기 카드와 밀도 통일, 박스 군더더기 제거) */
+  .home-bento .home-trend-grid { grid-template-columns: 1fr; gap: 0; }
+  .home-bento .home-trend-tile {
+    border: none; border-bottom: 1px solid var(--border);
+    border-radius: 0; padding: 7px 4px; gap: 8px;
+  }
+  .home-bento .home-trend-tile:last-child { border-bottom: none; }
+  .home-bento .home-trend-tile:hover { transform: none; box-shadow: none; background: var(--bg-elev); }
   @media (max-width: 760px) {
     .home-bento { grid-template-columns: 1fr; gap: 12px; }
   }
@@ -11653,7 +11647,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.0</a>
+      <a href="/changelog" id="foot-year">V31.1</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18566,6 +18560,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.1', date: '2026-05-29', title: '🎯 홈 색 절제 + 서류 느낌 (덜 둥글게)', items: [
+    '인기·실검 카드 색 통일 — amber/red 틴트 제거, 랭크 단색(1위만 강조), 의미색(정당·LIVE)만 유지',
+    '실검을 평평한 구분선 행으로 — 박스 군더더기·검색량 중복 표기 제거, 인기 카드와 밀도 통일',
+    '전체 라운드 축소(--rd 토큰) + 홈 카드 모서리 샤프 — 둥글둥글한 인상 → 전문가/문서 느낌'
+  ]},
   { v: 'V31.0', date: '2026-05-29', title: '🧭 홈 탐색 도구 목적별 정리 + 신규 법안 배지', items: [
     '탐색 도구 15개 플랫 카드 → 목적 3그룹(선거 준비·인물/정당·정부 평가, 각 한 줄 효용) + 니치 기능은 더보기 칩으로 추려 정리',
     '최신 패치 헤더에 "🆕 N건 신규" 배지 — 마지막 방문 이후 통과된 법안 수 (localStorage 기준선, 첫 방문은 0)',
@@ -23297,7 +23296,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.0 · 🧭 홈 목적별 정리 + 신규 법안 배지</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.1 · 🎯 색 절제 + 서류 느낌 (덜 둥글게)</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -26012,19 +26011,20 @@ async function populateHomeTrend() {
       const isPolitician = !!it.politician;
       const p = it.politician;
       const pColor = isPolitician && p?.POLY_NM ? partyColor(p.POLY_NM) : 'var(--accent)';
-      const meta = isPolitician
-        ? (p.POLY_NM || p._type_label || '정치인')
-        : (it.traffic || '검색 급상승');
       const href = isPolitician && p?.MONA_CD
         ? `/m/${encodeURIComponent(p.MONA_CD)}`
         : `https://search.naver.com/search.naver?where=nexearch&query=${encodeURIComponent(it.keyword)}`;
       const target_ = isPolitician ? '' : ' target="_blank" rel="noopener"';
+      // 비정치인은 meta(검색량)가 우측 count와 중복 → 정치인(정당)만 meta 표시
+      const metaHtml = isPolitician
+        ? `<div class="home-trend-meta" style="color:${pColor}">${escapeHtml(p.POLY_NM || p._type_label || '정치인')}</div>`
+        : '';
       return `
-        <a class="home-trend-tile" href="${href}"${target_} style="border-left-color:${pColor}">
+        <a class="home-trend-tile" href="${href}"${target_}>
           <div class="home-trend-rank">${it.rank}</div>
           <div class="home-trend-body">
             <div class="home-trend-name">${escapeHtml(it.keyword)}</div>
-            <div class="home-trend-meta" style="color:${pColor}">${escapeHtml(meta)}</div>
+            ${metaHtml}
           </div>
           <div class="home-trend-count">${escapeHtml(it.traffic || '🔥')}</div>
         </a>`;
