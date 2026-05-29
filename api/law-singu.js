@@ -44,6 +44,6 @@ export default async function handler(req, res) {
     }));
     return res.status(200).json(items);
   } catch (e) {
-    return res.status(200).json({ error: (e && e.message) || 'fetch 실패' });
+    return res.status(200).json({ error: (e && e.message) || 'fetch 실패', cause: e?.cause?.code || e?.cause?.message || String(e?.cause || '') });
   }
 }
