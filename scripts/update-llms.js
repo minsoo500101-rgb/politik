@@ -74,9 +74,9 @@ function buildReplacements(c) {
     [/22대 국회의원 \d+명 \(현역/g, `22대 국회의원 ${c.politicians_assembly}명 (현역`],
 
     // 용어 사전
-    [/정치 용어 사전 \d+개 ?용어[, ]+ ?\d+ ?카테고리/g,
-      `정치 용어 사전 ${c.glossary_terms}개 용어, ${c.glossary_categories} 카테고리`],
-    [/정치 용어 사전 ?\(?\/glossary\)?[^.]*?: ?\d+개 용어/g,
+    [/용어 사전 \d+개 ?용어[, ]+ ?\d+ ?카테고리/g,
+      `용어 사전 ${c.glossary_terms}개 용어, ${c.glossary_categories} 카테고리`],
+    [/용어 사전 ?\(?\/glossary\)?[^.]*?: ?\d+개 용어/g,
       (m) => m.replace(/\d+개 용어/, `${c.glossary_terms}개 용어`)],
 
     // 시군구

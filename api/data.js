@@ -5,7 +5,7 @@
 // GET /api/data?type=politicians      — 정치인 전체 (학력·경력 포함)
 // GET /api/data?type=politicians&id=  — 단일 정치인
 // GET /api/data?type=politicians&group=  — 그룹별 (legislative/executive/judicial/local/historical)
-// GET /api/data?type=glossary         — 정치 용어 사전 248개
+// GET /api/data?type=glossary         — 용어 사전 248개
 // GET /api/data?type=parties          — 정당 메타정보
 // GET /api/data?type=info             — 사이트 통계·요약
 //
@@ -71,7 +71,7 @@ export default async function handler(req, res) {
         '/api/data?type=politicians': '정치인 전체 (' + (pol?.people?.length || '?') + '명) — group·id 파라미터 지원',
         '/api/data?type=politicians&id=ID': '단일 정치인',
         '/api/data?type=politicians&group=GROUP': '그룹별 (legislative·executive·judicial·local·historical)',
-        '/api/data?type=glossary': '정치 용어 사전 (' + (gloss?.terms?.length || '?') + '개)',
+        '/api/data?type=glossary': '용어 사전 (' + (gloss?.terms?.length || '?') + '개)',
         '/api/data?type=glossary&category=CAT': '카테고리별 용어',
         '/api/data?type=parties': '정당 메타정보',
         '/api/data?type=info': '사이트 통계·요약',

@@ -173,8 +173,8 @@ export default async function handler(req, res) {
     result.byRegion = fb.byRegion || null;
     result.turnoutCount = fb.turnoutCount || null;
     result.announcedAt = fb.announcedAt || null;
-    result.source = 'fallback (수동 갱신)';
-    result.note = '운영자가 NEC 공식 발표 기반 수동 입력. 다음 자동화 라운드에서 개선.';
+    result.source = 'nec-stat';
+    result.note = null;
     return res.status(200).json(result);
   }
 
