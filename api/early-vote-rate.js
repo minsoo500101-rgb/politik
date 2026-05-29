@@ -1,11 +1,12 @@
-// V28.2 — 사전투표율 라이브 fetch
+// V29.7 — 사전투표율 fetch (공식 data.go.kr API 연동)
 // 9회 전국동시지방선거 (2026.6.3) 사전투표 (5/29~5/30)
 //
 // 다중 소스 fallback:
-//   1) data.go.kr NEC API (공식)
-//   2) info.nec.go.kr 통계 페이지 (HTML parsing)
-//   3) data/early-vote-fallback.json (수동 갱신 슬롯)
-//   4) 8회(2022) 동일 시각 기준 표시 (last resort)
+//   1) data.go.kr 중앙선관위 공식 API (ErVotingSttusInfoInqireService)
+//      — "완료 선거"만 데이터 제공. 사전투표 진행 중엔 INFO-03 → 2)로 넘어감.
+//      — 종료 후 공식 최종 수치+시도별 자동 반영. (Vercel env: DATA_GO_KR_KEY)
+//   2) data/early-vote-fallback.json (수동 갱신 슬롯 — 진행 중 실시간용)
+//   3) 8회(2022) 동일 시각 기준 표시 (last resort)
 //
 // 출력:
 //   {
@@ -24,8 +25,7 @@ const fs = require('fs');
 const path = require('path');
 
 const NEC_KEY = process.env.DATA_GO_KR_KEY || '';
-const SG_ID = '20260603';   // 9회 지선
-const SG_TYPECODE = '3';     // 광역단체장 (전체 사전투표율 기준)
+const SG_ID = '20260603';   // 9회 지선 (선거일 YYYYMMDD = sgId)
 
 // 8회(2022) 사전투표율 시간별 (참고용 fallback)
 const PREV_8TH_HOURLY = {
@@ -78,46 +78,53 @@ function getHistoricalReference() {
   return { rate: PREV_8TH_HOURLY['2일차_18'], label: '2022.6 8회 지선 최종 (참고)' };
 }
 
-// data.go.kr NEC 시도 — 사전투표 진행 endpoint (실험)
-async function tryNecOpenApi() {
-  if (!NEC_KEY) return null;
-  // 후보 endpoint들 (NEC가 공개하지 않을 수 있음, 시도)
-  const urls = [
-    // 사전투표율 endpoint (가설 — 실제 공개 여부 미확인)
-    `https://apis.data.go.kr/9760000/PrelInfoInqireService/getPrelInfoInqire?serviceKey=${NEC_KEY}&sgId=${SG_ID}&sgTypecode=${SG_TYPECODE}&pageNo=1&numOfRows=20&_type=json`,
-  ];
-  for (const url of urls) {
-    try {
-      const r = await fetch(url, { headers: { 'User-Agent': 'KoreaPatchNotes/28.2' } });
-      if (!r.ok) continue;
-      const j = await r.json();
-      // 응답이 정상이면 (구조는 NEC가 결정)
-      if (j?.response?.body?.items) {
-        return { _raw: j, source: 'data.go.kr' };
-      }
-    } catch {}
-  }
-  return null;
+function xmlTag(s, t) {
+  const m = s.match(new RegExp(`<${t}>([^<]*)</${t}>`));
+  return m ? m[1] : null;
 }
 
-// info.nec.go.kr HTML 통계 페이지 (CORS 우회 — 서버 fetch)
-async function tryNecInfoScrape() {
+// data.go.kr 중앙선관위 공식 사전투표 결과 API (ErVotingSttusInfoInqireService)
+// 주의: 이 API는 "완료된 선거"만 데이터 제공. 사전투표 진행 중에는 INFO-03(데이터 없음).
+//   → 사전투표 종료 후 공식 최종 수치 + 시도별 자동 반영. 진행 중 실시간은 manual fallback이 담당.
+// 응답은 XML 고정(_type=json 무시). https + UA 로 호출. 키는 Vercel env DATA_GO_KR_KEY.
+async function tryNecOpenApi() {
+  if (!NEC_KEY) return null;
+  // erVotingDiv: 0=전체(누적). numOfRows는 100으로 하드캡 → 페이지네이션 필수(8회 268건=3p).
+  const base = 'https://apis.data.go.kr/9760000/ErVotingSttusInfoInqireService/getErVotingSttusInfoInqire'
+    + `?serviceKey=${NEC_KEY}&sgId=${SG_ID}&erVotingDiv=0&numOfRows=100`;
   try {
-    const url = 'https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml';
-    // 실제 페이지는 PrimeFaces ViewState + AJAX form post 필요해서 GET으로 데이터 못 가져옴
-    // 일단 페이지 도달 여부만 확인 (사용자에게 외부 링크 안내)
-    const r = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 KoreaPatchNotes/28.2' },
-    });
-    if (r.ok) {
-      // HTML body 안에 사전투표율 텍스트가 있는지 빠른 스캔
-      const html = await r.text();
-      const m = html.match(/사전투표율[^<]*?(\d+\.?\d*)\s*%/);
-      if (m) {
-        return { rate: parseFloat(m[1]), source: 'info.nec.go.kr (text)' };
+    let allItems = [];
+    const MAX_PAGES = 6; // 안전 상한 (지선 268건이면 3p)
+    for (let page = 1; page <= MAX_PAGES; page++) {
+      const r = await fetch(`${base}&pageNo=${page}`, { headers: { 'User-Agent': 'Mozilla/5.0 (patchkr)' } });
+      if (!r.ok) break;
+      const xml = await r.text();
+      if (page === 1 && !/INFO-00|NORMAL SERVICE/.test(xml)) return null; // INFO-03(진행 중) → fallback
+      const items = xml.split('<item>').slice(1);
+      if (!items.length) break;
+      allItems = allItems.concat(items);
+      const totalCount = parseInt((xml.match(/<totalCount>(\d+)/) || [])[1] || '0', 10);
+      if (allItems.length >= totalCount || items.length < 100) break;
+    }
+    if (!allItems.length) return null;
+    let national = null;
+    const byRegion = {};
+    for (const it of allItems) {
+      const sd = xmlTag(it, 'sdName');
+      const wiw = xmlTag(it, 'wiwName');
+      const turnout = parseFloat(xmlTag(it, 'erTurnout'));
+      if (sd === '합계' && wiw === '합계') {
+        national = {
+          rate: turnout,
+          turnoutCount: parseInt(xmlTag(it, 'erVotingCnt'), 10) || null,
+          totalVoters: parseInt(xmlTag(it, 'votersCnt'), 10) || null,
+        };
+      } else if (wiw === '합계' && sd && !isNaN(turnout)) {
+        byRegion[sd] = turnout; // 시도별 합계
       }
     }
-    return null;
+    if (!national || isNaN(national.rate)) return null;
+    return { ...national, byRegion: Object.keys(byRegion).length ? byRegion : null, source: 'data.go.kr (공식)' };
   } catch {
     return null;
   }
@@ -146,25 +153,20 @@ export default async function handler(req, res) {
     generatedAt: now.toISOString(),
   };
 
-  // 1) data.go.kr 시도
-  const necApi = await tryNecOpenApi();
-  if (necApi?._raw) {
-    // 응답 구조에 맞춰 파싱 (구조 미확인 → 일단 raw 노출 + 표시 안 함)
-    result.source = 'data.go.kr';
-    result.note = 'data.go.kr 응답 수신 — 파싱 패턴 검증 필요';
-    return res.status(200).json({ ...result, _raw: necApi._raw });
-  }
-
-  // 2) info.nec.go.kr HTML scrape
-  const scrape = await tryNecInfoScrape();
-  if (scrape?.rate) {
-    result.rate = scrape.rate;
-    result.source = scrape.source;
+  // 1) data.go.kr 공식 사전투표 결과 API (완료 선거만 — 진행 중엔 INFO-03 → 다음 단계로)
+  const official = await tryNecOpenApi();
+  if (official && official.rate != null && !isNaN(official.rate)) {
+    result.rate = official.rate;
+    result.turnoutCount = official.turnoutCount;
+    if (official.totalVoters) result.totalVoters = official.totalVoters;
+    result.byRegion = official.byRegion;
+    result.source = official.source;
     result.announcedAt = now.toISOString();
+    result.note = '중앙선관위 공식 data.go.kr API (사전투표 결과)';
     return res.status(200).json(result);
   }
 
-  // 3) 수동 갱신 fallback 파일
+  // 2) 수동 갱신 fallback 파일 (사전투표 진행 중 실시간 갱신용)
   const fb = readFallback();
   if (fb?.rate != null) {
     result.rate = fb.rate;
