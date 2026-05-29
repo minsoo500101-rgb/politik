@@ -11537,7 +11537,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V29.7</a>
+      <a href="/changelog" id="foot-year">V29.8</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -16108,9 +16108,13 @@ function _getKoreaMarketStatus(symbol) {
   const minute = kst.getUTCMinutes();
   const totalMin = hour * 60 + minute;
   const isWeekday = day >= 1 && day <= 5;
+  // KRX 휴장일 (평일이어도 휴장) — 확정·임박분만. 필요 시 추가.
+  const KRX_HOLIDAYS = new Set(['2026-06-03']); // 제9회 전국동시지방선거일
+  const isHoliday = KRX_HOLIDAYS.has(kst.toISOString().slice(0, 10));
   // 한국 주식: 평일 09:00 ~ 15:30
   if (symbol === '^KS11' || symbol === '^KQ11') {
     if (!isWeekday) return 'CLOSED_WEEKEND';
+    if (isHoliday) return 'CLOSED_HOLIDAY';
     if (totalMin < 540) return 'PRE'; // 9시 이전
     if (totalMin < 930) return 'REGULAR'; // 9:00 ~ 15:30
     return 'CLOSED_TODAY'; // 15:30 이후
@@ -16118,6 +16122,7 @@ function _getKoreaMarketStatus(symbol) {
   // 외환 (USD/KRW): 평일 08:00 ~ 19:00 (대략)
   if (symbol === 'KRW=X' || symbol === 'JPY=X') {
     if (!isWeekday) return 'CLOSED_WEEKEND';
+    if (isHoliday) return 'CLOSED_HOLIDAY';
     if (totalMin < 480) return 'PRE';
     if (totalMin < 1140) return 'REGULAR';
     return 'CLOSED_TODAY';
@@ -16268,9 +16273,13 @@ async function setupYahooFinanceWidgets() {
     }
     const fmtPrice = price?.toLocaleString('ko-KR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     const fmtChange = Math.abs(change)?.toLocaleString('ko-KR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    // V29.8 — Yahoo의 KRX marketState가 장중에도 CLOSED/누락으로 와 '장 마감' 오표기 → KST 기준 재판정
+    const _krState = _getKoreaMarketStatus(sym);
+    if (_krState !== 'UNKNOWN') q.marketState = _krState;
     const marketStateLabel = q.marketState === 'REGULAR' ? '🟢 장 중'
                             : q.marketState === 'CLOSED_TODAY' ? '🟡 당일 마감'
                             : q.marketState === 'CLOSED_WEEKEND' ? '⚫ 주말 휴장'
+                            : q.marketState === 'CLOSED_HOLIDAY' ? '⚫ 휴장일'
                             : q.marketState === 'CLOSED' ? '⚫ 장 마감'
                             : q.marketState === 'PRE' ? '🟡 장 전'
                             : q.marketState === 'POST' || q.marketState === 'POSTPOST' ? '🟡 시간외'
@@ -18377,6 +18386,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V29.8', date: '2026-05-29', title: '📈 시세모니터 장중 오표기 fix (KST 재판정)', items: [
+    'Yahoo의 KRX marketState가 장중에도 CLOSED/누락 → "장 마감" 오표기되던 문제',
+    'KOSPI·KOSDAQ·환율은 KST 기준(_getKoreaMarketStatus)으로 재판정 후 표시',
+    '6/3 지방선거일 등 휴장일 가드 + "휴장일" 라벨 신설'
+  ]},
   { v: 'V29.7', date: '2026-05-29', title: '🔌 사전투표율 공식 API 연동 (data.go.kr 선관위)', items: [
     '추측 endpoint 제거 → 중앙선관위 공식 ErVotingSttusInfoInqireService 연동',
     '사전투표 종료 후 공식 최종 수치 + 17 시도별 자동 반영 (100건 하드캡 → 페이지네이션)',
@@ -22943,7 +22957,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.7 · 🔌 사전투표율 공식 API</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.8 · 📈 시세 장중 fix</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
