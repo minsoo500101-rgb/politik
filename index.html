@@ -11539,7 +11539,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.4</a>
+      <a href="/changelog" id="foot-year">V30.5</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -15952,6 +15952,51 @@ async function tryLoadLiveEconomy(onProgress) {
   }
 }
 
+// V30.5 — 세계 속 한국 경제 (World Bank 무료 API, 키 불필요)
+const WB_FLAGS = { KR:'🇰🇷', US:'🇺🇸', CN:'🇨🇳', JP:'🇯🇵', DE:'🇩🇪', GB:'🇬🇧', FR:'🇫🇷', IN:'🇮🇳' };
+const WB_NAMES = { KR:'한국', US:'미국', CN:'중국', JP:'일본', DE:'독일', GB:'영국', FR:'프랑스', IN:'인도' };
+async function loadEconWorldBank() {
+  const wrap = document.getElementById('econ-world-block');
+  if (!wrap) return;
+  try {
+    const r = await fetch('/api/worldbank');
+    const d = await r.json();
+    if (!currentRoute().startsWith('#/economy') || !document.getElementById('econ-world-block')) return;
+    if (!d.indicators || !d.indicators.length) { wrap.innerHTML = '<div style="color:var(--dim);font-size:13px;padding:18px;text-align:center">세계 비교 데이터를 불러오지 못했어요.</div>'; return; }
+    wrap.innerHTML = renderWorldBankBlock(d);
+  } catch { if (document.getElementById('econ-world-block')) wrap.innerHTML = ''; }
+}
+function renderWorldBankBlock(d) {
+  const fmt = (key, v) => key === 'gdp_pc' ? '$' + Math.round(v).toLocaleString() : key === 'gdp' ? '$' + (v / 1e12).toFixed(1) + '조' : v.toFixed(2) + '%';
+  const cards = d.indicators.map(ind => {
+    const entries = d.countries.map(c => ({ c, value: ind.byCountry[c] && ind.byCountry[c].value, year: ind.byCountry[c] && ind.byCountry[c].year })).filter(e => e.value != null);
+    if (!entries.length) return '';
+    const display = [...entries].sort((a, b) => b.value - a.value);
+    const max = Math.max(...entries.map(e => Math.abs(e.value))) || 1;
+    const ranked = [...entries].sort((a, b) => ind.higher === 'low' ? a.value - b.value : b.value - a.value);
+    const krRank = ranked.findIndex(e => e.c === 'KR') + 1;
+    const krYear = ind.byCountry['KR'] && ind.byCountry['KR'].year;
+    return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--bg-card)">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px">
+        <span style="font-size:13.5px;font-weight:800;color:var(--text)">${ind.label}</span>
+        ${krRank ? `<span style="font-size:11.5px;font-weight:800;color:var(--brand)">🇰🇷 ${krRank}위/${entries.length}</span>` : ''}
+        <span style="margin-left:auto;font-size:10.5px;color:var(--dim)">${krYear || ''}</span>
+      </div>
+      ${display.map(e => {
+        const isKR = e.c === 'KR';
+        const w = Math.max(3, Math.abs(e.value) / max * 100);
+        return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+          <span style="flex:0 0 62px;font-size:11.5px;font-weight:${isKR ? '800' : '600'};color:var(--text)">${WB_FLAGS[e.c] || ''} ${WB_NAMES[e.c] || e.c}</span>
+          <span style="flex:1;height:9px;background:var(--bg-elev);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:${w.toFixed(1)}%;background:${isKR ? 'var(--brand)' : 'var(--border-strong)'};border-radius:5px"></span></span>
+          <span style="flex:0 0 80px;text-align:right;font-size:11.5px;font-weight:${isKR ? '800' : '600'};color:${isKR ? 'var(--brand)' : 'var(--text-2)'}">${fmt(ind.key, e.value)}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px">${cards}</div>
+    <div style="font-size:11px;color:var(--dim);margin-top:10px">출처: World Bank Open Data · 국가별 최신 가용 연도 기준 (키 없이 직접 연동)</div>`;
+}
+
 function renderEconomyPage() {
   // V22.0 — 경제 지표 소셜 투표 활성화 헬퍼
   const _activateEconVotes = () => {
@@ -15984,7 +16029,7 @@ function renderEconomyPage() {
   });
   // V23.1 — TradingView 위젯 자동 로드 (econ-body 외부, 재렌더링 무영향)
   setTimeout(() => {
-    if (currentRoute().startsWith('#/economy')) setupTradingViewWidgets();
+    if (currentRoute().startsWith('#/economy')) { setupTradingViewWidgets(); loadEconWorldBank(); }
   }, 200);
   return `
     <div class="group-back" id="back-home">← 홈</div>
@@ -16016,14 +16061,20 @@ function renderEconomyPage() {
         <!-- 원자재·암호화폐: TradingView 실시간 -->
         <div class="econ-section-label" style="margin-top:14px">
           <span class="econ-section-tag econ-section-live">🔴 LIVE · 15~20분 지연</span>
-          <span class="econ-section-desc">원자재·암호화폐 — TradingView 임베드 위젯</span>
+          <span class="econ-section-desc">글로벌 지수·원자재·암호화폐 — TradingView 임베드 위젯</span>
         </div>
         <div class="econ-tv-grid">
+          <div class="econ-tv-widget" data-tv-symbol="FOREXCOM:SPXUSD" data-tv-name="S&P 500"></div>
+          <div class="econ-tv-widget" data-tv-symbol="TVC:NI225" data-tv-name="니케이 225"></div>
+          <div class="econ-tv-widget" data-tv-symbol="TVC:DXY" data-tv-name="달러인덱스"></div>
           <div class="econ-tv-widget" data-tv-symbol="TVC:USOIL" data-tv-name="WTI 원유"></div>
           <div class="econ-tv-widget" data-tv-symbol="TVC:GOLD" data-tv-name="국제 금"></div>
           <div class="econ-tv-widget" data-tv-symbol="CRYPTO:BTCUSD" data-tv-name="비트코인"></div>
         </div>
       </div>
+
+      <h2 style="font-size:18px;font-weight:800;margin:24px 0 12px;padding:0 4px">🌍 세계 속 한국 경제 <span style="font-size:11px;color:var(--dim);font-weight:600">· World Bank</span></h2>
+      <div id="econ-world-block"><div class="loading" style="padding:20px"><span class="loading-spinner"></span>세계 경제 비교 불러오는 중…</div></div>
 
       <h2 style="font-size:18px;font-weight:800;margin:24px 0 12px;padding:0 4px">📊 과거 추이 — 시계열 분석 (정부 임기·종가 기준)</h2>
       <div id="econ-body">
@@ -18404,6 +18455,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.5', date: '2026-05-29', title: '🌍 경제 섹션 확장 — 세계 비교 + 글로벌 시세', items: [
+    '"세계 속 한국 경제" 신규 — World Bank 무료 API로 주요 8개국 1인당GDP·GDP규모·성장률·물가·실업률 비교 (한국 순위 표시)',
+    '시세 모니터에 글로벌 지수 추가 — S&P500·니케이225·달러인덱스',
+    'World Bank는 키·프록시 불필요(CORS) — 매년 자동 최신, 추측 0'
+  ]},
   { v: 'V30.4', date: '2026-05-29', title: '🔗 경제 코스피·코스닥·환율 단일 기준 통일', items: [
     '코스피·코스닥·환율 현재값을 핵심지표·과거추이·시세모니터 모두 동일 소스(Yahoo 실시간)로 통일',
     'V30.2에서 제외했던 과거추이 코스피·코스닥 추이 복원 — 추이는 유지하고 현재값만 실시간으로'
@@ -23049,7 +23105,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.4 · 🔗 시세 단일 기준</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.5 · 🌍 경제 세계 비교</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
