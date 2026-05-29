@@ -43,6 +43,21 @@ function parseRows(rows) {
   return out;
 }
 
+async function clickSearch(page) {
+  // "통합검색"(헤더)이 아닌 조회조건의 검색 버튼을 여러 전략으로 시도
+  const candidates = [
+    page.getByRole('button', { name: '검색', exact: true }),
+    page.locator('button', { hasText: '검색' }).filter({ hasNotText: '통합' }),
+    page.locator('a', { hasText: '검색' }).filter({ hasNotText: '통합' }),
+    page.locator('input[value="검색"], input[value*="검색"]'),
+    page.locator(':text-is("검색")'),
+  ];
+  for (const loc of candidates) {
+    try { if (await loc.count()) { await loc.first().click({ timeout: 12000 }); return; } } catch {}
+  }
+  throw new Error('검색 버튼을 찾지 못함');
+}
+
 (async () => {
   if (!inWindow()) { console.log('[skip] 사전투표 기간 아님'); process.exit(0); }
 
@@ -50,13 +65,15 @@ function parseRows(rows) {
   let parsed = null;
   try {
     const page = await browser.newPage({ userAgent: UA, locale: 'ko-KR' });
+    const REPORT_URL = 'https://info.nec.go.kr/main/showDocument.xhtml?electionId=0020260603&topMenuId=VC&secondMenuId=VCAP01';
     await page.goto(HOME, { waitUntil: 'networkidle', timeout: 60000 });
-    // 투·개표 → 사전투표진행상황(위원회별)
-    await page.getByText('투·개표', { exact: true }).first().click({ timeout: 25000 });
-    await page.getByText('사전투표진행상황(위원회별)', { exact: true }).first().click({ timeout: 25000 });
-    await page.waitForLoadState('networkidle');
+    // 투·개표 진입(세션 컨텍스트 확보) 후 위원회별 페이지로 직접 이동
+    // — 서브메뉴 링크가 DOM엔 있으나 hidden이라 클릭 대신 href로 goto
+    await page.getByText('투·개표', { exact: true }).first().click({ timeout: 15000 }).catch(() => {});
+    await page.goto(REPORT_URL, { waitUntil: 'networkidle', timeout: 60000 });
+    await page.waitForTimeout(1200);
     // 검색 (시도=전체, 투표일자=전체 기본값)
-    await page.getByRole('button', { name: /검색/ }).first().click({ timeout: 25000 });
+    await clickSearch(page);
     await page.waitForSelector('text=합계', { timeout: 40000 });
     await page.waitForTimeout(1500);
     const rows = await page.evaluate(() => {
