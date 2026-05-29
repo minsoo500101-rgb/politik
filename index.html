@@ -2035,6 +2035,14 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     letter-spacing: 0.8px;
     animation: patch-pulse 2s infinite;
   }
+  .patch-new-badge {
+    display: inline-block;
+    font-size: 11px; font-weight: 800;
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--brand); color: #fff;
+    letter-spacing: -0.2px;
+    animation: patch-pulse 2s infinite;
+  }
   @keyframes patch-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
@@ -3438,6 +3446,55 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .explore-grid .tool-card.play-link:hover {
     border-color: var(--warn);
     border-style: solid;
+  }
+
+  /* V31.0 — 탐색 도구 목적별 그룹 (추리기 + 목적별 재구성) */
+  .goal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .goal-group {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .goal-head {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 12px; margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .goal-ic {
+    font-size: 20px; width: 40px; height: 40px; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--brand-pale); border-radius: 10px;
+  }
+  .goal-head b { font-size: 14px; font-weight: 800; color: var(--text); display: block; }
+  .goal-head em { font-size: 11.5px; color: var(--dim); font-style: normal; }
+  .goal-tool {
+    display: block; padding: 9px 11px; margin-top: 6px;
+    background: var(--bg-elev); border: 1px solid transparent;
+    border-radius: 9px; font-size: 13px; font-weight: 600;
+    color: var(--text); text-decoration: none;
+    transition: border-color .13s ease, background .13s ease;
+  }
+  .goal-tool:hover { border-color: var(--brand); background: var(--bg-card); }
+  .goal-more {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    margin-top: 14px;
+  }
+  .goal-more-lbl { font-size: 11.5px; font-weight: 700; color: var(--dim); margin-right: 2px; }
+  .goal-chip {
+    font-size: 12px; font-weight: 600;
+    padding: 6px 11px; border-radius: 999px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--dim); text-decoration: none;
+    transition: border-color .13s ease, color .13s ease;
+  }
+  .goal-chip:hover { border-color: var(--brand); color: var(--text); }
+  @media (max-width: 760px) {
+    .goal-grid { grid-template-columns: 1fr; }
   }
 
   /* ============ V20.7 — 실시간 정치 트렌드 (/today) ============ */
@@ -11596,7 +11653,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.9</a>
+      <a href="/changelog" id="foot-year">V31.0</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18509,6 +18566,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.0', date: '2026-05-29', title: '🧭 홈 탐색 도구 목적별 정리 + 신규 법안 배지', items: [
+    '탐색 도구 15개 플랫 카드 → 목적 3그룹(선거 준비·인물/정당·정부 평가, 각 한 줄 효용) + 니치 기능은 더보기 칩으로 추려 정리',
+    '최신 패치 헤더에 "🆕 N건 신규" 배지 — 마지막 방문 이후 통과된 법안 수 (localStorage 기준선, 첫 방문은 0)',
+    '내 사전투표소 찾기를 선거 그룹에 노출 (이전엔 선거 페이지에서만 접근 가능)'
+  ]},
   { v: 'V30.9', date: '2026-05-29', title: '🧹 실검 레이아웃 정리 + 법안 추이 바 제거', items: [
     '한국 실시간 검색 트렌드를 세로 Top 리스트로 — 벤토 반칸에서 6열 그리드가 잘리던 문제 해결 (5번까지 표시)',
     '"이번 주 처리·최근 30일·주간 가결률" 추이 바 제거 — 법안은 저빈도라 무의미, 최신 패치 피드가 신규 법안 노출'
@@ -22987,6 +23049,7 @@ function renderPartyHistoryPage() {
   `;
 }
 
+let _billsSeenBaseline; // V31.0 — 신규 법안 배지 기준선 (페이지 로드당 1회 캡처)
 function renderHome() {
   const groups = groupMembers();
   const totalCount = state.members.length;
@@ -23057,6 +23120,15 @@ function renderHome() {
   // 최근 통과 법안 (패치노트 피드용) — 가결된 의안만 최신순
   const allPassed = (state.bills || []).filter(b => /가결/.test(b.PROC_RESULT_CD || ''))
     .sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+
+  // V31.0 — 신규 법안 배지 (마지막 방문 이후 PROC_DT 큰 가결 법안 수, 첫 방문은 0)
+  // 기준선은 페이지 로드당 1회만 캡처 — 재렌더로 배지가 사라지지 않게. localStorage는 setup에서 max로 갱신.
+  const _billsMaxDt = allPassed.length ? (allPassed[0].PROC_DT || '') : '';
+  if (_billsSeenBaseline === undefined) {
+    try { _billsSeenBaseline = localStorage.getItem('patchkr_bills_lastseen') || ''; } catch (e) { _billsSeenBaseline = ''; }
+  }
+  const _newBillCount = (_billsSeenBaseline && _billsMaxDt)
+    ? allPassed.filter(b => (b.PROC_DT || '') > _billsSeenBaseline).length : 0;
 
   // 정당 필터 (홈 피드 전용)
   const homeF = state.homeFeedFilter || { party: 'all' };
@@ -23225,7 +23297,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.9 · 🧹 실검 정리 + 군더더기 제거</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.0 · 🧭 홈 목적별 정리 + 신규 법안 배지</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23368,7 +23440,7 @@ function renderHome() {
       <!-- 패치노트 피드 — 가장 위 -->
       <div class="patch-feed">
         <div class="patch-feed-head">
-          <h2>📋 최신 패치 <span class="patch-live">LIVE</span></h2>
+          <h2>📋 최신 패치 <span class="patch-live">LIVE</span>${_newBillCount > 0 ? `<span class="patch-new-badge">🆕 ${_newBillCount}건 신규</span>` : ''}</h2>
           <a href="/bills" class="chart-link">전체 패치노트 →</a>
         </div>
         <div class="home-filter-bar">
@@ -23500,28 +23572,41 @@ function renderHome() {
         </div>
       </div>
 
-      <!-- 탐색 도구 -->
+      <!-- 탐색 도구 (V31.0 — 목적별 재구성) -->
       <div class="explore-section">
         <div class="explore-h-row">
-          <h2 class="explore-h">🧭 탐색 도구</h2>
-          <span class="explore-sub">13개 도구 · 모두 무료</span>
+          <h2 class="explore-h">🧭 무엇을 하고 싶나요?</h2>
+          <span class="explore-sub">목적별로 골라보세요 · 모두 무료</span>
         </div>
-        <div class="explore-grid explore-grid-compact">
-          <a class="tool-card" href="/economy"><span>💰</span><div><b>경제 지표</b><em>금리·환율·물가·GDP 추이 + 정부 임기</em></div></a>
-          <a class="tool-card" href="/compare-cand"><span>🆚</span><div><b>9회 후보 비교</b><em>최대 3명 옆에 옆에</em></div></a>
-          <a class="tool-card" href="/dex"><span>📕</span><div><b>정치인 도감</b><em>삼권+지방+역사 컬렉션</em></div></a>
-          <a class="tool-card" href="/map"><span>🗺</span><div><b>정치 분포 지도</b><em>17 시도 + 226 시군구</em></div></a>
-          <a class="tool-card" href="/rankings"><span>📊</span><div><b>활동 랭킹</b><em>점수·발의·통과율</em></div></a>
-          <a class="tool-card" href="/glossary"><span>📖</span><div><b>용어 사전</b><em>248개 용어 15 카테고리</em></div></a>
-          <a class="tool-card" href="/bookmarks"><span>⭐</span><div><b>관심 의원</b><em>북마크 모아보기</em></div></a>
-          <a class="tool-card" href="/stances"><span>🗳</span><div><b>내 정치 입장</b><em>지지·반대 익명 기록</em></div></a>
-          <a class="tool-card" href="/committees"><span>🏢</span><div><b>위원회 25개</b><em>상임 17 + 특별 8</em></div></a>
-          <a class="tool-card" href="/world"><span>🌐</span><div><b>국제 비교</b><em>12개 민주국가 지표</em></div></a>
-          <a class="tool-card" href="/elections"><span>🗳</span><div><b>역대 지방선거</b><em>7·8회 결과 비교</em></div></a>
-          <a class="tool-card" href="/today"><span>🌍</span><div><b>지금 한국 6섹터</b><em>정치·경제·엔터·스포츠·국제·사회</em></div></a>
-          <a class="tool-card" href="/pledge-tracker"><span>🔥</span><div><b>8회 공약 이행 추적</b><em>4년 약속, 진짜 했나?</em></div></a>
-          <a class="tool-card" href="/history/parties"><span>📚</span><div><b>정당사 1948~</b><em>45개 정당 타임라인</em></div></a>
-          <a class="tool-card play-link" href="/play"><span>🧪</span><div><b>실험실</b><em>출신 분석·의원 비교·관리</em></div></a>
+        <div class="goal-grid">
+          <div class="goal-group">
+            <div class="goal-head"><span class="goal-ic">🗳</span><div><b>선거 준비</b><em>6/3 투표 전 후보 검증</em></div></div>
+            <a class="goal-tool" href="/compare-cand">🆚 9회 후보 5대 공약 비교</a>
+            <a class="goal-tool" href="/polling">📍 내 사전투표소 찾기</a>
+            <a class="goal-tool" href="/elections">🗳 역대 지방선거 비교</a>
+          </div>
+          <div class="goal-group">
+            <div class="goal-head"><span class="goal-ic">👤</span><div><b>인물·정당</b><em>누가 무엇을 하는가</em></div></div>
+            <a class="goal-tool" href="/dex">📕 정치인 도감 768명</a>
+            <a class="goal-tool" href="/rankings">📊 의원 활동 랭킹</a>
+            <a class="goal-tool" href="/map">🗺 정치 분포 지도</a>
+          </div>
+          <div class="goal-group">
+            <div class="goal-head"><span class="goal-ic">💰</span><div><b>정부 평가</b><em>데이터로 성적 매기기</em></div></div>
+            <a class="goal-tool" href="/economy">💰 경제 지표 LIVE</a>
+            <a class="goal-tool" href="/world">🌐 국제 12개국 비교</a>
+            <a class="goal-tool" href="/pledge-tracker">🔥 공약 이행 추적</a>
+          </div>
+        </div>
+        <div class="goal-more">
+          <span class="goal-more-lbl">더보기</span>
+          <a class="goal-chip" href="/glossary">📖 용어 사전</a>
+          <a class="goal-chip" href="/committees">🏢 위원회 25</a>
+          <a class="goal-chip" href="/history/parties">📚 정당사 1948~</a>
+          <a class="goal-chip" href="/today">🌍 지금 한국</a>
+          <a class="goal-chip" href="/bookmarks">⭐ 관심 의원</a>
+          <a class="goal-chip" href="/stances">🗳 내 정치 입장</a>
+          <a class="goal-chip" href="/play">🧪 실험실</a>
         </div>
       </div>
     </div>
@@ -25810,6 +25895,12 @@ function route() {
       populateHomeEconMini();
       // V30.7 — 상단 KPI 스트립 라이브 채움 (사전투표율 + 경제)
       populateHomeKpiStrip();
+      // V31.0 — 신규 법안 "본 시점" 갱신 (다음 방문 비교 기준)
+      try {
+        const _mx = (state.bills || []).filter(b => /가결/.test(b.PROC_RESULT_CD || ''))
+          .reduce((m, b) => ((b.PROC_DT || '') > m ? (b.PROC_DT || '') : m), '');
+        if (_mx) localStorage.setItem('patchkr_bills_lastseen', _mx);
+      } catch (e) {}
       // V21.1 — 홈 정치 트렌드 위젯 (네이버 뉴스 인물 빈도)
       populateHomeTrend();
       // V22.5 — 홈 인기 랭킹 위젯 (페이지뷰 기반)
