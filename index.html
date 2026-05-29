@@ -5688,6 +5688,61 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   @media (max-width: 700px) {
     .econ-mini-grid { grid-template-columns: repeat(2, 1fr); }
   }
+
+  /* V30.7 — 홈 상단 KPI 스트립 (대시보드 시그니처: 벤토 + 관제탑 혼합) */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .kpi-tile {
+    display: block;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 13px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .kpi-tile:hover { border-color: var(--brand); transform: translateY(-2px); }
+  .kpi-tile--accent { background: var(--brand-pale); border-color: var(--brand-soft); }
+  .kpi-l {
+    font-size: 10.5px; color: var(--dim); font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .kpi-v {
+    font-size: 19px; font-weight: 900; letter-spacing: -.5px;
+    margin-top: 3px; color: var(--text); line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-tile--accent .kpi-v { color: var(--brand); }
+  .kpi-d { font-size: 10.5px; margin-top: 2px; color: var(--dim); font-weight: 700; }
+  .kpi-d--up { color: var(--ok); }
+  .kpi-d--down { color: #dc2626; }
+  .kpi-d--flat { color: var(--dim); }
+  .kpi-d--accent { color: var(--brand); }
+  @media (max-width: 1024px) {
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .kpi-v { font-size: 17px; }
+  }
+
+  /* V30.8 — 홈 중간 카드 벤토 그리드 (2단): 여론판·인기랭킹·실검·경제 */
+  .home-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .home-bento > * { margin-bottom: 0 !important; }
+  .home-bento .home-bento-wide { grid-column: 1 / -1; }
+  @media (max-width: 760px) {
+    .home-bento { grid-template-columns: 1fr; gap: 12px; }
+  }
   @media (max-width: 420px) {
     .econ-mini-grid { gap: 6px; }
     .econ-mini-tile { padding: 10px 11px; }
@@ -11539,7 +11594,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.6</a>
+      <a href="/changelog" id="foot-year">V30.8</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18452,6 +18507,16 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.8', date: '2026-05-29', title: '🧩 홈 중간 카드 벤토 그리드 — 세로 나열 → 2단 타일', items: [
+    '시민 여론판·이번 주 인기·한국 실검·경제 핵심지표를 2단 벤토 그리드로 묶음 (스크롤 단축, 모던 레이아웃)',
+    '여론판·경제는 전체 폭, 인기·실검은 2열 나란히 — 데스크탑 2열, 모바일 1열 자동',
+    '기존 라이브 배선(랭킹·실검·경제 async, 접이식 토글)·라이트/다크 모두 유지'
+  ]},
+  { v: 'V30.7', date: '2026-05-29', title: '📊 홈 상단 KPI 스트립 — 대시보드 시그니처', items: [
+    '홈 최상단에 6개 핵심 지표 한 줄 (지선 D-day·사전투표율·코스피·원/달러·기준금리·통과 법안) — 스크롤 없이 즉시 확인',
+    '사전투표율·코스피·환율·금리는 라이브 (early-vote API + 경제 데이터 재사용, 별도 fetch 없이 dedupe)',
+    '라이트·다크 토큰 적용 + 6→3→2칸 반응형, 선거 종료 후 사전투표율 타일은 도감으로 자동 교체'
+  ]},
   { v: 'V30.6', date: '2026-05-29', title: '🧭 선거 2026 공용 탭바 — 흩어진 선거 페이지 연결', items: [
     '지선 종합·사전투표·투표소·공약비교·개표 5개 페이지 상단에 공용 탭바 (한 흐름으로 이동)',
     '라우트·URL은 그대로 유지 — SEO·사이트맵 보존하면서 파편화만 해소'
@@ -23102,10 +23167,59 @@ function renderHome() {
 
   return `
     <div class="dash">
+      ${(() => {
+        // V30.7 — 상단 KPI 스트립 (대시보드 시그니처)
+        const dDayN = _ddiff > 0 ? `D-${_ddiff}` : _ddiff === 0 ? 'D-Day' : `D+${Math.abs(_ddiff)}`;
+        const billsCount = (state.bills?.length || 0).toLocaleString();
+        // 사전투표율 타일: 선거 D+2 이내만 노출, 그 후엔 정치인 도감으로 교체
+        const evTileLive = _ddiff >= -2;
+        const evPlaceholder = _isEarlyVoting ? '집계 중' : _isEarlyD1 ? '5/29' : (_ddiff < 0 ? '집계 종료' : '대기');
+        const evSub = _isEarlyVoting ? '🔴 진행중' : _isEarlyD1 ? '내일 시작' : (_ddiff < 0 ? '사전투표 마감' : '5/29~30');
+        const evTile = evTileLive
+          ? `<a class="kpi-tile" href="/early-voting">
+               <div class="kpi-l">사전투표율</div>
+               <div class="kpi-v" id="kpi-ev-v">${evPlaceholder}</div>
+               <div class="kpi-d" id="kpi-ev-d">${evSub}</div>
+             </a>`
+          : `<a class="kpi-tile" href="/dex">
+               <div class="kpi-l">정치인 도감</div>
+               <div class="kpi-v">${totalCount.toLocaleString()}</div>
+               <div class="kpi-d kpi-d--accent">약력·표결·재산</div>
+             </a>`;
+        return `
+          <div class="kpi-strip" id="home-kpi-strip">
+            <a class="kpi-tile kpi-tile--accent" href="/election2026">
+              <div class="kpi-l">9회 지선</div>
+              <div class="kpi-v">${dDayN}</div>
+              <div class="kpi-d kpi-d--accent">6/3 본투표</div>
+            </a>
+            ${evTile}
+            <a class="kpi-tile" href="/economy">
+              <div class="kpi-l">코스피</div>
+              <div class="kpi-v" id="kpi-kospi-v">—</div>
+              <div class="kpi-d" id="kpi-kospi-d">로딩…</div>
+            </a>
+            <a class="kpi-tile" href="/economy">
+              <div class="kpi-l">원/달러</div>
+              <div class="kpi-v" id="kpi-usd-v">—</div>
+              <div class="kpi-d" id="kpi-usd-d">로딩…</div>
+            </a>
+            <a class="kpi-tile" href="/economy">
+              <div class="kpi-l">기준금리</div>
+              <div class="kpi-v" id="kpi-rate-v">—</div>
+              <div class="kpi-d" id="kpi-rate-d">로딩…</div>
+            </a>
+            <a class="kpi-tile" href="/bills">
+              <div class="kpi-l">22대 통과 법안</div>
+              <div class="kpi-v">${billsCount}</div>
+              <div class="kpi-d kpi-d--up">누적</div>
+            </a>
+          </div>`;
+      })()}
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.6 · 🧭 선거 탭 연결</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.8 · 🧩 홈 벤토 그리드</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23172,8 +23286,10 @@ function renderHome() {
         `;
       })()}
 
+      <!-- V30.8 — 중간 카드 벤토 그리드 (2단): 여론판·인기랭킹·실검·경제 -->
+      <div class="home-bento">
       <!-- 📊 V23.3/V24.7 — 시민 여론판 진입 카드 -->
-      <a href="/pulse" class="home-pulse-card" style="text-decoration:none;color:inherit">
+      <a href="/pulse" class="home-pulse-card home-bento-wide" style="text-decoration:none;color:inherit">
         <div class="home-pulse-l">
           <div class="home-pulse-eye">PUBLIC OPINION · LIVE</div>
           <div class="home-pulse-title">📊 시민 여론판</div>
@@ -23227,7 +23343,7 @@ function renderHome() {
       </div>
 
       <!-- 💰 경제 핵심 지표 미니 위젯 — 관심도 최상위 (환율·코스피·코스닥 매일 확인) -->
-      <div class="econ-mini-row collapsible-widget" id="home-econ-mini">
+      <div class="econ-mini-row collapsible-widget home-bento-wide" id="home-econ-mini">
         <button class="cw-toggle"><span>💰 경제 핵심 지표 <span style="color:var(--ok);font-size:11px;margin-left:4px" id="home-econ-live-mob" >🟢 LIVE</span></span><span class="cw-chev">▼</span></button>
         <div class="cw-body">
           <div class="econ-mini-head">
@@ -23241,6 +23357,7 @@ function renderHome() {
           </div>
         </div>
       </div>
+      </div><!-- /home-bento -->
 
       ${(() => {
         // 이번 주 트렌드 (최근 7일 처리 의안)
@@ -25731,6 +25848,8 @@ function route() {
       prefetchPhotos(prefetch, 3);
       // 홈 경제 미니 위젯 — 정적 데이터 즉시 표시 + 라이브 fetch 백그라운드
       populateHomeEconMini();
+      // V30.7 — 상단 KPI 스트립 라이브 채움 (사전투표율 + 경제)
+      populateHomeKpiStrip();
       // V21.1 — 홈 정치 트렌드 위젯 (네이버 뉴스 인물 빈도)
       populateHomeTrend();
       // V22.5 — 홈 인기 랭킹 위젯 (페이지뷰 기반)
@@ -25866,6 +25985,66 @@ async function populateHomeTrend() {
 
 // 홈 경제 미니 위젯 — 관심도 높은 순 6개 지표
 // 환율·코스피·코스닥 (매일 확인 빈도 최고) → 기준금리·CPI·실업률
+// V30.7 — 상단 KPI 스트립 라이브 채움 (사전투표율 + 코스피·원/달러·기준금리)
+async function populateHomeKpiStrip() {
+  const strip = document.getElementById('home-kpi-strip');
+  if (!strip) return;
+
+  // 1) 사전투표율 — /api/early-vote-rate (early-voting 페이지와 동일 소스)
+  if (document.getElementById('kpi-ev-v')) {
+    fetch('/api/early-vote-rate').then(r => r.ok ? r.json() : null).then(j => {
+      const vEl = document.getElementById('kpi-ev-v');
+      const dEl = document.getElementById('kpi-ev-d');
+      if (!j || !vEl) return;
+      if (j.rate != null) {
+        vEl.textContent = j.rate.toFixed(2) + '%';
+        if (dEl) {
+          const phaseShort = { '1일차': '🔴 1일차', '2일차': '🔴 2일차', '1일차_종료': '1일차 종료', 'lcl_종료': '집계 종료', '종료': '집계 종료', 'pre': '시작 전' };
+          dEl.textContent = phaseShort[j.phase] || '🔴 진행중';
+          dEl.className = 'kpi-d kpi-d--up';
+        }
+      }
+    }).catch(() => {});
+  }
+
+  // 2) 경제 — loadEconomy() 캐시 + tryLoadLiveEconomy() (econ-mini와 동일 dedupe)
+  const econ = await loadEconomy();
+  if (!econ) return;
+  // 'market' = 코스피·원달러 (연도별 데이터라 일간 등락 산출 불가 → 라이브 표기), 'rate' = 기준금리(저빈도 변경 → 방향)
+  const SPECS = [
+    ['kospi', 'kpi-kospi-v', 'kpi-kospi-d', 'market'],
+    ['usd_krw', 'kpi-usd-v', 'kpi-usd-d', 'market'],
+    ['base_rate', 'kpi-rate-v', 'kpi-rate-d', 'rate'],
+  ];
+  function fillEcon() {
+    for (const [id, vId, dId, kind] of SPECS) {
+      const ind = econ.indicators.find(x => x.id === id);
+      const vEl = document.getElementById(vId), dEl = document.getElementById(dId);
+      if (!ind || !ind.data?.length || !vEl) continue;
+      const last = ind.data[ind.data.length - 1];
+      const prev = ind.data[ind.data.length - 2];
+      const delta = prev ? last.value - prev.value : 0;
+      if (kind === 'rate') {
+        vEl.textContent = last.value.toFixed(2) + '%';
+        if (dEl) {
+          dEl.textContent = delta > 0 ? '▲ 인상' : delta < 0 ? '▼ 인하' : '= 동결';
+          dEl.className = 'kpi-d kpi-d--' + (delta > 0 ? 'down' : delta < 0 ? 'up' : 'flat');
+        }
+      } else {
+        vEl.textContent = last.value.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+        if (dEl) {
+          dEl.textContent = ind._live ? '🟢 실시간' : '장중 기준';
+          dEl.className = 'kpi-d kpi-d--flat';
+        }
+      }
+    }
+  }
+  fillEcon();
+  tryLoadLiveEconomy((ind, ok) => {
+    if (ok && document.getElementById('home-kpi-strip')) fillEcon();
+  }).then(() => { if (document.getElementById('home-kpi-strip')) fillEcon(); }).catch(() => {});
+}
+
 async function populateHomeEconMini() {
   const tiles = document.getElementById('home-econ-tiles');
   if (!tiles) return;
