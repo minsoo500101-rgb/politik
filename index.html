@@ -11485,6 +11485,8 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <div class="foot-h">📊 데이터</div>
       <a href="/bills">22대 법안 1,595건</a>
       <a href="/election2026">🔴 9회 지선 LIVE</a>
+      <a href="/early-voting">🗳 사전투표 안내·투표율</a>
+      <a href="/polling">📍 사전투표소 찾기</a>
       <a href="/election2026/live">🔴 선거 당일 개표</a>
       <a href="/economy">경제 지표</a>
       <a href="/dex">정치인 도감 768명</a>
@@ -11537,7 +11539,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.0</a>
+      <a href="/changelog" id="foot-year">V30.1</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18386,6 +18388,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.1', date: '2026-05-29', title: '🔍 SEO 정비 — 사전투표소 노출 강화', items: [
+    'sitemap에 /polling·/rankings·/me 추가 + 핵심 페이지 lastmod 갱신',
+    '홈 hero "사전투표소 찾기" 버튼 외부(선관위)→내부 /polling 연결',
+    'footer·llms.txt에 사전투표소 찾기·실시간 투표율 노출'
+  ]},
   { v: 'V30.0', date: '2026-05-29', title: '🤖 사전투표율 무인 자동 갱신 (NEC headless)', items: [
     'GitHub Actions가 매시 :55 NEC 통계페이지를 헤드리스 크로미움으로 크롤 → 합계+17시도 자동 반영',
     '봇차단(302)을 실제 브라우저로 우회 — 수동 복붙 불필요',
@@ -22993,7 +23000,7 @@ function renderHome() {
     ? `
           <a class="hero-btn hero-btn-live" href="/early-voting">🗳 사전투표 안내·체크리스트</a>
           <a class="hero-btn hero-btn-cmp" href="/compare-cand">🆚 후보 공약 비교</a>
-          <a class="hero-btn" href="https://si.nec.go.kr/" target="_blank" rel="noopener">📍 사전투표소 찾기 ↗</a>`
+          <a class="hero-btn" href="/polling">📍 내 사전투표소 찾기</a>`
     : _isEarlyD1
     ? `
           <a class="hero-btn hero-btn-live" href="/early-voting">🗳 사전투표 안내·체크리스트</a>
@@ -23014,7 +23021,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.0 · 🤖 사전투표율 자동화</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.1 · 🔍 SEO 정비</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
