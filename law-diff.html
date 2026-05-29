@@ -40,16 +40,19 @@
   .art-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#fafafa;border-bottom:1px solid var(--bd2)}
   .art-no{font-size:11px;color:var(--dim);font-weight:700}
   .copy-btn{font-size:11px;padding:3px 9px;margin-left:6px}
-  .art-grid{display:grid;grid-template-columns:1fr 1fr}
-  .art-col{padding:10px 12px;font-size:13px}
-  .art-col.old{border-right:1px solid var(--bd2)}
-  .col-label{font-size:10.5px;font-weight:700;color:var(--dim);margin-bottom:4px;letter-spacing:.5px}
+  .arow{display:grid;grid-template-columns:1fr 1fr}
+  .arow+.arow{border-top:1px solid var(--bd2)}
+  .arow.head .acol{font-size:10.5px;font-weight:700;color:var(--dim);letter-spacing:.5px;background:#fafafa}
+  .acol{padding:8px 12px;font-size:13px}
+  .acol.old{border-right:1px solid var(--bd2)}
+  .arow.same .acol{color:#9aa0a8}
+  .dim{color:#bbb}
   .dc{color:var(--del);font-weight:600}
   .ic{color:var(--ins);font-weight:600}
   .legend{font-size:11.5px;color:var(--dim);margin-bottom:8px}
   .empty,.loading{color:var(--dim);font-size:13px;padding:16px;text-align:center}
   footer{margin-top:24px;font-size:11px;color:#999;border-top:1px solid var(--bd2);padding-top:10px}
-  @media(max-width:680px){.art-grid{grid-template-columns:1fr}.art-col.old{border-right:0;border-bottom:1px solid var(--bd2)}}
+  @media(max-width:680px){.arow{grid-template-columns:1fr}.acol.old{border-right:0;border-bottom:1px solid var(--bd2)}}
 </style></head>
 <body><div class="wrap">
   <div class="top">
@@ -140,28 +143,45 @@ function search(){
     </div>`).join('');
 }
 
+function extractTitle(s){ s=stripTags(s); const m=s.match(/^제\s*\d+조(?:의\d+)?\s*\([^)]*\)/)||s.match(/^제\s*\d+조(?:의\d+)?/); return m?m[0].trim():''; }
+function isHeader(s){ return /^제\s*\d+조/.test(stripTags(s||'')); }
+function rowSide(r,side){ // 한 행을 화면용 HTML로 (색)
+  if(isUnchanged(r.newC)) return esc(stripTags(side==='old'?r.oldC:r.newC));
+  const df=wordDiff(r.oldC,r.newC);
+  return side==='old' ? (stripTags(r.oldC)?renderParts(df.oldParts,'dc'):'<span class="dim">(신설)</span>') : renderParts(df.newParts,'ic');
+}
 async function showCompare(mst,name){
   const box=$('#compare'); box.innerHTML='<div class="loading">신구조문 불러오는 중…</div>';
   box.scrollIntoView({behavior:'smooth',block:'start'});
   let d; try{ d=await (await fetch(BODY(mst))).json(); }
   catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
   const oldByNo=new Map((d.old||[]).map(a=>[String(a.no),a.content]));
-  ARTS=(d.new||[]).filter(a=>!isUnchanged(a.content)).map(a=>{
-    const oldC=oldByNo.get(String(a.no))||'', df=wordDiff(oldC,a.content);
-    return { no:String(a.no), oldEmpty:!stripTags(oldC), oldParts:df.oldParts, newParts:df.newParts };
-  });
-  const rows=ARTS.map((a,idx)=>`<div class="art">
-      <div class="art-bar"><span class="art-no">No.${esc(a.no)}</span>
-        <span><button class="copy-btn" data-idx="${idx}" data-side="old">📋 전 복사</button><button class="copy-btn" data-idx="${idx}" data-side="new">📋 후 복사</button></span></div>
-      <div class="art-grid">
-        <div class="art-col old"><div class="col-label">구 (개정 전)</div>${a.oldEmpty?'<span style="color:#aaa">(신설)</span>':renderParts(a.oldParts,'dc')}</div>
-        <div class="art-col new"><div class="col-label">신 (개정 후)</div>${renderParts(a.newParts,'ic')}</div>
-      </div></div>`).join('');
+  const rows=(d.new||[]).map(a=>({ no:String(a.no), oldC:oldByNo.get(String(a.no))||'', newC:a.content }));
+  // 제N조 단위로 그룹핑 (조 전체 구조 + 현행과같음 컨텍스트 보존)
+  const groups=[]; let cur=null;
+  for(const r of rows){
+    if(!cur || isHeader(r.newC) || isHeader(r.oldC)){ cur={title:extractTitle(r.newC)||extractTitle(r.oldC)||('제'+r.no), rows:[]}; groups.push(cur); }
+    cur.rows.push(r);
+  }
+  let changeCount=0;
+  for(const g of groups){ g.changed=false; for(const r of g.rows){ if(!isUnchanged(r.newC)){ const df=wordDiff(r.oldC,r.newC); if(df.oldParts.some(p=>p.c)||df.newParts.some(p=>p.c)){ g.changed=true; changeCount++; } } } }
+  ARTS = groups.filter(g=>g.changed);   // 복사 lookup용 (변경 있는 조만)
+  const cards = ARTS.map((g,gi)=>{
+    const body = g.rows.map(r=>{
+      const same = isUnchanged(r.newC);
+      return `<div class="arow${same?' same':''}"><div class="acol old">${rowSide(r,'old')}</div><div class="acol new">${rowSide(r,'new')}</div></div>`;
+    }).join('');
+    return `<div class="art">
+      <div class="art-bar"><span class="art-no">${esc(g.title)}</span>
+        <span><button class="copy-btn" data-idx="${gi}" data-side="old">📋 전 복사</button><button class="copy-btn" data-idx="${gi}" data-side="new">📋 후 복사</button></span></div>
+      <div class="arow head"><div class="acol old">구 (개정 전)</div><div class="acol new">신 (개정 후)</div></div>
+      ${body}</div>`;
+  }).join('');
   box.innerHTML = `
     <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)}</span></div>
-    <span class="count">변경 ${ARTS.length}건 / 전체 ${(d.new||[]).length}조</span>
-    <div class="legend">표시: <span class="dc">전(삭제)</span> / <span class="ic">후(추가)</span> — 색은 우상단에서 변경</div>
-    ${rows||'<div class="empty">변경 조문 없음</div>'}`;
+    <span class="count">변경 ${changeCount}건 · ${ARTS.length}개 조</span>
+    <div class="legend">표시: <span class="dc">전(삭제)</span> / <span class="ic">후(추가)</span> · 회색=현행과 같음 — 색은 우상단에서 변경</div>
+    ${cards||'<div class="empty">변경 조문 없음</div>'}`;
 }
 
 const today=new Date(), y2=new Date(); y2.setFullYear(today.getFullYear()-2);
@@ -178,10 +198,15 @@ $('#basket').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c
 $('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it)showCompare(it.dataset.mst,it.dataset.name);});
 $('#compare').addEventListener('click',e=>{
   const b=e.target.closest('.copy-btn'); if(!b)return;
-  const a=ARTS[+b.dataset.idx]; if(!a)return;
+  const g=ARTS[+b.dataset.idx]; if(!g)return;
   const side=b.dataset.side, color=side==='old'?$('#colDel').value:$('#colIns').value;
-  const parts=side==='old'?a.oldParts:a.newParts;
-  copyRich('<div>'+partsToHtml(parts,color)+'</div>', partsToPlain(parts), b);
+  const htmlRows=g.rows.map(r=>{
+    if(isUnchanged(r.newC)) return esc(stripTags(side==='old'?r.oldC:r.newC));
+    const df=wordDiff(r.oldC,r.newC);
+    return partsToHtml(side==='old'?df.oldParts:df.newParts, color);
+  });
+  const plainRows=g.rows.map(r=>stripTags(side==='old'?r.oldC:r.newC));
+  copyRich('<div>'+htmlRows.join('<br>')+'</div>', plainRows.join('\n'), b);
 });
 
 (async function init(){
