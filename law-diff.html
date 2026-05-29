@@ -16,6 +16,7 @@
   label{font-size:12px;color:var(--dim);font-weight:600}
   input[type=text],input[type=date]{font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--bd);border-radius:var(--rd);background:#fff}
   input[type=text]{flex:1;min-width:200px}
+  input[type=color]{width:30px;height:26px;border:1px solid var(--bd);border-radius:4px;padding:0;cursor:pointer;vertical-align:middle}
   button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:#fff;border-radius:var(--rd);padding:8px 12px;font-size:13px;font-weight:600}
   button.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
   button:hover{border-color:var(--accent)}
@@ -38,15 +39,14 @@
   .art{border:1px solid var(--bd);border-radius:var(--rd);margin-bottom:12px;overflow:hidden;background:#fff}
   .art-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#fafafa;border-bottom:1px solid var(--bd2)}
   .art-no{font-size:11px;color:var(--dim);font-weight:700}
-  .copy-btn{font-size:11px;padding:3px 9px}
+  .copy-btn{font-size:11px;padding:3px 9px;margin-left:6px}
   .art-grid{display:grid;grid-template-columns:1fr 1fr}
   .art-col{padding:10px 12px;font-size:13px}
-  .art-col.old{border-right:1px solid var(--bd2);background:#fffafa}
+  .art-col.old{border-right:1px solid var(--bd2)}
   .col-label{font-size:10.5px;font-weight:700;color:var(--dim);margin-bottom:4px;letter-spacing:.5px}
-  del{color:var(--del);text-decoration:line-through;background:#fde8e8}
-  ins{color:var(--ins);text-decoration:none;background:#e6edfd;font-weight:600}
+  .dc{color:var(--del);font-weight:600}
+  .ic{color:var(--ins);font-weight:600}
   .legend{font-size:11.5px;color:var(--dim);margin-bottom:8px}
-  .legend del,.legend ins{padding:0 3px}
   .empty,.loading{color:var(--dim);font-size:13px;padding:16px;text-align:center}
   footer{margin-top:24px;font-size:11px;color:#999;border-top:1px solid var(--bd2);padding-top:10px}
   @media(max-width:680px){.art-grid{grid-template-columns:1fr}.art-col.old{border-right:0;border-bottom:1px solid var(--bd2)}}
@@ -65,10 +65,13 @@
     <div class="row" style="margin-top:10px">
       <label>개정일(공포) 기간</label>
       <input type="date" id="from"><span style="color:var(--dim)">~</span><input type="date" id="to">
-      <label style="margin-left:6px"><input type="checkbox" id="rangeOn"> 기간 필터 적용</label>
+      <label style="margin-left:6px"><input type="checkbox" id="rangeOn"> 기간 필터</label>
+      <span style="margin-left:auto"></span>
+      <label>전 색 <input type="color" id="colDel" value="#dc2626"></label>
+      <label>후 색 <input type="color" id="colIns" value="#1d4ed8"></label>
     </div>
     <div class="chips" id="basket"></div>
-    <div class="hint">바스켓을 누르면 검색어가 채워져요. 기간 필터는 개정 공포일 기준입니다.</div>
+    <div class="hint">바스켓을 누르면 검색어가 채워져요. 기간 필터는 개정 공포일 기준. 복사 시 색 정보도 함께 복사돼요(워드·한글에 붙여넣기 가능).</div>
   </div>
 
   <div id="results"></div>
@@ -77,7 +80,9 @@
   <footer>본 자료는 정보 제공용이며 법률 자문이 아닙니다. 적용 판단은 원문·전문가 확인을 권장합니다. · 출처: 법제처 국가법령정보 (신구조문대비표)</footer>
 </div>
 <script>
+const EP = { list:q=>'/api/law-singu?action=list&q='+encodeURIComponent(q), body:mst=>'/api/law-singu?action=body&mst='+encodeURIComponent(mst) };
 const BASKET = ['철도안전법','철도사업법','도시철도법','철도산업발전기본법','산업안전보건법','중대재해 처벌 등에 관한 법률','시설물의 안전 및 유지관리에 관한 특별법','개인정보 보호법'];
+let ARTS = [];
 const $ = s => document.querySelector(s);
 const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const stripTags = s => String(s??'').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').trim();
@@ -90,24 +95,37 @@ function wordDiff(oldS,newS){
   const o=tokenize(oldS),n=tokenize(newS),m=o.length,k=n.length;
   const dp=Array.from({length:m+1},()=>new Int32Array(k+1));
   for(let i=m-1;i>=0;i--)for(let j=k-1;j>=0;j--)dp[i][j]=o[i]===n[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
-  let oa='',na='',i=0,j=0;
-  while(i<m&&j<k){ if(o[i]===n[j]){oa+=esc(o[i]);na+=esc(n[j]);i++;j++;}
-    else if(dp[i+1][j]>=dp[i][j+1]){oa+='<del>'+esc(o[i])+'</del>';i++;}
-    else {na+='<ins>'+esc(n[j])+'</ins>';j++;} }
-  while(i<m){oa+='<del>'+esc(o[i])+'</del>';i++;}
-  while(j<k){na+='<ins>'+esc(n[j])+'</ins>';j++;}
-  return {old:oa,new:na};
+  const oldParts=[],newParts=[]; let i=0,j=0;
+  while(i<m&&j<k){ if(o[i]===n[j]){oldParts.push({t:o[i],c:false});newParts.push({t:n[j],c:false});i++;j++;}
+    else if(dp[i+1][j]>=dp[i][j+1]){oldParts.push({t:o[i],c:true});i++;}
+    else {newParts.push({t:n[j],c:true});j++;} }
+  while(i<m){oldParts.push({t:o[i],c:true});i++;}
+  while(j<k){newParts.push({t:n[j],c:true});j++;}
+  return {oldParts,newParts};
+}
+const renderParts = (parts,cls) => parts.map(p=>p.c?`<span class="${cls}">${esc(p.t)}</span>`:esc(p.t)).join('');
+const partsToHtml = (parts,color) => parts.map(p=>p.c?`<span style="color:${color};font-weight:bold">${esc(p.t)}</span>`:esc(p.t)).join('');
+const partsToPlain = parts => parts.map(p=>p.t).join('');
+
+function applyColors(){ document.documentElement.style.setProperty('--del',$('#colDel').value); document.documentElement.style.setProperty('--ins',$('#colIns').value); }
+function toast(b){const o=b.dataset.lbl||b.textContent;b.dataset.lbl=o;b.textContent='✓ 복사됨';setTimeout(()=>b.textContent=o,1200);}
+async function copyRich(html,plain,btn){
+  try{
+    if(navigator.clipboard&&window.ClipboardItem){
+      await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([plain],{type:'text/plain'})})]);
+    }else{ await navigator.clipboard.writeText(plain); }
+    toast(btn);
+  }catch(e){ try{ await navigator.clipboard.writeText(plain); toast(btn);}catch(_){ alert('복사 실패: '+e.message); } }
 }
 
 function renderBasket(){ $('#basket').innerHTML = BASKET.map(n=>`<span class="chip" data-n="${esc(n)}">${esc(n)}</span>`).join(''); }
-
-async function api(qs){ const r=await fetch('/api/law-singu?'+qs); const j=await r.json(); if(j&&j.error)throw new Error(j.error); return j; }
+async function api(url){ const r=await fetch(url); const j=await r.json(); if(j&&j.error)throw new Error(j.error+(j.cause?(' ('+j.cause+')'):'')); return j; }
 
 async function search(){
   const q=$('#q').value.trim(); if(!q)return;
-  $('#results').innerHTML='<div class="loading">검색 중…</div>'; $('#compare').innerHTML='';
+  $('#results').innerHTML='<div class="loading">검색 중…</div>'; $('#compare').innerHTML=''; ARTS=[];
   let items=[];
-  try{ items=await api('action=list&q='+encodeURIComponent(q)); }
+  try{ items=await api(EP.list(q)); }
   catch(e){ $('#results').innerHTML='<div class="empty">조회 실패: '+esc(e.message)+'</div>'; return; }
   if(!Array.isArray(items)||!items.length){ $('#results').innerHTML='<div class="empty">신구표 결과 없음 (개정 이력이 없거나 명칭 불일치)</div>'; return; }
   if($('#rangeOn').checked){
@@ -126,35 +144,43 @@ async function search(){
 async function showCompare(mst,name){
   const box=$('#compare'); box.innerHTML='<div class="loading">신구조문 불러오는 중…</div>';
   box.scrollIntoView({behavior:'smooth',block:'start'});
-  let d; try{ d=await api('action=body&mst='+encodeURIComponent(mst)); }
+  let d; try{ d=await api(EP.body(mst)); }
   catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
   const oldByNo=new Map((d.old||[]).map(a=>[String(a.no),a.content]));
-  const changed=(d.new||[]).filter(a=>!isUnchanged(a.content)).map(a=>({no:String(a.no),oldC:oldByNo.get(String(a.no))||'',newC:a.content}));
-  const rows=changed.map(c=>{
-    const df=wordDiff(c.oldC,c.newC); const plainNew=stripTags(c.newC);
-    return `<div class="art">
-      <div class="art-bar"><span class="art-no">No.${esc(c.no)}</span>
-        <button class="copy-btn" data-copy="${esc(plainNew)}">📋 신조문 복사</button></div>
+  ARTS=(d.new||[]).filter(a=>!isUnchanged(a.content)).map(a=>{
+    const oldC=oldByNo.get(String(a.no))||'', df=wordDiff(oldC,a.content);
+    return { no:String(a.no), oldEmpty:!stripTags(oldC), oldParts:df.oldParts, newParts:df.newParts };
+  });
+  const rows=ARTS.map((a,idx)=>`<div class="art">
+      <div class="art-bar"><span class="art-no">No.${esc(a.no)}</span>
+        <span><button class="copy-btn" data-idx="${idx}" data-side="old">📋 전 복사</button><button class="copy-btn" data-idx="${idx}" data-side="new">📋 후 복사</button></span></div>
       <div class="art-grid">
-        <div class="art-col old"><div class="col-label">구 (개정 전)</div>${stripTags(c.oldC)?df.old:'<span style="color:#aaa">(신설)</span>'}</div>
-        <div class="art-col new"><div class="col-label">신 (개정 후)</div>${df.new}</div>
-      </div></div>`;
-  }).join('');
+        <div class="art-col old"><div class="col-label">구 (개정 전)</div>${a.oldEmpty?'<span style="color:#aaa">(신설)</span>':renderParts(a.oldParts,'dc')}</div>
+        <div class="art-col new"><div class="col-label">신 (개정 후)</div>${renderParts(a.newParts,'ic')}</div>
+      </div></div>`).join('');
   box.innerHTML = `
     <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)}</span></div>
-    <span class="count">변경 ${changed.length}건 / 전체 ${(d.new||[]).length}조</span>
-    <div class="legend">표시: <del>삭제(구)</del> <ins>추가(신)</ins></div>
+    <span class="count">변경 ${ARTS.length}건 / 전체 ${(d.new||[]).length}조</span>
+    <div class="legend">표시: <span class="dc">전(삭제)</span> / <span class="ic">후(추가)</span> — 색은 우상단에서 변경</div>
     ${rows||'<div class="empty">변경 조문 없음</div>'}`;
 }
 
 renderBasket();
 const today=new Date(), y2=new Date(); y2.setFullYear(today.getFullYear()-2);
 $('#to').value=today.toISOString().slice(0,10); $('#from').value=y2.toISOString().slice(0,10);
+applyColors();
 $('#searchBtn').onclick=search;
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')search();});
+$('#colDel').addEventListener('input',applyColors); $('#colIns').addEventListener('input',applyColors);
 $('#basket').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){$('#q').value=c.dataset.n;search();}});
 $('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it)showCompare(it.dataset.mst,it.dataset.name);});
-$('#compare').addEventListener('click',e=>{const b=e.target.closest('.copy-btn');if(b){navigator.clipboard.writeText(b.dataset.copy).then(()=>{const o=b.textContent;b.textContent='✓ 복사됨';setTimeout(()=>b.textContent=o,1200);});}});
+$('#compare').addEventListener('click',e=>{
+  const b=e.target.closest('.copy-btn'); if(!b)return;
+  const a=ARTS[+b.dataset.idx]; if(!a)return;
+  const side=b.dataset.side, color=side==='old'?$('#colDel').value:$('#colIns').value;
+  const parts=side==='old'?a.oldParts:a.newParts;
+  copyRich('<div>'+partsToHtml(parts,color)+'</div>', partsToPlain(parts), b);
+});
 search();
 </script>
 </body></html>

@@ -6,14 +6,22 @@ const BASE = 'https://www.law.go.kr/DRF';
 const REFERER = process.env.LAW_REFERER || 'https://patchkr.com';
 const asArr = x => Array.isArray(x) ? x : (x == null ? [] : [x]);
 
-async function drf(path, params, OC) {
+async function drf(path, params, OC, tries = 3) {
   const u = new URL(`${BASE}/${path}`);
   u.searchParams.set('OC', OC);
   u.searchParams.set('type', 'json');
   for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
-  const r = await fetch(u, { headers: { Referer: REFERER, 'User-Agent': 'Mozilla/5.0 (compatible; patchkr/1.0; +https://patchkr.com)' } });
-  const t = await r.text();
-  return JSON.parse(t); // 비JSON(권한/파라미터 오류)이면 throw → catch
+  let lastErr;
+  for (let a = 0; a < tries; a++) {
+    try {
+      const r = await fetch(u, { headers: { Referer: REFERER, 'User-Agent': 'Mozilla/5.0 (compatible; patchkr/1.0; +https://patchkr.com)' } });
+      const t = await r.text();
+      if (t && t.trim()) return JSON.parse(t);
+      lastErr = new Error('빈 응답');
+    } catch (e) { lastErr = e; }
+    if (a < tries - 1) await new Promise(r => setTimeout(r, 500));
+  }
+  throw lastErr || new Error('재시도 초과');
 }
 
 export default async function handler(req, res) {
