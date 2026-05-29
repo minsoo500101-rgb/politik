@@ -11,7 +11,7 @@ async function drf(path, params, OC) {
   u.searchParams.set('OC', OC);
   u.searchParams.set('type', 'json');
   for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
-  const r = await fetch(u, { headers: { Referer: REFERER } });
+  const r = await fetch(u, { headers: { Referer: REFERER, 'User-Agent': 'Mozilla/5.0 (compatible; patchkr/1.0; +https://patchkr.com)' } });
   const t = await r.text();
   return JSON.parse(t); // 비JSON(권한/파라미터 오류)이면 throw → catch
 }
