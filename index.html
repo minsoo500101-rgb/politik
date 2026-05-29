@@ -11537,7 +11537,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V29.9</a>
+      <a href="/changelog" id="foot-year">V29.10</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18386,6 +18386,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V29.10', date: '2026-05-29', title: '🗺 사전투표율 시·도별 막대 추가', items: [
+    '사전투표 페이지에 17 시·도별 투표율 막대(높은 순) 표시',
+    'API byRegion 렌더 — 최고/최저 색 강조, 짧은 지역명',
+    '수동 갱신 시 시·도별 수치도 함께 반영'
+  ]},
   { v: 'V29.9', date: '2026-05-29', title: '📍 사전투표소 찾기 신규 (/polling) — 선관위 공식 API', items: [
     '시·도 → 구·시·군으로 가까운 사전투표소 검색 (이름·장소·주소·층 + 지도 링크)',
     '중앙선관위 공식 data.go.kr API(PolplcInfoInqireService2) 연동, 서버 프록시 + XML 파싱',
@@ -19289,6 +19294,13 @@ function renderEarlyVotingPage() {
         </div>
       </section>
 
+      <!-- V29.10 — 시·도별 사전투표율 (byRegion) -->
+      <section class="ev-section" id="ev-region-section" style="display:none">
+        <h2>🗺 시·도별 사전투표율</h2>
+        <p class="ev-section-sub">누적 기준 · 높은 순</p>
+        <div id="ev-region-grid"></div>
+      </section>
+
       <section class="ev-section">
         <h2>⚡ 빠른 체크리스트</h2>
         <ul class="ev-checklist">
@@ -19449,6 +19461,31 @@ async function fetchEarlyVoteRate() {
       })[j.source] || ('출처: ' + (j.source || '미확인'));
       sourceEl.textContent = srcLabel + (j.note ? ' · ' + j.note : '');
     }
+
+    // V29.10 — 시·도별 사전투표율 막대
+    const regionSection = document.getElementById('ev-region-section');
+    const regionGrid = document.getElementById('ev-region-grid');
+    if (regionSection && regionGrid) {
+      const entries = j.byRegion ? Object.entries(j.byRegion).filter(e => e[1] != null) : [];
+      if (entries.length) {
+        const SD_SHORT = { '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주' };
+        entries.sort((a, b) => b[1] - a[1]);
+        const max = Math.max(...entries.map(e => e[1])) || 1;
+        regionGrid.innerHTML = entries.map(([name, rate], i) => {
+          const isTop = i === 0, isLow = i === entries.length - 1;
+          const c = isTop ? 'var(--ok)' : isLow ? 'var(--dim)' : 'var(--accent)';
+          return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--border)">
+            <span style="flex:0 0 40px;font-size:12.5px;font-weight:${isTop || isLow ? '800' : '600'};color:var(--text)">${SD_SHORT[name] || name}</span>
+            <span style="flex:1;height:9px;background:var(--bg-elev);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:${(rate / max * 100).toFixed(1)}%;background:${c};border-radius:5px"></span></span>
+            <span style="flex:0 0 46px;text-align:right;font-size:12.5px;font-weight:800;color:${c}">${rate.toFixed(2)}</span>
+          </div>`;
+        }).join('');
+        regionSection.style.display = '';
+      } else {
+        regionSection.style.display = 'none';
+      }
+    }
+
     if (dotEl) dotEl.style.color = 'var(--ok)';
   } catch (e) {
     if (sourceEl) sourceEl.textContent = '⚠️ 데이터 가져오기 실패 — NEC 통합선거정보 참고';
@@ -22972,7 +23009,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.9 · 📍 사전투표소 찾기</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V29.10 · 🗺 시도별 투표율</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자

@@ -2,7 +2,7 @@
 // 전략: cache-first (정적 자산) + network-first (API·데이터)
 // V27.9: HTML(document)은 network-first로 변경 — 사용자에게 즉시 최신 UI 노출
 
-const CACHE_VERSION = 'patchkr-v29.9';
+const CACHE_VERSION = 'patchkr-v29.10';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 
