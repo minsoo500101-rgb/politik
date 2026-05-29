@@ -11539,7 +11539,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.3</a>
+      <a href="/changelog" id="foot-year">V30.4</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -15927,6 +15927,22 @@ async function tryLoadLiveEconomy(onProgress) {
     }
   }));
   try { await _liveLoadPromise; } catch {}
+  // V30.4 — 코스피·코스닥·환율 현재값을 시세 모니터와 '동일 소스(Yahoo /api/quote)'로 통일.
+  // 과거추이 시계열(연도별)은 유지하고, 마지막(현재) 포인트만 실시간 값으로 교체 → 모든 표시 일치.
+  try {
+    const mq = await _fetchQuoteMultiSource(['^KS11', '^KQ11', 'KRW=X']);
+    const symToId = { '^KS11': 'kospi', '^KQ11': 'kosdaq', 'KRW=X': 'usd_krw' };
+    for (const q of (mq || [])) {
+      const id = symToId[q.symbol];
+      const ind = id && indicators.find(i => i.id === id);
+      if (ind && q.price != null && ind.data && ind.data.length) {
+        const yi = ind.data.findIndex(d => d.year === endYear);
+        if (yi >= 0) ind.data[yi] = { year: endYear, value: q.price };
+        else { ind.data.push({ year: endYear, value: q.price }); ind.data.sort((a, b) => a.year - b.year); }
+        ind._live = true;
+      }
+    }
+  } catch {}
   economyState.liveStatus = liveCount > 0 ? 'live' : 'fallback';
   economyState.liveCount = liveCount;
   // 페이지에 머물러 있으면 다시 렌더링
@@ -15989,7 +16005,7 @@ function renderEconomyPage() {
         <!-- 한국 시장: ECOS 일 종가 (TradingView가 KRX 차단 + Yahoo가 Vercel·CORS 차단) -->
         <div class="econ-section-label">
           <span class="econ-section-tag econ-section-daily">📅 가장 최근 영업일 종가</span>
-          <span class="econ-section-desc">코스피·코스닥·환율 현재값은 이 시세 모니터가 기준 (아래 과거추이엔 중복 표시 안 함)</span>
+          <span class="econ-section-desc">코스피·코스닥·환율 현재값은 사이트 전체(핵심지표·과거추이)가 이 시세 모니터 값으로 통일</span>
         </div>
         <div class="econ-yf-grid">
           <div class="econ-yf-widget" data-yf-symbol="^KS11" data-yf-name="코스피 (KOSPI)" data-yf-currency="KRW"></div>
@@ -16395,8 +16411,7 @@ function setupTradingViewWidgets() {
 function renderEconomyBody() {
   const d = economyState.data;
   if (!d) return '<div class="empty">경제 데이터를 불러올 수 없습니다.</div>';
-  // V30.2 — 코스피·코스닥은 상단 시세 모니터(실시간)가 기준값 → 과거추이 카드/표에서 제외 (숫자 혼동 방지)
-  const indicators = (d.indicators || []).filter(i => !['kospi', 'kosdaq'].includes(i.id));
+  const indicators = d.indicators || [];
   const presidents = d.presidents || [];
 
   // 정부 임기 시점 (year 단위)
@@ -18389,6 +18404,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.4', date: '2026-05-29', title: '🔗 경제 코스피·코스닥·환율 단일 기준 통일', items: [
+    '코스피·코스닥·환율 현재값을 핵심지표·과거추이·시세모니터 모두 동일 소스(Yahoo 실시간)로 통일',
+    'V30.2에서 제외했던 과거추이 코스피·코스닥 추이 복원 — 추이는 유지하고 현재값만 실시간으로'
+  ]},
   { v: 'V30.3', date: '2026-05-29', title: '🧹 라벨 정리 — 용어 사전·투표율 출처', items: [
     '"정치 용어 사전" → "용어 사전" (경제·국제·시민 용어도 포함하므로)',
     '사전투표율 출처 표기에서 "운영자 수동 갱신" 문구 제거 (자동 갱신 반영)'
@@ -23030,7 +23049,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.3 · 🧹 라벨 정리</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.4 · 🔗 시세 단일 기준</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
