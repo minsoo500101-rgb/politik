@@ -91,6 +91,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/m/(.*)", "destination": "/index.html" },
     { "source": "/((?!api/|data/|.*\\.[a-z0-9]+$).*)", "destination": "/index.html" }
   ],
   "redirects": [
