@@ -445,6 +445,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     grid-template-columns: auto 1fr auto;
     gap: 20px; align-items: center;
   }
+  .h-left { display: flex; align-items: center; gap: 10px; }
   .brand {
     font-size: 18px; font-weight: 800;
     letter-spacing: -0.5px;
@@ -11614,12 +11615,15 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
 <header>
   <div class="h-inner">
-    <div class="brand" id="brand">
+    <div class="h-left">
+      <button class="menu-btn" id="menu-btn" type="button" title="전체 페이지" aria-label="전체 페이지 메뉴 열기" aria-expanded="false" aria-controls="sidebar-drawer">☰</button>
+      <div class="brand" id="brand">
       <span class="brand-logo" aria-label="patchkr 로고">P</span>
       <div>
         대한민국 패치노트
         <div class="brand-sub">Korea Patch Notes · 정치·법안·선거·경제</div>
       </div>
+    </div>
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
@@ -11628,7 +11632,6 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <div class="ac-dropdown" id="ac-dropdown" role="listbox" aria-label="검색 자동완성"></div>
     </div>
     <div class="nav-stats">
-      <button class="menu-btn" id="menu-btn" type="button" title="전체 페이지" aria-label="전체 페이지 메뉴 열기" aria-expanded="false" aria-controls="sidebar-drawer">☰</button>
       <span class="freshness-badge" id="h-fresh" title="데이터 실시간 갱신 (국회 OPEN API · 중앙선관위)"></span>
       <button class="theme-toggle" id="theme-toggle" type="button" title="다크 모드 전환" aria-label="다크 모드 토글" aria-pressed="false">🌙</button>
     </div>
@@ -11715,7 +11718,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.3</a>
+      <a href="/changelog" id="foot-year">V31.4</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18638,6 +18641,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.4', date: '2026-05-29', title: '📂 사이드바 메뉴 버튼 헤더 좌측으로', items: [
+    '전체 페이지 메뉴(☰)를 헤더 우측 → 좌측(로고 앞)으로 이동 — 일반적인 내비게이션 위치'
+  ]},
   { v: 'V31.3', date: '2026-05-29', title: '📂 페이지 트리 사이드바 (어디서나 전체 탐색)', items: [
     '헤더 ☰ 버튼 → 좌측 슬라이드 드로어에 전체 페이지 트리 (선거·법안·경제·인물·여론·도구·사이트 카테고리)',
     '현재 페이지 자동 하이라이트 + 카테고리 접기/펴기, 백드롭·ESC·링크 클릭 시 자동 닫힘',
@@ -23383,7 +23389,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.3 · 📂 페이지 트리 사이드바</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.4 · 📂 사이드바 버튼 좌측</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
