@@ -11539,7 +11539,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V30.5</a>
+      <a href="/changelog" id="foot-year">V30.6</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18452,6 +18452,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V30.6', date: '2026-05-29', title: '🧭 선거 2026 공용 탭바 — 흩어진 선거 페이지 연결', items: [
+    '지선 종합·사전투표·투표소·공약비교·개표 5개 페이지 상단에 공용 탭바 (한 흐름으로 이동)',
+    '라우트·URL은 그대로 유지 — SEO·사이트맵 보존하면서 파편화만 해소'
+  ]},
   { v: 'V30.5', date: '2026-05-29', title: '🌍 경제 섹션 확장 — 세계 속 한국 경제 (World Bank)', items: [
     '"세계 속 한국 경제" 신규 — World Bank 무료 API로 주요 8개국 1인당GDP·GDP규모·성장률·물가·실업률 비교 (한국 순위 표시)',
     'World Bank는 키·프록시 불필요(CORS) — 매년 자동 최신, 추측 0'
@@ -23101,7 +23105,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.5 · 🌍 경제 세계 비교</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V30.6 · 🧭 선거 탭 연결</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -24449,6 +24453,29 @@ function setupPollingStationEvents() {
   search.addEventListener('input', renderList);
 }
 
+// V30.6 — 선거 2026 공용 탭바 (라우트는 유지 = SEO 보호, 페이지 간 이동만 연결)
+const ELECTION_TABS = [
+  { key: 'election2026', href: '/election2026',      label: '🗳 지선 종합' },
+  { key: 'early-voting', href: '/early-voting',      label: '📊 사전투표·투표율' },
+  { key: 'polling',      href: '/polling',           label: '📍 투표소 찾기' },
+  { key: 'compare-cand', href: '/compare-cand',      label: '🆚 공약 비교' },
+  { key: 'live',         href: '/election2026/live', label: '🔴 개표 (6/3)' },
+];
+function renderElectionTabs(active) {
+  return `<div style="display:flex;gap:6px;overflow-x:auto;padding:2px 0 12px;margin:0 0 4px" role="tablist" aria-label="선거 2026 섹션">`
+    + ELECTION_TABS.map(t => {
+      const on = t.key === active;
+      return `<a href="${t.href}"${on ? ' aria-current="page"' : ''} style="flex:0 0 auto;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid ${on ? 'var(--brand)' : 'var(--border)'};background:${on ? 'var(--brand)' : 'var(--bg-elev)'};color:${on ? '#fff' : 'var(--text-2)'}">${t.label}</a>`;
+    }).join('') + `</div>`;
+}
+function injectElectionTabs(active) {
+  const view = document.getElementById('view');
+  if (!view) return;
+  const back = document.getElementById('back-home') || document.getElementById('back-e26');
+  if (back) back.insertAdjacentHTML('afterend', renderElectionTabs(active));
+  else view.insertAdjacentHTML('afterbegin', renderElectionTabs(active));
+}
+
 function route() {
   const view = document.getElementById('view');
   const hash = currentRoute();
@@ -24488,6 +24515,7 @@ function route() {
   // V28.1 — 사전투표 가이드 (/early-voting)
   if (hash === '#/early-voting') {
     view.innerHTML = renderEarlyVotingPage();
+    injectElectionTabs('early-voting');
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -24500,6 +24528,7 @@ function route() {
   // V29.9 — 사전투표소 찾기 (/polling)
   if (hash === '#/polling') {
     view.innerHTML = renderPollingStationPage();
+    injectElectionTabs('polling');
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupPollingStationEvents();
     if (filterBar) filterBar.style.display = 'none';
@@ -24712,6 +24741,7 @@ function route() {
   // 9회 후보자 비교 (/compare-cand?a=&b=&c=)
   if (hash.startsWith('#/compare-cand')) {
     view.innerHTML = renderCandComparePage();
+    injectElectionTabs('compare-cand');
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     setupCandCompareEvents();
     if (filterBar) filterBar.style.display = 'none';
@@ -25081,6 +25111,7 @@ function route() {
   if (hash === '#/election2026/live') {
     const renderLive = () => {
       view.innerHTML = renderElectionLivePage();
+      injectElectionTabs('live');
       document.getElementById('back-e26')?.addEventListener('click', () => { nav('/election2026'); });
       // 시도 칩 클릭
       document.querySelectorAll('.r-other-link').forEach(el => {
@@ -25153,6 +25184,7 @@ function route() {
   if (hash === '#/election2026') {
     const renderE26 = () => {
       view.innerHTML = renderElection2026Page();
+      injectElectionTabs('election2026');
       document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
       // 후보 클릭 → 5대 공약 모달
       document.querySelectorAll('.e26-cand-click').forEach(el => {
