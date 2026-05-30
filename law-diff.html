@@ -173,7 +173,7 @@ async function showCompare(mst,name){
     }).join('');
     return `<div class="art">
       <div class="art-bar"><span class="art-no">${esc(g.title)}</span>
-        <span><button class="copy-btn" data-idx="${gi}" data-side="old">📋 전 복사</button><button class="copy-btn" data-idx="${gi}" data-side="new">📋 후 복사</button></span></div>
+        <span><button class="copy-btn" data-idx="${gi}" data-side="row" title="구·신을 엑셀 한 행 두 칸으로">📋 표 복사</button><button class="copy-btn" data-idx="${gi}" data-side="old">전</button><button class="copy-btn" data-idx="${gi}" data-side="new">후</button></span></div>
       <div class="arow head"><div class="acol old">구 (개정 전)</div><div class="acol new">신 (개정 후)</div></div>
       ${body}</div>`;
   }).join('');
@@ -199,14 +199,23 @@ $('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item
 $('#compare').addEventListener('click',e=>{
   const b=e.target.closest('.copy-btn'); if(!b)return;
   const g=ARTS[+b.dataset.idx]; if(!g)return;
-  const side=b.dataset.side, color=side==='old'?$('#colDel').value:$('#colIns').value;
-  const htmlRows=g.rows.map(r=>{
-    if(isUnchanged(r.newC)) return esc(stripTags(side==='old'?r.oldC:r.newC));
-    const df=wordDiff(r.oldC,r.newC);
-    return partsToHtml(side==='old'?df.oldParts:df.newParts, color);
-  });
-  const plainRows=g.rows.map(r=>stripTags(side==='old'?r.oldC:r.newC));
-  copyRich('<div>'+htmlRows.join('<br>')+'</div>', plainRows.join('\n'), b);
+  const side=b.dataset.side, colD=$('#colDel').value, colI=$('#colIns').value;
+  // 한 칸(엑셀 셀) HTML — 줄바꿈은 <br>, mso-data-placement로 같은 셀 유지
+  const cellHtml=(which,color)=> g.rows.map(r=> isUnchanged(r.newC)
+    ? esc(stripTags(which==='old'?r.oldC:r.newC))
+    : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color)
+  ).join('<br>');
+  const cellPlain=which=> g.rows.map(r=>stripTags(which==='old'?r.oldC:r.newC)).join('\n');
+  const TD='<td style="vertical-align:top;white-space:pre-wrap;mso-data-placement:same-cell">';
+  let html, plain;
+  if(side==='row'){
+    html=`<table><tr>${TD}${cellHtml('old',colD)}</td>${TD}${cellHtml('new',colI)}</td></tr></table>`;
+    plain=cellPlain('old')+'\t'+cellPlain('new');
+  } else {
+    html=`<table><tr>${TD}${cellHtml(side, side==='old'?colD:colI)}</td></tr></table>`;
+    plain=cellPlain(side);
+  }
+  copyRich(html, plain, b);
 });
 
 (async function init(){
