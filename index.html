@@ -11718,7 +11718,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.8</a>
+      <a href="/changelog" id="foot-year">V31.9</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18641,6 +18641,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.9', date: '2026-05-30', title: '⚖ 신구비교 즐겨찾기 + 시행일 기준', items: [
+    '관심 법령을 ☆로 직접 즐겨찾기 저장(브라우저 보관) — 자주 보는 법을 모아두고 한 번에 접근',
+    '목록·비교 화면에 개정일·시행일 모두 표시, 검색/정렬 기준을 시행일로 변경',
+    '신구비교를 새 창이 아니라 같은 탭에서 열도록 변경(헤더로 패치노트 복귀)'
+  ]},
   { v: 'V31.8', date: '2026-05-30', title: '⚖ 신구비교 전체 법령 확대 + 다크모드 통일', items: [
     '철도 8법 → 대한민국 전체 법령(법·시행령·시행규칙) 5,500여 종 신구표 검색으로 확대 — 법령구분 필터·최근 개정순',
     '본문 데이터는 최신 개정부터 매일 자동 캐시(점진 백필), 아직 안 받은 건 안내 후 순차 제공',
@@ -23409,7 +23414,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.8 · ⚖ 전체 법령 신구비교</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.9 · ⚖ 신구비교 즐겨찾기·시행일</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23712,7 +23717,7 @@ function renderHome() {
         </div>
         <div class="goal-more">
           <span class="goal-more-lbl">더보기</span>
-          <a class="goal-chip" href="/law-diff.html" target="_blank" rel="noopener">⚖ 법령 신구비교</a>
+          <a class="goal-chip" href="/law-diff.html">⚖ 법령 신구비교</a>
           <a class="goal-chip" href="/glossary">📖 용어 사전</a>
           <a class="goal-chip" href="/committees">🏢 위원회 25</a>
           <a class="goal-chip" href="/history/parties">📚 정당사 1948~</a>
@@ -26313,7 +26318,7 @@ const NAV_TREE = [
   ]},
   { label: '법안', icon: '📜', children: [
     { label: '22대 통과 법안', href: '/bills' },
-    { label: '⚖ 법령 신구비교', href: '/law-diff.html', blank: true },
+    { label: '⚖ 법령 신구비교', href: '/law-diff.html' },
   ]},
   { label: '경제', icon: '💰', children: [
     { label: '경제 지표', href: '/economy' },

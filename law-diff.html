@@ -37,6 +37,10 @@
   button:hover{border-color:var(--accent)}
   .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
   .chip-lab{font-size:11px;color:var(--dim);margin-right:2px}
+  .fav-empty{font-size:11.5px;color:var(--dim)}
+  .chip.fav{display:inline-flex;align-items:center;gap:7px;padding-right:7px}
+  .chip .cx{color:var(--dim);font-weight:700;font-size:11px;cursor:pointer}
+  .chip .cx:hover{color:var(--del)}
   .chip{font-size:12px;padding:5px 10px;border-radius:999px;background:var(--elev);border:1px solid var(--bd2);color:var(--tx2);cursor:pointer}
   .chip:hover{border-color:var(--accent);color:var(--accent)}
   .hint{font-size:11.5px;color:var(--dim);margin-top:8px}
@@ -46,7 +50,15 @@
   .li-meta{font-size:11.5px;color:var(--dim);margin-top:1px}
   .badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--badge-law-bg);color:var(--badge-law-tx);white-space:nowrap}
   .badge.rule{background:var(--badge-rule-bg);color:var(--badge-rule-tx)}
-  .li-date{margin-left:auto;text-align:right;font-size:11.5px;color:var(--tx2);white-space:nowrap}
+  .li-main{min-width:0}
+  .li-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .li-date{text-align:right;font-size:11.5px;color:var(--tx2);white-space:nowrap;line-height:1.45}
+  .star{border:none;background:none;cursor:pointer;font-size:17px;line-height:1;color:var(--dim);padding:3px;border-radius:4px}
+  .star:hover{background:var(--elev)}
+  .star.on{color:#f5a623}
+  .cmp-star{font:inherit;font-size:12px;font-weight:600;color:var(--tx2);border:1px solid var(--bd);background:var(--card);padding:6px 10px;border-radius:var(--rd);cursor:pointer}
+  .cmp-star:hover{border-color:var(--accent)}
+  .cmp-star.on{color:#d99300;border-color:#f5a623}
   .li-date b{color:var(--accent)}
   .cmp-head{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--tx);padding-bottom:8px;margin:18px 0 4px}
   .cmp-head h2{font-size:17px;margin:0}
@@ -96,7 +108,7 @@
       <button class="pri" id="searchBtn">검색</button>
     </div>
     <div class="row" style="margin-top:10px">
-      <label>개정일(공포) 기간</label>
+      <label>시행일 기간</label>
       <input type="date" id="from"><span style="color:var(--dim)">~</span><input type="date" id="to">
       <label style="margin-left:6px"><input type="checkbox" id="rangeOn"> 기간 필터</label>
       <span style="margin-left:auto"></span>
@@ -150,9 +162,25 @@ async function copyRich(html,plain,btn){
   }catch(e){ try{ await navigator.clipboard.writeText(plain); toast(btn);}catch(_){ alert('복사 실패: '+e.message); } }
 }
 
-const FEATURED=['철도안전법','철도사업법','산업안전보건법','중대재해 처벌 등에 관한 법률','시설물의 안전 및 유지관리에 관한 특별법','개인정보 보호법','도로교통법','건축법'];
-function renderBasket(){
-  $('#basket').innerHTML = '<span class="chip-lab">자주 찾는:</span>' + FEATURED.map(n=>`<span class="chip" data-n="${esc(n)}">${esc(n)}</span>`).join('');
+// 즐겨찾기 — 사용자가 직접 저장 (브라우저 localStorage, 법령명 기준)
+const FAVKEY='patchkr:law:favs';
+const loadFavs=()=>{ try{ return JSON.parse(localStorage.getItem(FAVKEY))||[]; }catch(e){ return []; } };
+let FAVS=loadFavs();
+const saveFavs=()=>{ try{ localStorage.setItem(FAVKEY,JSON.stringify(FAVS)); }catch(e){} };
+const isFav=name=>FAVS.some(f=>f.name===name);
+function toggleFav(it){
+  if(!it||!it.name) return;
+  if(isFav(it.name)) FAVS=FAVS.filter(f=>f.name!==it.name);
+  else FAVS=[{mst:it.mst,name:it.name},...FAVS].slice(0,50);
+  saveFavs(); renderFavs(); refreshStars();
+}
+function refreshStars(){
+  document.querySelectorAll('.star[data-name]').forEach(b=>{ const on=isFav(b.dataset.name); b.textContent=on?'★':'☆'; b.classList.toggle('on',on); });
+  const cs=$('#cmpStar'); if(cs){ const on=isFav(cs.dataset.name); cs.textContent=on?'★ 즐겨찾기됨':'☆ 즐겨찾기'; cs.classList.toggle('on',on); }
+}
+function renderFavs(){
+  if(!FAVS.length){ $('#basket').innerHTML='<span class="chip-lab">즐겨찾기:</span><span class="fav-empty">법을 검색해 결과의 ☆를 누르면 여기에 저장돼요</span>'; return; }
+  $('#basket').innerHTML='<span class="chip-lab">즐겨찾기:</span>'+FAVS.map(f=>`<span class="chip fav" data-n="${esc(f.name)}"><span class="cn">${esc(f.name)}</span><span class="cx" data-rm="${esc(f.name)}" title="삭제">✕</span></span>`).join('');
 }
 
 const RESULT_CAP=60;
@@ -165,20 +193,23 @@ function search(){
   if(kindSel) items=items.filter(it=>kindMatch(it.kind,kindSel));
   if($('#rangeOn').checked){
     const f=ymd($('#from').value), t=ymd($('#to').value);
-    items=items.filter(it=>{ const p=ymd(it.pub); return (!f||p>=f)&&(!t||p<=t); });
+    items=items.filter(it=>{ const p=ymd(it.ef); return (!f||p>=f)&&(!t||p<=t); });   // 시행일 기준
   }
   const total=items.length;
   if(!total){ $('#results').innerHTML='<div class="empty">조건에 맞는 신구표가 없어요. 검색어·구분·기간을 바꿔보세요.</div>'; return; }
   const filtered = q||kindSel||$('#rangeOn').checked;
   const shown=items.slice(0,RESULT_CAP);
   const head = filtered
-    ? `${total.toLocaleString()}건${total>RESULT_CAP?` 중 상위 ${RESULT_CAP}건 — 검색어를 좁히면 정확해져요`:''} · 클릭하면 신구비교`
-    : `최근 개정 ${shown.length}건 (전체 ${total.toLocaleString()}건) · 위에서 법령명으로 검색하세요`;
+    ? `${total.toLocaleString()}건${total>RESULT_CAP?` 중 상위 ${RESULT_CAP}건 — 검색어를 좁히면 정확해져요`:''} · 시행일순 · 클릭하면 신구비교`
+    : `시행일 기준 최신 ${shown.length}건 (전체 ${total.toLocaleString()}건) · 위에서 법령명으로 검색하세요`;
   $('#results').innerHTML = `<div class="li-meta" style="margin:4px 2px 8px">${head}</div>` + shown.map(it=>`
     <div class="list-item" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}">
       <span class="badge ${it.kind==='법률'?'':'rule'}">${esc(it.kind)}</span>
-      <div><div class="li-name">${esc(it.name)}</div><div class="li-meta">${esc(it.rev||'')} · 소관 ${esc(it.dept||'')}</div></div>
-      <div class="li-date">시행 <b>${fmtDate(it.ef)}</b><br>공포 ${fmtDate(it.pub)} 제${esc(it.pubNo||'')}호</div>
+      <div class="li-main"><div class="li-name">${esc(it.name)}</div><div class="li-meta">${esc(it.rev||'')} · 소관 ${esc(it.dept||'')}</div></div>
+      <div class="li-right">
+        <div class="li-date">시행 <b>${fmtDate(it.ef)}</b><br>개정 ${fmtDate(it.pub)}</div>
+        <button class="star ${isFav(it.name)?'on':''}" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}" title="즐겨찾기" aria-label="즐겨찾기 토글">${isFav(it.name)?'★':'☆'}</button>
+      </div>
     </div>`).join('');
 }
 
@@ -192,6 +223,7 @@ function rowSide(r,side){ // 한 행을 화면용 HTML로 (색)
 async function showCompare(mst,name){
   const box=$('#compare'); box.innerHTML='<div class="loading">신구조문 불러오는 중…</div>';
   box.scrollIntoView({behavior:'smooth',block:'start'});
+  const mi=MANIFEST.find(x=>String(x.mst)===String(mst))||{};
   let d;
   try{
     const res=await fetch(BODY(mst),{cache:'no-cache'});
@@ -201,7 +233,7 @@ async function showCompare(mst,name){
     }
     d=await res.json();
   }catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
-  CURLAW={name:d.name||name, ef:d.ef};
+  CURLAW={name:d.name||name, ef:d.ef, pub:mi.pub};
   const oldByNo=new Map((d.old||[]).map(a=>[String(a.no),a.content]));
   const rows=(d.new||[]).map(a=>({ no:String(a.no), oldC:oldByNo.get(String(a.no))||'', newC:a.content }));
   // 제N조 단위로 그룹핑 (조 전체 구조 + 현행과같음 컨텍스트 보존)
@@ -225,7 +257,7 @@ async function showCompare(mst,name){
       ${body}</div>`;
   }).join('');
   box.innerHTML = `
-    <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)}</span><button class="pri" id="dlXlsx" style="margin-left:auto;font-size:12px;padding:6px 12px">📥 엑셀 다운로드</button></div>
+    <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)} · 개정 ${fmtDate(mi.pub)}</span><button class="cmp-star ${isFav(d.name||name)?'on':''}" id="cmpStar" data-mst="${esc(mst)}" data-name="${esc(d.name||name)}" style="margin-left:auto">${isFav(d.name||name)?'★ 즐겨찾기됨':'☆ 즐겨찾기'}</button><button class="pri" id="dlXlsx" style="font-size:12px;padding:6px 12px">📥 엑셀 다운로드</button></div>
     <span class="count">변경 ${changeCount}건 · ${ARTS.length}개 조</span>
     <div class="legend">표시: <span class="dc">전(삭제)</span> / <span class="ic">후(추가)</span> · 회색=현행과 같음 — 색은 우상단에서 변경</div>
     ${cards||'<div class="empty">변경 조문 없음</div>'}`;
@@ -284,10 +316,17 @@ function applyTheme(name){
 }
 applyTheme(document.documentElement.getAttribute('data-theme')||'light');
 $('#theme-toggle').addEventListener('click',()=>{ const c=document.documentElement.getAttribute('data-theme')||'light'; applyTheme(c==='dark'?'light':'dark'); });
-$('#basket').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){$('#q').value=c.dataset.n;search();}});
-$('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it)showCompare(it.dataset.mst,it.dataset.name);});
+$('#basket').addEventListener('click',e=>{
+  const rm=e.target.closest('.cx'); if(rm){ FAVS=FAVS.filter(f=>f.name!==rm.dataset.rm); saveFavs(); renderFavs(); refreshStars(); return; }
+  const c=e.target.closest('.chip'); if(c){ $('#q').value=c.dataset.n; search(); }
+});
+$('#results').addEventListener('click',e=>{
+  const star=e.target.closest('.star'); if(star){ e.stopPropagation(); toggleFav({mst:star.dataset.mst,name:star.dataset.name}); return; }
+  const it=e.target.closest('.list-item'); if(it)showCompare(it.dataset.mst,it.dataset.name);
+});
 $('#compare').addEventListener('click',e=>{
   if(e.target.closest('#dlXlsx')){ exportXlsx(); return; }
+  const cs=e.target.closest('#cmpStar'); if(cs){ toggleFav({mst:cs.dataset.mst,name:cs.dataset.name}); return; }
   const b=e.target.closest('.copy-btn'); if(!b)return;
   const g=ARTS[+b.dataset.idx]; if(!g)return;
   const side=b.dataset.side, colD=$('#colDel').value, colI=$('#colIns').value;
@@ -313,9 +352,10 @@ $('#compare').addEventListener('click',e=>{
 (async function init(){
   try{
     MANIFEST = await (await fetch('/data/law/index.json',{cache:'no-cache'})).json();
+    MANIFEST.sort((a,b)=>ymd(b.ef).localeCompare(ymd(a.ef)));   // 시행일 최신순 정렬
     try{ const m=await (await fetch('/data/law/meta.json',{cache:'no-cache'})).json(); if(m?.generatedAt) $('#updated').textContent='마지막 갱신: '+new Date(m.generatedAt).toLocaleString('ko-KR'); }catch(_){}
   }catch(e){ $('#results').innerHTML='<div class="empty">데이터를 불러올 수 없어요 (자동 수집 전이거나 일시 오류).</div>'; $('#updated').textContent=''; return; }
-  renderBasket();
+  renderFavs();
   search();
 })();
 </script>
