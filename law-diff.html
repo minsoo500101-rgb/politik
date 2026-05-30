@@ -78,6 +78,10 @@
   .dc{color:var(--del);font-weight:600}
   .ic{color:var(--ins);font-weight:600}
   .legend{font-size:11.5px;color:var(--dim);margin-bottom:8px}
+  .pager{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:14px 0 4px}
+  .pager .pg{min-width:34px;padding:6px 10px;font-size:13px}
+  .pager .pg.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .note{margin-top:10px;font-size:11.5px;color:var(--dim);line-height:1.5;text-align:left}
   .empty,.loading{color:var(--dim);font-size:13px;padding:16px;text-align:center}
   footer{margin-top:24px;font-size:11px;color:var(--dim);border-top:1px solid var(--bd2);padding-top:10px}
   @media(max-width:680px){.arow{grid-template-columns:1fr}.acol.old{border-right:0;border-bottom:1px solid var(--bd2)}.ldx-head{padding:10px 14px}}
@@ -117,6 +121,7 @@
     </div>
     <div class="chips" id="basket"></div>
     <div class="hint"><span id="updated">불러오는 중…</span> · 복사 시 색 정보도 함께 복사돼요. 셀 줄바꿈까지 필요하면 비교 화면의 「📥 엑셀 다운로드」.</div>
+    <div class="hint">※ <b>전부개정</b>(제정 성격)이거나 본문 개정 없이 <b>별표·별지만 개정</b>된 경우, 법제처가 신구조문대비표를 제공하지 않아 검색되지 않을 수 있어요.</div>
   </div>
 
   <div id="results"></div>
@@ -183,8 +188,13 @@ function renderFavs(){
   $('#basket').innerHTML='<span class="chip-lab">즐겨찾기:</span>'+FAVS.map(f=>`<span class="chip fav" data-n="${esc(f.name)}"><span class="cn">${esc(f.name)}</span><span class="cx" data-rm="${esc(f.name)}" title="삭제">✕</span></span>`).join('');
 }
 
-const RESULT_CAP=60;
+const PAGE_SIZE=10, MAX_PAGES=5, RESULT_CAP=PAGE_SIZE*MAX_PAGES;   // 10건 × 5페이지
 const kindMatch=(k,sel)=> !sel ? true : (sel==='__rule' ? (k!=='법률'&&k!=='대통령령') : k===sel);
+const kindRank=k=> k==='법률'?0 : k==='대통령령'?1 : 2;            // 본법 → 시행령 → 시행규칙/부령
+const baseName=n=> String(n||'').replace(/\s*시행규칙$/,'').replace(/\s*시행령$/,'').trim();
+const SINGU_NOTE='※ 전부개정(제정과 같은 성격)이거나 본문 개정 없이 별표·별지만 개정된 경우, 법제처가 신구조문대비표를 제공하지 않아 여기서도 표시되지 않습니다.';
+let CUR_ITEMS=[], CUR_PAGE=1, CUR_FILTERED=false;
+
 function search(){
   const q=$('#q').value.trim(), kindSel=$('#kind').value;
   $('#compare').innerHTML=''; ARTS=[];
@@ -195,22 +205,43 @@ function search(){
     const f=ymd($('#from').value), t=ymd($('#to').value);
     items=items.filter(it=>{ const p=ymd(it.ef); return (!f||p>=f)&&(!t||p<=t); });   // 시행일 기준
   }
-  const total=items.length;
-  if(!total){ $('#results').innerHTML='<div class="empty">조건에 맞는 신구표가 없어요. 검색어·구분·기간을 바꿔보세요.</div>'; return; }
-  const filtered = q||kindSel||$('#rangeOn').checked;
-  const shown=items.slice(0,RESULT_CAP);
-  const head = filtered
-    ? `${total.toLocaleString()}건${total>RESULT_CAP?` 중 상위 ${RESULT_CAP}건 — 검색어를 좁히면 정확해져요`:''} · 시행일순 · 클릭하면 신구비교`
-    : `시행일 기준 최신 ${shown.length}건 (전체 ${total.toLocaleString()}건) · 위에서 법령명으로 검색하세요`;
-  $('#results').innerHTML = `<div class="li-meta" style="margin:4px 2px 8px">${head}</div>` + shown.map(it=>`
-    <div class="list-item" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}">
+  CUR_FILTERED = !!(q||kindSel||$('#rangeOn').checked);
+  if(q){
+    // 본법(법률)+시행령+시행규칙을 한 family로 묶어 위계순 — family는 시행일 최신 우선
+    const recent=g=>Math.max(...g.map(x=>+ymd(x.ef)||0));
+    const fam={}; items.forEach(it=>{ (fam[baseName(it.name)] = fam[baseName(it.name)]||[]).push(it); });
+    items = Object.values(fam).sort((a,b)=>recent(b)-recent(a))
+      .flatMap(g=>g.sort((a,b)=>kindRank(a.kind)-kindRank(b.kind) || ymd(b.ef).localeCompare(ymd(a.ef))));
+  }
+  CUR_ITEMS=items; CUR_PAGE=1;
+  renderResults();
+}
+function itemRow(it){
+  return `<div class="list-item" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}">
       <span class="badge ${it.kind==='법률'?'':'rule'}">${esc(it.kind)}</span>
       <div class="li-main"><div class="li-name">${esc(it.name)}</div><div class="li-meta">${esc(it.rev||'')} · 소관 ${esc(it.dept||'')}</div></div>
       <div class="li-right">
         <div class="li-date">시행 <b>${fmtDate(it.ef)}</b><br>개정 ${fmtDate(it.pub)}</div>
         <button class="star ${isFav(it.name)?'on':''}" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}" title="즐겨찾기" aria-label="즐겨찾기 토글">${isFav(it.name)?'★':'☆'}</button>
       </div>
-    </div>`).join('');
+    </div>`;
+}
+function pagerHtml(pages){
+  if(pages<=1) return '';
+  let b=''; for(let p=1;p<=pages;p++) b+=`<button class="pg${p===CUR_PAGE?' on':''}" data-page="${p}">${p}</button>`;
+  return `<div class="pager">${b}</div>`;
+}
+function renderResults(){
+  const total=CUR_ITEMS.length;
+  if(!total){ $('#results').innerHTML=`<div class="empty">조건에 맞는 신구표가 없어요. 검색어·구분·기간을 바꿔보세요.<div class="note">${SINGU_NOTE}</div></div>`; return; }
+  const capped=CUR_ITEMS.slice(0,RESULT_CAP);
+  const pages=Math.ceil(capped.length/PAGE_SIZE);
+  CUR_PAGE=Math.min(Math.max(1,CUR_PAGE),pages);
+  const slice=capped.slice((CUR_PAGE-1)*PAGE_SIZE, CUR_PAGE*PAGE_SIZE);
+  const head = CUR_FILTERED
+    ? `${total.toLocaleString()}건${total>RESULT_CAP?` (상위 ${RESULT_CAP}건 — 검색어를 좁혀보세요)`:''} · 시행일순`
+    : `시행일 기준 최신 ${Math.min(total,RESULT_CAP)}건 (전체 ${total.toLocaleString()}건) · 위에서 법령명으로 검색하세요`;
+  $('#results').innerHTML = `<div class="li-meta" style="margin:4px 2px 8px">${head}</div>` + slice.map(itemRow).join('') + pagerHtml(pages);
 }
 
 function extractTitle(s){ s=stripTags(s); const m=s.match(/^제\s*\d+조(?:의\d+)?\s*\([^)]*\)/)||s.match(/^제\s*\d+조(?:의\d+)?/); return m?m[0].trim():''; }
@@ -311,7 +342,7 @@ $('#kind').addEventListener('change',search);
 const THEME_KEY='politik:theme';
 function applyTheme(name){
   document.documentElement.setAttribute('data-theme',name);
-  const b=$('#theme-toggle'); if(b){ b.textContent=name==='dark'?'☀':'🌙'; b.setAttribute('aria-pressed',name==='dark'?'true':'false'); b.setAttribute('aria-label',name==='dark'?'라이트 모드로 전환':'다크 모드로 전환'); }
+  const b=$('#theme-toggle'); if(b){ b.textContent=name==='dark'?'☀️':'🌙'; b.setAttribute('aria-pressed',name==='dark'?'true':'false'); b.setAttribute('aria-label',name==='dark'?'라이트 모드로 전환':'다크 모드로 전환'); }
   try{localStorage.setItem(THEME_KEY,name);}catch(e){}
 }
 applyTheme(document.documentElement.getAttribute('data-theme')||'light');
@@ -321,6 +352,7 @@ $('#basket').addEventListener('click',e=>{
   const c=e.target.closest('.chip'); if(c){ $('#q').value=c.dataset.n; search(); }
 });
 $('#results').addEventListener('click',e=>{
+  const pg=e.target.closest('.pg'); if(pg){ CUR_PAGE=+pg.dataset.page; renderResults(); $('#results').scrollIntoView({behavior:'smooth',block:'start'}); return; }
   const star=e.target.closest('.star'); if(star){ e.stopPropagation(); toggleFav({mst:star.dataset.mst,name:star.dataset.name}); return; }
   const it=e.target.closest('.list-item'); if(it)showCompare(it.dataset.mst,it.dataset.name);
 });

@@ -11718,7 +11718,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.9</a>
+      <a href="/changelog" id="foot-year">V31.10</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18641,6 +18641,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.10', date: '2026-05-30', title: '⚖ 신구비교 탐색 개선 + 버그 수정', items: [
+    '목록을 10건씩 5페이지로 페이지네이션, 검색 시 본법+시행령+시행규칙을 한 묶음(위계순)으로 정리',
+    '전부개정·별표(별지)만 개정 등 법제처가 신구표를 제공하지 않는 사유 안내 추가',
+    '신구비교가 같은 탭에서 안 열리던 문제(SPA 라우터 충돌)·다크모드 테마 버튼 깨짐 수정'
+  ]},
   { v: 'V31.9', date: '2026-05-30', title: '⚖ 신구비교 즐겨찾기 + 시행일 기준', items: [
     '관심 법령을 ☆로 직접 즐겨찾기 저장(브라우저 보관) — 자주 보는 법을 모아두고 한 번에 접근',
     '목록·비교 화면에 개정일·시행일 모두 표시, 검색/정렬 기준을 시행일로 변경',
@@ -23414,7 +23419,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.9 · ⚖ 신구비교 즐겨찾기·시행일</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.10 · ⚖ 신구비교 탐색 개선</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -26290,6 +26295,9 @@ document.addEventListener('click', (e) => {
   if (target.startsWith('#/')) target = target.slice(1);
   else if (target.startsWith('#')) return; // 페이지 내 앵커는 그대로
   else if (!target.startsWith('/')) return; // 상대 경로는 그대로
+  // 정적 파일(.html 실제 페이지 — 예: /law-diff.html)·정적 데이터는 SPA 라우터 우회 → 브라우저 실제 이동
+  const _sp = target.split('?')[0];
+  if (_sp.endsWith('.html') || _sp.startsWith('/data/')) return;
   e.preventDefault();
   nav(target);
 });
@@ -26733,7 +26741,7 @@ function applyTheme(name) {
   document.documentElement.setAttribute('data-theme', name);
   const btn = document.getElementById('theme-toggle');
   if (btn) {
-    btn.textContent = name === 'dark' ? '☀' : '🌙';
+    btn.textContent = name === 'dark' ? '☀️' : '🌙';
     btn.setAttribute('aria-pressed', name === 'dark' ? 'true' : 'false');
     btn.setAttribute('aria-label', name === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
   }
