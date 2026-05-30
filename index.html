@@ -11718,7 +11718,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.7</a>
+      <a href="/changelog" id="foot-year">V31.8</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18641,6 +18641,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.8', date: '2026-05-30', title: '⚖ 신구비교 전체 법령 확대 + 다크모드 통일', items: [
+    '철도 8법 → 대한민국 전체 법령(법·시행령·시행규칙) 5,500여 종 신구표 검색으로 확대 — 법령구분 필터·최근 개정순',
+    '본문 데이터는 최신 개정부터 매일 자동 캐시(점진 백필), 아직 안 받은 건 안내 후 순차 제공',
+    '패치노트와 동일 디자인·다크모드로 통일 (헤더·색 토큰·테마 localStorage 동기화)'
+  ]},
   { v: 'V31.7', date: '2026-05-30', title: '⚖ 법령 신구비교 엑셀(.xlsx) 다운로드', items: [
     '신구비교표를 색·줄바꿈이 셀 안에 그대로 박힌 엑셀 파일로 즉시 다운로드 — 클립보드 붙여넣기의 셀 줄바꿈 한계를 우회',
     '조마다 한 행, [조·구(개정 전)·신(개정 후)] 3열 / 셀 안에서 항·호 자동 줄바꿈 + 변경부분 글자색(전 빨강·후 파랑)',
@@ -23404,7 +23409,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.7 · ⚖ 신구비교 엑셀 다운로드</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.8 · ⚖ 전체 법령 신구비교</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자

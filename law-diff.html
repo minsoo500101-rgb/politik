@@ -3,69 +3,97 @@
 <title>법령 신구비교 · 대한민국 패치노트</title>
 <meta name="robots" content="noindex">
 <style>
-  :root{--bd:#d9d9d9;--bd2:#eee;--tx:#1a1a1a;--dim:#6b7280;--bg:#f6f6f4;--card:#fff;--accent:#4F46E5;--del:#dc2626;--ins:#1d4ed8;--rd:6px}
+  :root{
+    --bg:#f7f7f5;--card:#fcfcfa;--elev:#f0efec;
+    --bd:#e7e5e0;--bd2:#edebe6;--tx:#1f2937;--tx2:#4b5563;--dim:#6b7280;
+    --accent:#4F46E5;--accent-strong:#4338CA;--del:#dc2626;--ins:#1d4ed8;--rd:6px;
+    --badge-law-bg:#eef0ff;--badge-law-tx:#3730a3;--badge-rule-bg:#e9f6ec;--badge-rule-tx:#1f7a37;
+  }
+  [data-theme="dark"]{
+    --bg:#0a0e14;--card:#11161e;--elev:#161b24;
+    --bd:#21272f;--bd2:#1b212a;--tx:#e6edf3;--tx2:#b8c1cc;--dim:#7d858f;
+    --accent:#818CF8;--accent-strong:#A5B4FC;
+    --badge-law-bg:#1e2350;--badge-law-tx:#aeb8ff;--badge-rule-bg:#16321f;--badge-rule-tx:#74d18c;
+  }
   *{box-sizing:border-box}
   body{font-family:'Pretendard','Malgun Gothic',-apple-system,system-ui,sans-serif;color:var(--tx);background:var(--bg);margin:0;line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1080px;margin:0 auto;padding:22px 20px 60px}
-  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .ldx-head{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--bd)}
+  .ldx-head .brand{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--tx);text-decoration:none;font-weight:800;letter-spacing:-.3px}
+  .ldx-head .brand .tag{font-weight:600;font-size:11.5px;color:var(--dim);border-left:1px solid var(--bd);padding-left:8px}
+  .theme-btn{font-size:14px;width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--bd);background:var(--bg);border-radius:var(--rd);cursor:pointer;color:var(--tx)}
+  .theme-btn:hover{border-color:var(--accent)}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 20px 60px}
+  .top{margin-bottom:14px}
   h1{font-size:20px;margin:0 0 2px;letter-spacing:-.5px}
   .sub{font-size:12.5px;color:var(--dim)}
-  .home-link{font-size:12.5px;color:var(--accent);text-decoration:none}
   .panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--rd);padding:14px 16px;margin-bottom:16px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   label{font-size:12px;color:var(--dim);font-weight:600}
-  input[type=text],input[type=date]{font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--bd);border-radius:var(--rd);background:#fff}
+  input[type=text],input[type=date],select{font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--bd);border-radius:var(--rd);background:var(--card);color:var(--tx)}
   input[type=text]{flex:1;min-width:200px}
-  input[type=color]{width:30px;height:26px;border:1px solid var(--bd);border-radius:4px;padding:0;cursor:pointer;vertical-align:middle}
-  button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:#fff;border-radius:var(--rd);padding:8px 12px;font-size:13px;font-weight:600}
+  input[type=color]{width:30px;height:26px;border:1px solid var(--bd);border-radius:4px;padding:0;cursor:pointer;vertical-align:middle;background:var(--card)}
+  button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:var(--rd);padding:8px 12px;font-size:13px;font-weight:600}
   button.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
   button:hover{border-color:var(--accent)}
-  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-  .chip{font-size:12px;padding:5px 10px;border-radius:999px;background:#f1f1ef;border:1px solid var(--bd2);color:#333;cursor:pointer}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .chip-lab{font-size:11px;color:var(--dim);margin-right:2px}
+  .chip{font-size:12px;padding:5px 10px;border-radius:999px;background:var(--elev);border:1px solid var(--bd2);color:var(--tx2);cursor:pointer}
   .chip:hover{border-color:var(--accent);color:var(--accent)}
   .hint{font-size:11.5px;color:var(--dim);margin-top:8px}
-  .list-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--bd);border-radius:var(--rd);background:#fff;margin-bottom:8px;cursor:pointer}
+  .list-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--bd);border-radius:var(--rd);background:var(--card);margin-bottom:8px;cursor:pointer}
   .list-item:hover{border-color:var(--accent);box-shadow:0 1px 6px rgba(0,0,0,.06)}
   .li-name{font-weight:700;font-size:14px}
   .li-meta{font-size:11.5px;color:var(--dim);margin-top:1px}
-  .badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:#eef;color:#3338b8;white-space:nowrap}
-  .badge.rule{background:#efe;color:#2a8a2a}
-  .li-date{margin-left:auto;text-align:right;font-size:11.5px;color:#444;white-space:nowrap}
+  .badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--badge-law-bg);color:var(--badge-law-tx);white-space:nowrap}
+  .badge.rule{background:var(--badge-rule-bg);color:var(--badge-rule-tx)}
+  .li-date{margin-left:auto;text-align:right;font-size:11.5px;color:var(--tx2);white-space:nowrap}
   .li-date b{color:var(--accent)}
   .cmp-head{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--tx);padding-bottom:8px;margin:18px 0 4px}
   .cmp-head h2{font-size:17px;margin:0}
   .cmp-meta{font-size:12px;color:var(--dim)}
-  .count{display:inline-block;background:var(--tx);color:#fff;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:4px;margin:10px 0}
-  .art{border:1px solid var(--bd);border-radius:var(--rd);margin-bottom:12px;overflow:hidden;background:#fff}
-  .art-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#fafafa;border-bottom:1px solid var(--bd2)}
+  .count{display:inline-block;background:var(--accent);color:#fff;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:4px;margin:10px 0}
+  .art{border:1px solid var(--bd);border-radius:var(--rd);margin-bottom:12px;overflow:hidden;background:var(--card)}
+  .art-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--elev);border-bottom:1px solid var(--bd2)}
   .art-no{font-size:11px;color:var(--dim);font-weight:700}
   .copy-btn{font-size:11px;padding:3px 9px;margin-left:6px}
   .arow{display:grid;grid-template-columns:1fr 1fr}
   .arow+.arow{border-top:1px solid var(--bd2)}
-  .arow.head .acol{font-size:10.5px;font-weight:700;color:var(--dim);letter-spacing:.5px;background:#fafafa}
+  .arow.head .acol{font-size:10.5px;font-weight:700;color:var(--dim);letter-spacing:.5px;background:var(--elev)}
   .acol{padding:8px 12px;font-size:13px}
   .acol.old{border-right:1px solid var(--bd2)}
-  .arow.same .acol{color:#9aa0a8}
-  .dim{color:#bbb}
+  .arow.same .acol{color:var(--dim)}
+  .dim{color:var(--dim)}
   .dc{color:var(--del);font-weight:600}
   .ic{color:var(--ins);font-weight:600}
   .legend{font-size:11.5px;color:var(--dim);margin-bottom:8px}
   .empty,.loading{color:var(--dim);font-size:13px;padding:16px;text-align:center}
-  footer{margin-top:24px;font-size:11px;color:#999;border-top:1px solid var(--bd2);padding-top:10px}
-  @media(max-width:680px){.arow{grid-template-columns:1fr}.acol.old{border-right:0;border-bottom:1px solid var(--bd2)}}
+  footer{margin-top:24px;font-size:11px;color:var(--dim);border-top:1px solid var(--bd2);padding-top:10px}
+  @media(max-width:680px){.arow{grid-template-columns:1fr}.acol.old{border-right:0;border-bottom:1px solid var(--bd2)}.ldx-head{padding:10px 14px}}
 </style>
+<script>/* no-flash 테마: patchkr와 동일 localStorage 키로 동기화 */(function(){try{var k='politik:theme';var s=localStorage.getItem(k)||((window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',s);}catch(e){}})();</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 </head>
-<body><div class="wrap">
+<body>
+<header class="ldx-head">
+  <a class="brand" href="/">📋 대한민국 패치노트 <span class="tag">법령 신구비교</span></a>
+  <button id="theme-toggle" class="theme-btn" aria-label="다크 모드로 전환" aria-pressed="false">🌙</button>
+</header>
+<div class="wrap">
   <div class="top">
-    <div><h1>📋 법령 신구비교</h1><div class="sub">철도 법령 바스켓 개정 신·구조문 모니터링 · 출처 법제처 국가법령정보</div></div>
-    <a class="home-link" href="/">← 패치노트 홈</a>
+    <h1>📋 법령 신구비교</h1>
+    <div class="sub">대한민국 전체 법령(법·시행령·시행규칙) 개정 신·구조문 대비 · 출처 법제처 국가법령정보</div>
   </div>
 
   <div class="panel">
     <div class="row">
-      <input type="text" id="q" placeholder="법령명 필터 (예: 철도안전법)" value="">
-      <button class="pri" id="searchBtn">필터</button>
+      <input type="text" id="q" placeholder="법령명 검색 (예: 철도안전법, 도로교통법, 건축법…)" value="">
+      <select id="kind" title="법령 구분 필터">
+        <option value="">전체 구분</option>
+        <option value="법률">법률</option>
+        <option value="대통령령">대통령령(시행령)</option>
+        <option value="__rule">부령·규칙</option>
+      </select>
+      <button class="pri" id="searchBtn">검색</button>
     </div>
     <div class="row" style="margin-top:10px">
       <label>개정일(공포) 기간</label>
@@ -76,7 +104,7 @@
       <label>후 색 <input type="color" id="colIns" value="#1d4ed8"></label>
     </div>
     <div class="chips" id="basket"></div>
-    <div class="hint"><span id="updated">불러오는 중…</span> · 복사 시 색 정보도 함께 복사돼요(워드·한글에 붙여넣기 가능). 모니터링 바스켓 외 법령은 추가 요청.</div>
+    <div class="hint"><span id="updated">불러오는 중…</span> · 복사 시 색 정보도 함께 복사돼요. 셀 줄바꿈까지 필요하면 비교 화면의 「📥 엑셀 다운로드」.</div>
   </div>
 
   <div id="results"></div>
@@ -122,22 +150,31 @@ async function copyRich(html,plain,btn){
   }catch(e){ try{ await navigator.clipboard.writeText(plain); toast(btn);}catch(_){ alert('복사 실패: '+e.message); } }
 }
 
+const FEATURED=['철도안전법','철도사업법','산업안전보건법','중대재해 처벌 등에 관한 법률','시설물의 안전 및 유지관리에 관한 특별법','개인정보 보호법','도로교통법','건축법'];
 function renderBasket(){
-  const groups=[...new Set(MANIFEST.map(it=>it.group))];
-  $('#basket').innerHTML = groups.map(n=>`<span class="chip" data-n="${esc(n)}">${esc(n)}</span>`).join('');
+  $('#basket').innerHTML = '<span class="chip-lab">자주 찾는:</span>' + FEATURED.map(n=>`<span class="chip" data-n="${esc(n)}">${esc(n)}</span>`).join('');
 }
 
+const RESULT_CAP=60;
+const kindMatch=(k,sel)=> !sel ? true : (sel==='__rule' ? (k!=='법률'&&k!=='대통령령') : k===sel);
 function search(){
-  const q=$('#q').value.trim();
+  const q=$('#q').value.trim(), kindSel=$('#kind').value;
   $('#compare').innerHTML=''; ARTS=[];
   let items=MANIFEST.slice();
-  if(q) items=items.filter(it=>(it.name||'').includes(q)||(it.group||'').includes(q));
+  if(q) items=items.filter(it=>(it.name||'').includes(q));
+  if(kindSel) items=items.filter(it=>kindMatch(it.kind,kindSel));
   if($('#rangeOn').checked){
     const f=ymd($('#from').value), t=ymd($('#to').value);
     items=items.filter(it=>{ const p=ymd(it.pub); return (!f||p>=f)&&(!t||p<=t); });
   }
-  if(!items.length){ $('#results').innerHTML='<div class="empty">해당 조건의 신구표가 없습니다. (모니터링 바스켓 외 법령은 추가 요청)</div>'; return; }
-  $('#results').innerHTML = `<div class="li-meta" style="margin:4px 2px 8px">${items.length}건 — 클릭하면 신구비교</div>` + items.map(it=>`
+  const total=items.length;
+  if(!total){ $('#results').innerHTML='<div class="empty">조건에 맞는 신구표가 없어요. 검색어·구분·기간을 바꿔보세요.</div>'; return; }
+  const filtered = q||kindSel||$('#rangeOn').checked;
+  const shown=items.slice(0,RESULT_CAP);
+  const head = filtered
+    ? `${total.toLocaleString()}건${total>RESULT_CAP?` 중 상위 ${RESULT_CAP}건 — 검색어를 좁히면 정확해져요`:''} · 클릭하면 신구비교`
+    : `최근 개정 ${shown.length}건 (전체 ${total.toLocaleString()}건) · 위에서 법령명으로 검색하세요`;
+  $('#results').innerHTML = `<div class="li-meta" style="margin:4px 2px 8px">${head}</div>` + shown.map(it=>`
     <div class="list-item" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}">
       <span class="badge ${it.kind==='법률'?'':'rule'}">${esc(it.kind)}</span>
       <div><div class="li-name">${esc(it.name)}</div><div class="li-meta">${esc(it.rev||'')} · 소관 ${esc(it.dept||'')}</div></div>
@@ -155,8 +192,15 @@ function rowSide(r,side){ // 한 행을 화면용 HTML로 (색)
 async function showCompare(mst,name){
   const box=$('#compare'); box.innerHTML='<div class="loading">신구조문 불러오는 중…</div>';
   box.scrollIntoView({behavior:'smooth',block:'start'});
-  let d; try{ d=await (await fetch(BODY(mst))).json(); }
-  catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
+  let d;
+  try{
+    const res=await fetch(BODY(mst),{cache:'no-cache'});
+    if(!res.ok){
+      box.innerHTML=`<div class="empty">이 신구표 본문은 아직 자동 캐시 전이에요.<br>최신 개정부터 순서대로 채워지는 중이라 곧 제공됩니다.<br><span class="dim" style="font-size:12px">${esc(name||'')}</span></div>`;
+      return;
+    }
+    d=await res.json();
+  }catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
   CURLAW={name:d.name||name, ef:d.ef};
   const oldByNo=new Map((d.old||[]).map(a=>[String(a.no),a.content]));
   const rows=(d.new||[]).map(a=>({ no:String(a.no), oldC:oldByNo.get(String(a.no))||'', newC:a.content }));
@@ -230,6 +274,16 @@ $('#rangeOn').addEventListener('change',search);
 $('#from').addEventListener('change',()=>{if($('#rangeOn').checked)search();});
 $('#to').addEventListener('change',()=>{if($('#rangeOn').checked)search();});
 $('#colDel').addEventListener('input',applyColors); $('#colIns').addEventListener('input',applyColors);
+$('#kind').addEventListener('change',search);
+// 테마 토글 — patchkr와 동일 localStorage 키로 동기화
+const THEME_KEY='politik:theme';
+function applyTheme(name){
+  document.documentElement.setAttribute('data-theme',name);
+  const b=$('#theme-toggle'); if(b){ b.textContent=name==='dark'?'☀':'🌙'; b.setAttribute('aria-pressed',name==='dark'?'true':'false'); b.setAttribute('aria-label',name==='dark'?'라이트 모드로 전환':'다크 모드로 전환'); }
+  try{localStorage.setItem(THEME_KEY,name);}catch(e){}
+}
+applyTheme(document.documentElement.getAttribute('data-theme')||'light');
+$('#theme-toggle').addEventListener('click',()=>{ const c=document.documentElement.getAttribute('data-theme')||'light'; applyTheme(c==='dark'?'light':'dark'); });
 $('#basket').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){$('#q').value=c.dataset.n;search();}});
 $('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it)showCompare(it.dataset.mst,it.dataset.name);});
 $('#compare').addEventListener('click',e=>{

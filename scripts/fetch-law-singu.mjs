@@ -1,84 +1,116 @@
 // 법령 신구표 자동 수집 — GitHub Actions(law.go.kr 도달 가능)에서 실행
 // 결과를 data/law/*.json 정적 파일로 저장 → patchkr(Vercel)가 서빙
-//   env: LAW_OC (GHA secret), LAW_REFERER (기본 https://patchkr.com)
+//   env: LAW_OC (GHA secret), LAW_REFERER (기본 https://patchkr.com), BODY_BUDGET (본문 백필/run, 기본 600)
+// 전략: 전체 신구표(5,500+)를 인덱스로, 본문은 미캐시분만 "최신(공포일자)순"으로 매 run 예산만큼 점진 백필.
 // 산출물:
-//   data/law/index.json        — 바스켓 신구표 목록(메타)
-//   data/law/body/<mst>.json   — 조별 구/신 본문
-//   data/law/meta.json         — 갱신시각·바스켓
-import { writeFileSync, mkdirSync } from 'node:fs';
+//   data/law/index.json        — 전체 신구표 목록(메타, 공포일자 desc)
+//   data/law/body/<mst>.json   — 조별 구/신 본문 (점진 캐시)
+//   data/law/meta.json         — 갱신시각·총건수·캐시본문수
+import { writeFileSync, readFileSync, readdirSync, mkdirSync, existsSync } from 'node:fs';
 
 const OC = process.env.LAW_OC;
 const REFERER = process.env.LAW_REFERER || 'https://patchkr.com';
+const BODY_BUDGET = Number(process.env.BODY_BUDGET || 600);
 const BASE = 'https://www.law.go.kr/DRF';
 if (!OC) { console.error('❌ LAW_OC 필요'); process.exit(1); }
 
-// 철도 사업자 법령 바스켓 (확장 가능)
-const BASKET = [
-  '철도안전법', '철도사업법', '도시철도법', '철도산업발전기본법',
-  '산업안전보건법', '중대재해 처벌 등에 관한 법률',
-  '시설물의 안전 및 유지관리에 관한 특별법', '개인정보 보호법',
-];
-
+// UI 칩 큐레이션은 프런트(law-diff.html)에서. 여기선 전체를 받는다.
 const asArr = x => Array.isArray(x) ? x : (x == null ? [] : [x]);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function drf(path, params, tries = 4) {
+async function drf(path, params, tries = 5) {
   const u = new URL(`${BASE}/${path}`);
   u.searchParams.set('OC', OC); u.searchParams.set('type', 'json');
-  for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
+  for (const [k, v] of Object.entries(params)) u.searchParams.set(k, String(v));
   let lastErr;
   for (let a = 0; a < tries; a++) {
     try {
       const r = await fetch(u, { headers: { Referer: REFERER, 'User-Agent': 'Mozilla/5.0 (compatible; patchkr/1.0)' } });
       const t = await r.text();
       if (t && t.trim()) return JSON.parse(t);
-      lastErr = new Error('빈 응답');
+      lastErr = new Error('빈 응답(' + r.status + ')');
     } catch (e) { lastErr = e; }
     await sleep(700);
   }
   throw lastErr || new Error('재시도 초과');
 }
 
+const toEntry = it => ({
+  mst: it.신구법일련번호, name: it.신구법명, kind: it.법령구분명,
+  rev: it.제개정구분명, ef: it.시행일자, pub: it.공포일자,
+  pubNo: it.공포번호, dept: it.소관부처명,
+});
+
+// 전체 신구표 인덱스 페이지네이션 수집
+async function fetchAllIndex() {
+  const per = 100;
+  const first = await drf('lawSearch.do', { target: 'oldAndNew', display: per, page: 1 });
+  const root = first?.OldAndNewLawSearch || {};
+  const total = Number(root.totalCnt) || 0;
+  const pages = Math.ceil(total / per);
+  let items = asArr(root.oldAndNew);
+  let okPages = 1, failPages = 0;
+  for (let p = 2; p <= pages; p++) {
+    try {
+      const j = await drf('lawSearch.do', { target: 'oldAndNew', display: per, page: p });
+      const a = asArr(j?.OldAndNewLawSearch?.oldAndNew);
+      if (a.length) { items = items.concat(a); okPages++; } else failPages++;
+    } catch (e) { failPages++; console.warn('  ✗ index page', p, e.message); }
+    await sleep(300);
+  }
+  console.log(`  인덱스: ${items.length}건 수집 (total ${total}, 페이지 ${okPages}/${pages}, 실패 ${failPages})`);
+  return { items, total };
+}
+
 (async () => {
   mkdirSync('data/law/body', { recursive: true });
-  const manifest = [];
-  const seen = new Set();
 
-  for (const law of BASKET) {
-    try {
-      const j = await drf('lawSearch.do', { target: 'oldAndNew', query: law, display: '50' });
-      const items = asArr(j?.OldAndNewLawSearch?.oldAndNew)
-        // 검색어를 법령명에 포함하는 것만 (무관한 매치 제외)
-        .filter(it => (it.신구법명 || '').includes(law.split(' ')[0].slice(0, 4)) || (it.신구법명 || '').includes(law));
-      for (const it of items) {
-        const mst = it.신구법일련번호;
-        if (!mst || seen.has(mst)) continue;
-        seen.add(mst);
-        try {
-          const b = await drf('lawService.do', { target: 'oldAndNew', MST: mst });
-          const s = b?.OldAndNewService || {};
-          writeFileSync(`data/law/body/${mst}.json`, JSON.stringify({
-            name: s.법령명 || it.신구법명, ef: s.시행일자 || it.시행일자,
-            old: asArr(s?.구조문목록?.조문), new: asArr(s?.신조문목록?.조문),
-          }));
-          manifest.push({
-            group: law, name: it.신구법명, kind: it.법령구분명, rev: it.제개정구분명,
-            ef: it.시행일자, pub: it.공포일자, pubNo: it.공포번호, dept: it.소관부처명, mst,
-          });
-          console.log('  ✓', it.신구법명, it.법령구분명, it.시행일자);
-        } catch (e) { console.warn('  ✗ body', mst, e.message); }
-        await sleep(500);
-      }
-    } catch (e) { console.warn('✗ search', law, e.message); }
-    await sleep(500);
+  // 1) 인덱스 (전체)
+  const { items: raw, total } = await fetchAllIndex();
+  const byMst = new Map();
+  for (const it of raw) { const m = it.신구법일련번호; if (m && !byMst.has(m)) byMst.set(m, toEntry(it)); }
+  let manifest = [...byMst.values()].sort((a, b) => String(b.pub || '').localeCompare(String(a.pub || '')));
+
+  // 안전 가드: 수집이 total의 90% 미만이면(차단·다중 페이지 실패) 기존 index를 보존
+  const enough = total === 0 ? manifest.length > 0 : manifest.length >= total * 0.9;
+  if (enough) {
+    writeFileSync('data/law/index.json', JSON.stringify(manifest));
+    console.log(`  ✓ index.json 갱신 (${manifest.length}건)`);
+  } else {
+    console.warn(`  ⚠ 수집 부족(${manifest.length}/${total}) — index.json 보존, 기존 목록으로 백필만 진행`);
+    if (existsSync('data/law/index.json')) {
+      try { manifest = JSON.parse(readFileSync('data/law/index.json', 'utf8')); } catch {}
+    }
   }
 
-  manifest.sort((a, b) => (b.pub || '').localeCompare(a.pub || ''));
-  writeFileSync('data/law/index.json', JSON.stringify(manifest));
+  // 2) 본문 백필: 미캐시분만 최신순 예산만큼
+  const have = new Set(readdirSync('data/law/body').filter(f => f.endsWith('.json')).map(f => f.replace('.json', '')));
+  const cachedBefore = have.size;
+  let fetched = 0, failed = 0;
+  for (const e of manifest) {
+    if (fetched >= BODY_BUDGET) break;
+    if (!e.mst || have.has(String(e.mst))) continue;
+    try {
+      const b = await drf('lawService.do', { target: 'oldAndNew', MST: e.mst });
+      const s = b?.OldAndNewService || {};
+      writeFileSync(`data/law/body/${e.mst}.json`, JSON.stringify({
+        name: s.법령명 || e.name, ef: s.시행일자 || e.ef,
+        old: asArr(s?.구조문목록?.조문), new: asArr(s?.신조문목록?.조문),
+      }));
+      have.add(String(e.mst)); fetched++;
+      if (fetched % 50 === 0) console.log(`  …본문 ${fetched}건`);
+    } catch (err) { failed++; console.warn('  ✗ body', e.mst, err.message); }
+    await sleep(400);
+  }
+
   writeFileSync('data/law/meta.json', JSON.stringify({
-    generatedAt: new Date().toISOString(), basket: BASKET, count: manifest.length,
+    generatedAt: new Date().toISOString(),
+    total: manifest.length,
+    cachedBodies: cachedBefore + fetched,
+    fetchedThisRun: fetched,
+    remaining: Math.max(0, manifest.length - (cachedBefore + fetched)),
     source: '법제처 국가법령정보 (신구조문대비표)',
   }));
-  console.log(`\n✅ 완료: ${manifest.length}건`);
-  if (!manifest.length) process.exit(1); // 빈 결과면 실패 처리(차단·오류 감지)
+  console.log(`\n✅ index ${manifest.length}건 / 본문 신규 ${fetched} (총 캐시 ${cachedBefore + fetched}, 잔여 ${Math.max(0, manifest.length - (cachedBefore + fetched))}) / 실패 ${failed}`);
+  if (!manifest.length) process.exit(1);
 })().catch(e => { console.error('오류:', e.message); process.exit(1); });
