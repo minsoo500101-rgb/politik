@@ -87,7 +87,7 @@ let MANIFEST = [], ARTS = [];
 const BODY = mst => '/data/law/body/'+encodeURIComponent(mst)+'.json';
 const $ = s => document.querySelector(s);
 const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const stripTags = s => String(s??'').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').trim();
+const stripTags = s => String(s??'').replace(/<\/?[a-zA-Z][^>]*>/g,'').replace(/&amp;/g,'&').trim(); // <P>등 ASCII태그만 제거, <단서 신설>같은 한글 주석은 보존
 const ymd = s => String(s||'').replace(/-/g,'');
 const fmtDate = s => s && s.length===8 ? `${s.slice(0,4)}.${s.slice(4,6)}.${s.slice(6,8)}` : (s||'-');
 const isUnchanged = s => /현행과\s*같음/.test(String(s??''));
