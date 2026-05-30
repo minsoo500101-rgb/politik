@@ -11665,7 +11665,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <a href="/bills">22대 법안 1,595건</a>
       <a href="/election2026">🔴 9회 지선 LIVE</a>
       <a href="/early-voting">🗳 사전투표 안내·투표율</a>
-      <a href="/polling">📍 사전투표소 찾기</a>
+      <a href="/polling">📍 투표소 찾기</a>
       <a href="/election2026/live">🔴 선거 당일 개표</a>
       <a href="/economy">경제 지표</a>
       <a href="/dex">정치인 도감 768명</a>
@@ -11683,7 +11683,6 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     </div>
     <div class="foot-col">
       <div class="foot-h">⭐ 내 활동</div>
-      <a href="/pulse">📊 시민 여론판</a>
       <a href="/share">📤 인스타 공유 카드</a>
       <a href="/me">📋 내 활동 대시보드</a>
       <a href="/bookmarks">관심 의원</a>
@@ -11718,7 +11717,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.10</a>
+      <a href="/changelog" id="foot-year">V31.11</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18641,6 +18640,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.11', date: '2026-05-30', title: '🧹 투표소 찾기 일반화 · 시민 여론판 정리', items: [
+    '‘사전투표소 찾기’ → ‘내 투표소 찾기’로 일반화 — 6/3 본투표소는 선관위 공식 finder 안내, 사전투표소(5/29~30) 검색은 유지',
+    '시민 여론판 기능 제거 (홈 카드·메뉴·페이지) — 활용도 낮아 정리'
+  ]},
   { v: 'V31.10', date: '2026-05-30', title: '⚖ 신구비교 탐색 개선 + 버그 수정', items: [
     '목록을 10건씩 5페이지로 페이지네이션, 검색 시 본법+시행령+시행규칙을 한 묶음(위계순)으로 정리',
     '전부개정·별표(별지)만 개정 등 법제처가 신구표를 제공하지 않는 사유 안내 추가',
@@ -19614,7 +19617,7 @@ function renderEarlyVotingPage() {
       <a href="/polling" class="ev-find-cta" style="display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:14px 18px;background:linear-gradient(135deg,var(--brand-deep),var(--brand));color:#fff;border-radius:var(--rd-xl);text-decoration:none;box-shadow:var(--sh-brand)">
         <span style="font-size:30px" aria-hidden="true">📍</span>
         <span style="flex:1;min-width:0">
-          <span style="display:block;font-size:15px;font-weight:800">내 사전투표소 찾기</span>
+          <span style="display:block;font-size:15px;font-weight:800">내 투표소 찾기</span>
           <span style="display:block;font-size:12px;opacity:0.92;margin-top:2px">시·도 → 구·시·군으로 가까운 사전투표소 검색 →</span>
         </span>
       </a>
@@ -20079,12 +20082,6 @@ const SHARE_CARD_TYPES = {
     label: '🗳 사전투표 잊지마세요',
     desc: '5/29·5/30 사전투표 안내 (전국 어디서나)',
     color: '#4F46E5',
-  },
-  pulse: {
-    id: 'pulse',
-    label: '📊 오늘의 시민 여론',
-    desc: '여론판 데이터 — 정치인 평가 Top 5',
-    color: '#3b82f6',
   },
   dday: {
     id: 'dday',
@@ -23349,7 +23346,7 @@ function renderHome() {
     ? `
           <a class="hero-btn hero-btn-live" href="/early-voting">🗳 사전투표 안내·체크리스트</a>
           <a class="hero-btn hero-btn-cmp" href="/compare-cand">🆚 후보 공약 비교</a>
-          <a class="hero-btn" href="/polling">📍 내 사전투표소 찾기</a>`
+          <a class="hero-btn" href="/polling">📍 내 투표소 찾기</a>`
     : _isEarlyD1
     ? `
           <a class="hero-btn hero-btn-live" href="/early-voting">🗳 사전투표 안내·체크리스트</a>
@@ -23419,7 +23416,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.10 · ⚖ 신구비교 탐색 개선</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.11 · 🧹 투표소·여론판 정리</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -23488,18 +23485,6 @@ function renderHome() {
 
       <!-- V30.8 — 중간 카드 벤토 그리드 (2단): 여론판·인기랭킹·실검·경제 -->
       <div class="home-bento">
-      <!-- 📊 V23.3/V24.7 — 시민 여론판 진입 카드 -->
-      <a href="/pulse" class="home-pulse-card home-bento-wide" style="text-decoration:none;color:inherit">
-        <div class="home-pulse-l">
-          <div class="home-pulse-eye">PUBLIC OPINION · LIVE</div>
-          <div class="home-pulse-title">📊 시민 여론판</div>
-          <div class="home-pulse-sub"><b>국민이 곧 국가</b> — 익명 시민들의 정치 의견 라이브 집계. 정치인 평가 Top·법안 동의도·시도별 성향.</div>
-          <div class="home-pulse-cta">오늘의 여론 보러가기 →</div>
-        </div>
-        <div class="home-pulse-r">
-          <div class="home-pulse-flag">🗳</div>
-        </div>
-      </a>
 
       <!-- 📊 V22.5 — 이번 주 인기 랭킹 (페이지뷰 기반) -->
       <div class="home-ranking-row collapsible-widget" id="home-ranking-row">
@@ -23704,7 +23689,7 @@ function renderHome() {
           <div class="goal-group">
             <div class="goal-head"><span class="goal-ic">🗳</span><div><b>선거 준비</b><em>6/3 투표 전 후보 검증</em></div></div>
             <a class="goal-tool" href="/compare-cand">🆚 9회 후보 5대 공약 비교</a>
-            <a class="goal-tool" href="/polling">📍 내 사전투표소 찾기</a>
+            <a class="goal-tool" href="/polling">📍 내 투표소 찾기</a>
             <a class="goal-tool" href="/elections">🗳 역대 지방선거 비교</a>
           </div>
           <div class="goal-group">
@@ -24525,7 +24510,7 @@ const ROUTE_META = {
   '/election2026': { title: '🔴 9회 전국동시지방선거 (2026.6.3) LIVE — 697명 후보 5대 공약', desc: '제9회 전국동시지방선거 후보자 697명 실시간 — 광역단체장 54·기초단체장 585·교육감 58 + 광역의원·기초의원. 시도지사·교육감 5대 공약 즉시 비교. 중앙선관위 공식 데이터.' },
   '/election2026/live': { title: '🔴 9회 지선 LIVE — 선거 당일 개표 실시간 (6/3 본 투표·개표)', desc: '제9회 전국동시지방선거 2026.6.3 — 본 투표(06~18시)·개표 진행 단계별 안내. 출구조사·개표방송·실시간 투표율·NEC 공식 데이터 빠른 진입. 17 시도지사·교육감·기초단체장 결과.' },
   '/early-voting': { title: '🗳 9회 지선 사전투표 안내 — 5/29·5/30 06:00~18:00', desc: '제9회 전국동시지방선거 사전투표 (2026.5.29~5.30) 안내·체크리스트. 신분증·시간·장소·전국 어디서나·관내관외·7장 투표 색깔별 안내. 후보 공약 미리 비교. 사전투표소 검색 (중앙선관위 통합선거정보).' },
-  '/polling': { title: '📍 사전투표소 찾기 — 9회 지선 (5/29·30)', desc: '제9회 전국동시지방선거 사전투표소 위치 검색. 시도·구시군별 사전투표소 이름·장소·주소 + 지도 연결. 사전투표는 5/29~30 전국 어디서나 가능. 출처: 중앙선거관리위원회 공식 API.' },
+  '/polling': { title: '📍 내 투표소 찾기 — 9회 지선 (6/3 본투표)', desc: '제9회 전국동시지방선거 투표소 안내. 6/3 본투표소 위치는 중앙선관위 ‘내 투표소 찾기’에서 확인. 사전투표소(5/29~30)는 시도·구시군별 이름·장소·주소 검색 + 지도 연결. 출처: 중앙선거관리위원회.' },
   '/committees': { title: '국회 위원회 25개 · 22대 상임위·특별위', desc: '제22대 국회 위원회 25개 (상임 17 + 특별 8). 처리 의안·위원장·간사·소속 의원.' },
   '/map': { title: '정치 분포 지도 — 17 시도 + 226 시군구 정당색', desc: '대한민국 17개 시도 + 226개 시군구 정당색 인터랙티브 지도. 단체장 정보 클릭 탐색.' },
   '/world': { title: '국제 비교 — 12개 민주국가 정치 지표', desc: '12개 민주국가 의원수·여성비율·투표율·민주주의지수·언론자유·청렴도 비교 분석.' },
@@ -24544,8 +24529,7 @@ const ROUTE_META = {
   '/bookmarks': { title: '관심 의원 — 북마크 모아보기', desc: '관심 정치인 북마크 모아보기. 개인 관심 의원·단체장 추적 페이지.' },
   '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
   '/me': { title: '📋 내 활동 대시보드 — 북마크·평점·투표·stance 한 곳에', desc: '익명 UUID로 저장된 본인의 모든 활동 기록을 한 페이지에서 확인. 관심 의원·정치 입장·9회 공약 평점·8회 이행 투표·소셜 투표·페이지 조회 통계.' },
-  '/pulse': { title: '📊 시민 여론판 — 익명 시민 정치 의견 라이브 집계 (Korea Public Opinion)', desc: '국민이 곧 국가. 시민 누적 의견(지지·반대·찬성·우려)을 매일 자동 집계. 정치인 평가 Top·법안 동의도·경제 우려·17 시도별 정치 성향. patchkr.com 사용자 데이터.' },
-  '/share': { title: '📤 인스타·SNS 공유 카드 — 6종 자동 생성', desc: '대한민국 패치노트 데이터를 1080x1080 인스타용 카드로 자동 생성. 시민 여론판·9회 지선 D-Day·KOSPI 데일리·오늘의 법안·정치인 카드·발의 랭킹 Top 5. 모바일에서 1탭 인스타 직접 전송.' },
+  '/share': { title: '📤 인스타·SNS 공유 카드 자동 생성', desc: '대한민국 패치노트 데이터를 1080x1080 인스타용 카드로 자동 생성. 9회 지선 D-Day·KOSPI 데일리·오늘의 법안·정치인 카드·발의 랭킹 Top 5. 모바일에서 1탭 인스타 직접 전송.' },
   '/developers': { title: '🔌 개발자·AI 공개 API 가이드 — 한국 정치·경제 데이터 무료 사용', desc: 'patchkr.com 공개 API 9종. 정치인·법안·9회 지선·경제 ECOS·한국 시장 시세·뉴스·트렌드·법령 검색·KOSPI/KOSDAQ Yahoo Finance 우회. CORS 허용·인증 없음·자유 사용. LLM/AI 친화 — /llms.txt + /llms-full.txt 별도 안내.' },
   '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
   '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
@@ -24661,11 +24645,11 @@ function renderPollingStationPage() {
     <div class="group-back" id="back-home">← 홈</div>
     <div style="max-width:880px;margin:0 auto;padding:8px 4px 60px">
       <div style="margin-bottom:18px">
-        <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-bottom:6px">POLLING STATION · 5/29·30</div>
-        <h1 style="font-size:26px;font-weight:900;color:var(--text);margin:0 0 8px;letter-spacing:-0.5px">📍 내 사전투표소 찾기</h1>
+        <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-bottom:6px">POLLING STATION · 9회 지선</div>
+        <h1 style="font-size:26px;font-weight:900;color:var(--text);margin:0 0 8px;letter-spacing:-0.5px">📍 내 투표소 찾기</h1>
         <p style="font-size:13.5px;color:var(--text-2);line-height:1.6;margin:0">
-          제9회 지방선거 <b>사전투표는 5/29(금)·30(토) 06:00~18:00, 전국 어디서나</b> 신분증만 있으면 됩니다.
-          지역을 골라 가까운 사전투표소를 확인하세요. <span style="color:var(--dim)">출처: 중앙선거관리위원회</span>
+          제9회 지방선거 <b>본투표는 6/3(수) 06:00~18:00</b>, 지정된 본인 투표소에서 합니다 — 위치는 <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">선관위 ‘내 투표소 찾기’ ↗</a>.
+          아래는 <b>사전투표소(5/29~30)</b> 검색입니다. <span style="color:var(--dim)">출처: 중앙선거관리위원회</span>
         </p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
@@ -24885,7 +24869,7 @@ function route() {
   }
   // V23.3 — 한국의 마음 (Korea Pulse)
   if (hash === '#/pulse') {
-    view.innerHTML = renderPulsePage();
+    nav('/'); return; // 시민 여론판(/pulse) 제거됨 — 홈으로 리다이렉트
     document.getElementById('back-home')?.addEventListener('click', () => { nav('/'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -26339,8 +26323,7 @@ const NAV_TREE = [
     { label: '위원회 25', href: '/committees' },
     { label: '정당사 1948~', href: '/history/parties' },
   ]},
-  { label: '여론·내 활동', icon: '📊', children: [
-    { label: '시민 여론판', href: '/pulse' },
+  { label: '내 활동', icon: '📊', children: [
     { label: '내 활동 대시보드', href: '/me' },
     { label: '관심 의원', href: '/bookmarks' },
     { label: '내 정치 입장', href: '/stances' },
