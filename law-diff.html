@@ -204,7 +204,7 @@ $('#compare').addEventListener('click',e=>{
   const cellHtml=(which,color)=> g.rows.map(r=> isUnchanged(r.newC)
     ? esc(stripTags(which==='old'?r.oldC:r.newC))
     : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color)
-  ).join('<br>');
+  ).join('&#10;');
   const cellPlain=which=> g.rows.map(r=>stripTags(which==='old'?r.oldC:r.newC)).join('\n');
   const TD='<td style="vertical-align:top;white-space:pre-wrap;mso-data-placement:same-cell">';
   let html, plain;
