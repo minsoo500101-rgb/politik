@@ -11717,7 +11717,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.11</a>
+      <a href="/changelog" id="foot-year">V31.12</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18640,6 +18640,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.12', date: '2026-05-30', title: '📍 6/3 본투표소 인앱 검색 추가', items: [
+    '6/3 본투표소를 앱 안에서 직접 검색 (중앙선관위 선거일 투표소 공식 데이터) — 본투표소↔사전투표소 토글',
+    '시·도 → 구·시·군 → 동·투표소명·주소 검색 + 네이버 지도 연결'
+  ]},
   { v: 'V31.11', date: '2026-05-30', title: '🧹 투표소 찾기 일반화 · 시민 여론판 정리', items: [
     '‘사전투표소 찾기’ → ‘내 투표소 찾기’로 일반화 — 6/3 본투표소는 선관위 공식 finder 안내, 사전투표소(5/29~30) 검색은 유지',
     '시민 여론판 기능 제거 (홈 카드·메뉴·페이지) — 활용도 낮아 정리'
@@ -23416,7 +23420,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.11 · 🧹 투표소·여론판 정리</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.12 · 📍 6/3 본투표소 검색</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -24648,9 +24652,13 @@ function renderPollingStationPage() {
         <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-bottom:6px">POLLING STATION · 9회 지선</div>
         <h1 style="font-size:26px;font-weight:900;color:var(--text);margin:0 0 8px;letter-spacing:-0.5px">📍 내 투표소 찾기</h1>
         <p style="font-size:13.5px;color:var(--text-2);line-height:1.6;margin:0">
-          제9회 지방선거 <b>본투표는 6/3(수) 06:00~18:00</b>, 지정된 본인 투표소에서 합니다 — 위치는 <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">선관위 ‘내 투표소 찾기’ ↗</a>.
-          아래는 <b>사전투표소(5/29~30)</b> 검색입니다. <span style="color:var(--dim)">출처: 중앙선거관리위원회</span>
+          제9회 지방선거 <b>본투표 6/3(수)</b> · 사전투표 5/29~30 (06:00~18:00). 아래에서 <b>본투표소·사전투표소</b>를 시·도·구로 검색하세요.
+          <span style="color:var(--dim)">내 지정 투표소 확인은 <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">선관위 ‘내 투표소 찾기’ ↗</a> · 출처: 중앙선거관리위원회</span>
         </p>
+      </div>
+      <div id="ps-type" style="display:inline-flex;gap:4px;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:12px">
+        <button type="button" data-pstype="day" class="ps-tbtn" style="border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:7px 13px;border-radius:8px;background:var(--accent);color:#fff">🗳 본투표소 6/3</button>
+        <button type="button" data-pstype="pre" class="ps-tbtn" style="border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:7px 13px;border-radius:8px;background:none;color:var(--text-2)">📋 사전투표소 5/29~30</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <select id="ps-sido" aria-label="시도 선택" style="flex:1;min-width:150px;padding:11px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;font-weight:600">
@@ -24661,7 +24669,7 @@ function renderPollingStationPage() {
           <option value="">구 · 시 · 군</option>
         </select>
       </div>
-      <input id="ps-search" type="search" placeholder="🔍 동 · 투표소 · 주소로 검색" aria-label="사전투표소 검색" style="width:100%;padding:11px 13px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;margin-bottom:16px;box-sizing:border-box" />
+      <input id="ps-search" type="search" placeholder="🔍 동 · 투표소 · 주소로 검색" aria-label="투표소 검색" style="width:100%;padding:11px 13px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;margin-bottom:16px;box-sizing:border-box" />
       <div id="ps-results" aria-live="polite" style="min-height:120px"></div>
     </div>
   `;
@@ -24674,17 +24682,20 @@ function setupPollingStationEvents() {
   const results = document.getElementById('ps-results');
   if (!sido || !gu || !search || !results) return;
   let stations = [];
+  let curType = 'day'; // day=본투표소(6/3) / pre=사전투표소(5/29~30)
+  const typeBox = document.getElementById('ps-type');
+  const typeLabel = () => curType === 'pre' ? '사전투표소' : '본투표소';
   const esc = (s) => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const msg = (t) => `<div style="text-align:center;color:var(--dim);padding:32px 12px;font-size:13.5px;line-height:1.6">${t}</div>`;
 
   function renderList() {
     if (!stations.length) { results.innerHTML = ''; return; }
     const guVal = gu.value, q = (search.value || '').trim();
-    if (!guVal && !q) { results.innerHTML = msg(`구·시·군을 선택하거나 검색해보세요.<br>이 지역 사전투표소 <b style="color:var(--text)">${stations.length}</b>곳`); return; }
+    if (!guVal && !q) { results.innerHTML = msg(`구·시·군을 선택하거나 검색해보세요.<br>이 지역 ${typeLabel()} <b style="color:var(--text)">${stations.length}</b>곳`); return; }
     let list = stations;
     if (guVal) list = list.filter(s => s.wiw === guVal);
     if (q) list = list.filter(s => (s.emd || '').includes(q) || (s.ps || '').includes(q) || (s.place || '').includes(q) || (s.addr || '').includes(q));
-    if (!list.length) { results.innerHTML = msg('조건에 맞는 사전투표소가 없어요.'); return; }
+    if (!list.length) { results.innerHTML = msg(`조건에 맞는 ${typeLabel()}가 없어요.`); return; }
     results.innerHTML = `<div style="font-size:12.5px;color:var(--dim);margin-bottom:10px">${list.length}곳</div>`
       + list.map(s => {
         const mapQ = encodeURIComponent(((s.addr || '') + ' ' + (s.place || '')).trim());
@@ -24701,10 +24712,10 @@ function setupPollingStationEvents() {
     gu.disabled = true; gu.innerHTML = '<option value="">구 · 시 · 군</option>'; stations = []; search.value = '';
     results.innerHTML = msg('불러오는 중…');
     try {
-      const r = await fetch(`/api/polling-station?sd=${encodeURIComponent(sd)}`);
+      const r = await fetch(`/api/polling-station?sd=${encodeURIComponent(sd)}&type=${curType}`);
       const d = await r.json();
       stations = d.stations || [];
-      if (!stations.length) { results.innerHTML = msg(`사전투표소 데이터를 불러오지 못했어요.${d.note ? '<br><span style="font-size:11.5px">(' + esc(d.note) + ')</span>' : ''}`); return; }
+      if (!stations.length) { results.innerHTML = msg(`${typeLabel()} 데이터를 불러오지 못했어요.${d.note ? '<br><span style="font-size:11.5px">(' + esc(d.note) + ')</span>' : ''}`); return; }
       const gus = [...new Set(stations.map(s => s.wiw).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ko'));
       gu.innerHTML = `<option value="">전체 (${stations.length}곳)</option>` + gus.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
       gu.disabled = false;
@@ -24714,6 +24725,16 @@ function setupPollingStationEvents() {
     }
   }
 
+  if (typeBox) typeBox.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-pstype]'); if (!b || b.dataset.pstype === curType) return;
+    curType = b.dataset.pstype;
+    typeBox.querySelectorAll('.ps-tbtn').forEach(btn => {
+      const on = btn.dataset.pstype === curType;
+      btn.style.background = on ? 'var(--accent)' : 'none';
+      btn.style.color = on ? '#fff' : 'var(--text-2)';
+    });
+    if (sido.value) loadSido(sido.value); else results.innerHTML = '';
+  });
   sido.addEventListener('change', () => {
     if (sido.value) loadSido(sido.value);
     else { stations = []; gu.disabled = true; gu.innerHTML = '<option value="">구 · 시 · 군</option>'; results.innerHTML = ''; }
