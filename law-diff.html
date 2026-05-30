@@ -204,10 +204,10 @@ $('#compare').addEventListener('click',e=>{
   const sb=(t,sep)=>String(t).replace(/\s*([①-⑳])/g,(m,c,off)=>off===0?c:sep+c);
   const cellHtml=(which,color)=> g.rows.map(r=> sb(isUnchanged(r.newC)
     ? esc(stripTags(which==='old'?r.oldC:r.newC))
-    : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color), '&#10;')
-  ).join('&#10;');
+    : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color), '<br>')
+  ).join('<br>');
   const cellPlain=which=> g.rows.map(r=> sb(stripTags(which==='old'?r.oldC:r.newC), '\n')).join('\n');
-  const TD='<td style="vertical-align:top;white-space:pre-wrap">'; // same-cell 제거: &#10;(LF문자)가 셀 안 줄바꿈으로 들어가게
+  const TD='<td style="vertical-align:top;mso-data-placement:same-cell">'; // 엑셀 네이티브: <br>+same-cell(no pre-wrap) → 셀 안 줄바꿈
   let html, plain;
   if(side==='row'){
     html=`<table><tr>${TD}${cellHtml('old',colD)}</td>${TD}${cellHtml('new',colI)}</td></tr></table>`;
