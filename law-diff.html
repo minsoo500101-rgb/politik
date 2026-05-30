@@ -192,6 +192,7 @@ const PAGE_SIZE=10, MAX_PAGES=5, RESULT_CAP=PAGE_SIZE*MAX_PAGES;   // 10건 × 5
 const kindMatch=(k,sel)=> !sel ? true : (sel==='__rule' ? (k!=='법률'&&k!=='대통령령') : k===sel);
 const kindRank=k=> k==='법률'?0 : k==='대통령령'?1 : 2;            // 본법 → 시행령 → 시행규칙/부령
 const baseName=n=> String(n||'').replace(/\s*시행규칙$/,'').replace(/\s*시행령$/,'').trim();
+const cleanDept=d=>[...new Set(String(d||'').split(',').map(s=>s.trim()).filter(Boolean))].join(', ');
 const SINGU_NOTE='※ 전부개정(제정과 같은 성격)이거나 본문 개정 없이 별표·별지만 개정된 경우, 법제처가 신구조문대비표를 제공하지 않아 여기서도 표시되지 않습니다.';
 let CUR_ITEMS=[], CUR_PAGE=1, CUR_FILTERED=false;
 
@@ -219,7 +220,7 @@ function search(){
 function itemRow(it){
   return `<div class="list-item" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}">
       <span class="badge ${it.kind==='법률'?'':'rule'}">${esc(it.kind)}</span>
-      <div class="li-main"><div class="li-name">${esc(it.name)}</div><div class="li-meta">${esc(it.rev||'')} · 소관 ${esc(it.dept||'')}</div></div>
+      <div class="li-main"><div class="li-name">${esc(it.name)}</div><div class="li-meta">${esc(it.rev||'')} · 소관 ${esc(cleanDept(it.dept))}</div></div>
       <div class="li-right">
         <div class="li-date">시행 <b>${fmtDate(it.ef)}</b><br>개정 ${fmtDate(it.pub)}</div>
         <button class="star ${isFav(it.name)?'on':''}" data-mst="${esc(it.mst)}" data-name="${esc(it.name)}" title="즐겨찾기" aria-label="즐겨찾기 토글">${isFav(it.name)?'★':'☆'}</button>
