@@ -53,7 +53,9 @@
   .empty,.loading{color:var(--dim);font-size:13px;padding:16px;text-align:center}
   footer{margin-top:24px;font-size:11px;color:#999;border-top:1px solid var(--bd2);padding-top:10px}
   @media(max-width:680px){.arow{grid-template-columns:1fr}.acol.old{border-right:0;border-bottom:1px solid var(--bd2)}}
-</style></head>
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+</head>
 <body><div class="wrap">
   <div class="top">
     <div><h1>📋 법령 신구비교</h1><div class="sub">철도 법령 바스켓 개정 신·구조문 모니터링 · 출처 법제처 국가법령정보</div></div>
@@ -83,7 +85,7 @@
   <footer>본 자료는 정보 제공용이며 법률 자문이 아닙니다. 적용 판단은 원문·전문가 확인을 권장합니다. · 출처: 법제처 국가법령정보 (신구조문대비표) · 자동 갱신</footer>
 </div>
 <script>
-let MANIFEST = [], ARTS = [];
+let MANIFEST = [], ARTS = [], CURLAW = {};
 const BODY = mst => '/data/law/body/'+encodeURIComponent(mst)+'.json';
 const $ = s => document.querySelector(s);
 const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -155,6 +157,7 @@ async function showCompare(mst,name){
   box.scrollIntoView({behavior:'smooth',block:'start'});
   let d; try{ d=await (await fetch(BODY(mst))).json(); }
   catch(e){ box.innerHTML='<div class="empty">본문 조회 실패: '+esc(e.message)+'</div>'; return; }
+  CURLAW={name:d.name||name, ef:d.ef};
   const oldByNo=new Map((d.old||[]).map(a=>[String(a.no),a.content]));
   const rows=(d.new||[]).map(a=>({ no:String(a.no), oldC:oldByNo.get(String(a.no))||'', newC:a.content }));
   // 제N조 단위로 그룹핑 (조 전체 구조 + 현행과같음 컨텍스트 보존)
@@ -178,10 +181,43 @@ async function showCompare(mst,name){
       ${body}</div>`;
   }).join('');
   box.innerHTML = `
-    <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)}</span></div>
+    <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)}</span><button class="pri" id="dlXlsx" style="margin-left:auto;font-size:12px;padding:6px 12px">📥 엑셀 다운로드</button></div>
     <span class="count">변경 ${changeCount}건 · ${ARTS.length}개 조</span>
     <div class="legend">표시: <span class="dc">전(삭제)</span> / <span class="ic">후(추가)</span> · 회색=현행과 같음 — 색은 우상단에서 변경</div>
     ${cards||'<div class="empty">변경 조문 없음</div>'}`;
+}
+
+// 엑셀(.xlsx) 다운로드 — 줄바꿈+색을 셀에 직접 박아 생성 (클립보드 한계 우회)
+async function exportXlsx(){
+  if(!window.ExcelJS){ alert('엑셀 라이브러리 로딩 중이에요. 잠시 후 다시 눌러주세요.'); return; }
+  if(!ARTS.length) return;
+  const argbOld='FF'+$('#colDel').value.replace('#','').toUpperCase();
+  const argbNew='FF'+$('#colIns').value.replace('#','').toUpperCase();
+  const sbn=t=>String(t).replace(/\s*([①-⑳])/g,(m,c,off)=>off===0?c:'\n'+c);
+  const runs=(g,which,argb)=>{
+    const out=[];
+    g.rows.forEach((r,ri)=>{
+      if(ri>0) out.push({text:'\n'});
+      if(isUnchanged(r.newC)){ out.push({text:sbn(stripTags(which==='old'?r.oldC:r.newC))}); }
+      else { const df=wordDiff(r.oldC,r.newC); (which==='old'?df.oldParts:df.newParts).forEach(p=>{ const t=sbn(p.t); if(!t)return; out.push(p.c?{text:t,font:{color:{argb},bold:true}}:{text:t}); }); }
+    });
+    return out.length?out:[{text:''}];
+  };
+  const wb=new ExcelJS.Workbook();
+  const ws=wb.addWorksheet('신구비교');
+  ws.columns=[{header:'조',width:22},{header:'구 (개정 전)',width:64},{header:'신 (개정 후)',width:64}];
+  ws.getRow(1).font={bold:true}; ws.getRow(1).alignment={vertical:'middle'};
+  ARTS.forEach(g=>{
+    const row=ws.addRow([g.title]);
+    row.getCell(2).value={richText:runs(g,'old',argbOld)};
+    row.getCell(3).value={richText:runs(g,'new',argbNew)};
+    [1,2,3].forEach(c=>{ row.getCell(c).alignment={wrapText:true,vertical:'top'}; });
+  });
+  const buf=await wb.xlsx.writeBuffer();
+  const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=(CURLAW.name||'신구비교').replace(/\s+/g,'')+'_신구비교.xlsx';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
 const today=new Date(), y2=new Date(); y2.setFullYear(today.getFullYear()-2);
@@ -197,17 +233,18 @@ $('#colDel').addEventListener('input',applyColors); $('#colIns').addEventListene
 $('#basket').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){$('#q').value=c.dataset.n;search();}});
 $('#results').addEventListener('click',e=>{const it=e.target.closest('.list-item');if(it)showCompare(it.dataset.mst,it.dataset.name);});
 $('#compare').addEventListener('click',e=>{
+  if(e.target.closest('#dlXlsx')){ exportXlsx(); return; }
   const b=e.target.closest('.copy-btn'); if(!b)return;
   const g=ARTS[+b.dataset.idx]; if(!g)return;
   const side=b.dataset.side, colD=$('#colDel').value, colI=$('#colIns').value;
-  // 셀 안 줄나눔: 항(①②③…) 앞에서 줄바꿈 (행 맨 앞은 제외) → 조-항-호 아웃라인
   const sb=(t,sep)=>String(t).replace(/\s*([①-⑳])/g,(m,c,off)=>off===0?c:sep+c);
+  // 클립보드: &#10;(LF)+same-cell → 한 셀 유지(색O). 셀 안 줄바꿈까지 필요하면 엑셀 다운로드 사용
   const cellHtml=(which,color)=> g.rows.map(r=> sb(isUnchanged(r.newC)
     ? esc(stripTags(which==='old'?r.oldC:r.newC))
-    : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color), '<br>')
-  ).join('<br>');
+    : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color), '&#10;')
+  ).join('&#10;');
   const cellPlain=which=> g.rows.map(r=> sb(stripTags(which==='old'?r.oldC:r.newC), '\n')).join('\n');
-  const TD='<td style="vertical-align:top;mso-data-placement:same-cell">'; // 엑셀 네이티브: <br>+same-cell(no pre-wrap) → 셀 안 줄바꿈
+  const TD='<td style="vertical-align:top;white-space:pre-wrap;mso-data-placement:same-cell">';
   let html, plain;
   if(side==='row'){
     html=`<table><tr>${TD}${cellHtml('old',colD)}</td>${TD}${cellHtml('new',colI)}</td></tr></table>`;

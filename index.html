@@ -11718,7 +11718,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.6</a>
+      <a href="/changelog" id="foot-year">V31.7</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18641,6 +18641,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.7', date: '2026-05-30', title: '⚖ 법령 신구비교 엑셀(.xlsx) 다운로드', items: [
+    '신구비교표를 색·줄바꿈이 셀 안에 그대로 박힌 엑셀 파일로 즉시 다운로드 — 클립보드 붙여넣기의 셀 줄바꿈 한계를 우회',
+    '조마다 한 행, [조·구(개정 전)·신(개정 후)] 3열 / 셀 안에서 항·호 자동 줄바꿈 + 변경부분 글자색(전 빨강·후 파랑)',
+    '브라우저에서 바로 생성(서버 불필요) — 워드·한글·엑셀 어디에 붙여도 색·줄바꿈 유지'
+  ]},
   { v: 'V31.6', date: '2026-05-30', title: '⚖ 법령 신구비교 자동 캐시 + 전/후 복사·색구분', items: [
     'law.go.kr가 클라우드 IP를 차단(ECONNRESET)해서, GitHub Actions가 매일 철도 법령 바스켓 신구표를 받아 정적 JSON으로 커밋 → patchkr가 서빙(fetch=GHA, 서빙=Vercel 분리)',
     '개정 전/후 각각 복사(워드·한글에 색 정보 포함) + 변경부분 글자색만(전 빨강/후 파랑, 색 변경 가능)',
@@ -23399,7 +23404,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.6 · ⚖ 법령 신구비교 자동화</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.7 · ⚖ 신구비교 엑셀 다운로드</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
