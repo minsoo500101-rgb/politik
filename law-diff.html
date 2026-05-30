@@ -207,7 +207,7 @@ $('#compare').addEventListener('click',e=>{
     : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color), '&#10;')
   ).join('&#10;');
   const cellPlain=which=> g.rows.map(r=> sb(stripTags(which==='old'?r.oldC:r.newC), '\n')).join('\n');
-  const TD='<td style="vertical-align:top;white-space:pre-wrap;mso-data-placement:same-cell">';
+  const TD='<td style="vertical-align:top;white-space:pre-wrap">'; // same-cell 제거: &#10;(LF문자)가 셀 안 줄바꿈으로 들어가게
   let html, plain;
   if(side==='row'){
     html=`<table><tr>${TD}${cellHtml('old',colD)}</td>${TD}${cellHtml('new',colI)}</td></tr></table>`;
