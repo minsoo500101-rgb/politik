@@ -200,12 +200,13 @@ $('#compare').addEventListener('click',e=>{
   const b=e.target.closest('.copy-btn'); if(!b)return;
   const g=ARTS[+b.dataset.idx]; if(!g)return;
   const side=b.dataset.side, colD=$('#colDel').value, colI=$('#colIns').value;
-  // 한 칸(엑셀 셀) HTML — 줄바꿈은 <br>, mso-data-placement로 같은 셀 유지
-  const cellHtml=(which,color)=> g.rows.map(r=> isUnchanged(r.newC)
+  // 셀 안 줄나눔: 항(①②③…) 앞에서 줄바꿈 (행 맨 앞은 제외) → 조-항-호 아웃라인
+  const sb=(t,sep)=>String(t).replace(/\s*([①-⑳])/g,(m,c,off)=>off===0?c:sep+c);
+  const cellHtml=(which,color)=> g.rows.map(r=> sb(isUnchanged(r.newC)
     ? esc(stripTags(which==='old'?r.oldC:r.newC))
-    : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color)
+    : partsToHtml(which==='old'?wordDiff(r.oldC,r.newC).oldParts:wordDiff(r.oldC,r.newC).newParts, color), '&#10;')
   ).join('&#10;');
-  const cellPlain=which=> g.rows.map(r=>stripTags(which==='old'?r.oldC:r.newC)).join('\n');
+  const cellPlain=which=> g.rows.map(r=> sb(stripTags(which==='old'?r.oldC:r.newC), '\n')).join('\n');
   const TD='<td style="vertical-align:top;white-space:pre-wrap;mso-data-placement:same-cell">';
   let html, plain;
   if(side==='row'){
