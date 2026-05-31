@@ -7,10 +7,7 @@ on:
         description: '읽기만 (커밋 안 함, 테스트)'
         type: boolean
         default: false
-  schedule:
-    # KST 06~19시, 15분 간격(:05/:20/:35/:50 = UTC 21-23,0-9). GitHub cron은 best-effort라
-    # 정시(:00)·:55 같은 고부하 분을 피하고 4회/시간으로 누락에 대비. 기간 가드는 스크립트에서.
-    - cron: '5,20,35,50 21,22,23,0,1,2,3,4,5,6,7,8,9 * * *'
+  # schedule(cron) 제거됨 — 2026-05-30 사전투표 종료. 필요 시 workflow_dispatch로 수동 실행.
 
 permissions:
   contents: write
