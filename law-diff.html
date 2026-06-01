@@ -63,6 +63,8 @@
   .cmp-head{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--tx);padding-bottom:8px;margin:18px 0 4px}
   .cmp-head h2{font-size:17px;margin:0}
   .cmp-meta{font-size:12px;color:var(--dim)}
+  .law-src{font-size:11.5px;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .law-src:hover{text-decoration:underline}
   .count{display:inline-block;background:var(--accent);color:#fff;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:4px;margin:10px 0}
   .art{border:1px solid var(--bd);border-radius:var(--rd);margin-bottom:12px;overflow:hidden;background:var(--card)}
   .art-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--elev);border-bottom:1px solid var(--bd2)}
@@ -122,6 +124,7 @@
     <div class="chips" id="basket"></div>
     <div class="hint"><span id="updated">불러오는 중…</span> · 복사 시 색 정보도 함께 복사돼요. 셀 줄바꿈까지 필요하면 비교 화면의 「📥 엑셀 다운로드」.</div>
     <div class="hint">※ <b>전부개정</b>(제정 성격)이거나 본문 개정 없이 <b>별표·별지만 개정</b>된 경우, 법제처가 신구조문대비표를 제공하지 않아 검색되지 않을 수 있어요.</div>
+    <div class="hint">※ 법제처 API는 법령당 <b>현행(최신) 개정 1건</b>만 제공 → 과거 개정 신구표는 <b>개정 시점부터 자동 누적</b> 중입니다. 그 이전 전체 이력은 비교 화면의 <b>「법제처 전체 연혁」</b> 링크에서 확인하세요.</div>
   </div>
 
   <div id="results"></div>
@@ -289,7 +292,7 @@ async function showCompare(mst,name){
       ${body}</div>`;
   }).join('');
   box.innerHTML = `
-    <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)} · 개정 ${fmtDate(mi.pub)}</span><button class="cmp-star ${isFav(d.name||name)?'on':''}" id="cmpStar" data-mst="${esc(mst)}" data-name="${esc(d.name||name)}" style="margin-left:auto">${isFav(d.name||name)?'★ 즐겨찾기됨':'☆ 즐겨찾기'}</button><button class="pri" id="dlXlsx" style="font-size:12px;padding:6px 12px">📥 엑셀 다운로드</button></div>
+    <div class="cmp-head"><h2>${esc(d.name||name)}</h2><span class="cmp-meta">시행 ${fmtDate(d.ef)} · 개정 ${fmtDate(mi.pub)}</span><a class="law-src" href="https://www.law.go.kr/법령/${encodeURIComponent(d.name||name)}" target="_blank" rel="noopener" title="법제처에서 전체 개정 이력·과거 신구표 보기">법제처 전체 연혁 ↗</a><button class="cmp-star ${isFav(d.name||name)?'on':''}" id="cmpStar" data-mst="${esc(mst)}" data-name="${esc(d.name||name)}" style="margin-left:auto">${isFav(d.name||name)?'★ 즐겨찾기됨':'☆ 즐겨찾기'}</button><button class="pri" id="dlXlsx" style="font-size:12px;padding:6px 12px">📥 엑셀 다운로드</button></div>
     <span class="count">변경 ${changeCount}건 · ${ARTS.length}개 조</span>
     <div class="legend">표시: <span class="dc">전(삭제)</span> / <span class="ic">후(추가)</span> · 회색=현행과 같음 — 색은 우상단에서 변경</div>
     ${cards||'<div class="empty">변경 조문 없음</div>'}`;

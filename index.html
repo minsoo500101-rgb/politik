@@ -11053,7 +11053,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.12</a>
+      <a href="/changelog" id="foot-year">V31.13</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -17976,6 +17976,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.13', date: '2026-06-01', title: '⚖ 신구비교 과거 개정 누적 + 법제처 연혁 링크', items: [
+    '법제처 API가 법령당 현행 개정 1건만 제공해 과거가 안 보이던 문제 — 캐시를 누적식으로 전환, 개정 시점부터 이력이 자동으로 쌓이도록',
+    '비교 화면에 「법제처 전체 연혁」 공식 링크 추가 — 누적 이전의 과거 개정·신구표는 법제처에서 바로 확인',
+    '시행일 기간 필터로 분기별 「변경 시행」 추적'
+  ]},
   { v: 'V31.12', date: '2026-05-30', title: '📍 6/3 본투표소 인앱 검색 추가', items: [
     '6/3 본투표소를 앱 안에서 직접 검색 (중앙선관위 선거일 투표소 공식 데이터) — 본투표소↔사전투표소 토글',
     '시·도 → 구·시·군 → 동·투표소명·주소 검색 + 네이버 지도 연결'
@@ -22408,7 +22413,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.12 · 📍 6/3 본투표소 검색</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.13 · ⚖ 신구비교 과거 개정 누적</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자

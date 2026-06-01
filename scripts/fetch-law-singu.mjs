@@ -65,22 +65,23 @@ async function fetchAllIndex() {
 (async () => {
   mkdirSync('data/law/body', { recursive: true });
 
-  // 1) 인덱스 (전체)
+  // 1) 인덱스 — 현행 전체 수집 후 기존 인덱스와 병합(누적). ★과거 개정 신구표는 절대 삭제하지 않음★
+  //    oldAndNew API는 법령당 '현행 개정 1건'만 주므로, 매 run 현행 스냅샷을 누적해야 분기별 이력이 쌓인다.
   const { items: raw, total } = await fetchAllIndex();
   const byMst = new Map();
-  for (const it of raw) { const m = it.신구법일련번호; if (m && !byMst.has(m)) byMst.set(m, toEntry(it)); }
-  let manifest = [...byMst.values()].sort((a, b) => String(b.pub || '').localeCompare(String(a.pub || '')));
-
-  // 안전 가드: 수집이 total의 90% 미만이면(차단·다중 페이지 실패) 기존 index를 보존
-  const enough = total === 0 ? manifest.length > 0 : manifest.length >= total * 0.9;
-  if (enough) {
-    writeFileSync('data/law/index.json', JSON.stringify(manifest));
-    console.log(`  ✓ index.json 갱신 (${manifest.length}건)`);
+  if (existsSync('data/law/index.json')) {
+    try { for (const e of JSON.parse(readFileSync('data/law/index.json', 'utf8'))) if (e && e.mst) byMst.set(String(e.mst), e); } catch {}
+  }
+  const prevCount = byMst.size;
+  // 새 MST(=새 개정)만 추가, 기존(과거 개정)은 유지 → 누적
+  for (const it of raw) { const m = it.신구법일련번호; if (m && !byMst.has(String(m))) byMst.set(String(m), toEntry(it)); }
+  const manifest = [...byMst.values()].sort((a, b) => String(b.ef || '').localeCompare(String(a.ef || '')));  // 시행일 desc
+  const added = byMst.size - prevCount;
+  if (raw.length > 0 || prevCount > 0) {
+    writeFileSync('data/law/index.json', JSON.stringify(manifest));   // 병합이라 부분 수집도 안전(삭제 없음)
+    console.log(`  ✓ index.json 누적 (${manifest.length}건 / 이번 신규 ${added} / 현행 ${total})`);
   } else {
-    console.warn(`  ⚠ 수집 부족(${manifest.length}/${total}) — index.json 보존, 기존 목록으로 백필만 진행`);
-    if (existsSync('data/law/index.json')) {
-      try { manifest = JSON.parse(readFileSync('data/law/index.json', 'utf8')); } catch {}
-    }
+    console.warn('  ⚠ 수집·기존 모두 0 — 건너뜀');
   }
 
   // 2) 본문 백필: 미캐시분만 최신순 예산만큼
@@ -105,7 +106,8 @@ async function fetchAllIndex() {
 
   writeFileSync('data/law/meta.json', JSON.stringify({
     generatedAt: new Date().toISOString(),
-    total: manifest.length,
+    total: manifest.length,   // 누적(과거 개정 포함)
+    current: total,           // 이번 현행 스냅샷 건수
     cachedBodies: cachedBefore + fetched,
     fetchedThisRun: fetched,
     remaining: Math.max(0, manifest.length - (cachedBefore + fetched)),
