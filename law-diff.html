@@ -116,7 +116,7 @@
     <div class="row" style="margin-top:10px">
       <label>시행일 기간</label>
       <input type="date" id="from"><span style="color:var(--dim)">~</span><input type="date" id="to">
-      <label style="margin-left:6px"><input type="checkbox" id="rangeOn"> 기간 필터</label>
+      <label style="margin-left:6px"><input type="checkbox" id="rangeOn" checked> 기간 필터</label>
       <span style="margin-left:auto"></span>
       <label>전 색 <input type="color" id="colDel" value="#dc2626"></label>
       <label>후 색 <input type="color" id="colIns" value="#1d4ed8"></label>
@@ -331,8 +331,8 @@ async function exportXlsx(){
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
-const today=new Date(), y2=new Date(); y2.setFullYear(today.getFullYear()-2);
-$('#to').value=today.toISOString().slice(0,10); $('#from').value=y2.toISOString().slice(0,10);
+const today=new Date();
+$('#to').value=today.toISOString().slice(0,10); $('#from').value='2025-01-01';   // 시행일 필터 시작 고정(2025-01-01)
 applyColors();
 $('#searchBtn').onclick=search;
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')search();});
