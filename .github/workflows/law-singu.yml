@@ -21,7 +21,7 @@ jobs:
         env:
           LAW_OC: ${{ secrets.LAW_OC }}
           LAW_REFERER: https://patchkr.com
-          BODY_BUDGET: '1500'   # 본문 백필/run (시행일 최신순). 전체 법×2025+ 과거 개정 포함 → 며칠 내 완비, 이후 신규만
+          BODY_BUDGET: '6000'   # 본문 백필/run (시행일 최신순). 전체 법×2025+ 일괄 백필용; 완비 후엔 미캐시만 받으므로 빠르게 no-op
           LAW_EF_FROM: '20250101'  # eflaw로 이 시행일 이후 모든 개정(과거 포함) 누적
         run: node scripts/fetch-law-singu.mjs
       - name: 커밋 & 푸시
