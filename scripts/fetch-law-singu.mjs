@@ -41,6 +41,16 @@ const toEntry = it => ({
   pubNo: it.공포번호, dept: it.소관부처명,
 });
 
+// eflaw(시행일 법령): EF_FROM 이후 '시행된 모든 개정(과거 포함)'을 열거 → 전체 법 × 최근 이력.
+// 핵심: 각 버전의 법령일련번호(=MST)로 lawService(target=oldAndNew, MST=)를 부르면 그 개정의 법제처 공식 신구표가 나옴.
+const EF_FROM = process.env.LAW_EF_FROM || '20250101';
+const ymdToday = () => { const d = new Date(); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; };
+const toEf = it => ({
+  mst: it.법령일련번호, name: it.법령명한글, kind: it.법령구분명,
+  rev: it.제개정구분명, ef: it.시행일자, pub: it.공포일자,
+  pubNo: it.공포번호, dept: it.소관부처명,
+});
+
 // 전체 신구표 인덱스 페이지네이션 수집
 async function fetchAllIndex() {
   const per = 100;
@@ -62,6 +72,25 @@ async function fetchAllIndex() {
   return { items, total };
 }
 
+// eflaw efYd=<from>~<오늘> 페이지네이션 (LawSearch.law). 한 법령의 여러 개정도 각각 반환됨.
+async function fetchEflawSince(fromYmd) {
+  const per = 100, to = ymdToday();
+  const base = { target: 'eflaw', efYd: `${fromYmd}~${to}`, display: per };
+  const first = await drf('lawSearch.do', { ...base, page: 1 });
+  const root = first?.LawSearch || {};
+  const total = Number(root.totalCnt) || 0;
+  const pages = Math.ceil(total / per);
+  let items = asArr(root.law);
+  let ok = 1, fail = 0;
+  for (let p = 2; p <= pages; p++) {
+    try { const j = await drf('lawSearch.do', { ...base, page: p }); const a = asArr(j?.LawSearch?.law); if (a.length) { items = items.concat(a); ok++; } else fail++; }
+    catch (e) { fail++; }
+    await sleep(250);
+  }
+  console.log(`  eflaw(${fromYmd}~${to}): ${items.length}건 (total ${total}, 페이지 ${ok}/${pages}, 실패 ${fail})`);
+  return items;
+}
+
 (async () => {
   mkdirSync('data/law/body', { recursive: true });
 
@@ -75,6 +104,13 @@ async function fetchAllIndex() {
   const prevCount = byMst.size;
   // 새 MST(=새 개정)만 추가, 기존(과거 개정)은 유지 → 누적
   for (const it of raw) { const m = it.신구법일련번호; if (m && !byMst.has(String(m))) byMst.set(String(m), toEntry(it)); }
+  // 1b) eflaw — EF_FROM(기본 2025-01-01) 이후 시행된 '모든 개정(과거 포함)'을 누적. 전체 법 × 최근 이력.
+  try {
+    const ef = await fetchEflawSince(EF_FROM);
+    let efNew = 0;
+    for (const it of ef) { const m = it.법령일련번호; if (m && !byMst.has(String(m))) { byMst.set(String(m), toEf(it)); efNew++; } }
+    console.log(`  eflaw 신규 ${efNew}건 병합 (인덱스 ${byMst.size})`);
+  } catch (e) { console.warn('  ⚠ eflaw 실패:', e.message); }
   const manifest = [...byMst.values()].sort((a, b) => String(b.ef || '').localeCompare(String(a.ef || '')));  // 시행일 desc
   const added = byMst.size - prevCount;
   if (raw.length > 0 || prevCount > 0) {
