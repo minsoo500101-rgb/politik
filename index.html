@@ -5189,6 +5189,19 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
 
   /* V22.9 — 선거 당일 개표 페이지 */
+  /* V31.17 — 실시간 본투표율 카드 */
+  .tv-live-card { margin-top: 14px; padding: 18px 20px; background: linear-gradient(135deg, rgba(239,68,68,0.07), var(--bg-card)); border: 1px solid var(--border); border-left: 4px solid #ef4444; border-radius: 8px; }
+  .tv-live-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .tv-live-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: var(--text); }
+  .tv-live-src { font-size: 11px; color: var(--dim); }
+  .tv-live-rate { font-size: 48px; font-weight: 900; line-height: 1; letter-spacing: -2px; color: #ef4444; font-variant-numeric: tabular-nums; }
+  .tv-live-rate.is-empty { font-size: 20px; font-weight: 700; color: var(--dim); letter-spacing: 0; }
+  .tv-live-sub { font-size: 12.5px; color: var(--dim); margin-top: 6px; }
+  .tv-live-cmp { font-size: 12px; color: var(--text); margin-top: 10px; background: var(--bg-elev); border-radius: 6px; padding: 7px 11px; }
+  .tv-live-cmp b { color: #ef4444; }
+  .tv-live-region { margin-top: 12px; }
+  .tv-live-link { display: inline-block; margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--link); text-decoration: none; }
+  .tv-live-link:hover { text-decoration: underline; }
   .live-page .live-hero { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; }
   .live-page .live-hero .e26-eye { color: rgba(255,255,255,0.85); }
   .live-page .live-hero h1 { color: #fff; }
@@ -11108,7 +11121,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.16</a>
+      <a href="/changelog" id="foot-year">V31.17</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11614,6 +11627,7 @@ const state = {
   localElections: null,
   election2026: null,
   nec2026Governors: null,
+  liveTurnout: null,   // V31.17 — 본투표 실시간 투표율 (/api/turnout)
 };
 
 // 법안 분야 자동 분류 (BILL_NAME + CURR_COMMITTEE 기반)
@@ -14914,12 +14928,47 @@ function renderElectionLivePage() {
       `;
     }
     if (stage.stage === 'voting') {
+      const t = state.liveTurnout;
+      const tEmpty = !(t && t.rate != null);
+      const tRate = tEmpty ? '집계 대기' : t.rate.toFixed(1) + '%';
+      const tSub = !tEmpty
+        ? `${t.turnoutCount ? Number(t.turnoutCount).toLocaleString() + '명 투표' : ''}${t.announcedAt ? (t.turnoutCount ? ' · ' : '') + '갱신 ' + new Date(t.announcedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}`
+        : (t && t.note ? t.note : '중앙선관위 집계 대기 · 아래 라이브에서 실시간 확인');
+      const tSrc = ({ 'nec-headless-auto': '📊 선관위 통계 자동수집', 'nec-stat': '📊 중앙선관위 통계', 'historical': '⏳ 집계 대기', 'pending': '⏳ 투표 시작 전' })[(t && t.source)] || '🔴 LIVE';
+      const SD_SHORT = { '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주' };
+      const tReg = (t && t.byRegion) ? Object.entries(t.byRegion).filter(e => e[1] != null) : [];
+      let tRegHtml = '';
+      if (tReg.length) {
+        tReg.sort((a, b) => b[1] - a[1]);
+        const mx = Math.max(...tReg.map(e => e[1])) || 1;
+        tRegHtml = `<div class="tv-live-region">${tReg.map(([n, rt], i) => {
+          const c = i === 0 ? 'var(--ok)' : i === tReg.length - 1 ? 'var(--dim)' : '#ef4444';
+          return `<div style="display:flex;align-items:center;gap:10px;padding:4px 0">
+            <span style="flex:0 0 38px;font-size:12px;font-weight:${i===0||i===tReg.length-1?'800':'600'};color:var(--text)">${SD_SHORT[n] || n}</span>
+            <span style="flex:1;height:8px;background:var(--bg-elev);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:${(rt / mx * 100).toFixed(1)}%;background:${c};border-radius:5px"></span></span>
+            <span style="flex:0 0 44px;text-align:right;font-size:12px;font-weight:800;color:${c}">${Number(rt).toFixed(1)}</span>
+          </div>`;
+        }).join('')}</div>`;
+      }
       return `
         <div class="live-section live-section-live">
           <div class="live-pulse-banner">
             <span class="live-pulse-dot"></span>
             <b>본 투표 진행 중</b> — 6월 3일 (수) · 06:00 ~ 18:00 · 신분증 지참
           </div>
+
+          <div class="tv-live-card">
+            <div class="tv-live-top">
+              <span class="tv-live-badge"><span class="live-pulse-dot"></span>실시간 투표율</span>
+              <span class="tv-live-src">${tSrc}</span>
+            </div>
+            <div class="tv-live-rate${tEmpty ? ' is-empty' : ''}">${tRate}</div>
+            <div class="tv-live-sub">${tSub}</div>
+            <div class="tv-live-cmp">📊 비교 — 8회(2022) 지선 최종 <b>50.9%</b> · 올해 사전투표 23.51%(역대 최고)</div>
+            ${tRegHtml}
+            <a class="tv-live-link" href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener">중앙선관위 실시간 통계 ↗</a>
+          </div>
+
           <div class="live-progress-wrap">
             <div class="live-progress-label">투표 시간 진행률 — <b>${votingProgress}%</b></div>
             <div class="live-progress-bar"><div class="live-progress-fill" style="width:${votingProgress}%"></div></div>
@@ -14933,8 +14982,9 @@ function renderElectionLivePage() {
               <div class="live-info-val live-clock" id="live-clock">${hhmm}</div>
             </div>
             <div class="live-info-card">
-              <div class="live-info-label">실시간 투표율</div>
-              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 라이브 ↗</a>
+              <div class="live-info-label">총 선거인수</div>
+              <div class="live-info-val">${(((t && t.totalVoters) || 44649908) / 10000).toFixed(0)}만</div>
+              <div class="live-info-sub">9회 선거인명부</div>
             </div>
             <div class="live-info-card">
               <div class="live-info-label">개표 시작 (예상)</div>
@@ -18031,6 +18081,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.17', date: '2026-06-03', title: '🔴 선거일 실시간 본투표율 — /election2026/live', items: [
+    '선거 당일 LIVE 페이지에 실시간 투표율 카드 — 누적 투표율·시도별 막대·8회(2022) 50.9% 비교, 60초 자동 갱신',
+    'data.go.kr 투·개표 API는 실시간 미제공(종료 2개월 후)이라 info.nec.go.kr 헤드리스 크롤(turnout.yml)로 투표시간 중 20분마다 수급 → /api/turnout',
+    '집계 대기 시 중앙선관위 라이브 링크로 graceful fallback'
+  ]},
   { v: 'V31.16', date: '2026-06-03', title: '📉 위기 지표판 추세선 + 사전투표율 최종값 교정', items: [
     '위기 지표판 카드에 10년 추세 스파크라인 추가 — 출산율(1.24→0.75)·고령화(13.1→20.3)·가계부채(79.7→97.2) 곡선 시각화',
     '9회 지선 사전투표율을 공식 최종값으로 교정: 22.16%(중간 발표) → 23.51%(최종, 역대 지선 최고) + 17개 시도 최종 반영',
@@ -19261,6 +19316,19 @@ async function fetchEarlyVoteRate() {
     if (dotEl) dotEl.style.color = 'var(--danger)';
     console.warn('[EarlyVote] fetch failed:', e.message);
   }
+}
+
+// V31.17 — 본투표 실시간 투표율 fetch (state 저장 → renderElectionLivePage가 렌더)
+async function fetchTurnout() {
+  try {
+    const r = await fetch('/api/turnout');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    state.liveTurnout = await r.json();
+  } catch (e) {
+    console.warn('[Turnout] fetch failed:', e.message);
+    if (!state.liveTurnout) state.liveTurnout = { rate: null, source: 'historical', note: '데이터 가져오기 실패 — NEC 라이브 참고' };
+  }
+  return state.liveTurnout;
 }
 
 function renderChangelogPage() {
@@ -24452,14 +24520,16 @@ function route() {
     renderLive();
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
-    // 60초마다 자동 갱신 (시계·진행률·단계)
+    // V31.17 — 실시간 본투표율: 진입 시 fetch 후 재렌더
+    fetchTurnout().then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
+    // 60초마다 자동 갱신 (시계·진행률·단계 + 투표율 재fetch)
     clearInterval(window._liveRefreshTimer);
     window._liveRefreshTimer = setInterval(() => {
       if (currentRoute() !== '#/election2026/live') {
         clearInterval(window._liveRefreshTimer);
         return;
       }
-      renderLive();
+      fetchTurnout().then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
     }, 60000);
     return;
   }
