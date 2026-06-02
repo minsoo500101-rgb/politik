@@ -50,6 +50,41 @@ def credit_str(econ):
         parts.append(f"{nm} {a.get('current','')}")
     return " · ".join(parts) if parts else "AA급"
 
+def econ_series(econ, idd):
+    """economy.json indicators에서 id의 (연도,값) 시계열."""
+    for it in econ.get("indicators", []):
+        if it.get("id") == idd:
+            return [(d.get("year"), d.get("value")) for d in (it.get("data") or [])]
+    return None
+
+def fmt_sv(v):
+    try: return f"{float(v):g}"
+    except Exception: return str(v)
+
+def sparkline(pairs, color):
+    """pairs: [(year,value), ...] -> 인라인 SVG 미니 추세선 + 양끝 라벨."""
+    pts = [(y, float(v)) for y, v in (pairs or []) if v is not None]
+    if len(pts) < 2:
+        return ""
+    vals = [v for _, v in pts]
+    mn, mx = min(vals), max(vals)
+    rng = (mx - mn) or 1
+    W, H, pad = 132, 32, 4
+    n = len(pts)
+    X = lambda i: pad + i * (W - 2 * pad) / (n - 1)
+    Y = lambda v: pad + (H - 2 * pad) * (1 - (v - mn) / rng)
+    line = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, (_, v) in enumerate(pts))
+    area = ("M" + f"{X(0):.1f},{H - pad:.1f} L"
+            + " L".join(f"{X(i):.1f},{Y(v):.1f}" for i, (_, v) in enumerate(pts))
+            + f" L{X(n - 1):.1f},{H - pad:.1f} Z")
+    (y0, v0), (y1, v1) = pts[0], pts[-1]
+    return (f'<div class="spark"><svg viewBox="0 0 {W} {H}" preserveAspectRatio="none" aria-hidden="true">'
+            f'<path d="{area}" fill="{color}" opacity="0.10"/>'
+            f'<polyline points="{line}" fill="none" stroke="{color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>'
+            f'<circle cx="{X(0):.1f}" cy="{Y(v0):.1f}" r="2" fill="{color}" opacity="0.45"/>'
+            f'<circle cx="{X(n - 1):.1f}" cy="{Y(v1):.1f}" r="2.6" fill="{color}"/></svg>'
+            f"<div class=\"spark-x\"><span>’{str(y0)[2:]} {fmt_sv(v0)}</span><span>’{str(y1)[2:]} {fmt_sv(v1)}</span></div></div>")
+
 def main():
     risk = load("data/risk-indicators.json")
     try:
@@ -75,6 +110,13 @@ def main():
             ind["_raw"] = raw
         else:
             ind["_value"] = ind.get("value", "—")
+        # 스파크라인 시계열: 정적 series 우선, 없으면 economy 라이브 시계열
+        if ind.get("series"):
+            ind["_series"] = [(p[0], p[1]) for p in ind["series"]]
+        elif live and live.get("id"):
+            ind["_series"] = econ_series(econ, live["id"])
+        else:
+            ind["_series"] = None
         # context의 {value} 치환
         ctx = ind.get("context", "")
         if "{value}" in ctx:
@@ -87,10 +129,12 @@ def main():
         s = SIG.get(ind.get("signal"), SIG["yellow"])
         note = ind.get("_note", "")
         compare = ind.get("compare", "")
+        spark = sparkline(ind.get("_series"), s['col'])
         return f"""<div class="card sig-{ind.get('signal')}">
   <div class="ch"><span class="dot">{s['dot']}</span><span class="lbl">{esc(ind.get('label'))}</span><span class="asof">{esc(ind.get('asof'))}</span></div>
   <div class="big"><span class="val">{esc(ind.get('_value'))}</span><span class="unit">{esc(ind.get('unit'))}</span></div>
   {f'<div class="note">{esc(note)}</div>' if note else ''}
+  {spark}
   <div class="hl">{esc(ind.get('headline'))}</div>
   <div class="ctx">{esc(ind.get('context'))}</div>
   <div class="cf">{f'<span class="cmp">기준 · {esc(compare)}</span>' if compare else '<span></span>'}<a class="src" href="{esc(ind.get('source_url'))}" target="_blank" rel="noopener nofollow">출처: {esc(ind.get('source'))} ↗</a></div>
@@ -182,6 +226,9 @@ h1{{font-size:30px;margin:8px 0 6px;letter-spacing:-.8px;line-height:1.2}}
 .big .val{{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1}}
 .big .unit{{font-size:15px;color:var(--dim);font-weight:600}}
 .note{{font-size:12px;color:var(--dim);margin:-1px 0 3px;font-weight:600}}
+.spark{{margin:7px 0 3px}}
+.spark svg{{width:100%;height:32px;display:block}}
+.spark-x{{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim);margin-top:1px;font-variant-numeric:tabular-nums}}
 .sig-red .big .val{{color:var(--red)}}.sig-yellow .big .val{{color:var(--yellow)}}.sig-green .big .val{{color:var(--green)}}
 .hl{{font-weight:800;font-size:14.5px;margin:6px 0 4px;letter-spacing:-.3px;line-height:1.35}}
 .ctx{{font-size:12.7px;color:var(--dim);line-height:1.62;flex:1}}

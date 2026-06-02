@@ -46,6 +46,9 @@ h1{font-size:30px;margin:8px 0 6px;letter-spacing:-.8px;line-height:1.2}
 .big .val{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1}
 .big .unit{font-size:15px;color:var(--dim);font-weight:600}
 .note{font-size:12px;color:var(--dim);margin:-1px 0 3px;font-weight:600}
+.spark{margin:7px 0 3px}
+.spark svg{width:100%;height:32px;display:block}
+.spark-x{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim);margin-top:1px;font-variant-numeric:tabular-nums}
 .sig-red .big .val{color:var(--red)}.sig-yellow .big .val{color:var(--yellow)}.sig-green .big .val{color:var(--green)}
 .hl{font-weight:800;font-size:14.5px;margin:6px 0 4px;letter-spacing:-.3px;line-height:1.35}
 .ctx{font-size:12.7px;color:var(--dim);line-height:1.62;flex:1}
@@ -71,6 +74,7 @@ footer{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid va
   <div class="ch"><span class="dot">🔴</span><span class="lbl">합계출산율</span><span class="asof">2024</span></div>
   <div class="big"><span class="val">0.75</span><span class="unit">명</span></div>
   
+  <div class="spark"><svg viewBox="0 0 132 32" preserveAspectRatio="none" aria-hidden="true"><path d="M4.0,28.0 L4.0,4.0 L17.8,7.2 L31.6,12.8 L45.3,16.0 L59.1,18.8 L72.9,22.5 L86.7,23.8 L100.4,25.2 L114.2,28.0 L128.0,26.6 L128.0,28.0 Z" fill="#dc2626" opacity="0.10"/><polyline points="4.0,4.0 17.8,7.2 31.6,12.8 45.3,16.0 59.1,18.8 72.9,22.5 86.7,23.8 100.4,25.2 114.2,28.0 128.0,26.6" fill="none" stroke="#dc2626" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="4.0" cy="4.0" r="2" fill="#dc2626" opacity="0.45"/><circle cx="128.0" cy="26.6" r="2.6" fill="#dc2626"/></svg><div class="spark-x"><span>’15 1.24</span><span>’24 0.75</span></div></div>
   <div class="hl">여성 1명이 평생 낳는 아이 0.75명 — 지구상 꼴찌</div>
   <div class="ctx">인구를 그대로 유지하려면 한 여성이 2.1명을 낳아야 한다. 지금은 그 3분의 1 수준. OECD 38개국 중 압도적 최하위이자, 통계가 잡히는 전 세계 국가 가운데 가장 낮다. 2023년 0.72명에서 9년 만에 살짝 반등했지만, 2025년 다시 0.65명대로 주저앉을 전망이다.</div>
   <div class="cf"><span class="cmp">기준 · 인구 유지선 2.1명</span><a class="src" href="https://kostat.go.kr" target="_blank" rel="noopener nofollow">출처: 통계청 ↗</a></div>
@@ -78,6 +82,7 @@ footer{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid va
   <div class="ch"><span class="dot">🔴</span><span class="lbl">65세 이상 인구 비율</span><span class="asof">2025</span></div>
   <div class="big"><span class="val">20.3</span><span class="unit">%</span></div>
   
+  <div class="spark"><svg viewBox="0 0 132 32" preserveAspectRatio="none" aria-hidden="true"><path d="M4.0,28.0 L4.0,28.0 L16.4,26.7 L28.8,25.3 L41.2,23.7 L53.6,22.0 L66.0,19.3 L78.4,16.3 L90.8,13.3 L103.2,10.3 L115.6,7.7 L128.0,4.0 L128.0,28.0 Z" fill="#dc2626" opacity="0.10"/><polyline points="4.0,28.0 16.4,26.7 28.8,25.3 41.2,23.7 53.6,22.0 66.0,19.3 78.4,16.3 90.8,13.3 103.2,10.3 115.6,7.7 128.0,4.0" fill="none" stroke="#dc2626" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="4.0" cy="28.0" r="2" fill="#dc2626" opacity="0.45"/><circle cx="128.0" cy="4.0" r="2.6" fill="#dc2626"/></svg><div class="spark-x"><span>’15 13.1</span><span>’25 20.3</span></div></div>
   <div class="hl">국민 5명 중 1명이 노인 — 2025년 &#x27;초고령사회&#x27; 첫 진입</div>
   <div class="ctx">65세 이상이 전체 인구의 20%를 넘으면 &#x27;초고령사회&#x27;다. 한국은 2025년 처음 그 선을 넘었다(20.3%, 1,051만 명). 2036년 30%, 2050년엔 40%에 이를 전망으로, 세계에서 가장 빠른 고령화 속도다. 일하는 세대가 부양해야 할 노인은 갈수록 늘어난다.</div>
   <div class="cf"><span class="cmp">기준 · 초고령사회 기준 20%</span><a class="src" href="https://kostat.go.kr" target="_blank" rel="noopener nofollow">출처: 통계청 ↗</a></div>
@@ -88,12 +93,14 @@ footer{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid va
   <div class="ch"><span class="dot">🔴</span><span class="lbl">가계부채 / GDP</span><span class="asof">2025</span></div>
   <div class="big"><span class="val">97.2</span><span class="unit">%</span></div>
   
+  <div class="spark"><svg viewBox="0 0 132 32" preserveAspectRatio="none" aria-hidden="true"><path d="M4.0,28.0 L4.0,28.0 L16.4,23.6 L28.8,19.9 L41.2,16.7 L53.6,13.4 L66.0,5.7 L78.4,4.0 L90.8,4.9 L103.2,8.7 L115.6,10.4 L128.0,11.7 L128.0,28.0 Z" fill="#dc2626" opacity="0.10"/><polyline points="4.0,28.0 16.4,23.6 28.8,19.9 41.2,16.7 53.6,13.4 66.0,5.7 78.4,4.0 90.8,4.9 103.2,8.7 115.6,10.4 128.0,11.7" fill="none" stroke="#dc2626" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="4.0" cy="28.0" r="2" fill="#dc2626" opacity="0.45"/><circle cx="128.0" cy="11.7" r="2.6" fill="#dc2626"/></svg><div class="spark-x"><span>’15 79.7</span><span>’25 97.2</span></div></div>
   <div class="hl">가계 빚이 나라 경제(GDP)와 맞먹는다</div>
   <div class="ctx">가계부채가 GDP의 97.2%. 2021년 105%로 정점을 찍은 뒤 줄고 있지만 여전히 OECD 최상위권이고, 국가 경제 규모에 육박한다. 금리가 조금만 올라도 이자 부담이 가계를 짓누른다 — 빚으로 떠받친 소비와 부동산의 그림자.</div>
   <div class="cf"><span class="cmp">기준 · 위험선 100%</span><a class="src" href="https://ecos.bok.or.kr" target="_blank" rel="noopener nofollow">출처: 한국은행 ↗</a></div>
 </div><div class="card sig-yellow">
   <div class="ch"><span class="dot">🟡</span><span class="lbl">잠재성장률</span><span class="asof">2025</span></div>
   <div class="big"><span class="val">1.7</span><span class="unit">%</span></div>
+  
   
   <div class="hl">성장 엔진이 식는다 — 잠재성장률 2% 붕괴</div>
   <div class="ctx">나라가 무리 없이 낼 수 있는 성장률이 2024년 2.0%에서 2025년 1.7%, 2026년 1.5%대로 내려앉는다(추정). 저출생·고령화로 일할 사람이 줄고 생산성 증가가 둔화한 결과다. 한 번 떨어진 성장 잠재력은 되돌리기 어렵다.</div>
@@ -105,6 +112,7 @@ footer{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid va
   <div class="ch"><span class="dot">🟡</span><span class="lbl">국가채무(D1) / GDP</span><span class="asof">2025</span></div>
   <div class="big"><span class="val">49.1</span><span class="unit">%</span></div>
   
+  
   <div class="hl">나랏빚, 2026년 사상 첫 GDP의 50% 돌파</div>
   <div class="ctx">국가채무(D1)가 GDP의 49.1%(2025)에서 2026년 51.6%로 사상 처음 50%를 넘어선다. 채무 총액은 1,300조 원을 넘었다. 아직 선진국 평균보다는 낮지만, 저출생으로 세금 낼 사람은 줄고 복지 지출은 느는 구조라 증가 속도가 가파르다.</div>
   <div class="cf"><span class="cmp">기준 · 2017년 36%</span><a class="src" href="https://www.moef.go.kr" target="_blank" rel="noopener nofollow">출처: 기획재정부 ↗</a></div>
@@ -115,12 +123,14 @@ footer{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid va
   <div class="ch"><span class="dot">🔴</span><span class="lbl">곡물자급률</span><span class="asof">2021~23 평균</span></div>
   <div class="big"><span class="val">19.5</span><span class="unit">%</span></div>
   
+  
   <div class="hl">우리가 먹는 곡물의 80%는 수입산</div>
   <div class="ctx">곡물자급률 19.5%로 주요국 중 최하위. 쌀은 자급(100%↑)하지만 밀 1.3%, 옥수수 4.3%로 사실상 전량 수입한다. 2008년 31%에서 계속 추락 중. 전쟁·기후·수출 통제로 글로벌 곡물 공급망이 흔들리면 식탁이 가장 먼저 위태로워진다.</div>
   <div class="cf"><span class="cmp">기준 · 2008년 31%</span><a class="src" href="https://www.mafra.go.kr" target="_blank" rel="noopener nofollow">출처: 농림축산식품부 ↗</a></div>
 </div><div class="card sig-red">
   <div class="ch"><span class="dot">🔴</span><span class="lbl">에너지 수입의존도</span><span class="asof">2023</span></div>
   <div class="big"><span class="val">93.9</span><span class="unit">%</span></div>
+  
   
   <div class="hl">에너지의 94%를 수입 — 수입길 막히면 멈추는 나라</div>
   <div class="ctx">석유·가스·석탄 등 1차 에너지의 93.9%를 해외에서 들여온다. 원전과 신재생을 늘려도 90%대를 벗어나지 못한다. 중동·러시아 정세가 한 번 출렁이면 물가와 전기·가스요금이 곧장 따라 흔들린다. 자원 빈국의 숙명이자 최대 안보 변수.</div>
@@ -129,6 +139,7 @@ footer{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid va
   <div class="ch"><span class="dot">🟢</span><span class="lbl">국가신용등급</span><span class="asof">2025</span></div>
   <div class="big"><span class="val">AA</span><span class="unit"></span></div>
   <div class="note">S&amp;P AA · 무디스 Aa2 · 피치 AA-</div>
+  
   <div class="hl">그래도 신용등급은 굳건 — 위기 지표 속 유일한 파란불</div>
   <div class="ctx">S&amp;P AA·무디스 Aa2·피치 AA-로 3대 신용평가사 모두 &#x27;안정적&#x27; 전망을 유지하고 있다. 아시아 최상위권이며 일부 선진국보다도 높다. 탄탄한 외환보유고와 재정 건전성이 떠받치는, 위기 지표판에서 유일하게 켜진 안전판이다.</div>
   <div class="cf"><span class="cmp">기준 · 3대 평가사 모두 &#x27;안정적&#x27;</span><a class="src" href="https://www.moef.go.kr" target="_blank" rel="noopener nofollow">출처: 기획재정부·S&amp;P·무디스·피치 ↗</a></div>
