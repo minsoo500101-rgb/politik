@@ -307,6 +307,16 @@ async function renderAmendment(){
   let changeCount=0;
   for(const g of groups){ g.changed=false; for(const r of g.rows){ if(!isUnchanged(r.newC)){ const df=wordDiff(r.oldC,r.newC); if(df.oldParts.some(p=>p.c)||df.newParts.some(p=>p.c)){ g.changed=true; changeCount++; } } } }
   ARTS = groups.filter(g=>g.changed);
+  if(!ARTS.length){
+    const av=ams[ci], hasBody=(d.new&&d.new.length)||(d.old&&d.old.length);
+    const msg = !hasBody
+      ? ((av.rev||'').includes('전부개정')
+          ? '<b>전부개정</b> — 법 전체가 새로 개정(제정 수준)되어 법제처가 조문별 신구조문대비표를 제공하지 않습니다.<br>전체 내용은 위 「법제처 전체 연혁」에서 확인하세요.'
+          : '본문(조문) 개정 없이 <b>별표·별지 등</b>만 개정되어, 법제처가 조문별 신구표를 제공하지 않습니다.<br>위 「법제처 전체 연혁」에서 확인하세요.')
+      : '이 개정에서 변경된 조문이 없습니다.';
+    box.innerHTML = `${headHtml}<div class="empty" style="text-align:left;line-height:1.8;padding:18px 16px">${msg}</div>`;
+    return;
+  }
   const cards = ARTS.map((g,gi)=>{
     const body = g.rows.map(r=>{
       const same = isUnchanged(r.newC);
@@ -321,7 +331,7 @@ async function renderAmendment(){
   box.innerHTML = `${headHtml}
     <span class="count">변경 ${changeCount}건 · ${ARTS.length}개 조</span>
     <div class="legend">표시: <span class="dc">전(삭제)</span> / <span class="ic">후(추가)</span> · 회색=현행과 같음 — 색은 우상단에서 변경</div>
-    ${cards||'<div class="empty">변경 조문 없음</div>'}`;
+    ${cards}`;
 }
 
 // 엑셀(.xlsx) 다운로드 — 줄바꿈+색을 셀에 직접 박아 생성 (클립보드 한계 우회)
