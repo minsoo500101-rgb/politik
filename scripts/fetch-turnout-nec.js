@@ -85,7 +85,8 @@ async function clickSearch(page) {
   let parsed = null;
   try {
     const page = await browser.newPage({ userAgent: UA, locale: 'ko-KR' });
-    await page.goto(HOME, { waitUntil: 'networkidle', timeout: 60000 });
+    await page.goto(HOME, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    await page.waitForTimeout(1000);
     await page.getByText('투·개표', { exact: true }).first().click({ timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(1500);
 
@@ -104,8 +105,8 @@ async function clickSearch(page) {
       if (pick) { target = pick.h; console.log('[menu] 선택:', pick.t, '->', target); }
       else console.log('[menu] 투표율 링크 못 찾음 — 기본 REPORT_URL 사용');
     }
-    await page.goto(target, { waitUntil: 'networkidle', timeout: 60000 });
-    await page.waitForTimeout(1200);
+    await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    await page.waitForTimeout(1500);
     await clickSearch(page);
     await page.waitForSelector('text=합계', { timeout: 40000 });
     await page.waitForTimeout(1500);
