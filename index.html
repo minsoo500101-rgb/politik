@@ -5957,6 +5957,61 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     .home-e26-dday { font-size: 36px; }
   }
 
+  /* 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 다크 관제판 스타일) */
+  .home-crisis-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 22px; align-items: center;
+    background: linear-gradient(135deg, #1f2937 0%, #0b1220 100%);
+    border: 1px solid #334155;
+    border-left: 4px solid #dc2626;
+    border-radius: 6px;
+    padding: 20px 26px;
+    margin-bottom: 18px;
+    color: #fff; text-decoration: none;
+    position: relative; overflow: hidden;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .home-crisis-card::before {
+    content: ''; position: absolute; right: -50px; top: -50px;
+    width: 220px; height: 220px; pointer-events: none;
+    background: radial-gradient(circle, rgba(220,38,38,0.28) 0%, transparent 70%);
+  }
+  .home-crisis-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+    border-left-color: #ef4444;
+  }
+  .hcc-l, .hcc-r { position: relative; z-index: 1; }
+  .hcc-eye {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.4px;
+    color: #fca5a5; margin-bottom: 7px;
+  }
+  .hcc-title {
+    font-size: 23px; font-weight: 900; letter-spacing: -0.6px;
+    margin-bottom: 7px; line-height: 1.15; color: #fff;
+  }
+  .hcc-sub { font-size: 13px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6; }
+  .hcc-sub b { color: #fff; font-weight: 800; }
+  .hcc-cta {
+    display: inline-block; font-size: 12.5px; font-weight: 800;
+    color: #fff; background: #dc2626; padding: 7px 15px; border-radius: 20px;
+  }
+  .hcc-r { text-align: center; min-width: 116px; }
+  .hcc-signals {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
+    font-size: 14px; margin-bottom: 9px; line-height: 1;
+  }
+  .hcc-rbig { font-size: 32px; font-weight: 900; color: #f87171; line-height: 1; letter-spacing: -1px; }
+  .hcc-rbig small { font-size: 12px; color: #cbd5e1; font-weight: 700; letter-spacing: 0; }
+  .hcc-r-l { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+  @media (max-width: 600px) {
+    .home-crisis-card { grid-template-columns: 1fr; padding: 16px 18px; gap: 13px; }
+    .hcc-title { font-size: 19px; }
+    .hcc-r { text-align: left; }
+    .hcc-signals { grid-template-columns: repeat(8, 1fr); font-size: 15px; }
+  }
+
   /* 홈 정당 필터 */
   .home-filter-bar {
     display: flex; gap: 6px; flex-wrap: wrap;
@@ -11053,7 +11108,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.14</a>
+      <a href="/changelog" id="foot-year">V31.15</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -17976,6 +18031,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.15', date: '2026-06-02', title: '🚨 국가 위기 지표판 신설 — 홈 배치', items: [
+    '대한민국 핵심 위기 지표 8종(출산율·고령화·가계부채·잠재성장률·국가채무·곡물자급률·에너지의존도·신용등급)을 신호등(🔴🟡🟢)으로 한 화면에 — /crisis.html',
+    '전부 공식 통계(통계청·한국은행·기재부·농식품부·에너지경제연구원), 가계부채·금리·환율·신용등급은 ECOS 라이브 주입, 매일 자동 갱신',
+    '홈 상단에 위기 지표판 카드 배치 + 사이트맵 등록 (트래픽 유입)'
+  ]},
   { v: 'V31.14', date: '2026-06-01', title: '⚖ 신구비교 — 전체 법 × 2025년+ 과거 개정 전부', items: [
     '법제처 eflaw(시행일 법령)로 2025-01 이후 시행된 모든 개정(과거 포함)을 열거 → 각 개정 MST로 공식 신구조문대비표를 직접 캐시',
     '전체 법령(법·시행령·시행규칙) × 2025+ 개정 ~8천 건 자동 백필 — 분기별 「변경 시행」 전수 인앱 확인',
@@ -22484,6 +22544,24 @@ function renderHome() {
           </div>
         `;
       })()}
+
+      <!-- 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 전부 공식 통계 → /crisis.html) -->
+      <a class="home-crisis-card" href="/crisis.html">
+        <div class="hcc-l">
+          <div class="hcc-eye">🚨 국가 위기 지표판 · 전부 공식 통계</div>
+          <div class="hcc-title">대한민국, 지금 괜찮은가?</div>
+          <div class="hcc-sub">합계출산율 <b>0.75명</b> · 가계빚 GDP의 <b>97%</b> · 에너지 <b>94% 수입</b> · 곡물자급 <b>20%</b></div>
+          <div class="hcc-cta">🔴 위험 신호 5개 — 한눈에 확인하기 →</div>
+        </div>
+        <div class="hcc-r">
+          <div class="hcc-signals">
+            <span>🔴</span><span>🔴</span><span>🔴</span><span>🔴</span>
+            <span>🔴</span><span>🟡</span><span>🟡</span><span>🟢</span>
+          </div>
+          <div class="hcc-rbig">5<small>/8 위험</small></div>
+          <div class="hcc-r-l">8개 핵심 지표</div>
+        </div>
+      </a>
 
       <!-- V30.8 — 중간 카드 벤토 그리드 (2단): 여론판·인기랭킹·실검·경제 -->
       <div class="home-bento">

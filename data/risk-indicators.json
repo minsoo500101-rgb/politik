@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-02",
+  "_note": "대한민국 위기 지표판 — 전부 공식 출처. 정적값은 연도·출처 명시, live는 빌드 시 data/economy.json에서 주입. 프레이밍은 후킹하되 숫자·해석은 100% 팩트.",
+  "categories": [
+    { "id": "population", "icon": "👶", "title": "인구 — 소멸 시계", "subtitle": "태어나는 사람은 줄고, 늙어가는 속도는 세계 최고" },
+    { "id": "economy",    "icon": "💸", "title": "가계·성장 — 식어가는 엔진", "subtitle": "빚으로 떠받친 경제, 멈춰 서는 성장" },
+    { "id": "fiscal",     "icon": "🏛️", "title": "나라살림 — 늘어나는 빚", "subtitle": "사상 처음 넘어서는 선들" },
+    { "id": "security",   "icon": "🌐", "title": "자립·안보 — 수입이 끊기면", "subtitle": "식량과 에너지, 그리고 마지막 안전판" }
+  ],
+  "indicators": [
+    {
+      "id": "tfr", "cat": "population", "label": "합계출산율", "value": "0.75", "unit": "명",
+      "signal": "red", "asof": "2024",
+      "headline": "여성 1명이 평생 낳는 아이 0.75명 — 지구상 꼴찌",
+      "context": "인구를 그대로 유지하려면 한 여성이 2.1명을 낳아야 한다. 지금은 그 3분의 1 수준. OECD 38개국 중 압도적 최하위이자, 통계가 잡히는 전 세계 국가 가운데 가장 낮다. 2023년 0.72명에서 9년 만에 살짝 반등했지만, 2025년 다시 0.65명대로 주저앉을 전망이다.",
+      "compare": "인구 유지선 2.1명",
+      "source": "통계청", "source_url": "https://kostat.go.kr"
+    },
+    {
+      "id": "aging", "cat": "population", "label": "65세 이상 인구 비율", "value": "20.3", "unit": "%",
+      "signal": "red", "asof": "2025",
+      "headline": "국민 5명 중 1명이 노인 — 2025년 '초고령사회' 첫 진입",
+      "context": "65세 이상이 전체 인구의 20%를 넘으면 '초고령사회'다. 한국은 2025년 처음 그 선을 넘었다(20.3%, 1,051만 명). 2036년 30%, 2050년엔 40%에 이를 전망으로, 세계에서 가장 빠른 고령화 속도다. 일하는 세대가 부양해야 할 노인은 갈수록 늘어난다.",
+      "compare": "초고령사회 기준 20%",
+      "source": "통계청", "source_url": "https://kostat.go.kr"
+    },
+    {
+      "id": "household_debt", "cat": "economy", "label": "가계부채 / GDP", "live": { "id": "household_debt_ratio" }, "unit": "%",
+      "signal": "red", "asof": "2025",
+      "headline": "가계 빚이 나라 경제(GDP)와 맞먹는다",
+      "context": "가계부채가 GDP의 {value}%. 2021년 105%로 정점을 찍은 뒤 줄고 있지만 여전히 OECD 최상위권이고, 국가 경제 규모에 육박한다. 금리가 조금만 올라도 이자 부담이 가계를 짓누른다 — 빚으로 떠받친 소비와 부동산의 그림자.",
+      "compare": "위험선 100%",
+      "source": "한국은행", "source_url": "https://ecos.bok.or.kr"
+    },
+    {
+      "id": "potential_growth", "cat": "economy", "label": "잠재성장률", "value": "1.7", "unit": "%",
+      "signal": "yellow", "asof": "2025",
+      "headline": "성장 엔진이 식는다 — 잠재성장률 2% 붕괴",
+      "context": "나라가 무리 없이 낼 수 있는 성장률이 2024년 2.0%에서 2025년 1.7%, 2026년 1.5%대로 내려앉는다(추정). 저출생·고령화로 일할 사람이 줄고 생산성 증가가 둔화한 결과다. 한 번 떨어진 성장 잠재력은 되돌리기 어렵다.",
+      "compare": "10년 전 3%대",
+      "source": "한국은행·OECD", "source_url": "https://www.bok.or.kr"
+    },
+    {
+      "id": "national_debt", "cat": "fiscal", "label": "국가채무(D1) / GDP", "value": "49.1", "unit": "%",
+      "signal": "yellow", "asof": "2025",
+      "headline": "나랏빚, 2026년 사상 첫 GDP의 50% 돌파",
+      "context": "국가채무(D1)가 GDP의 49.1%(2025)에서 2026년 51.6%로 사상 처음 50%를 넘어선다. 채무 총액은 1,300조 원을 넘었다. 아직 선진국 평균보다는 낮지만, 저출생으로 세금 낼 사람은 줄고 복지 지출은 느는 구조라 증가 속도가 가파르다.",
+      "compare": "2017년 36%",
+      "source": "기획재정부", "source_url": "https://www.moef.go.kr"
+    },
+    {
+      "id": "grain", "cat": "security", "label": "곡물자급률", "value": "19.5", "unit": "%",
+      "signal": "red", "asof": "2021~23 평균",
+      "headline": "우리가 먹는 곡물의 80%는 수입산",
+      "context": "곡물자급률 19.5%로 주요국 중 최하위. 쌀은 자급(100%↑)하지만 밀 1.3%, 옥수수 4.3%로 사실상 전량 수입한다. 2008년 31%에서 계속 추락 중. 전쟁·기후·수출 통제로 글로벌 곡물 공급망이 흔들리면 식탁이 가장 먼저 위태로워진다.",
+      "compare": "2008년 31%",
+      "source": "농림축산식품부", "source_url": "https://www.mafra.go.kr"
+    },
+    {
+      "id": "energy", "cat": "security", "label": "에너지 수입의존도", "value": "93.9", "unit": "%",
+      "signal": "red", "asof": "2023",
+      "headline": "에너지의 94%를 수입 — 수입길 막히면 멈추는 나라",
+      "context": "석유·가스·석탄 등 1차 에너지의 93.9%를 해외에서 들여온다. 원전과 신재생을 늘려도 90%대를 벗어나지 못한다. 중동·러시아 정세가 한 번 출렁이면 물가와 전기·가스요금이 곧장 따라 흔들린다. 자원 빈국의 숙명이자 최대 안보 변수.",
+      "compare": "거의 전량 수입",
+      "source": "에너지경제연구원", "source_url": "https://www.keei.re.kr"
+    },
+    {
+      "id": "credit", "cat": "security", "label": "국가신용등급", "live": { "credit": true }, "unit": "",
+      "signal": "green", "asof": "2025",
+      "headline": "그래도 신용등급은 굳건 — 위기 지표 속 유일한 파란불",
+      "context": "S&P AA·무디스 Aa2·피치 AA-로 3대 신용평가사 모두 '안정적' 전망을 유지하고 있다. 아시아 최상위권이며 일부 선진국보다도 높다. 탄탄한 외환보유고와 재정 건전성이 떠받치는, 위기 지표판에서 유일하게 켜진 안전판이다.",
+      "compare": "3대 평가사 모두 '안정적'",
+      "source": "기획재정부·S&P·무디스·피치", "source_url": "https://www.moef.go.kr"
+    }
+  ],
+  "market_strip": [
+    { "label": "기준금리", "live": { "id": "base_rate" }, "unit": "%" },
+    { "label": "원/달러 환율", "live": { "id": "usd_krw" }, "unit": "원" }
+  ]
+}

@@ -30,6 +30,7 @@ jobs:
           python build_static_pages.py
           python build_law_pages.py
           python build_law_hot.py
+          python build_risk.py
           python build_sitemap.py
 
       - name: Commit & push if changed
