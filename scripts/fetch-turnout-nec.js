@@ -17,8 +17,9 @@ const { chromium } = require('playwright');
 const FILE = path.join(__dirname, '..', 'data', 'turnout-fallback.json');
 const HOME = 'https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml';
 // 선거일 투표율 현황 문서. 메뉴 ID가 바뀌면 NEC_URL 로 덮어쓴다.
+// 선거일 투표진행상황(=투표율) 문서: topMenuId=VC, secondMenuId=VCVP01 (NEC 메뉴맵 확인).
 const REPORT_URL = process.env.NEC_URL
-  || 'https://info.nec.go.kr/main/showDocument.xhtml?electionId=0020260603&topMenuId=VC&secondMenuId=VCBP08';
+  || 'https://info.nec.go.kr/main/showDocument.xhtml?electionId=0020260603&topMenuId=VC&secondMenuId=VCVP01';
 const DRY = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true';
 const FORCE = process.env.FORCE === '1' || process.env.FORCE === 'true';
 
@@ -80,8 +81,8 @@ async function clickSearch(page) {
           .filter(x => x.h && /showDocument|secondMenuId|menuId/.test(x.h) && x.t)
       );
       console.log('[menu] 후보 링크:', JSON.stringify(menu.slice(0, 50)));
-      const pick = menu.find(x => /투표율/.test(x.t) && !/사전/.test(x.t))
-                || menu.find(x => /(투표\s*현황|투표상황)/.test(x.t) && !/사전/.test(x.t));
+      const pick = menu.find(x => /투표진행상황/.test(x.t) && !/사전/.test(x.t))
+                || menu.find(x => /투표율/.test(x.t) && !/사전|개표/.test(x.t));
       if (pick) { target = pick.h; console.log('[menu] 선택:', pick.t, '->', target); }
       else console.log('[menu] 투표율 링크 못 찾음 — 기본 REPORT_URL 사용');
     }
