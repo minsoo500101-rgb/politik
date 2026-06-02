@@ -33,22 +33,33 @@ function inWindow() {
 function phaseNow() {
   return Date.now() < Date.parse('2026-06-03T18:00:00+09:00') ? 'voting' : '종료';
 }
-// 컬럼 순서가 페이지마다 달라(사전 vs 본투표) 위치 의존 대신 값으로 판별:
-//   투표율 = 소수점 있고 0<v<=100 인 퍼센트 셀, 선거인수/투표수 = 가장 큰 정수들.
+// NEC '투표진행상황' 표 컬럼 예: [구분, 당일대상선거인수, 사전투표수, 선거인수(계), 당일투표수, …, 당일투표율%]
+// 위치에 의존하지 않고 값으로 판별:
+//   - 선거인수(계) = 가장 큰 정수, 당일대상선거인수 = 두번째 큰 정수
+//   - 사전투표수 = 선거인수 - 당일대상 (사전투표자는 당일 대상에서 제외됨)
+//   - 페이지 투표율(%) = 소수점 퍼센트 셀 → 당일투표율 → 당일투표수 = 선거인수 × 당일율
+//   - ★누적 투표율 = (사전투표수 + 당일투표수) / 선거인수  (언론 보도·헤드라인 기준)
 function parseRows(rows) {
   const out = {};
   for (const c of rows) {
     const name = (c[0] || '').trim();
     if (name !== '합계' && !SIDO.includes(name)) continue;
-    let rate = NaN;
+    let dayPct = NaN;
     const ints = [];
     for (const cell of c.slice(1)) {
-      const s = (cell || '').replace(/,/g, '').trim();
-      if (/^\d{1,3}\.\d+$/.test(s)) { const v = parseFloat(s); if (v > 0 && v <= 100 && isNaN(rate)) rate = v; }
+      const s = (cell || '').replace(/[,%\s]/g, '');
+      if (/^\d{1,3}\.\d+$/.test(s)) { const v = parseFloat(s); if (v >= 0 && v <= 100 && isNaN(dayPct)) dayPct = v; }
       else if (/^\d{2,}$/.test(s)) ints.push(parseInt(s, 10));
     }
+    if (isNaN(dayPct) || ints.length < 2) continue;
     ints.sort((a, b) => b - a);
-    if (!isNaN(rate)) out[name] = { eligible: ints[0] || null, count: ints[1] || null, rate };
+    const eligible = ints[0];
+    const dayElig = ints[1];
+    const preVote = Math.max(0, eligible - dayElig);
+    const dayVote = Math.round(eligible * dayPct / 100);
+    const count = preVote + dayVote;                                   // 누적 투표수
+    const rate = eligible ? +(count / eligible * 100).toFixed(2) : NaN; // 누적 투표율
+    if (!isNaN(rate) && eligible > 0) out[name] = { eligible, count, rate, dayRate: dayPct };
   }
   return out;
 }
