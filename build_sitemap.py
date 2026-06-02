@@ -15,6 +15,7 @@ TODAY = datetime.now().strftime("%Y-%m-%d")
 STATIC_PAGES = [
     {"path": "/",              "priority": "1.0", "freq": "daily"},
     {"path": "/bills",         "priority": "0.95", "freq": "daily"},
+    {"path": "/law-diff.html", "priority": "0.95", "freq": "daily"},
     {"path": "/election2026",  "priority": "0.95", "freq": "hourly"},
     {"path": "/committees",    "priority": "0.85", "freq": "weekly"},
     {"path": "/map",           "priority": "0.8",  "freq": "weekly"},
@@ -46,11 +47,11 @@ def build():
 
     # 고정 페이지
     out.append("\n  <!-- 메인 + 정적 SEO 페이지 -->")
-    for p in STATIC_PAGES[:8]:
+    for p in STATIC_PAGES[:9]:
         out.append(url_entry(p["path"], p["priority"], p["freq"], TODAY))
 
     out.append("\n  <!-- SPA 그룹 라우트 -->")
-    for p in STATIC_PAGES[8:]:
+    for p in STATIC_PAGES[9:]:
         out.append(url_entry(p["path"], p["priority"], p["freq"]))
 
     # 정당 페이지 (PARTY_INFO 기반)
