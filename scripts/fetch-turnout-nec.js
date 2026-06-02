@@ -68,7 +68,24 @@ async function clickSearch(page) {
     const page = await browser.newPage({ userAgent: UA, locale: 'ko-KR' });
     await page.goto(HOME, { waitUntil: 'networkidle', timeout: 60000 });
     await page.getByText('투·개표', { exact: true }).first().click({ timeout: 15000 }).catch(() => {});
-    await page.goto(REPORT_URL, { waitUntil: 'networkidle', timeout: 60000 });
+    await page.waitForTimeout(1500);
+
+    // 메뉴에서 '투표율'(선거일) 문서 링크를 동적 탐색 — 메뉴 ID 추정/변동 회피.
+    // NEC_URL 환경변수가 있으면 그걸 우선 사용.
+    let target = REPORT_URL;
+    if (!process.env.NEC_URL) {
+      const menu = await page.evaluate(() =>
+        [...document.querySelectorAll('a')]
+          .map(a => ({ t: (a.textContent || '').replace(/\s+/g, ' ').trim(), h: a.href || '' }))
+          .filter(x => x.h && /showDocument|secondMenuId|menuId/.test(x.h) && x.t)
+      );
+      console.log('[menu] 후보 링크:', JSON.stringify(menu.slice(0, 50)));
+      const pick = menu.find(x => /투표율/.test(x.t) && !/사전/.test(x.t))
+                || menu.find(x => /(투표\s*현황|투표상황)/.test(x.t) && !/사전/.test(x.t));
+      if (pick) { target = pick.h; console.log('[menu] 선택:', pick.t, '->', target); }
+      else console.log('[menu] 투표율 링크 못 찾음 — 기본 REPORT_URL 사용');
+    }
+    await page.goto(target, { waitUntil: 'networkidle', timeout: 60000 });
     await page.waitForTimeout(1200);
     await clickSearch(page);
     await page.waitForSelector('text=합계', { timeout: 40000 });
