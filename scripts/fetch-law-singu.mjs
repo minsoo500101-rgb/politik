@@ -74,7 +74,7 @@ async function fetchAllIndex() {
 
 // eflaw efYd=<from>~<오늘> 페이지네이션 (LawSearch.law). 한 법령의 여러 개정도 각각 반환됨.
 async function fetchEflawSince(fromYmd) {
-  const per = 100, to = ymdToday();
+  const per = 100, to = `${new Date().getFullYear() + 3}1231`;   // 시행예정(미래 시행일)까지 포함 → '곧 시행' 추적
   const base = { target: 'eflaw', efYd: `${fromYmd}~${to}`, display: per };
   const first = await drf('lawSearch.do', { ...base, page: 1 });
   const root = first?.LawSearch || {};
