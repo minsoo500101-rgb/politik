@@ -33,15 +33,22 @@ function inWindow() {
 function phaseNow() {
   return Date.now() < Date.parse('2026-06-03T18:00:00+09:00') ? 'voting' : '종료';
 }
+// 컬럼 순서가 페이지마다 달라(사전 vs 본투표) 위치 의존 대신 값으로 판별:
+//   투표율 = 소수점 있고 0<v<=100 인 퍼센트 셀, 선거인수/투표수 = 가장 큰 정수들.
 function parseRows(rows) {
   const out = {};
   for (const c of rows) {
     const name = (c[0] || '').trim();
     if (name !== '합계' && !SIDO.includes(name)) continue;
-    const eligible = parseInt((c[1] || '').replace(/[^\d]/g, ''), 10);
-    const count = parseInt((c[2] || '').replace(/[^\d]/g, ''), 10);
-    const rate = parseFloat((c[3] || '').replace(/[^\d.]/g, ''));
-    if (!isNaN(rate)) out[name] = { eligible, count, rate };
+    let rate = NaN;
+    const ints = [];
+    for (const cell of c.slice(1)) {
+      const s = (cell || '').replace(/,/g, '').trim();
+      if (/^\d{1,3}\.\d+$/.test(s)) { const v = parseFloat(s); if (v > 0 && v <= 100 && isNaN(rate)) rate = v; }
+      else if (/^\d{2,}$/.test(s)) ints.push(parseInt(s, 10));
+    }
+    ints.sort((a, b) => b - a);
+    if (!isNaN(rate)) out[name] = { eligible: ints[0] || null, count: ints[1] || null, rate };
   }
   return out;
 }
@@ -99,6 +106,8 @@ async function clickSearch(page) {
       });
       return result;
     });
+    const sumRow = rows.find(c => (c[0] || '').trim() === '합계');
+    if (sumRow) console.log('[debug] 합계 row:', JSON.stringify(sumRow));
     parsed = parseRows(rows);
   } finally {
     await browser.close();
