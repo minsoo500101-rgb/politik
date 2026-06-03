@@ -28,8 +28,34 @@ function getPhase() {
   return 'done';                         // 개표 완료
 }
 
+// ── 개표(count) 통합 — Vercel Hobby 함수 12개 제한 회피: turnout 함수가 ?kind=count도 처리 ──
+const COUNT_FILE = path.join(process.cwd(), 'data', 'count-fallback.json');
+function readCount() { try { return JSON.parse(fs.readFileSync(COUNT_FILE, 'utf8')); } catch { return null; } }
+function getCountPhase() {
+  const now = Date.now();
+  const open = Date.parse('2026-06-03T18:00:00+09:00');
+  const done = Date.parse('2026-06-04T06:00:00+09:00');
+  if (now < open) return 'pre';
+  if (now < done) return 'counting';
+  return 'done';
+}
+function serveCount(req, res) {
+  const phase = getCountPhase();
+  res.setHeader('Cache-Control', `public, max-age=30, s-maxage=${phase === 'counting' ? 120 : 1800}, stale-while-revalidate=600`);
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  const fb = readCount();
+  const regions = (fb && Array.isArray(fb.regions)) ? fb.regions : [];
+  return res.status(200).json({
+    phase, updatedAt: (fb && fb.updatedAt) || null, regions, counted: regions.length,
+    source: (regions.length && fb && fb._source) ? fb._source : (phase === 'pre' ? 'pending' : 'historical'),
+    note: regions.length ? null : (phase === 'pre' ? '개표 시작 전 (6/3 18:00)' : '개표 집계 대기 — 중앙선관위 실시간 참고'),
+    generatedAt: new Date().toISOString(),
+  });
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.query && req.query.kind === 'count') return serveCount(req, res);
   const phase = getPhase();
   // 투표 중엔 5분, 그 외 30분 CDN 캐시
   const cacheSecs = phase === 'voting' ? 300 : 1800;

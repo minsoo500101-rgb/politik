@@ -19385,7 +19385,7 @@ async function fetchTurnout() {
 // V31.18 — 시도지사 실시간 개표 fetch (state 저장 → renderElectionLivePage가 렌더)
 async function fetchCount() {
   try {
-    const r = await fetch('/api/count');
+    const r = await fetch('/api/turnout?kind=count');
     if (!r.ok) throw new Error('HTTP ' + r.status);
     state.liveCount = await r.json();
   } catch (e) {
