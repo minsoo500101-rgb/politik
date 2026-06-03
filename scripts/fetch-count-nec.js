@@ -64,22 +64,24 @@ async function clickSearch(page) {
       [...document.querySelectorAll('select')].map((s, i) => ({ i, id: s.id || '', name: s.name || '', opts: [...s.options].map(o => o.text.replace(/\s+/g, ' ').trim()) })));
     console.log('[selects]', JSON.stringify(selInfo).slice(0, 1200));
 
-    // '시·도지사' 옵션이 있는 select에서 선택
-    for (const s of selInfo) {
-      const idx = s.opts.findIndex(o => /시.?도지사|광역단체장/.test(o));
-      if (idx >= 0) {
-        try {
-          const sel = page.locator('select').nth(s.i);
-          await sel.selectOption({ index: idx });
-          console.log('[select] 시도지사 선택 select#' + s.i + ' opt:', s.opts[idx]);
-          await page.waitForTimeout(1200);
-        } catch (e) { console.log('[select] 실패:', e.message); }
-        break;
-      }
-    }
+    // 선거종류=시·도지사선거 를 JS로 설정(셀렉트가 숨김/커스텀이라 selectOption 대신 value+change)
+    const picked = await page.evaluate(() => {
+      const ec = document.getElementById('electionCode');
+      if (!ec) return 'no electionCode';
+      const opt = [...ec.options].find(o => /시.?도지사/.test(o.text));
+      if (!opt) return 'no 시도지사 opt';
+      ec.value = opt.value;
+      ec.dispatchEvent(new Event('change', { bubbles: true }));
+      return 'electionCode=' + opt.value + ' (' + opt.text.trim() + ')';
+    });
+    console.log('[select]', picked);
+    await page.waitForTimeout(1500);
 
     await clickSearch(page);
-    await page.waitForTimeout(2800);
+    await page.waitForTimeout(3000);
+
+    const bodyText = await page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 500));
+    console.log('[text]', bodyText);
 
     // 테이블 구조 덤프 (상위 3개 테이블, 각 6행)
     const dump = await page.evaluate(() => {
