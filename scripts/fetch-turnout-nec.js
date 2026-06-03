@@ -25,6 +25,9 @@ const FORCE = process.env.FORCE === '1' || process.env.FORCE === 'true';
 
 const SIDO = ['서울특별시','부산광역시','대구광역시','인천광역시','광주광역시','대전광역시','울산광역시','세종특별자치시','경기도','강원특별자치도','충청북도','충청남도','전북특별자치도','전라남도','경상북도','경상남도','제주특별자치도'];
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+// 9회 사전투표 공식 최종(사전투표소 기준). 라이브 카드에서 사전은 이 값으로 고정,
+// 본투표(당일) = 합계 − 사전 으로 계산해 세 값이 정확히 합산되게 한다.
+const EARLY_RATE = 23.51, EARLY_COUNT = 10498411;
 
 function inWindow() {
   const n = Date.now();
@@ -148,9 +151,9 @@ async function clickSearch(page) {
     phase: phaseNow(),
     turnoutCount: total.count,               // 합계 투표수
     totalVoters: eligTot,
-    breakdown: {                             // 사전 / 본투표(당일) / 합계 (동일 출처, 일관)
-      early: { rate: +(total.preVote / eligTot * 100).toFixed(2), count: total.preVote },
-      dayOf: { rate: total.dayRate, count: total.dayVote },
+    breakdown: {                             // 사전(공식 23.51 고정) / 본투표(=합계−사전) / 합계(라이브)
+      early: { rate: EARLY_RATE, count: EARLY_COUNT },
+      dayOf: { rate: +(total.rate - EARLY_RATE).toFixed(2), count: Math.max(0, total.count - EARLY_COUNT) },
       total: { rate: total.rate, count: total.count },
     },
     byRegion,                                // 시도별(합계 기준)
@@ -159,7 +162,7 @@ async function clickSearch(page) {
     _source: 'nec-headless-auto',
   };
 
-  console.log(`[ok] 합계 ${total.rate}% (사전 ${out.breakdown.early.rate}% + 당일 ${total.dayRate}%) · ${total.count.toLocaleString()}명 · 시도 ${regionCount}/17`);
+  console.log(`[ok] 합계 ${total.rate}% (사전 ${out.breakdown.early.rate}% + 본투표 ${out.breakdown.dayOf.rate}%) · ${total.count.toLocaleString()}명 · 시도 ${regionCount}/17`);
   if (DRY) { console.log('[dry-run] 파일 미수정\n' + JSON.stringify(out, null, 0).slice(0, 600)); process.exit(0); }
   fs.writeFileSync(FILE, JSON.stringify(out, null, 2) + '\n', 'utf8');
   console.log('[written]', FILE);
