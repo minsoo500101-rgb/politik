@@ -54,15 +54,14 @@ function parseRows(rows) {
       if (/^\d{1,3}\.\d+$/.test(s)) { const v = parseFloat(s); if (v >= 0 && v <= 100 && isNaN(dayPct)) dayPct = v; }
       else if (/^\d{2,}$/.test(s)) ints.push(parseInt(s, 10));
     }
-    if (isNaN(dayPct) || ints.length < 2) continue;
+    if (isNaN(dayPct) || ints.length < 1) continue;
     ints.sort((a, b) => b - a);
     const eligible = ints[0];
-    const dayElig = ints[1];
-    const preVote = Math.max(0, eligible - dayElig);
-    const dayVote = Math.round(eligible * dayPct / 100);
-    const count = preVote + dayVote;                                   // 누적 투표수
-    const rate = eligible ? +(count / eligible * 100).toFixed(2) : NaN; // 누적 투표율
-    if (!isNaN(rate) && eligible > 0) out[name] = { eligible, count, rate, dayRate: dayPct, preVote, dayVote };
+    // ★NEC는 오후 1시부터 투표율을 '사전 합산(누적)'으로 발표 전환. page %가 사전율(23.51) 이상이면 이미 누적 →
+    //   그대로 사용. 미만이면 오전(당일-only) → 사전을 더해 누적화. (이중계산 방지: 누적은 항상 사전율 이상)
+    const rate = dayPct >= EARLY_RATE ? dayPct : +((EARLY_RATE + dayPct).toFixed(2));
+    const count = Math.round(eligible * rate / 100);                    // 누적 투표수
+    if (eligible > 0) out[name] = { eligible, count, rate };
   }
   return out;
 }
@@ -136,8 +135,8 @@ async function clickSearch(page) {
 
   let cur = {};
   try { cur = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch {}
-  if (cur.rate != null && total.rate < cur.rate - 0.01) {
-    console.error(`[skip] 새 값(${total.rate}%)이 기존(${cur.rate}%)보다 낮음 — 파싱오류 의심, 미반영`);
+  if (!FORCE && cur.rate != null && total.rate < cur.rate - 0.01) {
+    console.error(`[skip] 새 값(${total.rate}%)이 기존(${cur.rate}%)보다 낮음 — 파싱오류 의심, 미반영 (FORCE=1로 무시)`);
     process.exit(0);
   }
 
