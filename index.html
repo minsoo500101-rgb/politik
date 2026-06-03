@@ -5199,6 +5199,12 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .tv-live-sub { font-size: 12.5px; color: var(--dim); margin-top: 6px; }
   .tv-live-cmp { font-size: 12px; color: var(--text); margin-top: 10px; background: var(--bg-elev); border-radius: 6px; padding: 7px 11px; }
   .tv-live-cmp b { color: #ef4444; }
+  .tv-live-split { display: flex; gap: 9px; margin-top: 11px; }
+  .tv-split-item { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; text-align: center; }
+  .tv-split-l { font-size: 11.5px; color: var(--dim); margin-bottom: 3px; }
+  .tv-split-v { font-size: 21px; font-weight: 800; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
+  .tv-split-item.live { border-color: rgba(239,68,68,0.4); }
+  .tv-split-item.live .tv-split-v { color: #ef4444; }
   .tv-live-region { margin-top: 12px; }
   .tv-live-link { display: inline-block; margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--link); text-decoration: none; }
   .tv-live-link:hover { text-decoration: underline; }
@@ -14932,8 +14938,14 @@ function renderElectionLivePage() {
       const tEmpty = !(t && t.rate != null);
       const tRate = tEmpty ? '집계 대기' : t.rate.toFixed(1) + '%';
       const tSub = !tEmpty
-        ? `${t.turnoutCount ? Number(t.turnoutCount).toLocaleString() + '명 투표' : ''}${t.announcedAt ? (t.turnoutCount ? ' · ' : '') + '갱신 ' + new Date(t.announcedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}`
+        ? `합계(사전+본투표) · ${t.turnoutCount ? Number(t.turnoutCount).toLocaleString() + '명' : ''}${t.announcedAt ? (t.turnoutCount ? ' · ' : '') + '갱신 ' + new Date(t.announcedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}`
         : (t && t.note ? t.note : '중앙선관위 집계 대기 · 아래 라이브에서 실시간 확인');
+      const bd = (!tEmpty && t.breakdown) ? t.breakdown : null;
+      const splitHtml = bd ? `
+            <div class="tv-live-split">
+              <div class="tv-split-item"><div class="tv-split-l">🗳 사전투표</div><div class="tv-split-v">${bd.early && bd.early.rate != null ? bd.early.rate.toFixed(1) + '%' : '—'}</div></div>
+              <div class="tv-split-item live"><div class="tv-split-l">📩 본투표(당일)</div><div class="tv-split-v">${bd.dayOf && bd.dayOf.rate != null ? bd.dayOf.rate.toFixed(1) + '%' : '—'}</div></div>
+            </div>` : '';
       const tSrc = ({ 'nec-headless-auto': '📊 선관위 통계 자동수집', 'nec-stat': '📊 중앙선관위 통계', 'historical': '⏳ 집계 대기', 'pending': '⏳ 투표 시작 전' })[(t && t.source)] || '🔴 LIVE';
       const SD_SHORT = { '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주' };
       const tReg = (t && t.byRegion) ? Object.entries(t.byRegion).filter(e => e[1] != null) : [];
@@ -14964,7 +14976,8 @@ function renderElectionLivePage() {
             </div>
             <div class="tv-live-rate${tEmpty ? ' is-empty' : ''}">${tRate}</div>
             <div class="tv-live-sub">${tSub}</div>
-            <div class="tv-live-cmp">📊 비교 — 8회(2022) 지선 최종 <b>50.9%</b> · 올해 사전투표 23.51%(역대 최고)</div>
+            ${splitHtml}
+            <div class="tv-live-cmp">📊 8회(2022) 지선 최종 <b>50.9%</b> · 올해 사전투표 최종 23.51%(역대 최고)</div>
             ${tRegHtml}
             <a class="tv-live-link" href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener">중앙선관위 실시간 통계 ↗</a>
           </div>

@@ -59,7 +59,7 @@ function parseRows(rows) {
     const dayVote = Math.round(eligible * dayPct / 100);
     const count = preVote + dayVote;                                   // 누적 투표수
     const rate = eligible ? +(count / eligible * 100).toFixed(2) : NaN; // 누적 투표율
-    if (!isNaN(rate) && eligible > 0) out[name] = { eligible, count, rate, dayRate: dayPct };
+    if (!isNaN(rate) && eligible > 0) out[name] = { eligible, count, rate, dayRate: dayPct, preVote, dayVote };
   }
   return out;
 }
@@ -141,19 +141,25 @@ async function clickSearch(page) {
   const byRegion = {};
   for (const s of SIDO) if (parsed[s]) byRegion[s] = parsed[s].rate;
 
+  const eligTot = total.eligible || 44649908;
   const out = {
     ...cur,
-    rate: total.rate,
+    rate: total.rate,                        // 합계(누적) 투표율
     phase: phaseNow(),
-    turnoutCount: total.count,
-    totalVoters: total.eligible || cur.totalVoters || 44649908,
-    byRegion,
+    turnoutCount: total.count,               // 합계 투표수
+    totalVoters: eligTot,
+    breakdown: {                             // 사전 / 본투표(당일) / 합계 (동일 출처, 일관)
+      early: { rate: +(total.preVote / eligTot * 100).toFixed(2), count: total.preVote },
+      dayOf: { rate: total.dayRate, count: total.dayVote },
+      total: { rate: total.rate, count: total.count },
+    },
+    byRegion,                                // 시도별(합계 기준)
     announcedAt: new Date().toISOString(),
     _lastUpdate: new Date().toISOString(),
     _source: 'nec-headless-auto',
   };
 
-  console.log(`[ok] 합계 ${total.rate}% (${total.count.toLocaleString()}명) · 시도 ${regionCount}/17`);
+  console.log(`[ok] 합계 ${total.rate}% (사전 ${out.breakdown.early.rate}% + 당일 ${total.dayRate}%) · ${total.count.toLocaleString()}명 · 시도 ${regionCount}/17`);
   if (DRY) { console.log('[dry-run] 파일 미수정\n' + JSON.stringify(out, null, 0).slice(0, 600)); process.exit(0); }
   fs.writeFileSync(FILE, JSON.stringify(out, null, 2) + '\n', 'utf8');
   console.log('[written]', FILE);

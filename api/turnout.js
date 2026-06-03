@@ -44,6 +44,7 @@ export default async function handler(req, res) {
     byRegion: null,
     turnoutCount: null,
     totalVoters: 44649908,                 // 9회 선거인명부(사전투표 최종 발표 기준)
+    breakdown: null,                       // { early, dayOf, total } — 사전/본투표/합계
     source: null,
     prev8th: { rate: PREV_8TH_FINAL, label: '2022.6 8회 지선 최종' },
     note: null,
@@ -57,6 +58,7 @@ export default async function handler(req, res) {
     result.byRegion = (fb.byRegion && Object.keys(fb.byRegion).length) ? fb.byRegion : null;
     result.turnoutCount = fb.turnoutCount || null;
     if (fb.totalVoters) result.totalVoters = fb.totalVoters;
+    if (fb.breakdown) result.breakdown = fb.breakdown;
     result.announcedAt = fb.announcedAt || null;
     result.source = fb._source || 'nec-stat';
     result.note = fb._note || null;
