@@ -1,0 +1,62 @@
+name: 시도지사 개표 자동 갱신 (NEC headless)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '읽기만 (커밋 안 함)'
+        type: boolean
+        default: false
+      force:
+        description: '개표시간 밖에도 강제 실행'
+        type: boolean
+        default: false
+      inspect:
+        description: '구조 덤프만 (파서 미실행)'
+        type: boolean
+        default: false
+      nec_url:
+        description: 'NEC 조회 문서 URL 오버라이드'
+        type: string
+        default: ''
+  schedule:
+    # 개표(2026-06-03 18:00 KST ~ 익일 02:00) 동안 10분 간격 (UTC 6/3 09시~17시)
+    - cron: '*/10 9-17 3 6 *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: count
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Playwright(chromium) 설치
+        run: |
+          npm i playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: NEC 개표 크롤 + fallback 갱신
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          FORCE: ${{ github.event.inputs.force }}
+          INSPECT: ${{ github.event.inputs.inspect }}
+          NEC_URL: ${{ github.event.inputs.nec_url }}
+        run: node scripts/fetch-count-nec.js
+      - name: 커밋·푸시 (변경 시에만)
+        if: ${{ github.event.inputs.dry_run != 'true' && github.event.inputs.inspect != 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/count-fallback.json
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "data: 시도지사 개표 자동 갱신 (NEC headless) $(TZ=Asia/Seoul date '+%m/%d %H:%M' 2>/dev/null || date -u '+%m/%dT%H:%MZ')"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push && break || (echo "재시도 $i"; sleep 5)
+          done
