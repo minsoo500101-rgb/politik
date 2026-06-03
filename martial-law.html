@@ -40,6 +40,17 @@ p{font-size:15px;margin:0 0 13px}
 .q{border-left:3px solid var(--dim);padding:4px 0 4px 14px;margin:14px 0;color:var(--tx);font-size:14.5px;font-style:italic}
 .note{background:var(--bg);border:1px dashed var(--bd);border-radius:9px;padding:12px 14px;font-size:13px;color:var(--dim);margin:18px 0}
 .note b{color:var(--tx)}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.side{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.side h3{font-size:14px;font-weight:800;margin:0 0 8px;padding-bottom:7px;border-bottom:1px solid var(--bd);letter-spacing:-.3px}
+.side ul{margin:0;padding-left:17px}
+.side li{font-size:13.5px;margin:6px 0;line-height:1.62}
+.side li i{color:var(--dim)}
+.side-a h3{color:#b45309}
+.side-b h3{color:#4F46E5}
+[data-theme=dark] .side-a h3{color:#fbbf24}
+[data-theme=dark] .side-b h3{color:#818cf8}
+@media(max-width:560px){.sides{grid-template-columns:1fr}}
 .src{font-size:13px;color:var(--dim)}
 .src a{color:var(--ac);text-decoration:none}
 .src li{margin:4px 0}
@@ -95,6 +106,30 @@ footer{margin-top:34px;font-size:11.5px;color:var(--dim);border-top:1px solid va
 <p><b>미국·일본.</b> 미국은 계엄 선포를 사전 통보받지 못했고, 백악관 국가안전보장회의(NSC)는 "사전에 알지 못했다"며 공개적으로 회의적 반응을 보였다. 토니 블링컨 당시 국무장관은 계엄 해제를 환영하며 "한국의 민주적 회복력은 세계에서 가장 강력한 사례 중 하나"라고 평가하고 법치에 기반한 한미동맹 지지를 재확인했다. 일본 이시바 시게루 총리는 1월로 검토되던 방한을 재고했고, 한일 외교장관 통화에서는 "한일관계의 중요성은 변하지 않는다"는 인식을 공유했다.</p>
 <p><b>국가신인도·시장.</b> 계엄 선포 직전 국무회의에서 최상목 당시 경제부총리는 "경제와 국가신인도에 치명적 영향을 준다"며 만류했고, 조태열 외교부 장관은 "70년간 대한민국이 쌓은 성취를 무너뜨린다"고 우려한 것으로 전해졌다. 시장은 즉각 반응해 <b>원/달러 환율이 한때 1,444원</b>까지 올라 약 25개월 만의 최저 수준을 기록했고(이후 1,420원대로 일부 회복), 미국 증시에 상장된 한국 관련 ETF는 4.4~5%가량 하락했다. 사태 진정 이후 정부는 대외 신뢰 회복을 위한 설명에 나서야 했다.</p>
 
+<h2>⑤ 엇갈린 시선 — 계엄을 둘러싼 양측의 주장</h2>
+<p>같은 사건을 두고 평가는 크게 갈렸다. 아래는 <b>양측의 주장을 그대로 병기</b>한 것으로 어느 한쪽을 지지하지 않으며, '주장'과 '사실로 확인된 부분'을 구분했다. 법원·헌법재판소의 판단은 ①~④와 같고(파면·1심 유죄, 항소심 진행 중·확정 전), 최종 평가는 읽는 분의 몫이다.</p>
+<div class="sides">
+  <div class="side side-a">
+    <h3>① 계엄·탄핵에 반대한 측</h3>
+    <ul>
+      <li><b>윤 대통령이 밝힌 계엄 사유</b> — 12.3 담화에서 "거대 야당의 입법 폭거·의회 독재에 맞서", "종북 반국가세력 척결과 자유 헌정질서 수호"를 내세웠다. 야당의 잇단 탄핵소추·예산 삭감을 '국정 마비'로 규정했다.</li>
+      <li><b>부정선거 의혹 제기</b> — 12.12 담화에서 "선관위 시스템이 해킹·데이터 조작에 취약하다"며 선거관리 불신을 이유 중 하나로 들었다. <i>단, 이 주장은 선관위·법원에서 사실로 확인되지 않았고 앞선 부정선거 소송도 전부 기각됐다.</i></li>
+      <li><b>법적 방어 논리</b> — 변호인단은 계엄을 헌법 제77조에 따른 '통치행위'로 사법심사 대상이 아니라 주장하고, 탄핵 절차의 하자(법사위 조사 생략·일사부재의 등)도 제기했다.</li>
+      <li><b>지지층 결집</b> — 탄핵 반대 집회가 이어졌고(분쟁데이터기관 ACLED 집계, 2025년 1월 친윤 집회 증가), 보수 시민단체·종교계·일부 대학가에서 반대 시국선언이 나왔다.</li>
+    </ul>
+  </div>
+  <div class="side side-b">
+    <h3>② 계엄을 위헌으로 본 측 (탄핵·파면 인용)</h3>
+    <ul>
+      <li><b>국회의 즉각 제동</b> — 계엄 약 2시간 반 만에 재석 190명 전원 찬성(190–0)으로 해제를 의결했다.</li>
+      <li><b>헌재 전원일치</b> — 2025.4.4 헌법재판소가 재판관 8인 전원일치로 제시된 탄핵 사유를 인정하고 윤 대통령을 파면했다(절차 쟁점엔 일부 보충의견).</li>
+      <li><b>국헌문란 인정</b> — 1심 형사재판부는 "국회에 군을 투입하는 등 국헌문란 목적의 폭동"을 인정해 무기징역을 선고했다(항소심 진행 중, 확정 전·무죄추정).</li>
+      <li><b>절차 정당성</b> — 탄핵소추는 국회 재적 과반 발의·3분의 2 이상 찬성으로 가결됐고 헌재 심리를 거쳤다.</li>
+    </ul>
+  </div>
+</div>
+<div class="note">🔎 위는 <b>양측 주장을 균형 있게 병기</b>한 것이다. 사실로 확인된 부분(국회 표결·헌재 결정·법원 판결)과 각 측의 '주장'은 구분했으며, 1심·항소심은 확정 판결이 아니고 피고인은 무죄로 추정된다.</div>
+
 <h2>출처</h2>
 <ul class="src">
   <li>위키백과(영문) — <a href="https://en.wikipedia.org/wiki/2024_South_Korean_martial_law_crisis" target="_blank" rel="noopener nofollow">2024 South Korean martial law crisis (타임라인·병력 규모·시장 영향) ↗</a></li>
@@ -107,6 +142,10 @@ footer{margin-top:34px;font-size:11.5px;color:var(--dim);border-top:1px solid va
   <li>코리아타임스 — <a href="https://www.koreatimes.co.kr/www/nation/2024/12/120_387797.html" target="_blank" rel="noopener nofollow">Martial law fiasco escalates South Korea's diplomatic isolation ↗</a></li>
   <li>Carnegie Endowment — <a href="https://carnegieendowment.org/emissary/2024/12/south-korea-martial-law-foreign-policy-us-alliance?lang=en" target="_blank" rel="noopener nofollow">The Global Consequences of Yoon's Martial Law Gambit ↗</a></li>
   <li>NBC News — <a href="https://www.nbcnews.com/world/south-korea/south-koreas-ousted-president-yoon-plotted-martial-law-eliminate-rival-rcna249252" target="_blank" rel="noopener nofollow">Probe: Yoon plotted martial law to eliminate rivals ↗</a></li>
+  <li>경향신문 — <a href="https://www.khan.co.kr/article/202412121059001" target="_blank" rel="noopener nofollow">[전문] 윤 대통령 '국민께 드리는 말씀'(12.12 담화) ↗</a></li>
+  <li>ACLED — <a href="https://acleddata.com/" target="_blank" rel="noopener nofollow">친윤·반윤 시위 주도 단체 분석(Q&A) ↗</a></li>
+  <li>법률신문 — <a href="https://www.lawtimes.co.kr/news/206945" target="_blank" rel="noopener nofollow">탄핵 5개 사유 8인 전원 인정…'절차'에 5인 보충의견 ↗</a></li>
+  <li>경향신문 — <a href="https://www.khan.co.kr/article/202504061401001" target="_blank" rel="noopener nofollow">윤 탄핵 심리 경과·쟁점 ↗</a></li>
 </ul>
 
 <div class="xl">📂 함께 보기 — <a href="/ballot-shortage.html">6·3 투표용지 부족 사태</a> · <a href="/judiciary.html">사법부 구성·임명·독립성 팩트체크</a></div>
