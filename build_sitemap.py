@@ -20,6 +20,7 @@ STATIC_PAGES = [
     {"path": "/crisis.html",   "priority": "0.9", "freq": "daily"},
     {"path": "/ballot-shortage.html", "priority": "0.9", "freq": "daily"},
     {"path": "/ballot-shortage-en.html", "priority": "0.85", "freq": "daily"},
+    {"path": "/judiciary.html",  "priority": "0.85", "freq": "weekly"},
     {"path": "/election2026",  "priority": "0.95", "freq": "hourly"},
     {"path": "/committees",    "priority": "0.85", "freq": "weekly"},
     {"path": "/map",           "priority": "0.8",  "freq": "weekly"},
@@ -51,11 +52,11 @@ def build():
 
     # 고정 페이지
     out.append("\n  <!-- 메인 + 정적 SEO 페이지 -->")
-    for p in STATIC_PAGES[:13]:
+    for p in STATIC_PAGES[:14]:
         out.append(url_entry(p["path"], p["priority"], p["freq"], TODAY))
 
     out.append("\n  <!-- SPA 그룹 라우트 -->")
-    for p in STATIC_PAGES[13:]:
+    for p in STATIC_PAGES[14:]:
         out.append(url_entry(p["path"], p["priority"], p["freq"]))
 
     # 정당 페이지 (PARTY_INFO 기반)
