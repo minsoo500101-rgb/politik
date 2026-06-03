@@ -77,27 +77,76 @@ async function clickSearch(page) {
     console.log('[select]', picked);
     await page.waitForTimeout(1500);
 
-    await clickSearch(page);
-    await page.waitForTimeout(3000);
-
-    const bodyText = await page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 500));
-    console.log('[text]', bodyText);
-
-    // 테이블 구조 덤프 (상위 3개 테이블, 각 6행)
-    const dump = await page.evaluate(() => {
-      return [...document.querySelectorAll('table')].slice(0, 4).map((t, ti) => ({
-        ti,
-        cap: (t.caption ? t.caption.innerText : '').replace(/\s+/g, ' ').trim().slice(0, 60),
-        rows: [...t.querySelectorAll('tr')].slice(0, 7).map(tr =>
-          [...tr.querySelectorAll('th,td')].map(c => (c.innerText || '').replace(/\s+/g, ' ').trim()).slice(0, 14)),
-      }));
+    // 시도 = 전체 (모든 시도 한 표에)
+    const cityPick = await page.evaluate(() => {
+      const cc = document.getElementById('cityCode');
+      if (!cc) return 'no cityCode';
+      const opt = [...cc.options].find(o => /전\s*체/.test(o.text)) || cc.options[0];
+      cc.value = opt.value; cc.dispatchEvent(new Event('change', { bubbles: true }));
+      return 'cityCode=' + opt.value + ' (' + opt.text.trim() + ')';
     });
-    console.log('[dump]', JSON.stringify(dump).slice(0, 3500));
+    console.log('[city]', cityPick);
+    await page.waitForTimeout(1000);
 
-    if (INSPECT) { console.log('[inspect] 구조 덤프 완료'); process.exit(0); }
-    // (파서는 구조 확인 후 추가)
-    console.log('[note] 파서 미구현 — INSPECT로 구조 먼저 확인');
-    process.exit(0);
+    await clickSearch(page);
+    await page.waitForTimeout(3500);
+
+    // 시도명이 가장 많이 든 테이블의 행(헤더+데이터) 추출
+    const grab = await page.evaluate(() => {
+      const SD = ['서울','부산','대구','인천','광주','대전','울산','세종','경기','강원','충청','충북','충남','전북','전라','전남','경상','경북','경남','제주'];
+      let best = [], bestN = 0;
+      for (const t of document.querySelectorAll('table')) {
+        const rows = [...t.querySelectorAll('tr')].map(tr => [...tr.querySelectorAll('th,td')].map(c => (c.innerText || '').replace(/\s+/g, ' ').trim()));
+        const n = rows.filter(r => r[0] && SD.some(s => r[0].startsWith(s))).length;
+        if (n > bestN) { best = rows; bestN = n; }
+      }
+      return best;
+    });
+    console.log('[rows]', JSON.stringify(grab.slice(0, 3)).slice(0, 1600), '... 총', grab.length, '행');
+
+    if (INSPECT) { console.log('[inspect] 완료'); process.exit(0); }
+
+    // 헤더에서 정당 컬럼 라벨 추출(있으면)
+    const PARTIES = ['더불어민주당','국민의힘','개혁신당','조국혁신당','진보당','정의당','무소속'];
+    const header = grab.find(r => r.some(c => PARTIES.some(p => c.includes(p)))) || [];
+    const colParty = {};
+    header.forEach((c, i) => { const p = PARTIES.find(p => c.includes(p)); if (p) colParty[i] = p; });
+
+    const SHORT = SIDO.map(s => s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, ''));
+    const fullName = sh => SIDO.find(s => s.startsWith(sh)) || sh;
+
+    const regions = [];
+    for (const r of grab) {
+      if (!r[0]) continue;
+      const sh = SHORT.find(s => r[0].startsWith(s));
+      if (!sh) continue;
+      const pcts = [];
+      r.forEach((c, i) => { const m = String(c).match(/(\d{1,3}\.\d+)\s*%/); if (m) pcts.push({ i, v: parseFloat(m[1]) }); });
+      if (!pcts.length) continue;
+      const progress = pcts[pcts.length - 1].v;                  // 개표율(마지막 %)
+      const cand = pcts.slice(0, -1).sort((a, b) => b.v - a.v);  // 후보 득표율 내림차순
+      regions.push({
+        sido: fullName(sh),
+        progress,
+        leader: cand[0] ? { party: colParty[cand[0].i] || '', rate: cand[0].v } : null,
+        second: cand[1] ? { party: colParty[cand[1].i] || '', rate: cand[1].v } : null,
+        won: r.some(c => /당선/.test(c)),
+      });
+    }
+    console.log('[parse]', regions.length + '개 시도 · 정당컬럼 ' + Object.keys(colParty).length);
+
+    if (!regions.length) { console.log('[skip] 개표 데이터 없음(개표 전/구조변경) — 기존 유지'); process.exit(0); }
+
+    const out = {
+      phase: Date.now() < Date.parse('2026-06-04T02:00:00+09:00') ? 'counting' : 'done',
+      updatedAt: new Date().toISOString(),
+      regions,
+      _source: 'nec-headless-auto',
+    };
+    console.log(`[ok] 개표 ${regions.length}/17 시도 · 평균 개표율 ${(regions.reduce((a, b) => a + b.progress, 0) / regions.length).toFixed(1)}%`);
+    if (DRY) { console.log('[dry]', JSON.stringify(out).slice(0, 600)); process.exit(0); }
+    fs.writeFileSync(FILE, JSON.stringify(out, null, 2) + '\n', 'utf8');
+    console.log('[written]', FILE);
   } finally {
     await browser.close();
   }

@@ -5205,6 +5205,21 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .tv-split-v { font-size: 21px; font-weight: 800; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
   .tv-split-item.live { border-color: rgba(239,68,68,0.4); }
   .tv-split-item.live .tv-split-v { color: #ef4444; }
+  /* V31.18 — 실시간 개표 그리드 */
+  .cnt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 9px; margin-top: 8px; }
+  .cnt-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 9px; padding: 10px 11px; }
+  .cnt-card.won { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .cnt-sido { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; font-size: 14px; color: var(--text); margin-bottom: 6px; }
+  .cnt-prog { font-size: 10.5px; font-weight: 600; color: var(--dim); }
+  .cnt-lead { display: flex; align-items: center; gap: 5px; border-left: 3px solid var(--accent); padding: 3px 0 3px 7px; }
+  .cnt-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 8px; }
+  .cnt-lp { font-size: 12.5px; font-weight: 700; color: var(--text); }
+  .cnt-lr { font-size: 13px; font-weight: 800; color: var(--text); margin-left: auto; font-variant-numeric: tabular-nums; }
+  .cnt-lead-tag { font-size: 9.5px; font-weight: 700; color: var(--dim); border: 1px solid var(--border); border-radius: 4px; padding: 1px 4px; }
+  .cnt-won { font-size: 10px; font-weight: 800; color: #fff; background: var(--accent); border-radius: 4px; padding: 1px 5px; }
+  .cnt-wait { color: var(--dim); font-size: 12px; }
+  .cnt-second { font-size: 11px; color: var(--dim); margin-top: 4px; padding-left: 10px; }
+  .cnt-wonbadge { font-size: 11px; font-weight: 800; color: #fff; background: var(--accent); border-radius: 5px; padding: 2px 7px; vertical-align: middle; }
   .tv-live-region { margin-top: 12px; }
   .tv-live-link { display: inline-block; margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--link); text-decoration: none; }
   .tv-live-link:hover { text-decoration: underline; }
@@ -11127,7 +11142,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.17</a>
+      <a href="/changelog" id="foot-year">V31.18</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11634,6 +11649,7 @@ const state = {
   election2026: null,
   nec2026Governors: null,
   liveTurnout: null,   // V31.17 — 본투표 실시간 투표율 (/api/turnout)
+  liveCount: null,     // V31.18 — 시도지사 실시간 개표 (/api/count)
 };
 
 // 법안 분야 자동 분류 (BILL_NAME + CURR_COMMITTEE 기반)
@@ -15039,6 +15055,27 @@ function renderElectionLivePage() {
       `;
     }
     if (stage.stage === 'counting') {
+      const cnt = state.liveCount;
+      const cRegions = (cnt && Array.isArray(cnt.regions)) ? cnt.regions : [];
+      const CNT_SHORT = { '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주' };
+      const CNT_COL = { '더불어민주당':'#152484','국민의힘':'#E61E2B','개혁신당':'#FF7210','조국혁신당':'#06275E','진보당':'#D6001C','정의당':'#FFCC00','무소속':'#888888' };
+      const cntTime = (cnt && cnt.updatedAt) ? new Date(cnt.updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
+      const wonN = cRegions.filter(r => r.won).length;
+      let countInner;
+      if (cRegions.length) {
+        countInner = `<div class="cnt-grid">${cRegions.map(rg => {
+          const lp = (rg.leader && rg.leader.party) ? rg.leader.party : '';
+          const col = CNT_COL[lp] || 'var(--accent)';
+          return `<div class="cnt-card${rg.won ? ' won' : ''}">
+            <div class="cnt-sido">${escapeHtml(CNT_SHORT[rg.sido] || rg.sido)}<span class="cnt-prog">${rg.progress != null ? '개표 ' + rg.progress.toFixed(1) + '%' : ''}</span></div>
+            ${rg.leader ? `<div class="cnt-lead" style="border-left-color:${col}"><span class="cnt-dot" style="background:${col}"></span><span class="cnt-lp">${escapeHtml(lp || '1위')}</span><span class="cnt-lr">${rg.leader.rate != null ? rg.leader.rate.toFixed(1) + '%' : ''}</span>${rg.won ? '<span class="cnt-won">당선</span>' : '<span class="cnt-lead-tag">유력</span>'}</div>` : '<div class="cnt-lead cnt-wait">집계 중</div>'}
+            ${rg.second ? `<div class="cnt-second">2위 ${escapeHtml(rg.second.party || '')} ${rg.second.rate != null ? rg.second.rate.toFixed(1) + '%' : ''}</div>` : ''}
+          </div>`;
+        }).join('')}</div>`;
+      } else {
+        countInner = `<p class="live-sub">${cnt && cnt.note ? escapeHtml(cnt.note) : '개표 집계 대기'} — 집계되면 자동 표시됩니다. 아래 선관위·방송에서 실시간 확인.</p>
+          <div class="r-other-grid" style="margin-top:8px">${Object.entries(REGION_SLUG_MAP).map(([slug, info]) => `<a href="/election2026/${slug}" class="r-other-link" data-region="${slug}">${escapeHtml(info.short)}</a>`).join('')}</div>`;
+      }
       return `
         <div class="live-section live-section-counting">
           <div class="live-pulse-banner">
@@ -15063,13 +15100,9 @@ function renderElectionLivePage() {
         </div>
 
         <div class="live-section">
-          <h2>📊 17 시도지사 개표 현황 — 실시간</h2>
-          <p class="live-sub">선관위 공식 데이터 직접 확인을 권장. 사이트는 외부 링크 제공.</p>
-          <div class="r-other-grid" style="margin-top:0">
-            ${Object.entries(REGION_SLUG_MAP).map(([slug, info]) => `
-              <a href="/election2026/${slug}" class="r-other-link" data-region="${slug}">${escapeHtml(info.short)}</a>
-            `).join('')}
-          </div>
+          <h2>📊 17 시도지사 실시간 개표${cntTime ? ` <span style="font-size:11px;color:var(--dim);font-weight:400">· 갱신 ${cntTime}</span>` : ''}${wonN ? ` <span class="cnt-wonbadge">당선 확정 ${wonN}</span>` : ''}</h2>
+          <p class="live-sub">중앙선관위 개표진행상황 실시간 집계 · 최종 결과는 NEC 공식 발표 기준</p>
+          ${countInner}
         </div>
 
         <div class="live-section">
@@ -18094,6 +18127,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.18', date: '2026-06-03', title: '🗳 선거일 실시간 개표 — 시도지사 17곳', items: [
+    '개표(18시~) 단계에 시도지사 17곳 실시간 개표 그리드 — 개표율·1·2위 정당·득표율·당선 확정, 60초 자동 갱신',
+    'NEC 개표진행상황(VCCP09) 헤드리스 크롤(count.yml, 개표시간 10분 간격) → /api/count',
+    '집계 전/대기 시 선관위·개표방송 링크로 graceful fallback'
+  ]},
   { v: 'V31.17', date: '2026-06-03', title: '🔴 선거일 실시간 본투표율 — /election2026/live', items: [
     '선거 당일 LIVE 페이지에 실시간 투표율 카드 — 누적 투표율·시도별 막대·8회(2022) 50.9% 비교, 60초 자동 갱신',
     'data.go.kr 투·개표 API는 실시간 미제공(종료 2개월 후)이라 info.nec.go.kr 헤드리스 크롤(turnout.yml)로 투표시간 중 20분마다 수급 → /api/turnout',
@@ -19342,6 +19380,19 @@ async function fetchTurnout() {
     if (!state.liveTurnout) state.liveTurnout = { rate: null, source: 'historical', note: '데이터 가져오기 실패 — NEC 라이브 참고' };
   }
   return state.liveTurnout;
+}
+
+// V31.18 — 시도지사 실시간 개표 fetch (state 저장 → renderElectionLivePage가 렌더)
+async function fetchCount() {
+  try {
+    const r = await fetch('/api/count');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    state.liveCount = await r.json();
+  } catch (e) {
+    console.warn('[Count] fetch failed:', e.message);
+    if (!state.liveCount) state.liveCount = { regions: [], note: '데이터 가져오기 실패 — NEC 라이브 참고' };
+  }
+  return state.liveCount;
 }
 
 function renderChangelogPage() {
@@ -24534,7 +24585,7 @@ function route() {
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
     // V31.17 — 실시간 본투표율: 진입 시 fetch 후 재렌더
-    fetchTurnout().then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
+    Promise.all([fetchTurnout(), fetchCount()]).then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
     // 60초마다 자동 갱신 (시계·진행률·단계 + 투표율 재fetch)
     clearInterval(window._liveRefreshTimer);
     window._liveRefreshTimer = setInterval(() => {
@@ -24542,7 +24593,7 @@ function route() {
         clearInterval(window._liveRefreshTimer);
         return;
       }
-      fetchTurnout().then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
+      Promise.all([fetchTurnout(), fetchCount()]).then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
     }, 60000);
     return;
   }
