@@ -6045,6 +6045,15 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     .hcc-r { text-align: left; }
     .hcc-signals { grid-template-columns: repeat(8, 1fr); font-size: 15px; }
   }
+  /* 🚨 V31.20 — 6.3 투표용지 부족 속보 배너 (홈 대문) */
+  .ballot-alert { display:block; background:linear-gradient(135deg,#b91c1c,#dc2626); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(220,38,38,.28); transition:transform .15s ease, box-shadow .15s ease; }
+  .ballot-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 70%); pointer-events:none; }
+  .ballot-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(220,38,38,.42); }
+  .ba-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(0,0,0,.22); padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
+  .ba-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
+  .ba-sub { font-size:13px; opacity:.96; line-height:1.55; position:relative; z-index:1; }
+  .ba-sub b { font-weight:800; }
+  @media (max-width:600px){ .ba-title{ font-size:17px } .ballot-alert{ padding:14px 16px } }
 
   /* 홈 정당 필터 */
   .home-filter-bar {
@@ -11142,7 +11151,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.19</a>
+      <a href="/changelog" id="foot-year">V31.20</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18127,6 +18136,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.20', date: '2026-06-03', title: '🚨 6·3 투표용지 부족 사태 — 속보 정리 + 홈 대문 배너', items: [
+    '제9회 지선 본투표 투표용지 부족 사태(서울 14곳·인천 투표 중단, 선관위 "유권자 50%만 인쇄" 시인·사과·고발) 공식 출처 기반 정리 — /ballot-shortage.html',
+    '홈 최상단 속보 배너 + 실시간 본투표율(사태 직접 원인) 라이브 연동',
+    '모든 내용 중앙선관위 발표·주요 언론 출처 표기, 정치권 주장은 입장으로 명시(중립 유지)'
+  ]},
   { v: 'V31.19', date: '2026-06-03', title: '🔧 SEO — 사이트맵·정적페이지 canonical 도메인 교정', items: [
     'sitemap.xml(258 URL)·정적 SEO 페이지 7종의 canonical·og:url이 politik-phi.vercel.app로 잘못 박혀있던 것을 patchkr.com으로 교정',
     'canonical↔사이트맵 도메인 불일치 해소 — 중복 색인·랭킹 분산 방지'
@@ -22659,6 +22673,13 @@ function renderHome() {
         <div class="dash-hero-r">${_heroButtons}
         </div>
       </div>
+
+      <!-- 🚨 V31.20 — 6.3 투표용지 부족 사태 속보 배너 (홈 최상단 대문) -->
+      <a class="ballot-alert" href="/ballot-shortage.html">
+        <div class="ba-badge">🚨 속보 · 6·3 지방선거</div>
+        <div class="ba-title">선관위, 투표용지 '절반만' 찍었다 — 사상 초유 용지 부족 사태</div>
+        <div class="ba-sub">서울 14곳·인천 투표 중단 · 선관위 "유권자 50%만 인쇄" 시인 · 대국민 사과 · 직무유기 고발 — <b>전문 보기 →</b></div>
+      </a>
 
       ${(() => {
         // 9회 지선 D-day 강조 카드 (선거 종료 후엔 숨김)
