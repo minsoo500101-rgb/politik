@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-BASE = "https://politik-phi.vercel.app"
+BASE = "https://patchkr.com"
 TODAY = datetime.now().strftime("%Y-%m-%d")
 
 # 고정 페이지 (메인 + 정적 SEO + SPA 라우트)

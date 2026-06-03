@@ -135,8 +135,8 @@ TEMPLATE = """<!DOCTYPE html>
 <meta property="og:type" content="website">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta property="og:url" content="https://politik-phi.vercel.app/{file}">
-<meta property="og:image" content="https://politik-phi.vercel.app/og-image.png">
+<meta property="og:url" content="https://patchkr.com/{file}">
+<meta property="og:image" content="https://patchkr.com/og-image.png">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="대한민국 패치 노트">
 
@@ -144,7 +144,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{desc}">
 
-<link rel="canonical" href="https://politik-phi.vercel.app/{file}">
+<link rel="canonical" href="https://patchkr.com/{file}">
 <link rel="alternate" type="application/rss+xml" title="대한민국 패치 노트" href="/feed.xml">
 
 <!-- 검색엔진 인증 (메인과 동일) -->

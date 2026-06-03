@@ -11142,7 +11142,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.18</a>
+      <a href="/changelog" id="foot-year">V31.19</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18127,6 +18127,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.19', date: '2026-06-03', title: '🔧 SEO — 사이트맵·정적페이지 canonical 도메인 교정', items: [
+    'sitemap.xml(258 URL)·정적 SEO 페이지 7종의 canonical·og:url이 politik-phi.vercel.app로 잘못 박혀있던 것을 patchkr.com으로 교정',
+    'canonical↔사이트맵 도메인 불일치 해소 — 중복 색인·랭킹 분산 방지'
+  ]},
   { v: 'V31.18', date: '2026-06-03', title: '🗳 선거일 실시간 개표 — 시도지사 17곳', items: [
     '개표(18시~) 단계에 시도지사 17곳 실시간 개표 그리드 — 개표율·1·2위 정당·득표율·당선 확정, 60초 자동 갱신',
     'NEC 개표진행상황(VCCP09) 헤드리스 크롤(count.yml, 개표시간 10분 간격) → /api/count',
