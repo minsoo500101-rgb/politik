@@ -11171,7 +11171,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.29</a>
+      <a href="/changelog" id="foot-year">V31.30</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -17271,8 +17271,8 @@ function renderTodayPage() {
         </div>
         <div class="today-block">
           <div class="today-block-h">
-            <h3>🗳 9회 지선 카운트다운</h3>
-            <span class="today-src">실시간</span>
+            <h3>🏛 현 정부 지도부</h3>
+            <span class="today-src">patchkr</span>
           </div>
           <div id="today-election" class="today-election-block">
             <div class="today-loading"><span class="loading-spinner"></span></div>
@@ -17574,18 +17574,18 @@ async function setupTodayEvents() {
     setTimeout(renderWeekBills, 2500);
   }
 
-  // 4. 9회 지선 결과 (선거 종료)
+  // 4. 현 정부 지도부 (지선 종료 후 교체)
   const elTarget = document.getElementById('today-election');
   if (elTarget) {
     elTarget.innerHTML = `
       <div class="td-elec-h">
-        <div class="td-elec-phase">개표 종료</div>
-        <div class="td-elec-dday">61.0%</div>
+        <div class="td-elec-phase">이재명 정부</div>
+        <div class="td-elec-dday" style="font-size:22px">21대</div>
       </div>
-      <div class="td-elec-meta">2026.06.03 (수) · 최종 투표율 61.0% · 광역단체장 민주 11·국힘 5</div>
+      <div class="td-elec-meta">대통령 이재명 · 국무총리 김민석 · 22대 국회 300석</div>
       <div class="td-elec-cta">
-        <a class="td-elec-btn" href="/election2026">🗳 9회 지선 결과 →</a>
-        <a class="td-elec-btn td-elec-btn-2" href="/pledge-tracker">📋 8회 공약 이행 추적 →</a>
+        <a class="td-elec-btn" href="/dex">🏛 정부·국회 인물 도감 →</a>
+        <a class="td-elec-btn td-elec-btn-2" href="/map">🗺 광역 지형 민주 11·국힘 5 →</a>
       </div>
     `;
   }
@@ -18231,6 +18231,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.30', date: '2026-06-04', title: '홈 — 이슈 배너 복원 + 오늘 위젯을 정부 지도부로 교체', items: [
+    '주요 이슈를 배너 형식으로 복원(사용자 선호) — 지선결과·투표용지·계엄 3개 배너, \'속보\'→\'단독\' 정리, 지선결과 최상단 배치',
+    '\'오늘의 정치\' 9회 지선 카운트다운(투표율·D-day) 블록 → 현 정부 지도부(대통령 이재명·국무총리 김민석·광역 민주11·국힘5)로 교체',
+  ]},
   { v: 'V31.29', date: '2026-06-04', title: '🧹 홈 정리 — 이슈 배너 3개를 큐레이션 카드로 통합', items: [
     '투표용지 부족·12·3 계엄·9회 지선결과 대형 배너 3개를 \'📌 지금 이슈\' 한 줄 큐레이션 카드로 통합 — 홈 상단 군더더기 축소, 한 줄 효용 강조. 선거 종료로 \'속보\' 프레이밍 정리',
     '위기 지표판 카드는 상시 후킹 유지',
@@ -22812,25 +22816,31 @@ function renderHome() {
         </div>
       </div>
 
-      <!-- 📌 V31.29 — 홈 '지금 이슈' 큐레이션 (투표용지·계엄·지선결과 배너 3개 통합) -->
-      <div class="home-issues">
-        <div class="home-issues-h">📌 지금 이슈</div>
-        <a class="issue-row" href="/election2026">
-          <span class="issue-ic">🗳</span>
-          <span class="issue-tx"><span class="issue-tt">9회 지방선거 결과</span><span class="issue-sub">광역단체장 <b>민주 11·국힘 5</b> · 최종 투표율 <b>61.0%</b> · 통합특별시 신설</span></span>
-          <span class="issue-ar">→</span>
-        </a>
-        <a class="issue-row" href="/ballot-shortage.html">
-          <span class="issue-ic">🚨</span>
-          <span class="issue-tx"><span class="issue-tt">6·3 투표용지 부족 사태</span><span class="issue-sub">선관위 '유권자 50%만 인쇄' 시인 · 대국민 사과 · 재선거 쟁점</span></span>
-          <span class="issue-ar">→</span>
-        </a>
-        <a class="issue-row" href="/martial-law.html">
-          <span class="issue-ic">⚖️</span>
-          <span class="issue-tx"><span class="issue-tt">윤석열 12·3 비상계엄</span><span class="issue-sub">헌재 전원일치 파면 · 1심 무기징역(항소심 중) · 팩트·여론·외신</span></span>
-          <span class="issue-ar">→</span>
-        </a>
-      </div>
+      <!-- V31.30 — 홈 주요 이슈 배너 (사용자 선호: 배너 형식, 지선결과 최상단) -->
+      <a class="home-e26-card" href="/election2026" style="text-decoration:none">
+        <div class="home-e26-l">
+          <div class="home-e26-eye">🗳 9회 전국동시지방선거 · 개표 종료</div>
+          <div class="home-e26-title">제9회 지방선거 결과 — 2026.6.3</div>
+          <div class="home-e26-sub">최종 투표율 <b>61.0%</b> · 광역단체장 <b>민주 11 · 국힘 5</b> · 광주·전남 통합특별시 신설</div>
+          <div class="home-e26-cta">📊 16곳 당선자 · 7·8·9회 비교 보기 →</div>
+        </div>
+        <div class="home-e26-r">
+          <div class="home-e26-dday" style="font-size:30px">61.0%</div>
+          <div class="home-e26-dday-l">최종 투표율</div>
+        </div>
+      </a>
+
+      <a class="ballot-alert" href="/ballot-shortage.html">
+        <div class="ba-badge">🚨 6·3 지방선거 · 단독</div>
+        <div class="ba-title">선관위, 투표용지 '절반만' 찍었다 — 사상 초유 용지 부족 사태</div>
+        <div class="ba-sub">서울 14곳·인천 투표 중단 · 선관위 "유권자 50%만 인쇄" 시인 · 대국민 사과 · 직무유기 고발 — <b>전문 보기 →</b></div>
+      </a>
+
+      <a class="martial-alert" href="/martial-law.html">
+        <div class="ma-badge">⚖️ 헌정사 기록 · 12·3 비상계엄</div>
+        <div class="ma-title">윤석열 12·3 비상계엄 — 선포부터 파면·1심 무기징역까지</div>
+        <div class="ma-sub">국회 <b>190–0</b> 계엄 해제 · 헌재 <b>전원일치 파면</b> · 1심 <b>무기징역</b>(항소심 중) · 계엄군 선관위 투입 — 팩트·여론·외신·외교 정리 <b>→</b></div>
+      </a>
 
       <!-- 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 전부 공식 통계 → /crisis.html) -->
       <a class="home-crisis-card" href="/crisis.html">
