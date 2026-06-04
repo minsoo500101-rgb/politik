@@ -11171,7 +11171,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.31</a>
+      <a href="/changelog" id="foot-year">V31.32</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18231,6 +18231,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.32', date: '2026-06-04', title: '📂 분석·기록 허브 신설 + 법령 thin-content noindex (AdSense)', items: [
+    'analysis.html \'분석·기록\' 정적 허브 신설 — 계엄·지선결과·투표용지·사법부·위기지표·영문 원본 기사를 설명과 함께 전면 배치(고유 콘텐츠 신호). nav·sitemap 등록',
+    '법령 신구비교 정적페이지(/law/*) X-Robots-Tag noindex — 자동생성 thin-content를 색인 제외(AdSense \'가치 낮은 콘텐츠\' 트리거 제거). law-diff 도구는 유지, 되돌리기 쉬움',
+    'robots.txt sitemap-law.xml 참조 제거 · 전략: 색인은 품질만, thin은 제외',
+  ]},
   { v: 'V31.31', date: '2026-06-04', title: '홈 상단 KPI 스트립 — 지선 D-day·사전투표율 타일 교체', items: [
     '상단 KPI 스트립(선거철 게이트 없이 상시 노출되던) 정리: \'9회 지선 D+1\' → \'9회 지선 민주 11(광역 결과)\', \'사전투표율 23.51%\' 타일은 선거일 이후 정치인 도감으로 자동 교체',
   ]},
@@ -25658,6 +25663,7 @@ updateMobileBottomNav();
 // V31.3 — 페이지 트리 사이드바 드로어
 const NAV_TREE = [
   { label: '홈', icon: '🏠', href: '/' },
+  { label: '분석·기록', icon: '📂', href: '/analysis.html' },
   { label: '9회 지선 결과', icon: '🗳', href: '/election2026' },
   { label: '법안', icon: '📜', children: [
     { label: '22대 통과 법안', href: '/bills' },
