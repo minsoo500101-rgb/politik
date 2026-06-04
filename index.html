@@ -17561,24 +17561,17 @@ async function setupTodayEvents() {
     setTimeout(renderWeekBills, 2500);
   }
 
-  // 4. 9회 지선 D-day
+  // 4. 9회 지선 결과 (선거 종료)
   const elTarget = document.getElementById('today-election');
   if (elTarget) {
-    const today = new Date();
-    const eday = new Date('2026-06-03T06:00:00+09:00');
-    const ddiff = Math.ceil((eday - today) / 86400000);
-    const phase = ddiff > 0 ? `D-${ddiff}` : ddiff === 0 ? 'D-Day' : `D+${Math.abs(ddiff)}`;
-    const phaseText = ddiff > 7 ? '선거운동 중' : ddiff > 0 ? '선거 D-Week' : ddiff === 0 ? '🔴 투표 진행' : '투표 종료';
-    const nec = state.nec2026Governors;
-    const totalCands = nec ? (nec.totalGov||0)+(nec.totalMuni||0)+(nec.totalEdu||0) : 0;
     elTarget.innerHTML = `
       <div class="td-elec-h">
-        <div class="td-elec-phase">${escapeHtml(phaseText)}</div>
-        <div class="td-elec-dday">${escapeHtml(phase)}</div>
+        <div class="td-elec-phase">개표 종료</div>
+        <div class="td-elec-dday">61.0%</div>
       </div>
-      <div class="td-elec-meta">2026.06.03 (수)${totalCands > 0 ? ` · 등록 후보 ${totalCands.toLocaleString()}명` : ''}</div>
+      <div class="td-elec-meta">2026.06.03 (수) · 최종 투표율 61.0% · 광역단체장 민주 11·국힘 5</div>
       <div class="td-elec-cta">
-        <a class="td-elec-btn" href="/election2026">🔴 9회 지선 LIVE →</a>
+        <a class="td-elec-btn" href="/election2026">🗳 9회 지선 결과 →</a>
         <a class="td-elec-btn td-elec-btn-2" href="/pledge-tracker">📋 8회 공약 이행 추적 →</a>
       </div>
     `;
