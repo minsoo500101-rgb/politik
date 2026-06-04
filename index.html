@@ -11171,7 +11171,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.30</a>
+      <a href="/changelog" id="foot-year">V31.31</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18231,6 +18231,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.31', date: '2026-06-04', title: '홈 상단 KPI 스트립 — 지선 D-day·사전투표율 타일 교체', items: [
+    '상단 KPI 스트립(선거철 게이트 없이 상시 노출되던) 정리: \'9회 지선 D+1\' → \'9회 지선 민주 11(광역 결과)\', \'사전투표율 23.51%\' 타일은 선거일 이후 정치인 도감으로 자동 교체',
+  ]},
   { v: 'V31.30', date: '2026-06-04', title: '홈 — 이슈 배너 복원 + 오늘 위젯을 정부 지도부로 교체', items: [
     '주요 이슈를 배너 형식으로 복원(사용자 선호) — 지선결과·투표용지·계엄 3개 배너, \'속보\'→\'단독\' 정리, 지선결과 최상단 배치',
     '\'오늘의 정치\' 9회 지선 카운트다운(투표율·D-day) 블록 → 현 정부 지도부(대통령 이재명·국무총리 김민석·광역 민주11·국힘5)로 교체',
@@ -22727,8 +22730,8 @@ function renderHome() {
         // V30.7 — 상단 KPI 스트립 (대시보드 시그니처)
         const dDayN = _ddiff > 0 ? `D-${_ddiff}` : _ddiff === 0 ? 'D-Day' : `D+${Math.abs(_ddiff)}`;
         const billsCount = (state.bills?.length || 0).toLocaleString();
-        // 사전투표율 타일: 선거 D+2 이내만 노출, 그 후엔 정치인 도감으로 교체
-        const evTileLive = _ddiff >= -2;
+        // 사전투표율 타일: 선거일까지만 노출, 그 후엔 정치인 도감으로 교체 (V31.31)
+        const evTileLive = _ddiff >= 0;
         const evPlaceholder = _isEarlyVoting ? '집계 중' : _isEarlyD1 ? '5/29' : (_ddiff < 0 ? '집계 종료' : '대기');
         const evSub = _isEarlyVoting ? '🔴 진행중' : _isEarlyD1 ? '내일 시작' : (_ddiff < 0 ? '사전투표 마감' : '5/29~30');
         const evTile = evTileLive
@@ -22746,8 +22749,8 @@ function renderHome() {
           <div class="kpi-strip" id="home-kpi-strip">
             <a class="kpi-tile kpi-tile--accent" href="/election2026">
               <div class="kpi-l">9회 지선</div>
-              <div class="kpi-v">${dDayN}</div>
-              <div class="kpi-d kpi-d--accent">6/3 본투표</div>
+              <div class="kpi-v">민주 11</div>
+              <div class="kpi-d kpi-d--accent">광역 결과 →</div>
             </a>
             ${evTile}
             <a class="kpi-tile" href="/economy">
