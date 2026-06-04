@@ -19,9 +19,9 @@ on:
         description: 'NEC 조회 문서 URL 오버라이드'
         type: string
         default: ''
-  schedule:
-    # 개표(2026-06-03 18:00 KST ~ 익일 02:00) 동안 10분 간격 (UTC 6/3 09시~17시)
-    - cron: '*/10 9-17 3 6 *'
+  # V31.27 — 9회 지선 종료. 자동 스케줄 정지(수동 실행 workflow_dispatch만 유지). 재사용 시 아래 cron 복원.
+  # schedule:
+  #   - cron: '*/10 9-17 3 6 *'
 
 permissions:
   contents: write

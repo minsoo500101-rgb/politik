@@ -22,11 +22,10 @@ STATIC_PAGES = [
     {"path": "/ballot-shortage-en.html", "priority": "0.85", "freq": "daily"},
     {"path": "/judiciary.html",  "priority": "0.85", "freq": "weekly"},
     {"path": "/martial-law.html", "priority": "0.9", "freq": "weekly"},
-    {"path": "/election2026",  "priority": "0.95", "freq": "hourly"},
+    {"path": "/election2026",  "priority": "0.9", "freq": "weekly"},
     {"path": "/committees",    "priority": "0.85", "freq": "weekly"},
     {"path": "/map",           "priority": "0.8",  "freq": "weekly"},
     {"path": "/world",         "priority": "0.75", "freq": "monthly"},
-    {"path": "/elections",     "priority": "0.7",  "freq": "monthly"},
     {"path": "/relations",     "priority": "0.6",  "freq": "weekly"},
     {"path": "/#/history/parties",       "priority": "0.5", "freq": "monthly"},
     {"path": "/#/group/legislative",     "priority": "0.5", "freq": "weekly"},
@@ -53,11 +52,11 @@ def build():
 
     # 고정 페이지
     out.append("\n  <!-- 메인 + 정적 SEO 페이지 -->")
-    for p in STATIC_PAGES[:15]:
+    for p in STATIC_PAGES[:14]:
         out.append(url_entry(p["path"], p["priority"], p["freq"], TODAY))
 
     out.append("\n  <!-- SPA 그룹 라우트 -->")
-    for p in STATIC_PAGES[15:]:
+    for p in STATIC_PAGES[14:]:
         out.append(url_entry(p["path"], p["priority"], p["freq"]))
 
     # 정당 페이지 (PARTY_INFO 기반)

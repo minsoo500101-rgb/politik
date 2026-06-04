@@ -15,10 +15,10 @@ on:
         description: 'NEC 조회 문서 URL 오버라이드 (메뉴 ID 변동 시)'
         type: string
         default: ''
-  schedule:
-    # 선거일(2026-06-03) 투표시간 06:00~18:00 KST 동안 20분 간격 (UTC 기준 6/2 21시~6/3 09시)
-    - cron: '*/20 21-23 2 6 *'
-    - cron: '*/20 0-9 3 6 *'
+  # V31.27 — 9회 지선 종료. 자동 스케줄 정지(수동 실행 workflow_dispatch만 유지). 재사용 시 아래 cron 복원.
+  # schedule:
+  #   - cron: '*/20 21-23 2 6 *'
+  #   - cron: '*/20 0-9 3 6 *'
 
 permissions:
   contents: write
