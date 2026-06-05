@@ -7927,6 +7927,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     margin-bottom: 12px;
   }
   .econ-table-wrap { overflow-x: auto; }
+  /* V31.33 — 모바일 와이드 표 좌우 스크롤 힌트 */
+  .tbl-scroll-hint { display: none; }
+  @media (max-width: 600px) {
+    .tbl-scroll-hint { display: block; text-align: right; font-size: 10.5px; color: var(--text-2); opacity: .8; margin: 0 2px 5px; }
+  }
   .econ-table {
     width: 100%; border-collapse: collapse;
     font-size: 12px;
@@ -11171,7 +11176,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.32</a>
+      <a href="/changelog" id="foot-year">V31.33</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -16384,6 +16389,7 @@ function renderEconomyBody() {
     return `
       <div class="econ-section">
         <h2>📊 정부별 평균 비교 <span style="font-size:11px;color:var(--dim);font-weight:400">· 임기 동안 연 평균 (반년 미만 해는 제외)</span></h2>
+        <div class="tbl-scroll-hint">← 좌우로 넘겨보세요 →</div>
         <div class="econ-table-wrap">
           <table class="econ-table">
             <thead>
@@ -16605,6 +16611,7 @@ function renderWorldComparePage() {
             <h3>전체 데이터 표 (${countries.length}개국)</h3>
             <span class="chart-link">한국 강조 · 정렬 가능</span>
           </div>
+          <div class="tbl-scroll-hint">← 좌우로 넘겨보세요 →</div>
           <div class="world-table-wrap">
             <table class="world-table">
               <thead>
@@ -18231,6 +18238,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.33', date: '2026-06-04', title: '모바일 와이드 표 좌우 스크롤 힌트 (해상도별 UI 검사 후속)', items: [
+    '경제(ECOS 시계열)·국제비교 등 모바일에서 가로 스크롤되는 와이드 표에 \'← 좌우로 넘겨보세요 →\' 힌트 추가. 해상도 320~1920 전수검사 결과 가로 오버플로 0건(레이아웃 건전)',
+  ]},
   { v: 'V31.32', date: '2026-06-04', title: '📂 분석·기록 허브 신설 + 법령 thin-content noindex (AdSense)', items: [
     'analysis.html \'분석·기록\' 정적 허브 신설 — 계엄·지선결과·투표용지·사법부·위기지표·영문 원본 기사를 설명과 함께 전면 배치(고유 콘텐츠 신호). nav·sitemap 등록',
     '법령 신구비교 정적페이지(/law/*) X-Robots-Tag noindex — 자동생성 thin-content를 색인 제외(AdSense \'가치 낮은 콘텐츠\' 트리거 제거). law-diff 도구는 유지, 되돌리기 쉬움',
