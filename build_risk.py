@@ -189,7 +189,7 @@ def main():
 <meta property="og:title" content="🚨 대한민국, 지금 괜찮은가 — 위기 지표판 (빨간불 {red}개)">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{BASE}/crisis.html">
-<meta property="og:image" content="{BASE}/og-image.png"><meta property="og:site_name" content="대한민국 패치노트">
+<meta property="og:image" content="{BASE}/og-image.png?v=2"><meta property="og:site_name" content="대한민국 패치노트">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{ld}</script>
 <script>try{{var t=localStorage.getItem('politik:theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}}catch(e){{}}</script>
