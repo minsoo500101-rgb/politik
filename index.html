@@ -11186,7 +11186,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.36</a>
+      <a href="/changelog" id="foot-year">V31.37</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18249,6 +18249,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.37', date: '2026-06-05', title: '🩹 젠슨 황 기사 공유 버튼 복구 (share.js 이모지 처리 버그)', items: [
+    'share.js의 제목 앞 이모지 제거 정규식에 u 플래그가 없어, 💻(서로게이트 쌍)처럼 목록에 없는 이모지로 시작하는 제목에서 high 서로게이트만 떨어져 나가 lone surrogate가 남고 → encodeURIComponent가 "URI malformed"로 깨지며 공유바 전체가 안 뜨던 문제. u 플래그 + \\p{Extended_Pictographic}로 모든 선행 이모지를 코드포인트 단위로 안전 제거(하드코딩 목록 불필요, 향후 어떤 이모지로 시작해도 안전). 전 정적 기사 공통 적용',
+  ]},
   { v: 'V31.36', date: '2026-06-05', title: '🩹 환율 안 뜨는 버그 수정 + 위기지표 환율 경제 탭 연동', items: [
     'Yahoo가 KRW=X의 심볼을 간헐적으로 USDKRW=X로 정규화해 돌려주면서 경제 탭·홈 KPI·시세 모니터의 환율 매칭(=== "KRW=X")이 깨져 환율만 안 뜨던 문제 해결 — /api/quote 프록시와 프런트 직접-Yahoo fallback 모두 "요청한 심볼 그대로" 반환하도록 수정(부분-병합 중복 재요청도 함께 해소)',
     '국가 위기지표판(crisis.html) 원/달러 환율을 경제 탭과 동일 소스(/api/quote·Yahoo)·동일 표기(ko-KR 2자리)로 실시간 연동 — fetch 실패 시 베이크값 유지(graceful fallback)',

@@ -4,7 +4,7 @@
   var url = location.href.split('#')[0];
   var title = (document.title || '')
     .replace(/\s*[|｜]\s*(?:대한민국 패치노트|Korea Patch Notes).*$/, '')
-    .replace(/^[\s🚨🔴⚖️🌐🌍📉🗳️📂📊💸👶🏛️]+/, '').trim();
+    .replace(/^[\s\p{Extended_Pictographic}\uFE0F\u20E3]+/u, '').trim();
   var en = ('' + (document.documentElement.lang || '')).toLowerCase().indexOf('en') === 0;
   var u = encodeURIComponent(url), t = encodeURIComponent(title), tu = encodeURIComponent(title + ' — ' + url);
   var L = en
