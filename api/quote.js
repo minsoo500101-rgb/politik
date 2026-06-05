@@ -68,7 +68,11 @@ async function fetchYahoo(symbol, range = '1mo', interval = '1d') {
     const meta = result.meta || {};
     const closes = (result.indicators?.quote?.[0]?.close || []).filter(c => c != null);
     return {
-      symbol: meta.symbol || symbol,
+      // 요청 심볼을 그대로 반환. Yahoo가 KRW=X의 meta.symbol을 간헐적으로
+      // USDKRW=X로 정규화해 돌려주면 프런트의 symbol 매칭(=== 'KRW=X')이 깨져
+      // 환율이 안 뜨는 문제가 발생 → 항상 요청 심볼로 echo.
+      symbol,
+      _yahooSymbol: meta.symbol || symbol,
       price: meta.regularMarketPrice,
       previousClose: meta.chartPreviousClose ?? meta.previousClose,
       change: null,
