@@ -61,7 +61,9 @@ footer{margin-top:34px;font-size:11.5px;color:var(--dim);border-top:1px solid va
 <div class="kicker">🚨 2026 KOREA LOCAL ELECTIONS</div>
 <h1>South Korea's election authority printed only HALF the ballots — and polling stations ran out</h1>
 <p class="dek">Voting halted at 14+ Seoul polling stations · National Election Commission admits printing ballots for only 50% of voters · public apology at 9 p.m. · criminal complaint filed · opposition demands a re-vote</p>
-<div class="byline">June 3, 2026 · Based on the NEC's official statements and major Korean news reports · every figure sourced</div>
+<div class="byline">Written June 3, 2026 · Results updated June 4 · Based on the NEC's official statements and major Korean news reports · every figure sourced</div>
+
+<div class="note" style="border-left:4px solid var(--ac)">📌 <b>Update (June 4, 2026)</b> — The election proceeded and votes were counted as scheduled; <b>winners are confirmed</b>. Final turnout was <b>61.0%</b> (vs. 50.9% in 2022); metropolitan mayors/governors split <b>11 Democratic Party · 5 People Power Party</b>. Seoul — where the shortage was worst — was won by Oh Se-hoon (People Power Party). Accountability for the shortage (a criminal complaint) and annulment demands proceed separately. → <a href="/election2026" style="color:var(--ac);font-weight:700">See the 9th local-election results</a></div>
 
 <div class="lead">
 On June 3, 2026, during South Korea's 9th nationwide local elections, polling stations in Seoul's Songpa district and elsewhere <b>ran out of ballot papers</b>, forcing voting to halt — an unprecedented breakdown in a country of advanced election administration. The cause is striking: the <b>National Election Commission (NEC) had printed ballots for only half (50%) of registered voters.</b> Even as advance-voting turnout hit a record 23.51% and election-day turnout surged, the commission stuck to a "print roughly 50%" convention — and stations ran dry. NEC Secretary-General Heo Cheol-hoon issued a public apology that night; the commission was reported to police for alleged dereliction of duty.
@@ -70,7 +72,7 @@ On June 3, 2026, during South Korea's 9th nationwide local elections, polling st
 <div class="kpis">
   <div class="kpi"><div class="n">14</div><div class="l">Seoul polling stations<br>out of ballots</div></div>
   <div class="kpi"><div class="n">50%</div><div class="l">of voters' ballots<br>actually printed</div></div>
-  <div class="kpi"><div class="n" id="liveTurnout">—</div><div class="l">live turnout<br>(the cause of the shortage)</div></div>
+  <div class="kpi"><div class="n">61.0%</div><div class="l">final turnout<br>(50% printing couldn't cover it)</div></div>
 </div>
 
 <h2>① What happened</h2>
@@ -85,8 +87,8 @@ On June 3, 2026, during South Korea's 9th nationwide local elections, polling st
 
 <h2>② Why — the NEC printed ballots for only 50% of voters</h2>
 <p>The NEC acknowledged that for Songpa it had <b>printed ballots equal to only 50% of registered voters</b>. An official explained that "for local elections we print ballots at roughly 50% of voters based on past turnout," and that "turnout was higher than in previous local elections, which caused the problem." The commission said such a ballot shortage was <b>unprecedented in Korean local elections</b>.</p>
-<p>The warning signs were there. Advance-voting turnout this cycle was a <b>record-high 23.51%</b> (over 10.49 million voters), and hourly election-day turnout ran consistently above the previous local election. Korea Patch Notes' own live tracking of the NEC's vote-progress data put <b>cumulative election-day turnout at <span id="liveTurnout2">—</span></b> — already past the 50.9% final turnout of the 2022 local elections. A "print only half" rule could not absorb that surge.</p>
-<div class="note">📊 <b>The data-driven cause</b>: record advance voting (23.51%) + surging election-day turnout → actual voters exceeded the "50% of registered" assumption → ballots ran out. In short, a <b>printing standard that underestimated turnout</b> directly caused the breakdown. (Our live turnout tracker: <a href="/election2026/live" style="color:var(--ac)">/election2026/live</a>)</div>
+<p>The warning signs were there. Advance-voting turnout this cycle was a <b>record-high 23.51%</b> (over 10.49 million voters), and hourly election-day turnout ran consistently above the previous local election. Final turnout reached <b>61.0%</b> — more than 10 points above the 50.9% of the 2022 local elections. A "print only half" rule could not absorb that surge.</p>
+<div class="note">📊 <b>The data-driven cause</b>: record advance voting (23.51%) + surging election-day turnout → actual voters exceeded the "50% of registered" assumption → ballots ran out. In short, a <b>printing standard that underestimated turnout</b> directly caused the breakdown. (→ <a href="/election2026" style="color:var(--ac)">9th local-election results</a>)</div>
 
 <h2>③ The NEC's response — a public apology</h2>
 <p>NEC Secretary-General Heo Cheol-hoon issued a statement at 9 p.m. from the commission's Gwacheon headquarters.</p>
@@ -179,19 +181,13 @@ On June 3, 2026, during South Korea's 9th nationwide local elections, polling st
 </ul>
 
 <div style="margin-top:24px">
-  <a class="cta" href="/election2026/live">▶ Live turnout & count</a>
+  <a class="cta" href="/election2026">▶ See the final results</a>
 </div>
 <div id="share-bar"></div>
 <script src="/share.js" defer></script>
 
 <footer>
-This report is for information only; all content is based on the NEC's official statements and the cited news reports. Claims by political parties and civic groups (re-vote, annulment, complaints) are attributed to those parties and are not the view of this site. Annulment and re-vote are legal questions for the Supreme Court and Constitutional Court. · Live turnout: NEC vote-progress data (info.nec.go.kr) · © Korea Patch Notes (patchkr.com)
+This report is for information only; all content is based on the NEC's official statements and the cited news reports. Claims by political parties and civic groups (re-vote, annulment, complaints) are attributed to those parties and are not the view of this site. Annulment and re-vote are legal questions for the Supreme Court and Constitutional Court. · Final turnout source: National Election Commission (info.nec.go.kr) · © Korea Patch Notes (patchkr.com)
 </footer>
 </div>
-<script>
-fetch('/api/turnout').then(r=>r.json()).then(j=>{
-  if(j&&j.rate!=null){var s=j.rate.toFixed(1)+'%';var a=document.getElementById('liveTurnout');var b=document.getElementById('liveTurnout2');if(a)a.textContent=s;if(b)b.textContent=s;}
-  else{var a=document.getElementById('liveTurnout');if(a)a.textContent='counting';}
-}).catch(function(){});
-</script>
 </body></html>
