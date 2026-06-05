@@ -244,7 +244,7 @@ footer{{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid v
 <div class="top"><a href="/">← 대한민국 패치노트</a><button class="tt" onclick="(function(){{var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{{localStorage.setItem('politik:theme',n)}}catch(e){{}}}})()">🌓</button></div>
 <div class="hero">
   <h1>🚨 대한민국, 지금 괜찮은가</h1>
-  <p class="lede">출산율·빚·식량·에너지… 나라의 핵심 지표에 켜진 신호등을 한 화면에 모았습니다. <b>전부 정부·공식기관 통계</b>, 매일 자동 갱신.</p>
+  <p class="lede">출산율·빚·식량·에너지… 나라의 핵심 지표에 켜진 신호등을 한 화면에 모았습니다. <b>전부 정부·공식기관 통계</b> 기반 · 정기 갱신.</p>
 </div>
 {summary}
 {strip_html}
