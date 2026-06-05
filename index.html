@@ -6065,6 +6065,16 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .ma-sub b { font-weight:800; color:#e0e7ff; }
   @media (max-width:600px){ .ma-title{ font-size:17px } .martial-alert{ padding:14px 16px } }
 
+  /* 💻 V31.35 — 젠슨 황 방한 배너 (홈, 경제·반도체) */
+  .nvidia-alert { display:block; background:linear-gradient(135deg,#1a2e05,#3a5a0b); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(118,185,0,.22); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(118,185,0,.3); }
+  .nvidia-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(118,185,0,.28) 0%, transparent 70%); pointer-events:none; }
+  .nvidia-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(118,185,0,.36); }
+  .nv-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(118,185,0,.28); color:#d4f5a3; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
+  .nv-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
+  .nv-sub { font-size:13px; opacity:.93; line-height:1.55; position:relative; z-index:1; }
+  .nv-sub b { font-weight:800; color:#eaffd0; }
+  @media (max-width:600px){ .nv-title{ font-size:17px } .nvidia-alert{ padding:14px 16px } }
+
   /* 📌 V31.29 — 홈 '지금 이슈' 큐레이션 카드 (이슈 배너 3개 통합, 한 줄 효용) */
   .home-issues { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:5px 5px 6px; margin-bottom:16px; }
   .home-issues-h { font-size:11.5px; font-weight:800; color:var(--dim); letter-spacing:.4px; padding:8px 10px 5px; }
@@ -11176,7 +11186,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.34</a>
+      <a href="/changelog" id="foot-year">V31.35</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18238,6 +18248,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.35', date: '2026-06-05', title: '💻 젠슨 황 엔비디아 CEO 방한 기사 신설 (경제·반도체)', items: [
+    'nvidia-huang.html 신설 — 7개월 만 재방한·HBM4(Vera Rubin·삼성/SK/마이크론)·총수 삼겹살 회동·삼성전자 +10.1% 사상 최고가·잠실 시구를 다수 언론(YTN·MBC·CNBC·Seoul Economic Daily) 출처로 정리. 홈 배너·분석 허브·sitemap 등록',
+  ]},
   { v: 'V31.34', date: '2026-06-05', title: '🔴 잠실7동 투표함 35시간 대치·강제 반출 후속 (투표용지 기사 KO/EN)', items: [
     '6/5 잠실7동 제2투표소 투표함 2개 35시간 대치→경찰 강제 반출·개표 후속을 투표용지 부족 기사(국문/영문)에 타임라인·양측 입장·출처로 추가. SEO 메타(title·desc·og·JSON-LD dateModified) 갱신, 홈 배너·분석 허브 반영',
   ]},
@@ -22861,6 +22874,13 @@ function renderHome() {
         <div class="ma-badge">⚖️ 헌정사 기록 · 12·3 비상계엄</div>
         <div class="ma-title">윤석열 12·3 비상계엄 — 선포부터 파면·1심 무기징역까지</div>
         <div class="ma-sub">국회 <b>190–0</b> 계엄 해제 · 헌재 <b>전원일치 파면</b> · 1심 <b>무기징역</b>(항소심 중) · 계엄군 선관위 투입 — 팩트·여론·외신·외교 정리 <b>→</b></div>
+      </a>
+
+      <!-- 💻 V31.35 — 젠슨 황 방한 배너 (경제·반도체) -->
+      <a class="nvidia-alert" href="/nvidia-huang.html">
+        <div class="nv-badge">💻 경제·반도체 · 단독</div>
+        <div class="nv-title">젠슨 황, 7개월 만에 또 방한 — HBM4·총수 회동·시구</div>
+        <div class="nv-sub">엔비디아 CEO 6/4 입국 · 컴퓨텍스서 <b>Vera Rubin 양산·HBM4 삼성/SK/마이크론</b> 발표 · <b>삼성전자 +10.1% 사상 최고가</b> · 최태원·구광모·이해진 삼겹살 회동 <b>→</b></div>
       </a>
 
       <!-- 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 전부 공식 통계 → /crisis.html) -->
