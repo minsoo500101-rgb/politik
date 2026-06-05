@@ -154,9 +154,11 @@ def main():
     strip = []
     for m in risk.get("market_strip", []):
         live = m.get("live", {})
-        v = fmt_live(live.get("id",""), latest(econ, live.get("id",""))) if live.get("id") else "—"
-        strip.append(f'<div class="ms"><span class="ms-l">{esc(m.get("label"))}</span><span class="ms-v">{esc(v)}<small>{esc(m.get("unit"))}</small></span></div>')
-    strip_html = f'<div class="strip">{"".join(strip)}<span class="ms-as">오늘 기준 · 한국은행 ECOS</span></div>' if strip else ""
+        lid = live.get("id", "")
+        v = fmt_live(lid, latest(econ, lid)) if lid else "—"
+        idattr = f' id="live-{esc(lid)}"' if lid else ""
+        strip.append(f'<div class="ms"><span class="ms-l">{esc(m.get("label"))}</span><span class="ms-v"{idattr}>{esc(v)}<small>{esc(m.get("unit"))}</small></span></div>')
+    strip_html = f'<div class="strip">{"".join(strip)}<span class="ms-as" id="fx-asof">오늘 기준 · 한국은행 ECOS</span></div>' if strip else ""
 
     updated = esc(risk.get("updatedAt", ""))
     title = f"🚨 대한민국, 지금 괜찮은가 — 국가 위기 지표판 (빨간불 {red}개) | 대한민국 패치노트"
@@ -259,6 +261,20 @@ footer{{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid v
   · 인구: 통계청 · 가계부채·금리·환율·신용등급: 한국은행 ECOS / 기획재정부 · 잠재성장률: 한국은행·OECD · 곡물자급률: 농림축산식품부 · 에너지: 에너지경제연구원<br>
   최종 데이터 갱신: {updated} · © 대한민국 패치노트
 </footer>
+<script>
+(function(){{
+  // 위기지표 '원/달러 환율' → 경제 탭과 동일 소스(/api/quote · Yahoo)·동일 표기(ko-KR 2자리)로 실시간 연동
+  fetch('/api/quote?symbols=KRW%3DX&range=1mo&interval=1d').then(function(r){{return r.ok?r.json():null;}}).then(function(d){{
+    if(!d||!d.quotes)return;
+    var q=d.quotes.filter(function(x){{return x.symbol==='KRW=X';}})[0];
+    if(!q||q.price==null)return;
+    var el=document.getElementById('live-usd_krw');
+    if(el)el.innerHTML=Number(q.price).toLocaleString('ko-KR',{{minimumFractionDigits:2,maximumFractionDigits:2}})+'<small>원</small>';
+    var a=document.getElementById('fx-asof');
+    if(a)a.textContent='🟢 환율 실시간 · 경제 탭과 동일 시세 · 기준금리 한국은행 ECOS';
+  }}).catch(function(){{}});
+}})();
+</script>
 </div></body></html>"""
 
     Path("crisis.html").write_text(page, encoding="utf-8")
