@@ -6075,6 +6075,16 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .nv-sub b { font-weight:800; color:#eaffd0; }
   @media (max-width:600px){ .nv-title{ font-size:17px } .nvidia-alert{ padding:14px 16px } }
 
+  /* 🎗 제71회 현충일 추모 배너 (홈 최상단, 장엄 톤) */
+  .memorial-alert { display:block; background:linear-gradient(135deg,#0c111d,#1b2336); color:#ece9e0; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,.4); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(201,162,39,.4); }
+  .memorial-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:160px; height:160px; background:radial-gradient(circle, rgba(201,162,39,.20) 0%, transparent 70%); pointer-events:none; }
+  .memorial-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,.55); }
+  .md-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(201,162,39,.22); color:#e6cf86; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
+  .md-title { font-size:21px; font-weight:800; letter-spacing:-.3px; line-height:1.3; margin-bottom:6px; position:relative; z-index:1; }
+  .md-sub { font-size:13px; color:#b9bdc7; line-height:1.6; position:relative; z-index:1; }
+  .md-sub b { font-weight:800; color:#e6cf86; }
+  @media (max-width:600px){ .md-title{ font-size:18px } .memorial-alert{ padding:14px 16px } }
+
   /* 📌 V31.29 — 홈 '지금 이슈' 큐레이션 카드 (이슈 배너 3개 통합, 한 줄 효용) */
   .home-issues { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:5px 5px 6px; margin-bottom:16px; }
   .home-issues-h { font-size:11.5px; font-weight:800; color:var(--dim); letter-spacing:.4px; padding:8px 10px 5px; }
@@ -11186,7 +11196,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.38</a>
+      <a href="/changelog" id="foot-year">V31.39</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18263,6 +18273,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.39', date: '2026-06-06', title: '🎗 제71회 현충일 추모 페이지 신설', items: [
+    'memorial-day.html — 순국선열·호국영령을 기리는 추모 페이지(장엄 다크 톤): 반기(조기) 태극기·추모 불빛 애니메이션, 「함께 1분 묵념하기」 60초 인터랙션, 현충일의 의미·유래(망종·6·25·1956 제정), 조기(弔旗) 다는 법 도해, 전국 국립묘지 안내. 홈 최상단 추모 배너 + sitemap 등록',
+  ]},
   { v: 'V31.38', date: '2026-06-05', title: '⚡ 홈 환율·코스피 미리보기 즉시 라이브화 (시드값 멈춤 해소)', items: [
     '홈 KPI 스트립·경제 미니위젯의 환율(원/달러)·코스피·코스닥이 처음 몇 초간 시드값(≈1,501원)에 멈춰 있다가 경제 탭을 다녀와야 라이브로 바뀌던 문제 해결. 원인: 현재값 Yahoo 시세 갱신이 느린 ECOS 과거 시계열(9종) 완료(await) 뒤에 묶여 있었음. 현재값 fetch를 ECOS와 분리해 즉시 적용(onProgress 즉시 통지)하도록 변경 → 홈 진입 ~수백 ms 내 라이브 표기. ECOS 시계열은 뒤따라 채우되 라이브 현재값을 덮지 않게 가드',
   ]},
@@ -22887,6 +22900,13 @@ function renderHome() {
           <div class="home-e26-dday" style="font-size:30px">61.0%</div>
           <div class="home-e26-dday-l">최종 투표율</div>
         </div>
+      </a>
+
+      <!-- 🎗 제71회 현충일 (2026.6.6) — 추모 배너 (최상단) -->
+      <a class="memorial-alert" href="/memorial-day.html">
+        <div class="md-badge">🎗 제71회 현충일 · 2026.6.6</div>
+        <div class="md-title">순국선열과 호국영령을 기립니다</div>
+        <div class="md-sub">나라를 위해 모든 것을 바친 분들을 기억하며 — 현충일의 의미 · 조기(弔旗) 다는 법 · <b>함께 1분 묵념하기</b> <b>→</b></div>
       </a>
 
       <a class="ballot-alert" href="/ballot-shortage.html">
