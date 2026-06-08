@@ -66,9 +66,18 @@ async function main() {
   let skipped = 0;
 
   for (const p of candidates) {
-    const title = p.wiki || p.name_ko;
     process.stdout.write(`[${++fetched}/${candidates.length}] ${p.name_ko} (${p.type}) … `);
-    const summary = await fetchWikiSummary(title);
+    // 후보 제목: wiki 필드 → 이름 → "이름 (정치인)" (동명이인·disambiguation 대응)
+    const titles = [];
+    if (p.wiki) titles.push(p.wiki);
+    if (!titles.includes(p.name_ko)) titles.push(p.name_ko);
+    titles.push(`${p.name_ko} (정치인)`);
+    let summary = null;
+    for (const t of titles) {
+      summary = await fetchWikiSummary(t);
+      if (summary) break;
+      await sleep(120);
+    }
     if (!summary) {
       console.log('SKIP (no wiki)');
       skipped++;
