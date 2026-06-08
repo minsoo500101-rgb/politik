@@ -7,6 +7,7 @@ data/risk-indicators.json (검증된 정적 지표 + 후킹 프레이밍)
 홈(index.html) 위기 카드에서 링크. sitemap 등록은 build_sitemap이 처리.
 """
 import json, html
+from datetime import date
 from pathlib import Path
 
 BASE = "https://patchkr.com"
@@ -160,7 +161,9 @@ def main():
         strip.append(f'<div class="ms"><span class="ms-l">{esc(m.get("label"))}</span><span class="ms-v"{idattr}>{esc(v)}<small>{esc(m.get("unit"))}</small></span></div>')
     strip_html = f'<div class="strip">{"".join(strip)}<span class="ms-as" id="fx-asof">오늘 기준 · 한국은행 ECOS</span></div>' if strip else ""
 
-    updated = esc(risk.get("updatedAt", ""))
+    # 빌드 시점 날짜로 자동 스탬프 → daily 크론(build-static-pages)이 매일 갱신.
+    # 시장 지표(환율·금리)는 페이지의 라이브 fetch가 클라이언트에서 실시간 보정.
+    updated = esc(date.today().isoformat())
     title = f"🚨 대한민국, 지금 괜찮은가 — 국가 위기 지표판 (빨간불 {red}개) | 대한민국 패치노트"
     desc = (f"출산율 0.75명·가계부채 GDP 육박·식량자급 20%·에너지 94% 수입… 대한민국의 위기 신호를 한 화면에. "
             f"빨간불 {red}·노란불 {yellow}·파란불 {green}. 통계청·한국은행·기재부 공식 데이터 기반. 무료.")

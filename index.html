@@ -22778,9 +22778,9 @@ function renderHome() {
        지금 697명 후보 5대 공약 비교 + 내 후보 결정 → 내일 투표소로.`
     : _isElectionSeason
     ? `<b>선거 ${_isElectionDay ? '당일' : 'D-' + _ddiff}</b> — 697명 후보·공약 비교·정부 평가까지. 한국 정치·경제 데이터 한 곳에서.<br>
-       22대 통과 법안 <b>${(state.bills?.length || 0).toLocaleString()}건</b> · 정치인 <b>${totalCount.toLocaleString()}명</b> · 경제 지표 9종 LIVE.`
+       22대 통과 법안 <b>${(state.bills?.length || 0).toLocaleString()}건</b> · 정치인 <b>768명</b> · 경제 지표 9종 LIVE.`
     : `<b>한국의 모든 것 한 곳에</b> — 정치·법안·선거·경제·인물·역사를 데이터로.<br>
-       22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>${totalCount.toLocaleString()}명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.`;
+       22대 국회 <b>${(state.bills?.length || 0).toLocaleString()}건</b> 통과 법안 · 정치인 <b>768명</b> · 9회 지선 후보자 실시간 · 17 시도 정치 분포 · 국제 12개국 비교.`;
   // 시즌별 헤어 버튼
   const _heroButtons = _isEarlyVoting
     ? `
@@ -22820,7 +22820,7 @@ function renderHome() {
              </a>`
           : `<a class="kpi-tile" href="/dex">
                <div class="kpi-l">정치인 도감</div>
-               <div class="kpi-v">${totalCount.toLocaleString()}</div>
+               <div class="kpi-v">768</div>
                <div class="kpi-d kpi-d--accent">약력·표결·재산</div>
              </a>`;
         return `
