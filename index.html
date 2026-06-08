@@ -11196,7 +11196,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.39</a>
+      <a href="/changelog" id="foot-year">V31.40</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18273,6 +18273,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.40', date: '2026-06-06', title: '📰 기사 최신화 — 계엄 재판·젠슨 황 방한 (6/6 기준)', items: [
+    '계엄 기사(martial-law): 내란 항소심 재판부 기피 재항고로 정지 · 위증 1심 무죄(5.28) · 평양 드론작전 6.12 선고 예정 · 여론조사 수수 6월 중 선고 · 2차 특검 2023.11 준비 정황 반영. 젠슨 황 기사(nvidia-huang): 입국일 정정(6.5)·잠실 시구·홍대 삼겹살+2차 치킨 총수 회동 등 완료 사실로 갱신. 모두 출처 표기·dateModified 갱신 + 홈 배너 동기화',
+  ]},
   { v: 'V31.39', date: '2026-06-06', title: '🎗 제71회 현충일 추모 페이지 신설', items: [
     'memorial-day.html — 순국선열·호국영령을 기리는 추모 페이지(장엄 다크 톤): 반기(조기) 태극기·추모 불빛 애니메이션, 「함께 1분 묵념하기」 60초 인터랙션, 현충일의 의미·유래(망종·6·25·1956 제정), 조기(弔旗) 다는 법 도해, 전국 국립묘지 안내. 홈 최상단 추모 배너 + sitemap 등록',
   ]},
@@ -22918,14 +22921,14 @@ function renderHome() {
       <a class="martial-alert" href="/martial-law.html">
         <div class="ma-badge">⚖️ 헌정사 기록 · 12·3 비상계엄</div>
         <div class="ma-title">윤석열 12·3 비상계엄 — 선포부터 파면·1심 무기징역까지</div>
-        <div class="ma-sub">국회 <b>190–0</b> 계엄 해제 · 헌재 <b>전원일치 파면</b> · 1심 <b>무기징역</b>(항소심 중) · 계엄군 선관위 투입 — 팩트·여론·외신·외교 정리 <b>→</b></div>
+        <div class="ma-sub">국회 <b>190–0</b> 계엄 해제 · 헌재 <b>전원일치 파면</b> · 1심 <b>무기징역</b>(항소심 정지) · 위증 1심 무죄 · 계엄군 선관위 투입 — 팩트·여론·외신·외교 정리 <b>→</b></div>
       </a>
 
       <!-- 💻 V31.35 — 젠슨 황 방한 배너 (경제·반도체) -->
       <a class="nvidia-alert" href="/nvidia-huang.html">
         <div class="nv-badge">💻 경제·반도체 · 단독</div>
         <div class="nv-title">젠슨 황, 7개월 만에 또 방한 — HBM4·총수 회동·시구</div>
-        <div class="nv-sub">엔비디아 CEO 6/4 입국 · 컴퓨텍스서 <b>Vera Rubin 양산·HBM4 삼성/SK/마이크론</b> 발표 · <b>삼성전자 +10.1% 사상 최고가</b> · 최태원·구광모·이해진 삼겹살 회동 <b>→</b></div>
+        <div class="nv-sub">엔비디아 CEO 6/5 입국 · 컴퓨텍스서 <b>Vera Rubin 양산·HBM4 삼성/SK/마이크론</b> 발표 · <b>삼성전자 +10.1% 사상 최고가</b> · 최태원·구광모·이해진 삼겹살 회동 <b>→</b></div>
       </a>
 
       <!-- 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 전부 공식 통계 → /crisis.html) -->
