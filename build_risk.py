@@ -167,12 +167,23 @@ def main():
     title = f"🚨 대한민국, 지금 괜찮은가 — 국가 위기 지표판 (빨간불 {red}개) | 대한민국 패치노트"
     desc = (f"출산율 0.75명·가계부채 GDP 육박·식량자급 20%·에너지 94% 수입… 대한민국의 위기 신호를 한 화면에. "
             f"빨간불 {red}·노란불 {yellow}·파란불 {green}. 통계청·한국은행·기재부 공식 데이터 기반. 무료.")
+    img_obj = {"@type": "ImageObject", "url": f"{BASE}/og-image.png?v=2", "width": 1200, "height": 630}
     ld = json.dumps({
         "@context": "https://schema.org", "@type": "CollectionPage",
         "name": "대한민국 국가 위기 지표판",
         "description": desc, "inLanguage": "ko",
+        "url": f"{BASE}/crisis.html",
+        "image": img_obj,
         "isBasedOn": "통계청·한국은행·기획재정부·농림축산식품부·에너지경제연구원 공식 통계",
-        "publisher": {"@type": "Organization", "name": "대한민국 패치노트", "url": BASE},
+        "publisher": {"@type": "Organization", "name": "대한민국 패치노트", "url": BASE, "logo": img_obj},
+    }, ensure_ascii=False)
+    crumb = json.dumps({
+        "@context": "https://schema.org", "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{BASE}/"},
+            {"@type": "ListItem", "position": 2, "name": "분석·기록", "item": f"{BASE}/analysis.html"},
+            {"@type": "ListItem", "position": 3, "name": "국가 위기 지표판", "item": f"{BASE}/crisis.html"},
+        ],
     }, ensure_ascii=False)
 
     summary = (
@@ -195,6 +206,7 @@ def main():
 <meta property="og:image" content="{BASE}/og-image.png?v=2"><meta property="og:site_name" content="대한민국 패치노트">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{ld}</script>
+<script type="application/ld+json">{crumb}</script>
 <script>try{{var t=localStorage.getItem('politik:theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}}catch(e){{}}</script>
 <style>
 :root{{--bg:#f7f7f8;--card:#fff;--bd:#e5e7eb;--tx:#1f2937;--dim:#6b7280;--ac:#4F46E5;--red:#dc2626;--yellow:#d97706;--green:#16a34a}}
