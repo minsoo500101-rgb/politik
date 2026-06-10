@@ -11216,7 +11216,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.44</a>
+      <a href="/changelog" id="foot-year">V31.45</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18293,6 +18293,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.45', date: '2026-06-10', title: "🧭 홈 '무엇을 하고 싶나요' 큐레이션 — 선거 후 정리", items: [
+    "선거가 끝난 시점에 맞춰 탐색 섹션을 정리: '선거 준비(6/3 투표 전 후보 검증)' → '선거 돌아보기(6·3 지선 결과·쟁점·공약)'로 개편. 9회 지선 결과·투표용지 부족 사태·후보 공약 비교를 전면 배치하고, 현재 활성 투표가 없는 '투표소 찾기'는 더보기로 이동(니치 도구 정리)",
+  ]},
   { v: 'V31.44', date: '2026-06-10', title: '🔍 검색 최적화(SEO) — 구조화 데이터 보강', items: [
     '기사·분석 9개 페이지에 구글 권장 구조화 데이터 보강 — NewsArticle/Article에 대표이미지(image)·author·publisher 로고·mainEntityOfPage 추가(구글 뉴스·검색 리치결과 노출 요건 충족), 전 페이지 BreadcrumbList(빵부스러기) 추가로 검색결과에 경로 표시. 위기 지표판·분석 허브(CollectionPage)에도 image·canonical(url) 보강. 콘텐츠 변경 없이 검색엔진 인식만 개선',
   ]},
@@ -23186,10 +23189,10 @@ function renderHome() {
         </div>
         <div class="goal-grid">
           <div class="goal-group">
-            <div class="goal-head"><span class="goal-ic">🗳</span><div><b>선거 준비</b><em>6/3 투표 전 후보 검증</em></div></div>
-            <a class="goal-tool" href="/compare-cand">🆚 9회 후보 5대 공약 비교</a>
-            <a class="goal-tool" href="/polling">📍 내 투표소 찾기</a>
-            <a class="goal-tool" href="/election2026">🗳 역대 지방선거 비교 (7·8·9회)</a>
+            <div class="goal-head"><span class="goal-ic">🗳</span><div><b>선거 돌아보기</b><em>6·3 지선 결과·쟁점·공약</em></div></div>
+            <a class="goal-tool" href="/election2026">🗳 9회 지선 결과 (7·8·9회 비교)</a>
+            <a class="goal-tool" href="/ballot-shortage.html">🚨 투표용지 부족 사태</a>
+            <a class="goal-tool" href="/compare-cand">🆚 후보 5대 공약 비교</a>
           </div>
           <div class="goal-group">
             <div class="goal-head"><span class="goal-ic">👤</span><div><b>인물·정당</b><em>누가 무엇을 하는가</em></div></div>
@@ -23206,6 +23209,7 @@ function renderHome() {
         </div>
         <div class="goal-more">
           <span class="goal-more-lbl">더보기</span>
+          <a class="goal-chip" href="/polling">📍 투표소 찾기</a>
           <a class="goal-chip" href="/law-diff.html">⚖ 법령 신구비교</a>
           <a class="goal-chip" href="/glossary">📖 용어 사전</a>
           <a class="goal-chip" href="/committees">🏢 위원회 25</a>
