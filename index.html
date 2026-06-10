@@ -5931,159 +5931,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
   .tool-card span { font-size: 16px; }
 
-  /* 홈 9회 지선 LIVE 카드 */
-  .home-e26-card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 24px; align-items: center;
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    border-radius: 6px;
-    padding: 20px 26px;
-    margin-bottom: 18px;
-    cursor: pointer;
-    color: #fff;
-    transition: transform 0.15s, box-shadow 0.15s;
-    position: relative; overflow: hidden;
-  }
-  .home-e26-card::before {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse at top right, rgba(255,255,255,0.15) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .home-e26-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(239,68,68,0.4);
-  }
-  .home-e26-l, .home-e26-r { position: relative; z-index: 1; }
-  .home-e26-eye {
-    font-size: 11px; font-weight: 800;
-    letter-spacing: 1.5px;
-    margin-bottom: 6px;
-    animation: patch-pulse 1.8s infinite;
-  }
-  .home-e26-title {
-    font-size: 22px; font-weight: 800;
-    margin-bottom: 6px;
-    letter-spacing: -0.5px;
-  }
-  .home-e26-sub { font-size: 13px; opacity: 0.95; margin-bottom: 10px; }
-  .home-e26-sub b { font-weight: 800; }
-  .home-e26-cta {
-    display: inline-block;
-    padding: 7px 14px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 8px;
-    font-size: 12px; font-weight: 700;
-  }
-  .home-e26-dday {
-    font-size: 48px; font-weight: 900;
-    line-height: 1; text-align: center;
-    letter-spacing: -2px;
-    font-variant-numeric: tabular-nums;
-  }
-  .home-e26-dday-l {
-    font-size: 11px; text-align: center;
-    margin-top: 4px; opacity: 0.85;
-  }
-  @media (max-width: 600px) {
-    .home-e26-card { grid-template-columns: 1fr; padding: 18px 20px; }
-    .home-e26-title { font-size: 18px; }
-    .home-e26-dday { font-size: 36px; }
-  }
 
-  /* 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 다크 관제판 스타일) */
-  .home-crisis-card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 22px; align-items: center;
-    background: linear-gradient(135deg, #1f2937 0%, #0b1220 100%);
-    border: 1px solid #334155;
-    border-left: 4px solid #dc2626;
-    border-radius: 6px;
-    padding: 20px 26px;
-    margin-bottom: 18px;
-    color: #fff; text-decoration: none;
-    position: relative; overflow: hidden;
-    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-  }
-  .home-crisis-card::before {
-    content: ''; position: absolute; right: -50px; top: -50px;
-    width: 220px; height: 220px; pointer-events: none;
-    background: radial-gradient(circle, rgba(220,38,38,0.28) 0%, transparent 70%);
-  }
-  .home-crisis-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.4);
-    border-left-color: #ef4444;
-  }
-  .hcc-l, .hcc-r { position: relative; z-index: 1; }
-  .hcc-eye {
-    font-size: 11px; font-weight: 800; letter-spacing: 0.4px;
-    color: #fca5a5; margin-bottom: 7px;
-  }
-  .hcc-title {
-    font-size: 23px; font-weight: 900; letter-spacing: -0.6px;
-    margin-bottom: 7px; line-height: 1.15; color: #fff;
-  }
-  .hcc-sub { font-size: 13px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6; }
-  .hcc-sub b { color: #fff; font-weight: 800; }
-  .hcc-cta {
-    display: inline-block; font-size: 12.5px; font-weight: 800;
-    color: #fff; background: #dc2626; padding: 7px 15px; border-radius: 20px;
-  }
-  .hcc-r { text-align: center; min-width: 116px; }
-  .hcc-signals {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
-    font-size: 14px; margin-bottom: 9px; line-height: 1;
-  }
-  .hcc-rbig { font-size: 32px; font-weight: 900; color: #f87171; line-height: 1; letter-spacing: -1px; }
-  .hcc-rbig small { font-size: 12px; color: #cbd5e1; font-weight: 700; letter-spacing: 0; }
-  .hcc-r-l { font-size: 11px; color: #94a3b8; margin-top: 4px; }
-  @media (max-width: 600px) {
-    .home-crisis-card { grid-template-columns: 1fr; padding: 16px 18px; gap: 13px; }
-    .hcc-title { font-size: 19px; }
-    .hcc-r { text-align: left; }
-    .hcc-signals { grid-template-columns: repeat(8, 1fr); font-size: 15px; }
-  }
-  /* 🚨 V31.20 — 6.3 투표용지 부족 속보 배너 (홈 대문) */
-  .ballot-alert { display:block; background:linear-gradient(135deg,#b91c1c,#dc2626); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(220,38,38,.28); transition:transform .15s ease, box-shadow .15s ease; }
-  .ballot-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 70%); pointer-events:none; }
-  .ballot-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(220,38,38,.42); }
-  .ba-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(0,0,0,.22); padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
-  .ba-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
-  .ba-sub { font-size:13px; opacity:.96; line-height:1.55; position:relative; z-index:1; }
-  .ba-sub b { font-weight:800; }
-  @media (max-width:600px){ .ba-title{ font-size:17px } .ballot-alert{ padding:14px 16px } }
-
-  /* 📌 V31.26 — 12·3 비상계엄 기록 배너 (홈, ballot-alert 바로 아래) */
-  .martial-alert { display:block; background:linear-gradient(135deg,#1e293b,#334155); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(15,23,42,.32); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(148,163,184,.22); }
-  .martial-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(129,140,248,.20) 0%, transparent 70%); pointer-events:none; }
-  .martial-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(15,23,42,.45); }
-  .ma-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(129,140,248,.22); color:#c7d2fe; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
-  .ma-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
-  .ma-sub { font-size:13px; opacity:.93; line-height:1.55; position:relative; z-index:1; }
-  .ma-sub b { font-weight:800; color:#e0e7ff; }
-  @media (max-width:600px){ .ma-title{ font-size:17px } .martial-alert{ padding:14px 16px } }
-
-  /* 💻 V31.35 — 젠슨 황 방한 배너 (홈, 경제·반도체) */
-  .nvidia-alert { display:block; background:linear-gradient(135deg,#1a2e05,#3a5a0b); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(118,185,0,.22); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(118,185,0,.3); }
-  .nvidia-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(118,185,0,.28) 0%, transparent 70%); pointer-events:none; }
-  .nvidia-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(118,185,0,.36); }
-  .nv-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(118,185,0,.28); color:#d4f5a3; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
-  .nv-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
-  .nv-sub { font-size:13px; opacity:.93; line-height:1.55; position:relative; z-index:1; }
-  .nv-sub b { font-weight:800; color:#eaffd0; }
-  @media (max-width:600px){ .nv-title{ font-size:17px } .nvidia-alert{ padding:14px 16px } }
-
-  /* 🎗 제71회 현충일 추모 배너 (홈 최상단, 장엄 톤) */
-  .memorial-alert { display:block; background:linear-gradient(135deg,#0c111d,#1b2336); color:#ece9e0; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,.4); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(201,162,39,.4); }
-  .memorial-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:160px; height:160px; background:radial-gradient(circle, rgba(201,162,39,.20) 0%, transparent 70%); pointer-events:none; }
-  .memorial-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,.55); }
-  .md-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(201,162,39,.22); color:#e6cf86; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
-  .md-title { font-size:21px; font-weight:800; letter-spacing:-.3px; line-height:1.3; margin-bottom:6px; position:relative; z-index:1; }
-  .md-sub { font-size:13px; color:#b9bdc7; line-height:1.6; position:relative; z-index:1; }
-  .md-sub b { font-weight:800; color:#e6cf86; }
-  @media (max-width:600px){ .md-title{ font-size:18px } .memorial-alert{ padding:14px 16px } }
 
   /* 🏛 이재명 취임 1주년 배너 (teal) */
   .lee-alert { display:block; background:linear-gradient(135deg,#0b3b38,#0f766e); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(15,118,110,.28); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(45,212,191,.3); }
@@ -6095,15 +5943,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .le-sub b { font-weight:800; color:#d1fae5; }
   @media (max-width:600px){ .le-title{ font-size:17px } .lee-alert{ padding:14px 16px } }
 
-  /* 📈 코스피 8천 돌파 배너 (blue) */
-  .kospi-alert { display:block; background:linear-gradient(135deg,#0c2c5a,#1d4ed8); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(37,99,235,.28); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(96,165,250,.35); }
-  .kospi-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(96,165,250,.26) 0%, transparent 70%); pointer-events:none; }
-  .kospi-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(37,99,235,.42); }
-  .ks-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(96,165,250,.28); color:#bfdbfe; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
-  .ks-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
-  .ks-sub { font-size:13px; opacity:.95; line-height:1.55; position:relative; z-index:1; }
-  .ks-sub b { font-weight:800; color:#dbeafe; }
-  @media (max-width:600px){ .ks-title{ font-size:17px } .kospi-alert{ padding:14px 16px } }
+
 
   /* 📌 V31.29 — 홈 '지금 이슈' 큐레이션 카드 (이슈 배너 3개 통합, 한 줄 효용) */
   .home-issues { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:5px 5px 6px; margin-bottom:16px; }
@@ -9783,7 +9623,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     }
     /* 모든 카드: 패딩 축소 + 둥근 모서리 약간 작게 + 폭 100% */
     .home-ranking-row, .home-trend-row, .econ-mini-row,
-    .patch-feed, .home-e26-card,
+    .patch-feed,
     .e26-section, .live-section, .me-card,
     .trend-bar, .domain-grid,
     .dash-grid {
@@ -9842,22 +9682,6 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       width: 100%;
       box-sizing: border-box;
     }
-    /* 9회 지선 hero */
-    .home-e26-card {
-      padding: 14px 14px !important;
-      flex-direction: column;
-      gap: 8px;
-      text-align: left;
-    }
-    .home-e26-l { width: 100%; }
-    .home-e26-r {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-top: 4px;
-    }
-    .home-e26-dday { font-size: 26px !important; }
-    .home-e26-dday-l { font-size: 11px; }
     /* 좌우 풀폭 확실히 */
     .dash > *,
     .e26-page > *,
@@ -10080,7 +9904,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   /* 시각 노이즈 제거 — 모바일 그림자 단순화 */
   @media (max-width: 700px) {
     .dash-card, .domain-card, .patch-feed, .home-ranking-row,
-    .home-trend-row, .econ-mini-row, .home-e26-card,
+    .home-trend-row, .econ-mini-row,
     .me-page > div, .e26-section, .live-section {
       box-shadow: none !important;
     }
@@ -11216,7 +11040,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.47</a>
+      <a href="/changelog" id="foot-year">V31.48</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18293,6 +18117,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.48', date: '2026-06-10', title: '🧹 죽은 CSS 정리 + 홈 인물 수 통일', items: [
+    '홈 배너 재구성으로 미사용된 배너 CSS 일괄 제거(home-e26·ballot·martial·kospi·crisis·memorial·nvidia ≈10.6KB) — 반응형 공유 셀렉터의 잔여 토큰까지 외과적 정리. 히어로 stat 인물 수를 동적 785 → 768로 통일(도감 헤드라인·KPI 타일·meta와 일치; 정확한 785는 인물 도메인 카드에서 국회·지방·사법 분해와 함께 유지)',
+  ]},
   { v: 'V31.47', date: '2026-06-10', title: '🏠 홈 주요 이슈 재구성 — 배너 과적 정리(피처 1 + 컴팩트 리스트)', items: [
     "홈 풀폭 이슈 배너 6연속(지선결과·이재명·투표용지·계엄·코스피·위기지표)을 '단독 피처(이재명 취임 1주년) + 컴팩트 이슈 리스트 5행'으로 재구성 — 정보 위계 명확화·중복 노출 축소·스크롤 길이↓. 메모리 큐레이션 원칙('한 줄 효용') 반영, 기존 .home-issues 컴포넌트 재사용(신규 CSS 0). 히어로 버전 핀 하드코딩(V31.14)을 최신 버전 자동 표시로 수정",
   ]},
@@ -22897,7 +22724,7 @@ function renderHome() {
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
             const billsCount = (state.bills?.length || 0).toLocaleString();
-            const polCount = totalCount.toLocaleString();
+            const polCount = '768'; // 도감 헤드라인 — meta·KPI 타일과 통일(동적 totalCount=785는 아래 인물 도메인 카드에서 분해와 함께 사용)
             const necTotal = state.nec2026Governors ? ((state.nec2026Governors.totalGov||0)+(state.nec2026Governors.totalMuni||0)+(state.nec2026Governors.totalEdu||0)) : 0;
             const isElect = _isElectionSeason;
             const dDayN = isElect ? (_ddiff === 0 ? 'Day' : _ddiff) : null;
