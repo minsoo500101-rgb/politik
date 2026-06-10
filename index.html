@@ -11216,7 +11216,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.46</a>
+      <a href="/changelog" id="foot-year">V31.47</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18293,6 +18293,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.47', date: '2026-06-10', title: '🏠 홈 주요 이슈 재구성 — 배너 과적 정리(피처 1 + 컴팩트 리스트)', items: [
+    "홈 풀폭 이슈 배너 6연속(지선결과·이재명·투표용지·계엄·코스피·위기지표)을 '단독 피처(이재명 취임 1주년) + 컴팩트 이슈 리스트 5행'으로 재구성 — 정보 위계 명확화·중복 노출 축소·스크롤 길이↓. 메모리 큐레이션 원칙('한 줄 효용') 반영, 기존 .home-issues 컴포넌트 재사용(신규 CSS 0). 히어로 버전 핀 하드코딩(V31.14)을 최신 버전 자동 표시로 수정",
+  ]},
   { v: 'V31.46', date: '2026-06-10', title: '🔄 사이트 정보 최신화 — 데이터 신선도 점검', items: [
     '전 데이터 신선도 점검 후 갱신: economy.json 정적 데이터 기준일 2026-05-28 → 2026-06-10(ECOS 폴백 표시 문구 최신화, 코스피 8,228·원/달러 1,531 현행 확인). 국가 위기지표(6/8)·정치인 도감 동기화(6/8)·9회 지선 결과(확정)·지도부(대통령 이재명·광역 민주11·국힘5)·법안 1,595·용어 248 메타 모두 현행 일치 확인',
   ]},
@@ -22889,7 +22892,7 @@ function renderHome() {
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
-          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">V31.14 · ⚖ 전체 법 2025+ 개정 전부</a></h1>
+          <h1 class="ds-display" style="margin-bottom:8px">대한민국 패치노트 <a href="/changelog" class="version-pill" style="text-decoration:none;cursor:pointer;font-size:11px;vertical-align:middle" title="변경 이력 보기">${CHANGELOG[0] ? CHANGELOG[0].v : ''} · 변경 이력</a></h1>
           <p>${_heroSub}</p>
           ${(() => {
             // V26.8 hero stat strip — 4개 큰 숫자
@@ -22930,63 +22933,56 @@ function renderHome() {
         </div>
       </div>
 
-      <!-- V31.30 — 홈 주요 이슈 배너 (사용자 선호: 배너 형식, 지선결과 최상단) -->
-      <a class="home-e26-card" href="/election2026" style="text-decoration:none">
-        <div class="home-e26-l">
-          <div class="home-e26-eye">🗳 9회 전국동시지방선거 · 개표 종료</div>
-          <div class="home-e26-title">제9회 지방선거 결과 — 2026.6.3</div>
-          <div class="home-e26-sub">최종 투표율 <b>61.0%</b> · 광역단체장 <b>민주 11 · 국힘 5</b> · 광주·전남 통합특별시 신설</div>
-          <div class="home-e26-cta">📊 16곳 당선자 · 7·8·9회 비교 보기 →</div>
-        </div>
-        <div class="home-e26-r">
-          <div class="home-e26-dday" style="font-size:30px">61.0%</div>
-          <div class="home-e26-dday-l">최종 투표율</div>
-        </div>
-      </a>
-
-      <!-- 🏛 이재명 취임 1주년 기자회견 (2026.6.8) — 최상단 -->
+      <!-- V31.47 — 홈 주요 이슈: 단독 피처(이재명 1주년) + 컴팩트 이슈 리스트 (배너 6연속 → 1+리스트로 정리) -->
       <a class="lee-alert" href="/president-1year.html">
         <div class="le-badge">🏛 정치 · 취임 1주년</div>
         <div class="le-title">이재명 대통령 취임 1주년 기자회견 — '대체불가 대한민국'</div>
         <div class="le-sub">6/8 청와대 영빈관·내외신 160명 · <b>부동산·세제·코스피 '아직도 저평가'</b> 발언 · '공소취소' 질문 답변 · 취임 1년 코스피 2,700→<b>8,000 돌파</b> 맥락·양측 평가 정리 <b>→</b></div>
       </a>
 
-      <a class="ballot-alert" href="/ballot-shortage.html">
-        <div class="ba-badge">🚨 6·3 지방선거 · 단독</div>
-        <div class="ba-title">선관위, 투표용지 '절반만' 찍었다 — 사상 초유 용지 부족 사태</div>
-        <div class="ba-sub">선관위 1차 조사 <b>전국 50곳</b> 용지 부족 · 잠실 투표함 강제 반출(6/5) → <b>올림픽공원 개표소 '재선거' 봉쇄 시위(주말 2만~3만)</b> · 진상규명위 — 전문 보기 →</div>
-      </a>
-
-      <a class="martial-alert" href="/martial-law.html">
-        <div class="ma-badge">⚖️ 헌정사 기록 · 12·3 비상계엄</div>
-        <div class="ma-title">윤석열 12·3 비상계엄 — 선포부터 파면·1심 무기징역까지</div>
-        <div class="ma-sub">국회 <b>190–0</b> 계엄 해제 · 헌재 <b>전원일치 파면</b> · 1심 <b>무기징역</b>(항소심 정지) · 위증 1심 무죄 · 계엄군 선관위 투입 — 팩트·여론·외신·외교 정리 <b>→</b></div>
-      </a>
-
-      <!-- 📈 코스피 8천 돌파 배너 (경제) · 젠슨 황 기사는 분석 허브에서 -->
-      <a class="kospi-alert" href="/economy">
-        <div class="ks-badge">📈 경제 · 증시</div>
-        <div class="ks-title">코스피, 사상 첫 '8,000' 돌파 — 1년 새 약 3배</div>
-        <div class="ks-sub">AI·반도체 랠리(삼성전자·SK하이닉스 HBM)가 견인 · 취임 무렵 2,700선 → <b>8,000선 돌파</b> · 글로벌 상위권 도약 평가 · <b>코스피·환율 9종 라이브</b>로 확인 <b>→</b></div>
-      </a>
-
-      <!-- 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 전부 공식 통계 → /crisis.html) -->
-      <a class="home-crisis-card" href="/crisis.html">
-        <div class="hcc-l">
-          <div class="hcc-eye">🚨 국가 위기 지표판 · 전부 공식 통계</div>
-          <div class="hcc-title">대한민국, 지금 괜찮은가?</div>
-          <div class="hcc-sub">합계출산율 <b>0.75명</b> · 가계빚 GDP의 <b>97%</b> · 에너지 <b>94% 수입</b> · 곡물자급 <b>20%</b></div>
-          <div class="hcc-cta">🔴 위험 신호 5개 — 한눈에 확인하기 →</div>
-        </div>
-        <div class="hcc-r">
-          <div class="hcc-signals">
-            <span>🔴</span><span>🔴</span><span>🔴</span><span>🔴</span>
-            <span>🔴</span><span>🟡</span><span>🟡</span><span>🟢</span>
+      <div class="home-issues">
+        <div class="home-issues-h">📌 지금 한국 · 주요 이슈</div>
+        <a class="issue-row" href="/election2026">
+          <div class="issue-ic">🗳</div>
+          <div class="issue-tx">
+            <div class="issue-tt">제9회 지방선거 결과 (6·3)</div>
+            <div class="issue-sub">투표율 <b>61.0%</b> · 광역 <b>민주 11·국힘 5</b> · 16곳 당선자</div>
           </div>
-          <div class="hcc-rbig">5<small>/8 위험</small></div>
-          <div class="hcc-r-l">8개 핵심 지표</div>
-        </div>
-      </a>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/ballot-shortage.html">
+          <div class="issue-ic">🚨</div>
+          <div class="issue-tx">
+            <div class="issue-tt">투표용지 부족 사태</div>
+            <div class="issue-sub">선관위 '절반만 인쇄' · 전국 <b>50곳</b> · 개표소 '재선거' 봉쇄 시위</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/martial-law.html">
+          <div class="issue-ic">⚖️</div>
+          <div class="issue-tx">
+            <div class="issue-tt">12·3 비상계엄 — 파면·1심 무기징역</div>
+            <div class="issue-sub">파면 → 1심 <b>무기징역</b>(항소심) · 팩트·여론·외신 정리</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/economy">
+          <div class="issue-ic">📈</div>
+          <div class="issue-tx">
+            <div class="issue-tt">코스피 8,000 돌파</div>
+            <div class="issue-sub">1년 새 약 3배 · AI·반도체 랠리 · 환율·코스피 9종 라이브</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/crisis.html">
+          <div class="issue-ic">🚨</div>
+          <div class="issue-tx">
+            <div class="issue-tt">국가 위기 지표판 — 지금 괜찮은가?</div>
+            <div class="issue-sub">출산율 <b>0.75</b> · 가계빚 GDP <b>97%</b> · 🔴 위험 5/8</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+      </div>
 
       <!-- V30.8 — 중간 카드 벤토 그리드 (2단): 여론판·인기랭킹·실검·경제 -->
       <div class="home-bento">
