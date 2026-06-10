@@ -6085,6 +6085,26 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   .md-sub b { font-weight:800; color:#e6cf86; }
   @media (max-width:600px){ .md-title{ font-size:18px } .memorial-alert{ padding:14px 16px } }
 
+  /* 🏛 이재명 취임 1주년 배너 (teal) */
+  .lee-alert { display:block; background:linear-gradient(135deg,#0b3b38,#0f766e); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(15,118,110,.28); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(45,212,191,.3); }
+  .lee-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(45,212,191,.22) 0%, transparent 70%); pointer-events:none; }
+  .lee-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(15,118,110,.42); }
+  .le-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(45,212,191,.25); color:#a7f3d0; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
+  .le-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
+  .le-sub { font-size:13px; opacity:.95; line-height:1.55; position:relative; z-index:1; }
+  .le-sub b { font-weight:800; color:#d1fae5; }
+  @media (max-width:600px){ .le-title{ font-size:17px } .lee-alert{ padding:14px 16px } }
+
+  /* 📈 코스피 8천 돌파 배너 (blue) */
+  .kospi-alert { display:block; background:linear-gradient(135deg,#0c2c5a,#1d4ed8); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(37,99,235,.28); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(96,165,250,.35); }
+  .kospi-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(96,165,250,.26) 0%, transparent 70%); pointer-events:none; }
+  .kospi-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(37,99,235,.42); }
+  .ks-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(96,165,250,.28); color:#bfdbfe; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
+  .ks-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
+  .ks-sub { font-size:13px; opacity:.95; line-height:1.55; position:relative; z-index:1; }
+  .ks-sub b { font-weight:800; color:#dbeafe; }
+  @media (max-width:600px){ .ks-title{ font-size:17px } .kospi-alert{ padding:14px 16px } }
+
   /* 📌 V31.29 — 홈 '지금 이슈' 큐레이션 카드 (이슈 배너 3개 통합, 한 줄 효용) */
   .home-issues { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:5px 5px 6px; margin-bottom:16px; }
   .home-issues-h { font-size:11.5px; font-weight:800; color:var(--dim); letter-spacing:.4px; padding:8px 10px 5px; }
@@ -11196,7 +11216,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.42</a>
+      <a href="/changelog" id="foot-year">V31.43</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18273,6 +18293,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.43', date: '2026-06-10', title: '🏛 이재명 취임 1주년 기사 + 홈 배너 큐레이션 (코스피 8천)', items: [
+    "신규 기사 president-1year: 이재명 대통령 취임 1주년 기자회견(6/8 '대체불가 대한민국') — 부동산·세제, 코스피 '아직도 저평가' 발언, 검찰 공소취소 답변, 취임 1년 코스피 2,700→8,000 돌파 맥락, 성과·우려 양측 평가를 사실/주장 구분해 정리(출처 MBC·뉴시스·뉴스핌·파이낸셜뉴스). 분석 허브 최상단·사이트맵 등록",
+    '홈 상단 배너 큐레이션(목적별): 지난 현충일(6/6) 추모 배너 → 이재명 취임 1주년 기사 배너로 교체, 종료된 젠슨 황 방한 배너 → 코스피 8,000 돌파(경제 탭) 배너로 교체. 젠슨 황 기사는 분석 허브에서 계속 접근 가능',
+  ]},
   { v: 'V31.42', date: '2026-06-06', title: '📚 주요 기사 심층 확장 (분량 대폭 ↑) + 젠슨 황 최신화', items: [
     '젠슨 황(nvidia-huang): 6/7 깐부치킨 재회동·전영현 삼성 회동·최태원 "5년 내 메모리 2배"·6/8 발표 예정 반영 + 분량 2배(왜 한국인가·HBM 해설·삼성/SK/마이크론 경쟁표·인물·전망·FAQ). 계엄(martial-law): 헌재 5개 파면사유·내란죄/무기징역 해설·함께 기소된 사람들·FAQ 신규. 사법부(judiciary): 선거소송 절차·재검표 검증·대법원 vs 헌재 비교표·FAQ 신규. 모두 출처 표기·dateModified 갱신',
   ]},
@@ -22911,11 +22935,11 @@ function renderHome() {
         </div>
       </a>
 
-      <!-- 🎗 제71회 현충일 (2026.6.6) — 추모 배너 (최상단) -->
-      <a class="memorial-alert" href="/memorial-day.html">
-        <div class="md-badge">🎗 제71회 현충일 · 2026.6.6</div>
-        <div class="md-title">순국선열과 호국영령을 기립니다</div>
-        <div class="md-sub">나라를 위해 모든 것을 바친 분들을 기억하며 — 현충일의 의미 · 조기(弔旗) 다는 법 · <b>함께 1분 묵념하기</b> <b>→</b></div>
+      <!-- 🏛 이재명 취임 1주년 기자회견 (2026.6.8) — 최상단 -->
+      <a class="lee-alert" href="/president-1year.html">
+        <div class="le-badge">🏛 정치 · 취임 1주년</div>
+        <div class="le-title">이재명 대통령 취임 1주년 기자회견 — '대체불가 대한민국'</div>
+        <div class="le-sub">6/8 청와대 영빈관·내외신 160명 · <b>부동산·세제·코스피 '아직도 저평가'</b> 발언 · '공소취소' 질문 답변 · 취임 1년 코스피 2,700→<b>8,000 돌파</b> 맥락·양측 평가 정리 <b>→</b></div>
       </a>
 
       <a class="ballot-alert" href="/ballot-shortage.html">
@@ -22930,11 +22954,11 @@ function renderHome() {
         <div class="ma-sub">국회 <b>190–0</b> 계엄 해제 · 헌재 <b>전원일치 파면</b> · 1심 <b>무기징역</b>(항소심 정지) · 위증 1심 무죄 · 계엄군 선관위 투입 — 팩트·여론·외신·외교 정리 <b>→</b></div>
       </a>
 
-      <!-- 💻 V31.35 — 젠슨 황 방한 배너 (경제·반도체) -->
-      <a class="nvidia-alert" href="/nvidia-huang.html">
-        <div class="nv-badge">💻 경제·반도체 · 단독</div>
-        <div class="nv-title">젠슨 황, 7개월 만에 또 방한 — HBM4·총수 회동·시구</div>
-        <div class="nv-sub">엔비디아 CEO 6/5 입국 · 컴퓨텍스서 <b>Vera Rubin 양산·HBM4 삼성/SK/마이크론</b> 발표 · <b>삼성전자 +10.1% 사상 최고가</b> · 최태원·구광모·이해진 삼겹살 회동 <b>→</b></div>
+      <!-- 📈 코스피 8천 돌파 배너 (경제) · 젠슨 황 기사는 분석 허브에서 -->
+      <a class="kospi-alert" href="/economy">
+        <div class="ks-badge">📈 경제 · 증시</div>
+        <div class="ks-title">코스피, 사상 첫 '8,000' 돌파 — 1년 새 약 3배</div>
+        <div class="ks-sub">AI·반도체 랠리(삼성전자·SK하이닉스 HBM)가 견인 · 취임 무렵 2,700선 → <b>8,000선 돌파</b> · 글로벌 상위권 도약 평가 · <b>코스피·환율 9종 라이브</b>로 확인 <b>→</b></div>
       </a>
 
       <!-- 🚨 V31.15 — 국가 위기 지표판 홈 카드 (트래픽 후킹, 전부 공식 통계 → /crisis.html) -->
