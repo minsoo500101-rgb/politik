@@ -305,7 +305,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <!-- V28.2 — 사전투표율 라이브 fetch: /api/early-vote-rate 신규 (다중 fallback: NEC API·info.nec.go.kr·수동슬롯·8회참고) + 5분 폴링 라이브 카드 (52px 누적%·8회 비교·시도별 옵션) -->
-<link rel="prefetch" as="fetch" href="/data/politicians.json?v=26" crossorigin>
+<link rel="prefetch" as="fetch" href="/data/politicians.json?v=27" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
@@ -11040,7 +11040,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.49</a>
+      <a href="/changelog" id="foot-year">V31.50</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11399,7 +11399,7 @@ async function loadWikiOverrides() {
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 // 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
-const POLITICIANS_VER = 26;
+const POLITICIANS_VER = 27;
 // V27.4 — 22대 의원 286명 fetch (별도 파일, 별도 state)
 async function loadAssembly22() {
   try {
@@ -11435,7 +11435,7 @@ async function loadAssembly22() {
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
-    const r = await fetch('/data/politicians.json?v=26' + POLITICIANS_VER);
+    const r = await fetch('/data/politicians.json?v=27' + POLITICIANS_VER);
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
@@ -18117,6 +18117,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.50', date: '2026-06-13', title: '📕 인물도감 — 현역 의원 약력 보강 (국회 OPEN API)', items: [
+    '경력 공란이던 상임위 간사 의원 10명(유상범·정태호·박수영·조정훈·김건·박성훈·김미애·김주영·이성권·김한규)의 약력을 국회 OPEN API(열린국회정보)로 채움. 위키로 못 채우던 동명이인·문서없음 케이스를 공식 출처로 해결. 안전장치: 현역 의원 type + 이름·정당 교차검증된 단일 매칭만 반영(교육감·단체장 동명이인 오귀속 방지). politicians.json version 26→27·캐시버전 동반 상향. 도감은 이미 9회 지선 당선자 반영 완료 상태 (소도시 기초단체장 55명은 의원 아니라 대상 외)',
+  ]},
   { v: 'V31.49', date: '2026-06-13', title: "🕐 기사 시제 최신화 (6/13 기준) — 지난 '예정' 표현 정리 + 한·영 동기화", items: [
     "2026-06-13 기준 콘텐츠 전수 점검 후 갱신: ①계엄(martial-law) 6.12 드론작전·6월 중 명태균 1심 '선고 예정' → '선고 기일(결과는 공식 확인 후 반영)'로 중립화(추측 결과 미기재), ②젠슨 황(nvidia) 6.8 공동발표 '예정' 동일 처리, ③투표용지 영문판(ballot-shortage-en)에 국문 확정 사실 동기화 — 부족 규모 '서울 14곳→전국 50곳' 정정·진상규명위, 6/6~7 올림픽공원 개표소 '재선거' 집회(2만~3만) 섹션 신규 번역 추가, ④투표용지 국문 진행형 '공방' 문장을 법적 절차 프레이밍으로, ⑤위기지표 출산율 '2025년 전망' 미래형 정리. 각 dateModified 갱신. 현충일 페이지는 상시 추모 성격이라 시제 변경 없음",
   ]},
