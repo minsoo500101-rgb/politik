@@ -11040,7 +11040,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.50</a>
+      <a href="/changelog" id="foot-year">V31.51</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18117,6 +18117,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.51', date: '2026-06-13', title: '⚽ 2026 월드컵 — 대한민국 기사 신규 + cupbracket.com 대진표 연결', items: [
+    '신규 기사 worldcup-2026: 대한민국 2026 FIFA 월드컵 개막전 체코 2–1 승(6/11·황인범·오현규)·A조 공동 1위, 남은 일정(6/18 멕시코·6/24 남아공), 48개국 새 포맷 정리. 결과·순위는 FIFA 공식 기록(위키백과·ESPN 교차검증), 실시간 대진표·예측 브라켓은 cupbracket.com(비공식 팬 트래커)으로 연결. 홈 주요 이슈·분석 허브·사이트맵 등록',
+  ]},
   { v: 'V31.50', date: '2026-06-13', title: '📕 인물도감 — 현역 의원 약력 보강 (국회 OPEN API)', items: [
     '경력 공란이던 상임위 간사 의원 10명(유상범·정태호·박수영·조정훈·김건·박성훈·김미애·김주영·이성권·김한규)의 약력을 국회 OPEN API(열린국회정보)로 채움. 위키로 못 채우던 동명이인·문서없음 케이스를 공식 출처로 해결. 안전장치: 현역 의원 type + 이름·정당 교차검증된 단일 매칭만 반영(교육감·단체장 동명이인 오귀속 방지). politicians.json version 26→27·캐시버전 동반 상향. 도감은 이미 9회 지선 당선자 반영 완료 상태 (소도시 기초단체장 55명은 의원 아니라 대상 외)',
   ]},
@@ -22775,6 +22778,14 @@ function renderHome() {
 
       <div class="home-issues">
         <div class="home-issues-h">📌 지금 한국 · 주요 이슈</div>
+        <a class="issue-row" href="/worldcup-2026.html">
+          <div class="issue-ic">⚽</div>
+          <div class="issue-tx">
+            <div class="issue-tt">대한민국, 월드컵 개막전 승리 (체코 2–1)</div>
+            <div class="issue-sub">A조 공동 1위 · 황인범·오현규 · 6/18 멕시코전 · 대진표 cupbracket.com</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
         <a class="issue-row" href="/election2026">
           <div class="issue-ic">🗳</div>
           <div class="issue-tx">
