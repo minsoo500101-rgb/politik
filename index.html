@@ -305,7 +305,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <!-- V28.2 — 사전투표율 라이브 fetch: /api/early-vote-rate 신규 (다중 fallback: NEC API·info.nec.go.kr·수동슬롯·8회참고) + 5분 폴링 라이브 카드 (52px 누적%·8회 비교·시도별 옵션) -->
-<link rel="prefetch" as="fetch" href="/data/politicians.json?v=27" crossorigin>
+<link rel="prefetch" as="fetch" href="/data/politicians.json?v=28" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
@@ -11036,7 +11036,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.55</a>
+      <a href="/changelog" id="foot-year">V31.56</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11395,7 +11395,7 @@ async function loadWikiOverrides() {
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 // 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
-const POLITICIANS_VER = 27;
+const POLITICIANS_VER = 28;
 // V27.4 — 22대 의원 286명 fetch (별도 파일, 별도 state)
 async function loadAssembly22() {
   try {
@@ -11431,7 +11431,7 @@ async function loadAssembly22() {
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
-    const r = await fetch('/data/politicians.json?v=27' + POLITICIANS_VER);
+    const r = await fetch('/data/politicians.json?v=28' + POLITICIANS_VER);
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
@@ -18113,6 +18113,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.56', date: '2026-06-13', title: '🔎 정치·경제 데이터 전수검사 — 검증된 항목 최신화', items: [
+    "정치·경제 섹터 데이터를 6그룹 병렬 웹검증 후, 다출처·내부정합·라이브관측으로 확인된 것만 반영: ①22대 후반기 국회 의장단 신규(조정식 의장·남인순·박덕흠 부의장, 2026.6.5~, 공식 약력은 국회 OPEN API) ②임기근 조달청장↔재정경제부 2차관 중복 정리(내부 경력상 2025.6 조달청장 종료→차관 확정) ③최재해 감사원장 '직무정지(탄핵소추)' 라벨 제거(2025.3 기각·복귀) ④경제 시장지표 시드를 라이브값으로(코스피 8,228→9,052·코스닥 1,133→967·환율 1,531→1,530). politicians v28·economy v8·캐시버전 상향. 인물 제거/개각·기초단체장 226명·거시지표 등은 출처 추가확인 필요로 보류",
+  ]},
   { v: 'V31.55', date: '2026-06-13', title: '🐛 홈 인기 Top5 — 정당 라벨이 이름 가리던 문제 수정', items: [
     '정치인/법안 인기 Top5에서 좁은 2단 칸일 때 정당·소관위 라벨이 이름을 덮던 레이아웃 버그 수정 — 이름(행1)+정당(행2) 세로 스택으로 변경(모바일과 동일). .rank-row 하위로 스코프해 다른 랭킹 컴포넌트엔 영향 없음',
   ]},

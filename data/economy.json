@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "updatedAt": "2026-06-13",
   "_note": "한국 핵심 경제 지표 시계열 (2015~2026). 출처: 한국은행 ECOS, 통계청 KOSIS, 한국거래소 공식. 정부 공식 공개 데이터 인용 — 추가 라이선스 불필요. V24.9: 2025·2026년 KOSPI/KOSDAQ/USDKRW ECOS 실제값 동기화.",
   "indicators": [
@@ -12,19 +12,56 @@
       "desc": "통화정책 기준이 되는 정책 금리. 한국은행 금융통화위원회 결정.",
       "interpretation": "낮을수록 시장에 돈 풀림 (경기 부양), 높을수록 회수 (인플레 억제).",
       "higher_is_good": null,
-      "ecos": { "stat": "722Y001", "period": "M", "item": "0101000" },
+      "ecos": {
+        "stat": "722Y001",
+        "period": "M",
+        "item": "0101000"
+      },
       "data": [
-        { "year": 2015, "value": 1.50 },
-        { "year": 2016, "value": 1.25 },
-        { "year": 2017, "value": 1.50 },
-        { "year": 2018, "value": 1.75 },
-        { "year": 2019, "value": 1.25 },
-        { "year": 2020, "value": 0.50 },
-        { "year": 2021, "value": 1.00 },
-        { "year": 2022, "value": 3.25 },
-        { "year": 2023, "value": 3.50 },
-        { "year": 2024, "value": 3.00 },
-        { "year": 2025, "value": 2.50 }
+        {
+          "year": 2015,
+          "value": 1.5
+        },
+        {
+          "year": 2016,
+          "value": 1.25
+        },
+        {
+          "year": 2017,
+          "value": 1.5
+        },
+        {
+          "year": 2018,
+          "value": 1.75
+        },
+        {
+          "year": 2019,
+          "value": 1.25
+        },
+        {
+          "year": 2020,
+          "value": 0.5
+        },
+        {
+          "year": 2021,
+          "value": 1
+        },
+        {
+          "year": 2022,
+          "value": 3.25
+        },
+        {
+          "year": 2023,
+          "value": 3.5
+        },
+        {
+          "year": 2024,
+          "value": 3
+        },
+        {
+          "year": 2025,
+          "value": 2.5
+        }
       ]
     },
     {
@@ -36,20 +73,61 @@
       "desc": "원화의 미국 달러 대비 가치 (한국은행 매매기준율, 연도별 마지막 영업일).",
       "interpretation": "높을수록 원화 약세 — 수출 유리, 수입·해외여행·외화부채 불리.",
       "higher_is_good": null,
-      "ecos": { "stat": "731Y001", "period": "D", "item": "0000001", "count": "1000" },
+      "ecos": {
+        "stat": "731Y001",
+        "period": "D",
+        "item": "0000001",
+        "count": "1000"
+      },
       "data": [
-        { "year": 2015, "value": 1172 },
-        { "year": 2016, "value": 1208 },
-        { "year": 2017, "value": 1071 },
-        { "year": 2018, "value": 1118 },
-        { "year": 2019, "value": 1156 },
-        { "year": 2020, "value": 1088 },
-        { "year": 2021, "value": 1189 },
-        { "year": 2022, "value": 1267 },
-        { "year": 2023, "value": 1288 },
-        { "year": 2024, "value": 1470 },
-        { "year": 2025, "value": 1435 },
-        { "year": 2026, "value": 1531 }
+        {
+          "year": 2015,
+          "value": 1172
+        },
+        {
+          "year": 2016,
+          "value": 1208
+        },
+        {
+          "year": 2017,
+          "value": 1071
+        },
+        {
+          "year": 2018,
+          "value": 1118
+        },
+        {
+          "year": 2019,
+          "value": 1156
+        },
+        {
+          "year": 2020,
+          "value": 1088
+        },
+        {
+          "year": 2021,
+          "value": 1189
+        },
+        {
+          "year": 2022,
+          "value": 1267
+        },
+        {
+          "year": 2023,
+          "value": 1288
+        },
+        {
+          "year": 2024,
+          "value": 1470
+        },
+        {
+          "year": 2025,
+          "value": 1435
+        },
+        {
+          "year": 2026,
+          "value": 1530
+        }
       ]
     },
     {
@@ -61,19 +139,57 @@
       "desc": "전년 동월 대비 소비자물가지수(CPI) 상승률 — 라이브는 지수 기준, 클라이언트에서 전년비 계산.",
       "interpretation": "한국은행 목표는 연 2%. 5% 이상이면 고물가, 0% 미만이면 디플레.",
       "higher_is_good": false,
-      "ecos": { "stat": "901Y009", "period": "M", "item": "0", "transform": "yoy" },
+      "ecos": {
+        "stat": "901Y009",
+        "period": "M",
+        "item": "0",
+        "transform": "yoy"
+      },
       "data": [
-        { "year": 2015, "value": 0.7 },
-        { "year": 2016, "value": 1.0 },
-        { "year": 2017, "value": 1.9 },
-        { "year": 2018, "value": 1.5 },
-        { "year": 2019, "value": 0.4 },
-        { "year": 2020, "value": 0.5 },
-        { "year": 2021, "value": 2.5 },
-        { "year": 2022, "value": 5.1 },
-        { "year": 2023, "value": 3.6 },
-        { "year": 2024, "value": 2.3 },
-        { "year": 2025, "value": 1.9 }
+        {
+          "year": 2015,
+          "value": 0.7
+        },
+        {
+          "year": 2016,
+          "value": 1
+        },
+        {
+          "year": 2017,
+          "value": 1.9
+        },
+        {
+          "year": 2018,
+          "value": 1.5
+        },
+        {
+          "year": 2019,
+          "value": 0.4
+        },
+        {
+          "year": 2020,
+          "value": 0.5
+        },
+        {
+          "year": 2021,
+          "value": 2.5
+        },
+        {
+          "year": 2022,
+          "value": 5.1
+        },
+        {
+          "year": 2023,
+          "value": 3.6
+        },
+        {
+          "year": 2024,
+          "value": 2.3
+        },
+        {
+          "year": 2025,
+          "value": 1.9
+        }
       ]
     },
     {
@@ -85,19 +201,56 @@
       "desc": "경제활동인구 중 실업자 비율 (연평균).",
       "interpretation": "낮을수록 좋음. 한국은 3% 내외 유지가 평균.",
       "higher_is_good": false,
-      "ecos": { "stat": "901Y027", "period": "M", "item": "I61BC" },
+      "ecos": {
+        "stat": "901Y027",
+        "period": "M",
+        "item": "I61BC"
+      },
       "data": [
-        { "year": 2015, "value": 3.6 },
-        { "year": 2016, "value": 3.7 },
-        { "year": 2017, "value": 3.7 },
-        { "year": 2018, "value": 3.8 },
-        { "year": 2019, "value": 3.8 },
-        { "year": 2020, "value": 4.0 },
-        { "year": 2021, "value": 3.7 },
-        { "year": 2022, "value": 2.9 },
-        { "year": 2023, "value": 2.7 },
-        { "year": 2024, "value": 2.8 },
-        { "year": 2025, "value": 2.7 }
+        {
+          "year": 2015,
+          "value": 3.6
+        },
+        {
+          "year": 2016,
+          "value": 3.7
+        },
+        {
+          "year": 2017,
+          "value": 3.7
+        },
+        {
+          "year": 2018,
+          "value": 3.8
+        },
+        {
+          "year": 2019,
+          "value": 3.8
+        },
+        {
+          "year": 2020,
+          "value": 4
+        },
+        {
+          "year": 2021,
+          "value": 3.7
+        },
+        {
+          "year": 2022,
+          "value": 2.9
+        },
+        {
+          "year": 2023,
+          "value": 2.7
+        },
+        {
+          "year": 2024,
+          "value": 2.8
+        },
+        {
+          "year": 2025,
+          "value": 2.7
+        }
       ]
     },
     {
@@ -110,17 +263,50 @@
       "interpretation": "높을수록 경기 좋음. 2~3%가 잠재성장률, 마이너스면 경기 침체.",
       "higher_is_good": true,
       "data": [
-        { "year": 2015, "value": 2.8 },
-        { "year": 2016, "value": 2.9 },
-        { "year": 2017, "value": 3.2 },
-        { "year": 2018, "value": 2.9 },
-        { "year": 2019, "value": 2.2 },
-        { "year": 2020, "value": -0.7 },
-        { "year": 2021, "value": 4.3 },
-        { "year": 2022, "value": 2.6 },
-        { "year": 2023, "value": 1.4 },
-        { "year": 2024, "value": 2.0 },
-        { "year": 2025, "value": 1.8 }
+        {
+          "year": 2015,
+          "value": 2.8
+        },
+        {
+          "year": 2016,
+          "value": 2.9
+        },
+        {
+          "year": 2017,
+          "value": 3.2
+        },
+        {
+          "year": 2018,
+          "value": 2.9
+        },
+        {
+          "year": 2019,
+          "value": 2.2
+        },
+        {
+          "year": 2020,
+          "value": -0.7
+        },
+        {
+          "year": 2021,
+          "value": 4.3
+        },
+        {
+          "year": 2022,
+          "value": 2.6
+        },
+        {
+          "year": 2023,
+          "value": 1.4
+        },
+        {
+          "year": 2024,
+          "value": 2
+        },
+        {
+          "year": 2025,
+          "value": 1.8
+        }
       ]
     },
     {
@@ -132,20 +318,61 @@
       "desc": "코스피 지수 연말 종가 (한국거래소).",
       "interpretation": "주식시장 전반 흐름 지표. 단 개별 종목 추천 X.",
       "higher_is_good": null,
-      "ecos": { "stat": "802Y001", "period": "D", "item": "0001000", "count": "1000" },
+      "ecos": {
+        "stat": "802Y001",
+        "period": "D",
+        "item": "0001000",
+        "count": "1000"
+      },
       "data": [
-        { "year": 2015, "value": 1961 },
-        { "year": 2016, "value": 2026 },
-        { "year": 2017, "value": 2467 },
-        { "year": 2018, "value": 2041 },
-        { "year": 2019, "value": 2197 },
-        { "year": 2020, "value": 2873 },
-        { "year": 2021, "value": 2977 },
-        { "year": 2022, "value": 2236 },
-        { "year": 2023, "value": 2655 },
-        { "year": 2024, "value": 2399 },
-        { "year": 2025, "value": 4214 },
-        { "year": 2026, "value": 8228 }
+        {
+          "year": 2015,
+          "value": 1961
+        },
+        {
+          "year": 2016,
+          "value": 2026
+        },
+        {
+          "year": 2017,
+          "value": 2467
+        },
+        {
+          "year": 2018,
+          "value": 2041
+        },
+        {
+          "year": 2019,
+          "value": 2197
+        },
+        {
+          "year": 2020,
+          "value": 2873
+        },
+        {
+          "year": 2021,
+          "value": 2977
+        },
+        {
+          "year": 2022,
+          "value": 2236
+        },
+        {
+          "year": 2023,
+          "value": 2655
+        },
+        {
+          "year": 2024,
+          "value": 2399
+        },
+        {
+          "year": 2025,
+          "value": 4214
+        },
+        {
+          "year": 2026,
+          "value": 9052
+        }
       ]
     },
     {
@@ -157,20 +384,61 @@
       "desc": "코스닥 지수 연말 종가. 중소·벤처기업 중심.",
       "interpretation": "기술주·바이오 동향 지표. 코스피보다 변동성 큼.",
       "higher_is_good": null,
-      "ecos": { "stat": "802Y001", "period": "D", "item": "0089000", "count": "1000" },
+      "ecos": {
+        "stat": "802Y001",
+        "period": "D",
+        "item": "0089000",
+        "count": "1000"
+      },
       "data": [
-        { "year": 2015, "value": 682 },
-        { "year": 2016, "value": 631 },
-        { "year": 2017, "value": 798 },
-        { "year": 2018, "value": 675 },
-        { "year": 2019, "value": 669 },
-        { "year": 2020, "value": 968 },
-        { "year": 2021, "value": 1033 },
-        { "year": 2022, "value": 679 },
-        { "year": 2023, "value": 866 },
-        { "year": 2024, "value": 678 },
-        { "year": 2025, "value": 925 },
-        { "year": 2026, "value": 1133 }
+        {
+          "year": 2015,
+          "value": 682
+        },
+        {
+          "year": 2016,
+          "value": 631
+        },
+        {
+          "year": 2017,
+          "value": 798
+        },
+        {
+          "year": 2018,
+          "value": 675
+        },
+        {
+          "year": 2019,
+          "value": 669
+        },
+        {
+          "year": 2020,
+          "value": 968
+        },
+        {
+          "year": 2021,
+          "value": 1033
+        },
+        {
+          "year": 2022,
+          "value": 679
+        },
+        {
+          "year": 2023,
+          "value": 866
+        },
+        {
+          "year": 2024,
+          "value": 678
+        },
+        {
+          "year": 2025,
+          "value": 925
+        },
+        {
+          "year": 2026,
+          "value": 967
+        }
       ]
     },
     {
@@ -182,19 +450,56 @@
       "desc": "가계신용 잔액의 명목 GDP 대비 비율 (연말).",
       "interpretation": "한국은 OECD 최상위권. 100% 이상이면 위험 신호로 분류.",
       "higher_is_good": false,
-      "ecos": { "stat": "903Y049", "period": "Q", "item": "" },
+      "ecos": {
+        "stat": "903Y049",
+        "period": "Q",
+        "item": ""
+      },
       "data": [
-        { "year": 2015, "value": 79.7 },
-        { "year": 2016, "value": 84.4 },
-        { "year": 2017, "value": 88.4 },
-        { "year": 2018, "value": 91.8 },
-        { "year": 2019, "value": 95.4 },
-        { "year": 2020, "value": 103.7 },
-        { "year": 2021, "value": 105.5 },
-        { "year": 2022, "value": 104.5 },
-        { "year": 2023, "value": 100.4 },
-        { "year": 2024, "value": 98.6 },
-        { "year": 2025, "value": 97.2 }
+        {
+          "year": 2015,
+          "value": 79.7
+        },
+        {
+          "year": 2016,
+          "value": 84.4
+        },
+        {
+          "year": 2017,
+          "value": 88.4
+        },
+        {
+          "year": 2018,
+          "value": 91.8
+        },
+        {
+          "year": 2019,
+          "value": 95.4
+        },
+        {
+          "year": 2020,
+          "value": 103.7
+        },
+        {
+          "year": 2021,
+          "value": 105.5
+        },
+        {
+          "year": 2022,
+          "value": 104.5
+        },
+        {
+          "year": 2023,
+          "value": 100.4
+        },
+        {
+          "year": 2024,
+          "value": 98.6
+        },
+        {
+          "year": 2025,
+          "value": 97.2
+        }
       ]
     },
     {
@@ -206,19 +511,57 @@
       "desc": "연간 상품수출 (억달러). 한국은행 ECOS 국제수지 통계 월별 합계.",
       "interpretation": "한국 GDP의 약 40%가 수출. 글로벌 경기·반도체 수요에 민감. 2024년 $683.8B = 6,837 억$.",
       "higher_is_good": true,
-      "ecos": { "stat": "301Y013", "period": "M", "item": "110000", "transform": "sum_year_oku" },
+      "ecos": {
+        "stat": "301Y013",
+        "period": "M",
+        "item": "110000",
+        "transform": "sum_year_oku"
+      },
       "data": [
-        { "year": 2015, "value": 5267 },
-        { "year": 2016, "value": 4954 },
-        { "year": 2017, "value": 5737 },
-        { "year": 2018, "value": 6049 },
-        { "year": 2019, "value": 5422 },
-        { "year": 2020, "value": 5125 },
-        { "year": 2021, "value": 6444 },
-        { "year": 2022, "value": 6836 },
-        { "year": 2023, "value": 6326 },
-        { "year": 2024, "value": 6837 },
-        { "year": 2025, "value": 7100 }
+        {
+          "year": 2015,
+          "value": 5267
+        },
+        {
+          "year": 2016,
+          "value": 4954
+        },
+        {
+          "year": 2017,
+          "value": 5737
+        },
+        {
+          "year": 2018,
+          "value": 6049
+        },
+        {
+          "year": 2019,
+          "value": 5422
+        },
+        {
+          "year": 2020,
+          "value": 5125
+        },
+        {
+          "year": 2021,
+          "value": 6444
+        },
+        {
+          "year": 2022,
+          "value": 6836
+        },
+        {
+          "year": 2023,
+          "value": 6326
+        },
+        {
+          "year": 2024,
+          "value": 6837
+        },
+        {
+          "year": 2025,
+          "value": 7100
+        }
       ]
     }
   ],
@@ -238,9 +581,24 @@
         "tier": 3,
         "max_tier": 22,
         "history": [
-          { "date": "2016-08-08", "rating": "AA", "outlook": "stable", "note": "AA-에서 AA로 상향" },
-          { "date": "2015-09-15", "rating": "AA-", "outlook": "positive", "note": "A+에서 AA-로 상향" },
-          { "date": "2012-09-14", "rating": "A+", "outlook": "stable", "note": "A에서 A+로 상향" }
+          {
+            "date": "2016-08-08",
+            "rating": "AA",
+            "outlook": "stable",
+            "note": "AA-에서 AA로 상향"
+          },
+          {
+            "date": "2015-09-15",
+            "rating": "AA-",
+            "outlook": "positive",
+            "note": "A+에서 AA-로 상향"
+          },
+          {
+            "date": "2012-09-14",
+            "rating": "A+",
+            "outlook": "stable",
+            "note": "A에서 A+로 상향"
+          }
         ]
       },
       {
@@ -254,8 +612,18 @@
         "tier": 3,
         "max_tier": 22,
         "history": [
-          { "date": "2015-12-19", "rating": "Aa2", "outlook": "stable", "note": "Aa3에서 Aa2로 상향" },
-          { "date": "2012-08-27", "rating": "Aa3", "outlook": "stable", "note": "A1에서 Aa3로 상향" }
+          {
+            "date": "2015-12-19",
+            "rating": "Aa2",
+            "outlook": "stable",
+            "note": "Aa3에서 Aa2로 상향"
+          },
+          {
+            "date": "2012-08-27",
+            "rating": "Aa3",
+            "outlook": "stable",
+            "note": "A1에서 Aa3로 상향"
+          }
         ]
       },
       {
@@ -269,8 +637,18 @@
         "tier": 4,
         "max_tier": 22,
         "history": [
-          { "date": "2012-09-06", "rating": "AA-", "outlook": "stable", "note": "A+에서 AA-로 상향" },
-          { "date": "2011-11-07", "rating": "A+", "outlook": "positive", "note": "A에서 A+로 상향" }
+          {
+            "date": "2012-09-06",
+            "rating": "AA-",
+            "outlook": "stable",
+            "note": "A+에서 AA-로 상향"
+          },
+          {
+            "date": "2011-11-07",
+            "rating": "A+",
+            "outlook": "positive",
+            "note": "A에서 A+로 상향"
+          }
         ]
       }
     ],
@@ -283,13 +661,69 @@
     }
   },
   "presidents": [
-    { "name": "박근혜", "start": "2013-02", "end": "2017-03", "party": "새누리당", "note": "탄핵", "acting": false },
-    { "name": "황교안", "start": "2016-12", "end": "2017-05", "party": "—", "note": "권한대행 (박근혜 탄핵소추~문재인 취임)", "acting": true },
-    { "name": "문재인", "start": "2017-05", "end": "2022-05", "party": "더불어민주당", "note": "", "acting": false },
-    { "name": "윤석열", "start": "2022-05", "end": "2025-04", "party": "국민의힘", "note": "탄핵", "acting": false },
-    { "name": "한덕수", "start": "2024-12", "end": "2024-12", "party": "—", "note": "권한대행 1차 (윤석열 직무정지~한덕수 직무정지)", "acting": true },
-    { "name": "최상목", "start": "2024-12", "end": "2025-03", "party": "—", "note": "권한대행 (한덕수 직무정지~한덕수 복귀)", "acting": true },
-    { "name": "한덕수", "start": "2025-03", "end": "2025-06", "party": "—", "note": "권한대행 2차 (한덕수 직무복귀~이재명 취임)", "acting": true },
-    { "name": "이재명", "start": "2025-06", "end": "재임 중", "party": "더불어민주당", "note": "현직", "acting": false }
+    {
+      "name": "박근혜",
+      "start": "2013-02",
+      "end": "2017-03",
+      "party": "새누리당",
+      "note": "탄핵",
+      "acting": false
+    },
+    {
+      "name": "황교안",
+      "start": "2016-12",
+      "end": "2017-05",
+      "party": "—",
+      "note": "권한대행 (박근혜 탄핵소추~문재인 취임)",
+      "acting": true
+    },
+    {
+      "name": "문재인",
+      "start": "2017-05",
+      "end": "2022-05",
+      "party": "더불어민주당",
+      "note": "",
+      "acting": false
+    },
+    {
+      "name": "윤석열",
+      "start": "2022-05",
+      "end": "2025-04",
+      "party": "국민의힘",
+      "note": "탄핵",
+      "acting": false
+    },
+    {
+      "name": "한덕수",
+      "start": "2024-12",
+      "end": "2024-12",
+      "party": "—",
+      "note": "권한대행 1차 (윤석열 직무정지~한덕수 직무정지)",
+      "acting": true
+    },
+    {
+      "name": "최상목",
+      "start": "2024-12",
+      "end": "2025-03",
+      "party": "—",
+      "note": "권한대행 (한덕수 직무정지~한덕수 복귀)",
+      "acting": true
+    },
+    {
+      "name": "한덕수",
+      "start": "2025-03",
+      "end": "2025-06",
+      "party": "—",
+      "note": "권한대행 2차 (한덕수 직무복귀~이재명 취임)",
+      "acting": true
+    },
+    {
+      "name": "이재명",
+      "start": "2025-06",
+      "end": "재임 중",
+      "party": "더불어민주당",
+      "note": "현직",
+      "acting": false
+    }
   ]
 }
