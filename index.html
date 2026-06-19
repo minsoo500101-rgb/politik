@@ -5933,15 +5933,6 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
 
 
-  /* 🏛 이재명 취임 1주년 배너 (teal) */
-  .lee-alert { display:block; background:linear-gradient(135deg,#0b3b38,#0f766e); color:#fff; text-decoration:none; border-radius:8px; padding:16px 20px; margin-bottom:16px; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(15,118,110,.28); transition:transform .15s ease, box-shadow .15s ease; border:1px solid rgba(45,212,191,.3); }
-  .lee-alert::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(45,212,191,.22) 0%, transparent 70%); pointer-events:none; }
-  .lee-alert:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(15,118,110,.42); }
-  .le-badge { display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.4px; background:rgba(45,212,191,.25); color:#a7f3d0; padding:3px 9px; border-radius:5px; margin-bottom:8px; position:relative; z-index:1; }
-  .le-title { font-size:21px; font-weight:900; letter-spacing:-.5px; line-height:1.25; margin-bottom:6px; position:relative; z-index:1; }
-  .le-sub { font-size:13px; opacity:.95; line-height:1.55; position:relative; z-index:1; }
-  .le-sub b { font-weight:800; color:#d1fae5; }
-  @media (max-width:600px){ .le-title{ font-size:17px } .lee-alert{ padding:14px 16px } }
 
 
 
@@ -11040,7 +11031,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.53</a>
+      <a href="/changelog" id="foot-year">V31.54</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18117,6 +18108,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.54', date: '2026-06-13', title: '🧭 홈 피처 정리 — 이재명 1주년 배너 내리고 리스트 행으로 강등', items: [
+    "홈 단독 피처(이재명 취임 1주년 lee-alert 대형 배너)를 제거하고, 해당 기사는 「주요 이슈」 리스트의 일반 행으로 강등(여전히 접근 가능·삭제 아님). 더 시의성 높은 드론작전 30년·월드컵이 자연스럽게 상단을 차지. 홈은 히어로 → 컴팩트 이슈 리스트로 단순화",
+  ]},
   { v: 'V31.53', date: '2026-06-13', title: "⚖️ 신규 기사: 윤석열 '평양 무인기' 징역 30년 + 홈 배치 정리", items: [
     "신규 심층 기사 drone-treason: '평양 무인기' 드론작전 일반이적 1심(6/12, 윤석열·김용현 각 30년·여인형 15년·김용대 집유) — 헌정사 첫 전직 대통령 일반이적 유죄. 사건 경위('북풍'→계엄 명분)·일반이적죄(형법 외환의 죄)·재판부 판단·12·3 계엄과의 관계를 공식 출처로 정리(무죄추정 명기). 홈 주요 이슈 최상단·분석 허브·사이트맵 등록",
     '홈 「주요 이슈」 배치 정리: 드론 30년을 최상단으로, 계엄 행은 12·3 계엄 전체 개요(파면·내란 무기징역)로 역할 분리해 중복 제거',
@@ -22776,13 +22770,7 @@ function renderHome() {
         </div>
       </div>
 
-      <!-- V31.47 — 홈 주요 이슈: 단독 피처(이재명 1주년) + 컴팩트 이슈 리스트 (배너 6연속 → 1+리스트로 정리) -->
-      <a class="lee-alert" href="/president-1year.html">
-        <div class="le-badge">🏛 정치 · 취임 1주년</div>
-        <div class="le-title">이재명 대통령 취임 1주년 기자회견 — '대체불가 대한민국'</div>
-        <div class="le-sub">6/8 청와대 영빈관·내외신 160명 · <b>부동산·세제·코스피 '아직도 저평가'</b> 발언 · '공소취소' 질문 답변 · 취임 1년 코스피 2,700→<b>8,000 돌파</b> 맥락·양측 평가 정리 <b>→</b></div>
-      </a>
-
+      <!-- V31.54 — 홈 주요 이슈 컴팩트 리스트 (피처 배너 제거, 이재명 1주년은 리스트 행으로 강등) -->
       <div class="home-issues">
         <div class="home-issues-h">📌 지금 한국 · 주요 이슈</div>
         <a class="issue-row" href="/drone-treason.html">
@@ -22798,6 +22786,14 @@ function renderHome() {
           <div class="issue-tx">
             <div class="issue-tt">대한민국, 월드컵 개막전 승리 (체코 2–1)</div>
             <div class="issue-sub">A조 공동 1위 · 황인범·오현규 · 6/18 멕시코전 · 대진표 cupbracket.com</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/president-1year.html">
+          <div class="issue-ic">🏛</div>
+          <div class="issue-tx">
+            <div class="issue-tt">이재명 대통령 취임 1주년 기자회견</div>
+            <div class="issue-sub">6/8 '대체불가 대한민국' · 부동산 보유세 강화·7월 세제개편 · 코스피 8천 맥락·양측 평가</div>
           </div>
           <div class="issue-ar">→</div>
         </a>
