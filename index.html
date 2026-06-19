@@ -11040,7 +11040,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.52</a>
+      <a href="/changelog" id="foot-year">V31.53</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18117,6 +18117,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.53', date: '2026-06-13', title: "⚖️ 신규 기사: 윤석열 '평양 무인기' 징역 30년 + 홈 배치 정리", items: [
+    "신규 심층 기사 drone-treason: '평양 무인기' 드론작전 일반이적 1심(6/12, 윤석열·김용현 각 30년·여인형 15년·김용대 집유) — 헌정사 첫 전직 대통령 일반이적 유죄. 사건 경위('북풍'→계엄 명분)·일반이적죄(형법 외환의 죄)·재판부 판단·12·3 계엄과의 관계를 공식 출처로 정리(무죄추정 명기). 홈 주요 이슈 최상단·분석 허브·사이트맵 등록",
+    '홈 「주요 이슈」 배치 정리: 드론 30년을 최상단으로, 계엄 행은 12·3 계엄 전체 개요(파면·내란 무기징역)로 역할 분리해 중복 제거',
+  ]},
   { v: 'V31.52', date: '2026-06-13', title: '🔄 시한성 기사 최신화 — 웹 검증으로 보류 항목 확정', items: [
     "직전 '결과 확인 후 반영'으로 비워뒀던 시한성 항목을 공식 보도로 검증해 확정: ①계엄 별건 '평양 무인기' 드론작전 6.12 1심 윤석열 징역 30년(헌정사 첫 전직 대통령 일반이적 유죄·김용현 30년·여인형 15년) — martial-law·홈 이슈행·analysis 카드 반영, ②젠슨 황·최태원 6.8 엔비디아·SK 'AI 팩토리 메모리 장기 파트너십' 발표 확정 — nvidia 반영, ③이재명 부동산 보유세 강화·금융규제 전환·7월 세제개편 방향 구체화 — president 반영. 명태균 게이트 재판은 6월 말~7월 초 선고 전망(보류). economy 기준일 6/13. 출처 파이낸셜뉴스·MBC·서울경제·머니투데이 등",
   ]},
@@ -22781,6 +22785,14 @@ function renderHome() {
 
       <div class="home-issues">
         <div class="home-issues-h">📌 지금 한국 · 주요 이슈</div>
+        <a class="issue-row" href="/drone-treason.html">
+          <div class="issue-ic">⚖️</div>
+          <div class="issue-tx">
+            <div class="issue-tt">윤석열 '평양 무인기' 징역 30년 — 첫 전직 대통령 일반이적 유죄</div>
+            <div class="issue-sub">6/12 1심 · 김용현 30년·여인형 15년 · "계엄 명분 쌓기 위한 위법 군사작전"</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
         <a class="issue-row" href="/worldcup-2026.html">
           <div class="issue-ic">⚽</div>
           <div class="issue-tx">
@@ -22808,8 +22820,8 @@ function renderHome() {
         <a class="issue-row" href="/martial-law.html">
           <div class="issue-ic">⚖️</div>
           <div class="issue-tx">
-            <div class="issue-tt">12·3 비상계엄 — 무기징역 + 드론작전 30년</div>
-            <div class="issue-sub">6/12 '평양 무인기' 별건 <b>징역 30년</b>(첫 전직 대통령 일반이적 유죄) · 내란 1심 무기징역 · 팩트·외신</div>
+            <div class="issue-tt">12·3 비상계엄 — 파면·내란 1심 무기징역</div>
+            <div class="issue-sub">헌재 전원일치 파면 · 내란 우두머리 1심 <b>무기징역</b>(항소심 정지) · 팩트·여론·외신 정리</div>
           </div>
           <div class="issue-ar">→</div>
         </a>

@@ -19,6 +19,7 @@ STATIC_PAGES = [
     {"path": "/bills",                   "priority": "0.95", "freq": "daily"},
     {"path": "/analysis.html",           "priority": "0.92", "freq": "weekly"},
     {"path": "/worldcup-2026.html",      "priority": "0.9",  "freq": "daily"},
+    {"path": "/drone-treason.html",      "priority": "0.9",  "freq": "weekly"},
     {"path": "/president-1year.html",     "priority": "0.9",  "freq": "weekly"},
     {"path": "/memorial-day.html",       "priority": "0.85", "freq": "monthly"},
     {"path": "/nvidia-huang.html",       "priority": "0.88", "freq": "weekly"},
