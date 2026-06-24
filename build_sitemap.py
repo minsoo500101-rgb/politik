@@ -21,6 +21,8 @@ STATIC_PAGES = [
     {"path": "/election-analysis-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/assembly-22-composition.html","priority": "0.9", "freq": "monthly"},
     {"path": "/economy-2026-review.html",     "priority": "0.9", "freq": "weekly"},
+    {"path": "/gwangju-jeonnam-merge.html",   "priority": "0.9", "freq": "weekly"},
+    {"path": "/yellow-envelope-100days.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/worldcup-2026.html",      "priority": "0.9",  "freq": "daily"},
     {"path": "/drone-treason.html",      "priority": "0.9",  "freq": "weekly"},
     {"path": "/president-1year.html",     "priority": "0.9",  "freq": "weekly"},
