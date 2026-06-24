@@ -24,6 +24,7 @@ STATIC_PAGES = [
     {"path": "/gwangju-jeonnam-merge.html",   "priority": "0.9", "freq": "weekly"},
     {"path": "/yellow-envelope-100days.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/korea-security-2026.html",     "priority": "0.9", "freq": "weekly"},
+    {"path": "/dmz-frontline-2026.html",      "priority": "0.9", "freq": "weekly"},
     {"path": "/worldcup-2026.html",      "priority": "0.9",  "freq": "daily"},
     {"path": "/drone-treason.html",      "priority": "0.9",  "freq": "weekly"},
     {"path": "/president-1year.html",     "priority": "0.9",  "freq": "weekly"},
