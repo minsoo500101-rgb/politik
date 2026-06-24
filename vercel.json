@@ -99,6 +99,9 @@
   ],
   "rewrites": [
     { "source": "/m/(.*)", "destination": "/index.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/business", "destination": "/business.html" },
     { "source": "/((?!api/|data/|.*\\.[a-z0-9]+$).*)", "destination": "/index.html" }
   ],
   "redirects": [

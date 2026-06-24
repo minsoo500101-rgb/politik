@@ -11036,7 +11036,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.56</a>
+      <a href="/changelog" id="foot-year">V31.57</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -17771,7 +17771,7 @@ function renderBusinessPage() {
         <ul class="about-ul">
           <li><b>의원 활동 데이터 피드</b> — 발의·표결 일일 업데이트, JSON/CSV API</li>
           <li><b>법안 모니터링</b> — 키워드 기반 알림, 영향 분석 리포트</li>
-          <li><b>인물 DB 라이선스</b> — 768명 인물 정보 (22대 의원 286 + 자체 DB 482), 학술/언론 활용</li>
+          <li><b>인물 DB 라이선스</b> — 정치인 768명 (22대 의원 286 + 자체 DB 482), 학술/언론 활용</li>
           <li><b>선거 분석 (시즌)</b> — 9회 지선 등 종합 리포트</li>
           <li><b>커스텀 데이터 추출</b> — 특정 시기·정당·위원회 등 맞춤 추출</li>
         </ul>
@@ -18113,6 +18113,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.57', date: '2026-06-24', title: '📄 AdSense 대응 — 신뢰 페이지 정적화 + 전 페이지 광고 코드', items: [
+    "구글 애드센스 '가치 없는 콘텐츠' 반려 대응: ①/about·/privacy·/business를 SPA(JS 렌더, 크롤러 미인식)에서 크롤러가 바로 읽는 정적 HTML 페이지로 전환(운영주체·운영원칙·데이터출처·정확성정책·연락처·개인정보처리방침 — 가시 텍스트 530/327/220단어, ld+json AboutPage·Organization·BreadcrumbList 포함) ②vercel.json에서 세 경로를 정적 파일로 라우팅 ③정적 기사 13개 전체 head에 AdSense 로더 추가(기존엔 SPA에만 존재→심사봇이 기사 페이지에서 광고코드 미발견 문제) ④사이트맵에 /about·/business·/privacy 등록 ⑤about·business 인물수 표기를 사이트 표준 768명(22대 의원 286+자체 DB 482)으로 정합",
+  ]},
   { v: 'V31.56', date: '2026-06-13', title: '🔎 정치·경제 데이터 전수검사 — 검증된 항목 최신화', items: [
     "정치·경제 섹터 데이터를 6그룹 병렬 웹검증 후, 다출처·내부정합·라이브관측으로 확인된 것만 반영: ①22대 후반기 국회 의장단 신규(조정식 의장·남인순·박덕흠 부의장, 2026.6.5~, 공식 약력은 국회 OPEN API) ②임기근 조달청장↔재정경제부 2차관 중복 정리(내부 경력상 2025.6 조달청장 종료→차관 확정) ③최재해 감사원장 '직무정지(탄핵소추)' 라벨 제거(2025.3 기각·복귀) ④경제 시장지표 시드를 라이브값으로(코스피 8,228→9,052·코스닥 1,133→967·환율 1,531→1,530). politicians v28·economy v8·캐시버전 상향. 인물 제거/개각·기초단체장 226명·거시지표 등은 출처 추가확인 필요로 보류",
   ]},
