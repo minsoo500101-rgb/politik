@@ -1,5 +1,179 @@
 [
   {
+    "timestamp": "2026-06-27T10:02:47.928Z",
+    "timestamp_kst": "2026. 6. 27. PM 7:02:47",
+    "site_version": null,
+    "pages": [
+      {
+        "url": "/",
+        "critical": true,
+        "status": 503,
+        "ms": 467,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/early-voting",
+        "critical": true,
+        "status": 503,
+        "ms": 373,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/election2026",
+        "critical": true,
+        "status": 503,
+        "ms": 374,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/economy",
+        "critical": true,
+        "status": 503,
+        "ms": 376,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/bills",
+        "critical": false,
+        "status": 503,
+        "ms": 374,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/changelog",
+        "critical": false,
+        "status": 503,
+        "ms": 428,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/glossary",
+        "critical": false,
+        "status": 503,
+        "ms": 518,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/llms.txt",
+        "critical": false,
+        "status": 503,
+        "ms": 522,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      },
+      {
+        "url": "/sitemap.xml",
+        "critical": false,
+        "status": 503,
+        "ms": 685,
+        "contentMatch": false,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false
+      }
+    ],
+    "apis": [
+      {
+        "url": "/api/early-vote-rate",
+        "critical": true,
+        "status": 503,
+        "ms": 24,
+        "bodyLen": 99,
+        "error": null,
+        "pass": true,
+        "note": null
+      },
+      {
+        "url": "/api/trends",
+        "critical": false,
+        "status": 503,
+        "ms": 23,
+        "bodyLen": 99,
+        "error": null,
+        "pass": true,
+        "note": null
+      },
+      {
+        "url": "/api/data?type=info",
+        "critical": false,
+        "status": 503,
+        "ms": 46,
+        "bodyLen": 99,
+        "error": null,
+        "pass": true,
+        "note": null
+      },
+      {
+        "url": "/api/quote?symbols=^KS11",
+        "critical": false,
+        "status": 503,
+        "ms": 45,
+        "bodyLen": 99,
+        "error": null,
+        "pass": false,
+        "note": "403 expected (Origin guard)"
+      },
+      {
+        "url": "/api/naver?action=health",
+        "critical": false,
+        "status": 503,
+        "ms": 22,
+        "bodyLen": 99,
+        "error": null,
+        "pass": true,
+        "note": null
+      }
+    ],
+    "pass_count": 4,
+    "total_count": 14,
+    "critical_fail": [
+      {
+        "url": "/",
+        "status": 503,
+        "error": null
+      },
+      {
+        "url": "/early-voting",
+        "status": 503,
+        "error": null
+      },
+      {
+        "url": "/election2026",
+        "status": 503,
+        "error": null
+      },
+      {
+        "url": "/economy",
+        "status": 503,
+        "error": null
+      }
+    ],
+    "avg_response_ms": 306
+  },
+  {
     "timestamp": "2026-06-27T07:46:06.459Z",
     "timestamp_kst": "2026. 6. 27. PM 4:46:06",
     "site_version": null,
@@ -7579,158 +7753,5 @@
     "total_count": 14,
     "critical_fail": [],
     "avg_response_ms": 735
-  },
-  {
-    "timestamp": "2026-06-21T03:42:46.003Z",
-    "timestamp_kst": "2026. 6. 21. PM 12:42:46",
-    "site_version": null,
-    "pages": [
-      {
-        "url": "/",
-        "critical": true,
-        "status": 200,
-        "ms": 624,
-        "contentMatch": true,
-        "bodyLen": 1031813,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/early-voting",
-        "critical": true,
-        "status": 200,
-        "ms": 479,
-        "contentMatch": true,
-        "bodyLen": 1031807,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/election2026",
-        "critical": true,
-        "status": 200,
-        "ms": 676,
-        "contentMatch": true,
-        "bodyLen": 1031806,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/economy",
-        "critical": true,
-        "status": 200,
-        "ms": 661,
-        "contentMatch": true,
-        "bodyLen": 1031810,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/bills",
-        "critical": false,
-        "status": 200,
-        "ms": 916,
-        "contentMatch": true,
-        "bodyLen": 1031815,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/changelog",
-        "critical": false,
-        "status": 200,
-        "ms": 911,
-        "contentMatch": true,
-        "bodyLen": 1031816,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/glossary",
-        "critical": false,
-        "status": 200,
-        "ms": 1028,
-        "contentMatch": true,
-        "bodyLen": 1031816,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/llms.txt",
-        "critical": false,
-        "status": 200,
-        "ms": 1021,
-        "contentMatch": true,
-        "bodyLen": 4694,
-        "error": null,
-        "pass": true
-      },
-      {
-        "url": "/sitemap.xml",
-        "critical": false,
-        "status": 200,
-        "ms": 1298,
-        "contentMatch": true,
-        "bodyLen": 47075,
-        "error": null,
-        "pass": true
-      }
-    ],
-    "apis": [
-      {
-        "url": "/api/early-vote-rate",
-        "critical": true,
-        "status": 200,
-        "ms": 1047,
-        "bodyLen": 511,
-        "error": null,
-        "pass": true,
-        "note": null
-      },
-      {
-        "url": "/api/trends",
-        "critical": false,
-        "status": 200,
-        "ms": 1123,
-        "bodyLen": 11244,
-        "error": null,
-        "pass": true,
-        "note": null
-      },
-      {
-        "url": "/api/data?type=info",
-        "critical": false,
-        "status": 200,
-        "ms": 350,
-        "bodyLen": 255,
-        "error": null,
-        "pass": true,
-        "note": null
-      },
-      {
-        "url": "/api/quote?symbols=^KS11",
-        "critical": false,
-        "status": 403,
-        "ms": 349,
-        "bodyLen": 190,
-        "error": null,
-        "pass": true,
-        "note": "403 expected (Origin guard)"
-      },
-      {
-        "url": "/api/naver?action=health",
-        "critical": false,
-        "status": 200,
-        "ms": 320,
-        "bodyLen": 290,
-        "error": null,
-        "pass": true,
-        "note": null
-      }
-    ],
-    "pass_count": 14,
-    "total_count": 14,
-    "critical_fail": [],
-    "avg_response_ms": 772
   }
 ]
