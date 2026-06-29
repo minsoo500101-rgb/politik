@@ -27,6 +27,7 @@ STATIC_PAGES = [
     {"path": "/dmz-frontline-2026.html",      "priority": "0.9", "freq": "weekly"},
     {"path": "/en",                           "priority": "0.85","freq": "weekly"},
     {"path": "/korea-martial-law-explained.html","priority": "0.9","freq": "weekly"},
+    {"path": "/fake-news-law-2026.html",       "priority": "0.9", "freq": "weekly"},
     {"path": "/worldcup-2026.html",      "priority": "0.9",  "freq": "daily"},
     {"path": "/drone-treason.html",      "priority": "0.9",  "freq": "weekly"},
     {"path": "/president-1year.html",     "priority": "0.9",  "freq": "weekly"},
