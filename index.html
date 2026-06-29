@@ -11035,7 +11035,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.64</a>
+      <a href="/changelog" id="foot-year">V31.65</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18112,6 +18112,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.65', date: '2026-06-24', title: '🏠 홈 「주요 이슈」 최신순 재정렬 + 신규 기사 반영', items: [
+    "홈 주요 이슈 리스트를 최신순으로 재정렬하고 이번 분기 신규 기사 반영: 허위조작정보법(7/7)→월드컵(A조 3위 마감)→DMZ 감축론→한반도 안보(핵 60기)→전남광주 통합(7/1)→노란봉투법 100일→드론 30년→9회 지선→12·3 계엄 순. 오래되거나 상시성 항목(이재명 1주년·투표용지·코스피·위기지표)은 맨 아래 '분석·기록 전체 보기'로 이동. 큐레이션 원칙 유지(9행+더보기).",
+  ]},
   { v: 'V31.64', date: '2026-06-24', title: '📜 신규 기사 — 허위조작정보 근절법(개정 정보통신망법) 7/7 시행 논란', items: [
     "현재 이슈 원본 기사 신규(다출처 교차검증·중립): 개정 정보통신망법('허위조작정보 근절법') 2026.7.7 시행 — 허위·조작정보 최대 5배 징벌배상·10억 과징금·혐오표현 규제·100만+ 플랫폼 신고의무. 철회 청원 13만 돌파, 참여연대·언론단체·야당(한동훈)·미 국무부의 표현의 자유 우려를 진보·보수 양쪽 동시 제기로 정리. 찬반 박스·입법과정·쟁점(모호성·사전검열)·출처 명기. 분석 허브·사이트맵 등록.",
   ]},
@@ -22809,27 +22812,59 @@ function renderHome() {
       <!-- V31.54 — 홈 주요 이슈 컴팩트 리스트 (피처 배너 제거, 이재명 1주년은 리스트 행으로 강등) -->
       <div class="home-issues">
         <div class="home-issues-h">📌 지금 한국 · 주요 이슈</div>
-        <a class="issue-row" href="/drone-treason.html">
-          <div class="issue-ic">⚖️</div>
+        <a class="issue-row" href="/fake-news-law-2026.html">
+          <div class="issue-ic">📜</div>
           <div class="issue-tx">
-            <div class="issue-tt">윤석열 '평양 무인기' 징역 30년 — 첫 전직 대통령 일반이적 유죄</div>
-            <div class="issue-sub">6/12 1심 · 김용현 30년·여인형 15년 · "계엄 명분 쌓기 위한 위법 군사작전"</div>
+            <div class="issue-tt">'허위조작정보 근절법' 7월 7일 시행</div>
+            <div class="issue-sub">허위·조작정보 <b>최대 5배 배상</b>·10억 과징금 · 철회 청원 13만+ · 표현의 자유 논란</div>
           </div>
           <div class="issue-ar">→</div>
         </a>
         <a class="issue-row" href="/worldcup-2026.html">
           <div class="issue-ic">⚽</div>
           <div class="issue-tx">
-            <div class="issue-tt">대한민국, 월드컵 개막전 승리 (체코 2–1)</div>
-            <div class="issue-sub">A조 공동 1위 · 황인범·오현규 · 6/18 멕시코전 · 대진표 cupbracket.com</div>
+            <div class="issue-tt">대한민국, 월드컵 A조 3위로 마감</div>
+            <div class="issue-sub">6/24 남아공 0–1 패 · <b>1승 2패</b> · 멕시코·남아공 32강 직행 · 와일드카드 대기</div>
           </div>
           <div class="issue-ar">→</div>
         </a>
-        <a class="issue-row" href="/president-1year.html">
-          <div class="issue-ic">🏛</div>
+        <a class="issue-row" href="/dmz-frontline-2026.html">
+          <div class="issue-ic">🛡</div>
           <div class="issue-tx">
-            <div class="issue-tt">이재명 대통령 취임 1주년 기자회견</div>
-            <div class="issue-sub">6/8 '대체불가 대한민국' · 부동산 보유세 강화·7월 세제개편 · 코스피 8천 맥락·양측 평가</div>
+            <div class="issue-tt">DMZ '축소'와 '요새화'</div>
+            <div class="issue-sub">최전방 병력 <b>75% 감축론</b>(2.2만→6천) vs 북 MDL 80m 철책 · 국방부·유엔사 해석차</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/korea-security-2026.html">
+          <div class="issue-ic">🛰</div>
+          <div class="issue-tx">
+            <div class="issue-tt">2026 한반도 안보 — 북 핵탄두 '60기 추정'</div>
+            <div class="issue-sub">SIPRI 50→<b>60기</b> · 9차 당대회 국방력 5개년 · 이재명 '평화공존 3원칙'</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/gwangju-jeonnam-merge.html">
+          <div class="issue-ic">🗺</div>
+          <div class="issue-tx">
+            <div class="issue-tt">전남광주통합특별시 7월 1일 출범</div>
+            <div class="issue-sub">40년 만 재통합 · 인구 약 <b>320만</b>·GRDP 158조 · 초대 시장 민형배(79.0%)</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/yellow-envelope-100days.html">
+          <div class="issue-ic">🤝</div>
+          <div class="issue-tx">
+            <div class="issue-tt">노란봉투법 시행 100일</div>
+            <div class="issue-sub">하청노조 <b>1,161곳</b>→원청 439곳 교섭요구 · 사용자성 인정 73% · 본교섭은 소수</div>
+          </div>
+          <div class="issue-ar">→</div>
+        </a>
+        <a class="issue-row" href="/drone-treason.html">
+          <div class="issue-ic">⚖️</div>
+          <div class="issue-tx">
+            <div class="issue-tt">윤석열 '평양 무인기' 징역 30년</div>
+            <div class="issue-sub">6/12 1심 · 첫 전직 대통령 일반이적 유죄 · 김용현 30년·여인형 15년</div>
           </div>
           <div class="issue-ar">→</div>
         </a>
@@ -22837,39 +22872,23 @@ function renderHome() {
           <div class="issue-ic">🗳</div>
           <div class="issue-tx">
             <div class="issue-tt">제9회 지방선거 결과 (6·3)</div>
-            <div class="issue-sub">투표율 <b>61.0%</b> · 광역 <b>민주 11·국힘 5</b> · 16곳 당선자</div>
-          </div>
-          <div class="issue-ar">→</div>
-        </a>
-        <a class="issue-row" href="/ballot-shortage.html">
-          <div class="issue-ic">🚨</div>
-          <div class="issue-tx">
-            <div class="issue-tt">투표용지 부족 사태</div>
-            <div class="issue-sub">선관위 '절반만 인쇄' · 전국 <b>50곳</b> · 개표소 '재선거' 봉쇄 시위</div>
+            <div class="issue-sub">투표율 <b>61.0%</b> · 광역 <b>민주 11·국힘 5</b> · 8년 만의 지형 역전</div>
           </div>
           <div class="issue-ar">→</div>
         </a>
         <a class="issue-row" href="/martial-law.html">
-          <div class="issue-ic">⚖️</div>
+          <div class="issue-ic">🏛</div>
           <div class="issue-tx">
             <div class="issue-tt">12·3 비상계엄 — 파면·내란 1심 무기징역</div>
-            <div class="issue-sub">헌재 전원일치 파면 · 내란 우두머리 1심 <b>무기징역</b>(항소심 정지) · 팩트·여론·외신 정리</div>
+            <div class="issue-sub">헌재 전원일치 파면 · 내란 우두머리 <b>무기징역</b>(항소심 정지) · 팩트·여론·외신</div>
           </div>
           <div class="issue-ar">→</div>
         </a>
-        <a class="issue-row" href="/economy">
-          <div class="issue-ic">📈</div>
+        <a class="issue-row" href="/analysis.html">
+          <div class="issue-ic">📂</div>
           <div class="issue-tx">
-            <div class="issue-tt">코스피 8,000 돌파</div>
-            <div class="issue-sub">1년 새 약 3배 · AI·반도체 랠리 · 환율·코스피 9종 라이브</div>
-          </div>
-          <div class="issue-ar">→</div>
-        </a>
-        <a class="issue-row" href="/crisis.html">
-          <div class="issue-ic">🚨</div>
-          <div class="issue-tx">
-            <div class="issue-tt">국가 위기 지표판 — 지금 괜찮은가?</div>
-            <div class="issue-sub">출산율 <b>0.75</b> · 가계빚 GDP <b>97%</b> · 🔴 위험 5/8</div>
+            <div class="issue-tt">분석·기록 전체 보기</div>
+            <div class="issue-sub">데이터 분석(지선·국회·경제) · 투표용지 부족 · 엔비디아 · 위기 지표판 · 이재명 1주년 등</div>
           </div>
           <div class="issue-ar">→</div>
         </a>
