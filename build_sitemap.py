@@ -29,6 +29,7 @@ STATIC_PAGES = [
     {"path": "/korea-martial-law-explained.html","priority": "0.9","freq": "weekly"},
     {"path": "/fake-news-law-2026.html",       "priority": "0.9", "freq": "weekly"},
     {"path": "/prosecution-reform-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/kim-keonhee-verdict-2026.html","priority": "0.9", "freq": "weekly"},
     {"path": "/worldcup-2026.html",      "priority": "0.9",  "freq": "daily"},
     {"path": "/drone-treason.html",      "priority": "0.9",  "freq": "weekly"},
     {"path": "/president-1year.html",     "priority": "0.9",  "freq": "weekly"},

@@ -11035,7 +11035,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.66</a>
+      <a href="/changelog" id="foot-year">V31.67</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18112,6 +18112,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.67', date: '2026-07-02', title: '⚖️ 신규 기사 — 김건희 1심 징역 7년 + 전남광주 출범 갱신', items: [
+    "신규 기사: 김건희 '매관매직' 1심 징역 7년(kim-keonhee-verdict-2026) — 2026.6.26 서울중앙지법 특정범죄가중처벌법상 알선수재 전부 유죄, 추징 6480만원, 3억 금품(그림·시계·가방 등) 몰수, 7/1 항소. 별건(도이치·명품백 상고심) 맥락 포함. 다출처 검증·중립·무죄추정 명기. 홈 자동정렬·허브·사이트맵 등록.",
+    "전남광주통합특별시 기사 시제 갱신: 7월 1일 '출범 예정'→'출범'(어제 출범 완료 반영).",
+  ]},
   { v: 'V31.66', date: '2026-06-24', title: '⚙️ 홈 이슈 자동정렬 + 신규 기사(검찰개혁)', items: [
     "홈 「주요 이슈」 자동정렬 도입 — 하드코딩 나열을 renderHomeIssueRows() 함수로 리팩터. 항목 배열에 date만 넣으면 최신순 자동 정렬돼, 기사 추가 시 수동 재정렬 불필요(유지보수 자동화). '분석·기록 전체 보기'는 항상 맨 끝 고정.",
     "신규 기사: 검찰청 폐지·공소청·중수청 개편(prosecution-reform-2026) — 2026.10.2 검찰청(1949~) 폐지, 기소는 공소청(법무부)·수사는 중대범죄수사청(행안부)으로 분리, 공소청법·중수청법 3월 국회 통과. 6대 범죄·조직·찬반 쟁점을 다출처(법률신문·경향·국가법령정보) 검증·중립 정리. 홈 자동정렬·허브·사이트맵 등록.",
@@ -22530,6 +22534,7 @@ function renderHomeIssueRows(){
   var items=[
     {d:"2026-07-07",ic:"📜",href:"/fake-news-law-2026.html",tt:"'허위조작정보 근절법' 7월 7일 시행",sub:"허위·조작정보 <b>최대 5배 배상</b>·10억 과징금 · 철회 청원 13만+ · 표현의 자유 논란"},
     {d:"2026-07-01",ic:"🗺",href:"/gwangju-jeonnam-merge.html",tt:"전남광주통합특별시 7월 1일 출범",sub:"40년 만 재통합 · 인구 약 <b>320만</b>·GRDP 158조 · 초대 시장 민형배(79.0%)"},
+    {d:"2026-06-26",ic:"⚖️",href:"/kim-keonhee-verdict-2026.html",tt:"김건희 '매관매직' 1심 징역 7년",sub:"6/26 알선수재 전부 유죄 · 3억 금품·추징 6480만 · 7/1 항소(확정 전)"},
     {d:"2026-06-25",ic:"🔍",href:"/prosecution-reform-2026.html",tt:"70년 검찰청, 10월 폐지 — 공소청·중수청 개편",sub:"수사·기소 분리 · 공소청(기소·법무부)+중수청(수사·행안부) · 3월 국회 통과·10월 2일 시행"},
     {d:"2026-06-24",ic:"⚽",href:"/worldcup-2026.html",tt:"대한민국, 월드컵 A조 3위로 마감",sub:"6/24 남아공 0–1 패 · <b>1승 2패</b> · 멕시코·남아공 32강 직행 · 와일드카드 대기"},
     {d:"2026-06-24",ic:"🛡",href:"/dmz-frontline-2026.html",tt:"DMZ '축소'와 '요새화'",sub:"최전방 병력 <b>75% 감축론</b>(2.2만→6천) vs 북 MDL 80m 철책 · 국방부·유엔사 해석차"},
