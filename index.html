@@ -305,7 +305,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <!-- V28.2 — 사전투표율 라이브 fetch: /api/early-vote-rate 신규 (다중 fallback: NEC API·info.nec.go.kr·수동슬롯·8회참고) + 5분 폴링 라이브 카드 (52px 누적%·8회 비교·시도별 옵션) -->
-<link rel="prefetch" as="fetch" href="/data/politicians.json?v=28" crossorigin>
+<link rel="prefetch" as="fetch" href="/data/politicians.json?v=29" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
@@ -11035,7 +11035,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.67</a>
+      <a href="/changelog" id="foot-year">V31.68</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11394,7 +11394,7 @@ async function loadWikiOverrides() {
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 // 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
-const POLITICIANS_VER = 28;
+const POLITICIANS_VER = 29;
 // V27.4 — 22대 의원 286명 fetch (별도 파일, 별도 state)
 async function loadAssembly22() {
   try {
@@ -11430,7 +11430,7 @@ async function loadAssembly22() {
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
-    const r = await fetch('/data/politicians.json?v=28' + POLITICIANS_VER);
+    const r = await fetch('/data/politicians.json?v=29' + POLITICIANS_VER);
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
@@ -18112,6 +18112,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.68', date: '2026-07-02', title: '🔎 전수검사 — 월드컵 탈락·국무총리 교체 반영', items: [
+    "시한부 콘텐츠·데이터 전수검사 후 stale 항목 갱신(다출처 검증): ①월드컵 기사를 '와일드카드 대기'→'32강 탈락 확정'으로 갱신 — 6/28 다른 조 종료로 조별 3위 중 10위(전체 34위), 2018 이후 8년 만의 조별리그 탈락(홍명보호). ②도감 국무총리 김민석→한성숙(7/1 취임) — 헌정사 2번째 여성총리·전 네이버 대표·중기부 장관, 무소속, 제50대. politicians v29(수술 교체, 6줄 diff). 홈 자동정렬·허브 카드 동반 갱신.",
+    "보류(추가 확인·결정 필요): 경제 기사 코스피 9,052 표기가 7월 초 실시간(~7,300선)과 괴리 → 서사 재작성 필요, 22대 후반기 상임위원장 11명(6/30 확정) 도감 반영, 6월 CPI 등.",
+  ]},
   { v: 'V31.67', date: '2026-07-02', title: '⚖️ 신규 기사 — 김건희 1심 징역 7년 + 전남광주 출범 갱신', items: [
     "신규 기사: 김건희 '매관매직' 1심 징역 7년(kim-keonhee-verdict-2026) — 2026.6.26 서울중앙지법 특정범죄가중처벌법상 알선수재 전부 유죄, 추징 6480만원, 3억 금품(그림·시계·가방 등) 몰수, 7/1 항소. 별건(도이치·명품백 상고심) 맥락 포함. 다출처 검증·중립·무죄추정 명기. 홈 자동정렬·허브·사이트맵 등록.",
     "전남광주통합특별시 기사 시제 갱신: 7월 1일 '출범 예정'→'출범'(어제 출범 완료 반영).",
@@ -22536,7 +22540,7 @@ function renderHomeIssueRows(){
     {d:"2026-07-01",ic:"🗺",href:"/gwangju-jeonnam-merge.html",tt:"전남광주통합특별시 7월 1일 출범",sub:"40년 만 재통합 · 인구 약 <b>320만</b>·GRDP 158조 · 초대 시장 민형배(79.0%)"},
     {d:"2026-06-26",ic:"⚖️",href:"/kim-keonhee-verdict-2026.html",tt:"김건희 '매관매직' 1심 징역 7년",sub:"6/26 알선수재 전부 유죄 · 3억 금품·추징 6480만 · 7/1 항소(확정 전)"},
     {d:"2026-06-25",ic:"🔍",href:"/prosecution-reform-2026.html",tt:"70년 검찰청, 10월 폐지 — 공소청·중수청 개편",sub:"수사·기소 분리 · 공소청(기소·법무부)+중수청(수사·행안부) · 3월 국회 통과·10월 2일 시행"},
-    {d:"2026-06-24",ic:"⚽",href:"/worldcup-2026.html",tt:"대한민국, 월드컵 A조 3위로 마감",sub:"6/24 남아공 0–1 패 · <b>1승 2패</b> · 멕시코·남아공 32강 직행 · 와일드카드 대기"},
+    {d:"2026-06-28",ic:"⚽",href:"/worldcup-2026.html",tt:"대한민국, 월드컵 32강 탈락 (A조 3위)",sub:"6/28 확정 · <b>1승 2패</b> · 3위 중 10위로 와일드카드 무산 · 8년 만의 조별 탈락"},
     {d:"2026-06-24",ic:"🛡",href:"/dmz-frontline-2026.html",tt:"DMZ '축소'와 '요새화'",sub:"최전방 병력 <b>75% 감축론</b>(2.2만→6천) vs 북 MDL 80m 철책 · 국방부·유엔사 해석차"},
     {d:"2026-06-22",ic:"🤝",href:"/yellow-envelope-100days.html",tt:"노란봉투법 시행 100일",sub:"하청노조 <b>1,161곳</b>→원청 439곳 교섭요구 · 사용자성 인정 73% · 본교섭은 소수"},
     {d:"2026-06-12",ic:"⚖️",href:"/drone-treason.html",tt:"윤석열 '평양 무인기' 징역 30년",sub:"6/12 1심 · 첫 전직 대통령 일반이적 유죄 · 김용현 30년·여인형 15년"},
