@@ -11035,7 +11035,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.69</a>
+      <a href="/changelog" id="foot-year">V31.70</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18112,6 +18112,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.70', date: '2026-07-02', title: '💾 신규 기사 SK하이닉스 미국 상장 + 경제 기사 코스피 정정', items: [
+    "신규 기사: SK하이닉스 미국 나스닥 상장(hynix-us-listing-2026) — 공모가 $149·약 265억 달러 조달로 외국 기업 미국 IPO 사상 최대(알리바바 초월), ADR 이중상장·프리미엄 프라이싱, AI/HBM 수요·'코리아 디스카운트' 해소 기대, '재평가 vs 국내 이탈' 쟁점. 다출처(CNN·오마이뉴스·서울경제·인베스팅) 검증·중립.",
+    "경제 기사(economy-2026-review) 코스피 정정: '2,399→9,052 폭등(277%)'을 '상반기 9,000선 고점(9,052)→7월 반도체주 조정 7,000선 안팎'으로 수정 — 전수검사에서 지적된 실시간 괴리(사실 오류) 해소. 제목·리드·KPI·1번 섹션·표 주석·하이닉스 기사 링크 반영. 홈 자동정렬·허브·사이트맵 등록.",
+  ]},
   { v: 'V31.69', date: '2026-07-02', title: '🏛 신규 기사 — 한성숙 신임 국무총리(20년 만의 여성 총리)', items: [
     "신규 기사: 한성숙 제50대 국무총리 취임(han-seongsuk-pm-2026) — 7/1 취임, 2006년 한명숙 이후 20년 만의 여성 총리, 전 네이버 대표·초대 중기부 장관 IT 기업인 출신. 김민석 후임, 6/30 여당 단독 인준. 프로필·취임경위·청문회 쟁점(다주택·정보유출·안보관)을 여야 시각으로 균형 정리. 다출처 검증·중립. 홈 자동정렬·허브·사이트맵 등록.",
   ]},
@@ -22540,6 +22544,7 @@ function renderHomeIssueRows(){
   // 홈 주요 이슈 — 여기 배열에 항목만 추가하면 date(d) 기준 최신순 자동 정렬됨.
   var items=[
     {d:"2026-07-07",ic:"📜",href:"/fake-news-law-2026.html",tt:"'허위조작정보 근절법' 7월 7일 시행",sub:"허위·조작정보 <b>최대 5배 배상</b>·10억 과징금 · 철회 청원 13만+ · 표현의 자유 논란"},
+    {d:"2026-07-02",ic:"💾",href:"/hynix-us-listing-2026.html",tt:"SK하이닉스, 미국 나스닥 상장 — 외국기업 사상 최대 IPO",sub:"공모가 $149·약 265억 달러 · 알리바바 넘어선 최대 · AI/HBM·코리아 디스카운트"},
     {d:"2026-07-01",ic:"🧑‍💼",href:"/han-seongsuk-pm-2026.html",tt:"한성숙 신임 국무총리 취임 — 20년 만의 여성 총리",sub:"7/1 취임 · 전 네이버 대표·IT 기업인 · 김민석 후임 · 6/30 여당 단독 인준"},
     {d:"2026-07-01",ic:"🗺",href:"/gwangju-jeonnam-merge.html",tt:"전남광주통합특별시 7월 1일 출범",sub:"40년 만 재통합 · 인구 약 <b>320만</b>·GRDP 158조 · 초대 시장 민형배(79.0%)"},
     {d:"2026-06-26",ic:"⚖️",href:"/kim-keonhee-verdict-2026.html",tt:"김건희 '매관매직' 1심 징역 7년",sub:"6/26 알선수재 전부 유죄 · 3억 금품·추징 6480만 · 7/1 항소(확정 전)"},

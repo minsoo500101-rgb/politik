@@ -31,6 +31,7 @@ STATIC_PAGES = [
     {"path": "/prosecution-reform-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/kim-keonhee-verdict-2026.html","priority": "0.9", "freq": "weekly"},
     {"path": "/han-seongsuk-pm-2026.html",    "priority": "0.9", "freq": "weekly"},
+    {"path": "/hynix-us-listing-2026.html",   "priority": "0.9", "freq": "weekly"},
     {"path": "/worldcup-2026.html",      "priority": "0.9",  "freq": "daily"},
     {"path": "/drone-treason.html",      "priority": "0.9",  "freq": "weekly"},
     {"path": "/president-1year.html",     "priority": "0.9",  "freq": "weekly"},
