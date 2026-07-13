@@ -1,0 +1,65 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>목업 2 — 히어로 중심 미니멀</title>
+<style>
+  :root{--brand:#6366F1;--brand2:#818CF8;--bg:#0b0b0e;--card:#15151b;--bd:#26262f;--tx:#F2F2F4;--dim:#9090a0}
+  *{box-sizing:border-box;margin:0}
+  body{font-family:'Pretendard',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;max-width:980px;margin:0 auto}
+  .logo{font-weight:900;font-size:17px}.logo b{color:var(--brand2)}
+  .nav .links{display:flex;gap:22px;font-size:13.5px;color:var(--dim);font-weight:600}
+  .hero{text-align:center;padding:54px 24px 40px;max-width:760px;margin:0 auto;position:relative}
+  .kicker{display:inline-flex;align-items:center;gap:7px;background:rgba(99,102,241,.16);border:1px solid rgba(129,140,248,.3);color:var(--brand2);border-radius:24px;padding:7px 16px;font-size:12.5px;font-weight:700;margin-bottom:22px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399;animation:p 1.4s infinite}@keyframes p{50%{opacity:.3}}
+  .hero h1{font-size:52px;font-weight:900;letter-spacing:-2.5px;line-height:1.05;background:linear-gradient(120deg,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px}
+  .hero p{font-size:16px;color:var(--dim);line-height:1.6;max-width:520px;margin:0 auto 26px}
+  .cta{display:flex;gap:10px;justify-content:center}
+  .b1{background:var(--brand);color:#fff;font-weight:800;font-size:14px;border-radius:12px;padding:14px 24px}
+  .b2{background:var(--card);border:1px solid var(--bd);color:var(--tx);font-weight:700;font-size:14px;border-radius:12px;padding:14px 22px}
+  .stats{display:flex;justify-content:center;gap:0;max-width:760px;margin:8px auto 0;border:1px solid var(--bd);border-radius:16px;overflow:hidden;background:var(--card)}
+  .stat{flex:1;text-align:center;padding:22px 12px;border-right:1px solid var(--bd)}.stat:last-child{border:0}
+  .stat .n{font-size:30px;font-weight:900;letter-spacing:-1px}.stat .n.hl{color:var(--brand2)}
+  .stat .l{font-size:11.5px;color:var(--dim);margin-top:4px;font-weight:600}
+  .sect{max-width:980px;margin:44px auto 0;padding:0 28px}
+  .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .sh h2{font-size:19px;font-weight:800;letter-spacing:-.5px}.sh a{color:var(--dim);font-size:13px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--bd);font-size:14px}.row:last-child{border:0}
+  .mut{color:var(--dim);font-size:12px}.tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:#1e1e26;color:var(--brand2);margin-left:4px}
+  .up{color:#f87171}.dn{color:#60a5fa}.foot{height:60px}
+</style></head>
+<body>
+  <div class="nav"><div class="logo">📋 대한민국 <b>패치노트</b></div>
+    <div class="links"><span>선거</span><span>법안</span><span>경제</span><span>인물</span><span>여론</span></div>
+  </div>
+  <div class="hero">
+    <span class="kicker"><span class="dot"></span>사전투표 진행 중 · 5/29~30</span>
+    <h1>한국 정치, 데이터로<br>한눈에.</h1>
+    <p>9회 지방선거부터 22대 국회·경제 지표·정치인 768명까지 — 평가·해석 없이 공식 수치 그대로.</p>
+    <div class="cta"><div class="b1">🗳 사전투표 안내 →</div><div class="b2">📍 내 투표소 찾기</div></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="n hl">D-5</div><div class="l">9회 지선 (6/3)</div></div>
+    <div class="stat"><div class="n hl">9.25%</div><div class="l">실시간 사전투표율</div></div>
+    <div class="stat"><div class="n">697</div><div class="l">등록 후보</div></div>
+    <div class="stat"><div class="n">1,595</div><div class="l">22대 통과 법안</div></div>
+  </div>
+  <div class="sect">
+    <div class="sh"><h2>지금 한국</h2><a>전체 →</a></div>
+    <div class="two">
+      <div class="panel">
+        <div style="font-size:13px;font-weight:800;margin-bottom:12px">🔥 인기 정치인</div>
+        <div class="row"><span>1 한동훈 <span class="tag">국민의힘</span></span><span class="mut">12.4k</span></div>
+        <div class="row"><span>2 이재명 <span class="tag">민주당</span></span><span class="mut">9.8k</span></div>
+        <div class="row"><span>3 김동연 <span class="tag">민주당</span></span><span class="mut">6.1k</span></div>
+      </div>
+      <div class="panel">
+        <div style="font-size:13px;font-weight:800;margin-bottom:12px">💰 시세 모니터</div>
+        <div class="row"><span>코스피</span><span class="up">8,476 ▲2.1%</span></div>
+        <div class="row"><span>코스닥</span><span class="dn">1,074 ▼1.2%</span></div>
+        <div class="row"><span>원/달러</span><span class="up">1,508 ▲0.4%</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"></div>
+</body></html>

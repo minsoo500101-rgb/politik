@@ -58,7 +58,17 @@ footer{margin-top:34px;font-size:11.5px;color:var(--dim);border-top:1px solid va
 footer a{color:var(--ac);text-decoration:none}
 .ft-nav{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-weight:600}
 @media(max-width:560px){h1{font-size:23px}.kpis{grid-template-columns:1fr 1fr}}
-</style><script defer src="/_vercel/insights/script.js"></script></head><body><div class="wrap">
+</style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
+@view-transition{navigation:auto}
+h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
+html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
+::selection{background:rgba(79,70,229,.2)}
+[data-theme=dark] ::selection{background:rgba(129,140,248,.32)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1cfc8;border-radius:999px;border:3px solid transparent;background-clip:padding-box}
+@media (prefers-reduced-motion:no-preference){::view-transition-old(root),::view-transition-new(root){animation-duration:.18s}}
+</style>
+</head><body><div class="wrap">
 <div class="top"><a href="/">← 대한민국 패치노트</a><span><button class="tt" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('politik:theme',n)}catch(e){}})()">🌓</button></span></div>
 
 <div class="kicker">📜 정책 추적 · 노동</div>

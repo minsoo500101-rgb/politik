@@ -429,12 +429,47 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   a { color: var(--link); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
+  /* ============ V31.71 — 2026 트렌드 폴리시 ============
+     선별 기준: 서류/전문가 톤 유지(샤프 코너 불변) + 저비용 모던 CSS만.
+     ① text-wrap balance/pretty ② 브랜드 selection·accent-color
+     ③ 모던 스크롤바 ④ aurora 배경(초저채도) ⑤ View Transitions
+     ⑥ 라우트 진입 모션 — 전부 prefers-reduced-motion 가드 */
+  h1, h2, h3 { text-wrap: balance; }
+  p, li, .issue-sub, .art-desc { text-wrap: pretty; }
+  html { accent-color: var(--brand); scrollbar-color: var(--border-strong) transparent; }
+  ::selection { background: rgba(79,70,229,0.20); }
+  [data-theme="dark"] ::selection { background: rgba(129,140,248,0.32); }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--dim); background-clip: padding-box; border: 3px solid transparent; }
+  body {
+    background-image: radial-gradient(1100px 480px at 50% -240px, rgba(79,70,229,0.05), transparent 70%);
+    background-repeat: no-repeat;
+  }
+  [data-theme="dark"] body {
+    background-image: radial-gradient(1100px 500px at 50% -240px, rgba(129,140,248,0.09), transparent 70%);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.18s; }
+    #view > * { animation: pageIn 0.3s cubic-bezier(.2,.7,.3,1) both; }
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+
   /* ============ Header ============ */
   header {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(247,247,245,0.92);   /* V29.2 — bg(#f7f7f5) 톤 매칭 (이전 흰색 255,255,255) */
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(247,247,245,0.86);   /* V31.71 — 투명도↑ + saturate 글래스 (V29.2 톤 유지) */
+    backdrop-filter: blur(14px) saturate(1.6);
+    -webkit-backdrop-filter: blur(14px) saturate(1.6);
     border-bottom: 1px solid var(--border);
     padding: 14px 24px;
     isolation: isolate;
@@ -11035,7 +11070,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.70</a>
+      <a href="/changelog" id="foot-year">V31.71</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18112,6 +18147,9 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.71', date: '2026-07-02', title: '✨ 2026 웹 디자인 트렌드 폴리시 — 모던 CSS 선별 적용', items: [
+    "서류/전문가 톤(샤프 코너)을 유지하면서 최신 CSS 트렌드만 선별 적용: ①View Transitions API — SPA 라우트 전환 크로스페이드(runRoute 래퍼, nav·popstate) + 정적 기사 간 cross-document 전환(@view-transition) ②라우트 진입 모션(pageIn 슬라이드업) ③글래스 헤더 고도화 blur 8→14px + saturate(1.6) ④text-wrap: balance(제목)/pretty(본문) ⑤브랜드 ::selection·accent-color ⑥모던 스크롤바(양 테마) ⑦홈 상단 aurora 그라디언트(초저채도 인디고). 전부 prefers-reduced-motion 가드. 정적 페이지 30개에 trend-polish 일괄 삽입. 로컬 브라우저 런타임 검증(계산 스타일·라우팅·콘솔 0에러) 완료.",
+  ]},
   { v: 'V31.70', date: '2026-07-02', title: '💾 신규 기사 SK하이닉스 미국 상장 + 경제 기사 코스피 정정', items: [
     "신규 기사: SK하이닉스 미국 나스닥 상장(hynix-us-listing-2026) — 공모가 $149·약 265억 달러 조달로 외국 기업 미국 IPO 사상 최대(알리바바 초월), ADR 이중상장·프리미엄 프라이싱, AI/HBM 수요·'코리아 디스카운트' 해소 기대, '재평가 vs 국내 이탈' 쟁점. 다출처(CNN·오마이뉴스·서울경제·인베스팅) 검증·중립.",
     "경제 기사(economy-2026-review) 코스피 정정: '2,399→9,052 폭등(277%)'을 '상반기 9,000선 고점(9,052)→7월 반도체주 조정 7,000선 안팎'으로 수정 — 전수검사에서 지적된 실시간 괴리(사실 오류) 해소. 제목·리드·KPI·1번 섹션·표 주석·하이닉스 기사 링크 반영. 홈 자동정렬·허브·사이트맵 등록.",
@@ -23826,6 +23864,15 @@ function currentRoute() {
   return '#' + p + (location.search || '');
 }
 // nav(target) — '#/about' | '/about' | '' (홈) 모두 허용. pushState + route() 실행.
+// V31.71 — View Transitions API: 라우트 전환 크로스페이드 (미지원·모션축소 시 즉시 렌더)
+function runRoute() {
+  if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.startViewTransition(() => route());
+  } else {
+    route();
+  }
+}
+
 function nav(target) {
   if (target == null) target = '/';
   let path = String(target);
@@ -23844,7 +23891,7 @@ function nav(target) {
   // popstate는 자동 발화하지 않으므로 직접 호출
   const _drop = document.getElementById('ac-dropdown');
   if (_drop) _drop.classList.remove('open');
-  route();
+  runRoute();
   window.scrollTo(0, 0);
   // V22.8 — 모바일 하단 nav 활성 상태 갱신
   updateMobileBottomNav();
@@ -25613,7 +25660,7 @@ async function populateHomeEconMini() {
 window.addEventListener('popstate', () => {
   const _drop = document.getElementById('ac-dropdown');
   if (_drop) _drop.classList.remove('open');
-  route();
+  runRoute();
 });
 // 내부 링크 자동 인터셉트 — <a href="/foo">는 nav()로 처리, _blank·외부 링크는 그대로
 document.addEventListener('click', (e) => {

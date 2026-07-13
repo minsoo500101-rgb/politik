@@ -1,0 +1,74 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>목업 1 — 벤토 그리드</title>
+<style>
+  :root{--brand:#6366F1;--brand2:#818CF8;--bg:#0c0c10;--card:#16161c;--elev:#1e1e26;--bd:#2a2a34;--tx:#ECECEF;--dim:#9a9aa6;--ok:#34d399;--up:#f87171;--dn:#60a5fa}
+  *{box-sizing:border-box;margin:0}
+  body{font-family:'Pretendard',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:22px;max-width:1080px;margin:0 auto;-webkit-font-smoothing:antialiased}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .logo{font-weight:900;font-size:18px;letter-spacing:-.5px}.logo b{color:var(--brand2)}
+  .search{flex:1;max-width:440px;margin:0 16px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;color:var(--dim);font-size:13px}
+  .pill{background:var(--elev);border:1px solid var(--bd);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--dim)}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;grid-auto-rows:minmax(96px,auto)}
+  .c{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px;transition:.2s}
+  .c:hover{border-color:var(--brand);transform:translateY(-2px)}
+  .hero{grid-column:span 2;grid-row:span 2;background:linear-gradient(150deg,#1e1b4b,#312e81 60%,#4338ca);border:none;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;right:-40px;top:-40px;width:220px;height:220px;background:radial-gradient(circle,rgba(129,140,248,.35),transparent 70%)}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;width:fit-content}
+  .dot{width:7px;height:7px;border-radius:50%;background:#fca5a5;box-shadow:0 0 8px #f87171;animation:p 1.4s infinite}
+  @keyframes p{50%{opacity:.4}}
+  .hero h1{font-size:34px;font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin:14px 0 6px}
+  .hero .sub{color:#c7d2fe;font-size:13.5px;line-height:1.5}
+  .heror{display:flex;gap:20px;margin-top:16px;position:relative;z-index:1}
+  .heror .n{font-size:30px;font-weight:900;letter-spacing:-1px}.heror .l{font-size:11px;color:#c7d2fe;font-weight:600}
+  .hbtn{margin-top:14px;background:#fff;color:#312e81;font-weight:800;font-size:13px;border-radius:10px;padding:11px 16px;width:fit-content;position:relative;z-index:1}
+  .eye{font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+  .big{font-size:26px;font-weight:900;letter-spacing:-1px}.unit{font-size:12px;color:var(--dim);font-weight:600}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--bd)}
+  .row:last-child{border:0}.mut{color:var(--dim);font-size:11.5px}
+  .tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--elev);color:var(--brand2)}
+  .up{color:var(--up)}.dn{color:var(--dn)}
+  .spark{height:34px;display:flex;align-items:flex-end;gap:3px;margin-top:8px}
+  .spark i{flex:1;background:linear-gradient(var(--brand2),var(--brand));border-radius:2px;opacity:.85}
+  .wide{grid-column:span 2}
+  h3{font-size:13.5px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .live{font-size:10px;color:var(--ok);font-weight:700}
+</style></head>
+<body>
+  <div class="top">
+    <div class="logo">📋 대한민국 <b>패치노트</b></div>
+    <div class="search">🔍 정치인·법안·후보 통합 검색</div>
+    <div class="pill">🌙 다크</div>
+  </div>
+  <div class="grid">
+    <div class="c hero">
+      <div>
+        <span class="badge"><span class="dot"></span>9회 지방선거 · 사전투표 진행 중</span>
+        <h1>D-5<br>2026 지방선거</h1>
+        <div class="sub">전국 어디서나 신분증만 있으면 사전투표 가능 (5/29~30)</div>
+      </div>
+      <div>
+        <div class="heror">
+          <div><div class="n">9.25%</div><div class="l">실시간 사전투표율</div></div>
+          <div><div class="n">697</div><div class="l">등록 후보</div></div>
+        </div>
+        <div class="hbtn">📍 내 투표소 찾기 →</div>
+      </div>
+    </div>
+    <div class="c"><div class="eye">KOSPI</div><div class="big up">8,476<span class="unit"> ▲2.1%</span></div><div class="spark"><i style="height:40%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:70%"></i><i style="height:62%"></i><i style="height:88%"></i><i style="height:100%"></i></div></div>
+    <div class="c"><div class="eye">USD/KRW</div><div class="big dn">1,508<span class="unit"> ▲0.4%</span></div><div class="mut" style="margin-top:8px">원/달러 환율 · 장중</div></div>
+    <div class="c wide"><h3>🔥 이번 주 인기 정치인 <span class="live">● LIVE</span></h3>
+      <div class="row"><span><b>1</b> &nbsp;한동훈 <span class="tag">국민의힘</span></span><span class="mut">조회 12.4k</span></div>
+      <div class="row"><span><b>2</b> &nbsp;이재명 <span class="tag">민주당</span></span><span class="mut">조회 9.8k</span></div>
+      <div class="row"><span><b>3</b> &nbsp;김동연 <span class="tag">민주당</span></span><span class="mut">조회 6.1k</span></div>
+    </div>
+    <div class="c"><div class="eye">22대 통과 법안</div><div class="big">1,595<span class="unit"> 건</span></div><div class="mut" style="margin-top:8px">이번 주 +23건</div></div>
+    <div class="c"><div class="eye">시민 여론판</div><div class="big">76<span class="unit">% 지지</span></div><div class="mut" style="margin-top:8px">오늘 4,201명 참여</div></div>
+    <div class="c wide"><h3>🗺 시·도별 사전투표율</h3>
+      <div class="row"><span>전남</span><span class="up">18.6%</span></div>
+      <div class="row"><span>전북</span><span class="up">15.9%</span></div>
+      <div class="row"><span>대구</span><span class="dim">7.2%</span></div>
+    </div>
+    <div class="c"><div class="eye">한국 실검 1위</div><div style="font-size:18px;font-weight:800;margin-top:4px">사전투표</div><div class="mut" style="margin-top:8px">🔥 급상승</div></div>
+    <div class="c"><div class="eye">정치인 도감</div><div class="big">768<span class="unit"> 명</span></div><div class="mut" style="margin-top:8px">약력·표결·재산</div></div>
+  </div>
+</body></html>
