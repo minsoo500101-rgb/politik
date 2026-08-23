@@ -11070,7 +11070,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.73</a>
+      <a href="/changelog" id="foot-year">V31.74</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18147,6 +18147,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.74', date: '2026-08-23', title: '🔒 API CORS 정리 — 함수 API는 patchkr 전용, 정적 JSON은 개방 유지', items: [
+    "외부 사이트가 브라우저에서 우리 함수 API를 자기 서비스에 직접 꽂아 쓰던 '무임승차'를 차단. api/*.js 10개의 CORS 전면허용(*)을 제거하고 patchkr.com·www·프리뷰 배포·localhost Origin만 허용(Vary: Origin 포함). quote·naver는 이미 허용목록 방식이라 유지 — 12개 전부 Origin 제한 완료.",
+    "부작용 없음 확인: 우리 사이트는 same-origin이라 Origin 헤더 자체를 보내지 않아 무영향, 서버 간 호출·AI 크롤러도 CORS 무관. 정규식 로직 8케이스 런타임 검증(정상 도메인 허용·스푸핑/유사 도메인 차단) + 12개 파일 문법 검증 통과.",
+    "개방성은 유지: `/data/*.json` 정적 파일은 CORS 전면 개방 그대로(CDN 서빙이라 함수 비용 0). llms.txt·/developers 안내를 실제와 맞게 정정 — 데이터 이용자는 정적 JSON 경로를 권장 경로로 안내. 참고: 함수 API는 12개 전부 이미 s-maxage CDN 캐시가 걸려 있어 부하 자체는 캐시로 통제되고 있음.",
+  ]},
   { v: 'V31.73', date: '2026-08-23', title: '📰 6주치 밀린 업데이트 — 신규 기사 3편 + 주요 갱신 2건', items: [
     "7/14~8/23 백로그 스캔(15에이전트·전건 다출처 confirmed) 일괄 반영. 신규 기사 3편: ①부동산 대책 총정리(8/3 세제개편 — 종부세 주택 수→주택가액 기준 전환·실거주 차등공제 14억/9억 + 8/13 공급대책 — 수도권 23만호+α·신규택지 1차 2만7,200호·착공 68→37개월·가계대출 증가율 3.0%) ②2026 폭염·수해 기록(8/1 양산 41.6℃ 122년 관측사상 최고·온열질환 3,089명 첫 3천 돌파·사망 26명·거제 813mm 산사태) ③패스트트랙 330일→90일 국회법 개정(8/20, 재석 234·찬성 153·반대 81·상임위 60일·법사위 30일).",
     "주요 갱신 2건: ①민주당 전당대회 기사를 '5파전 확정'→'김민석 신임 당대표 선출'(8/17, 54.08% vs 정청래 45.92%, 선호투표제·1인1표제 첫 적용, 최고위원 5인)로 전면 개편 ②윤석열 재판 기사에 7/27 선거법 1심(징역 1년6개월·집유 3년, 당선무효형·397억 반환 쟁점)과 8월 항소심 현황(9/7·9/10 증인신문 재지정, 무인기 항소심 비공개) 반영.",
@@ -20446,7 +20451,7 @@ function renderDevelopersPage() {
       <header class="dev-hero">
         <div class="dev-hero-eye">DEVELOPERS · AI · API</div>
         <h1>🔌 공개 API 가이드</h1>
-        <p>patchkr.com의 모든 데이터를 무료·인증없이 사용. CORS 허용. LLM/AI 직접 호출 가능.</p>
+        <p>patchkr.com의 데이터를 무료·인증없이 사용. <b>정적 JSON(<code>/data/*.json</code>)은 CORS 전면 개방</b>이라 어디서든 바로 호출할 수 있고, 함수형 API(<code>/api/*</code>)는 patchkr.com 도메인 전용입니다(서버 간 호출·크롤러는 무관).</p>
       </header>
 
       <section class="dev-section">
@@ -23969,7 +23974,7 @@ const ROUTE_META = {
   '/stances': { title: '내 정치 입장 — 지지·반대 기록', desc: '익명으로 정치인 지지·반대 입장을 기록. 본인의 정치 성향과 입법 평가 기록.' },
   '/me': { title: '📋 내 활동 대시보드 — 북마크·평점·투표·stance 한 곳에', desc: '익명 UUID로 저장된 본인의 모든 활동 기록을 한 페이지에서 확인. 관심 의원·정치 입장·9회 공약 평점·8회 이행 투표·소셜 투표·페이지 조회 통계.' },
   '/share': { title: '📤 인스타·SNS 공유 카드 자동 생성', desc: '대한민국 패치노트 데이터를 1080x1080 인스타용 카드로 자동 생성. 9회 지선 D-Day·KOSPI 데일리·오늘의 법안·정치인 카드·발의 랭킹 Top 5. 모바일에서 1탭 인스타 직접 전송.' },
-  '/developers': { title: '🔌 개발자·AI 공개 API 가이드 — 한국 정치·경제 데이터 무료 사용', desc: 'patchkr.com 공개 API 9종. 정치인·법안·9회 지선·경제 ECOS·한국 시장 시세·뉴스·트렌드·법령 검색·KOSPI/KOSDAQ Yahoo Finance 우회. CORS 허용·인증 없음·자유 사용. LLM/AI 친화 — /llms.txt + /llms-full.txt 별도 안내.' },
+  '/developers': { title: '🔌 개발자·AI 공개 API 가이드 — 한국 정치·경제 데이터 무료 사용', desc: 'patchkr.com 공개 데이터 가이드. 정적 JSON(/data/*.json — 정치인·국회의원·용어·경제·선거·국제비교)은 CORS 전면 개방·인증 없음·자유 사용. 함수형 API(/api/*)는 patchkr.com 도메인 전용. LLM/AI 친화 — /llms.txt + /llms-full.txt 별도 안내.' },
   '/rankings': { title: '활동 랭킹 — 22대 의원 종합 점수', desc: '제22대 국회의원 활동 종합 점수 랭킹. 발의·통과율·위원회 활동 측정.' },
   '/compare': { title: '의원 비교 — 22대 국회의원 옆에 옆에', desc: '제22대 국회의원 2명 옆에 옆에 비교. 약력·발의·표결·활동 점수 데이터 대조.' },
   '/compare-cand': { title: '9회 지선 후보 비교 — 5대 공약 옆에 옆에', desc: '제9회 지방선거 후보자 최대 3명 옆에 옆에 비교. 5대 공약·약력·재산·전과 대조.' },

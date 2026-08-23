@@ -50,7 +50,16 @@ function parseItems(xml, nameTag) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // V31.74 — CORS: patchkr 도메인만 허용(외부 사이트의 브라우저 직접 호출 차단). 정적 /data/*.json은 계속 개방.
+  res.setHeader('Vary', 'Origin');
+  {
+    const _o = req.headers.origin || '';
+    if (/^https:\/\/(www\.)?patchkr\.com$/.test(_o) ||
+        /^https:\/\/politik-[a-z0-9-]+\.vercel\.app$/.test(_o) ||
+        /^http:\/\/localhost(:\d+)?$/.test(_o)) {
+      res.setHeader('Access-Control-Allow-Origin', _o);
+    }
+  }
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   // 투표소 위치는 사실상 정적 → 길게 캐시
   res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=21600, stale-while-revalidate=86400');

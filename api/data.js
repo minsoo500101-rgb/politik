@@ -47,7 +47,16 @@ function getGlossary() {
 
 export default async function handler(req, res) {
   // CORS — 모든 도메인 허용
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // V31.74 — CORS: patchkr 도메인만 허용(외부 사이트의 브라우저 직접 호출 차단). 정적 /data/*.json은 계속 개방.
+  res.setHeader('Vary', 'Origin');
+  {
+    const _o = req.headers.origin || '';
+    if (/^https:\/\/(www\.)?patchkr\.com$/.test(_o) ||
+        /^https:\/\/politik-[a-z0-9-]+\.vercel\.app$/.test(_o) ||
+        /^http:\/\/localhost(:\d+)?$/.test(_o)) {
+      res.setHeader('Access-Control-Allow-Origin', _o);
+    }
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   // 24시간 CDN 캐시

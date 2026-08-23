@@ -55,13 +55,21 @@
 
 ## 공개 API
 
-### 자체 데이터 (CORS *, 자유 사용 — 출처 표기 권장)
-- `GET /api/data?type=politicians` — 정치인 766명 (22대 의원 286 + 자체 DB 480) (공공누리 1유형 + CC BY-SA 4.0)
-- `GET /api/data?type=glossary` — 용어 사전 248개 (CC BY-SA 4.0)
-- `GET /api/data?type=parties` — 정당 메타정보 (CC BY 4.0)
-- `GET /api/data?type=info` — 사이트 통계 요약 (CC BY 4.0)
+> **2026-08 변경 안내** — 함수형 API(`/api/*`)는 이제 **patchkr.com 도메인에서만 브라우저 호출**이 가능합니다(CORS 제한). 서버 간 호출·크롤러는 영향 없습니다. 데이터를 그대로 활용하려면 아래 **정적 JSON**을 쓰세요 — CORS 전면 개방·인증 불필요·CDN 서빙이라 더 빠릅니다.
 
-### 공공데이터 프록시 (CORS *, 자유 사용 — 공공누리 1유형)
+### ★ 정적 데이터 파일 (CORS *, 자유 사용 — 출처 표기 권장) — 권장 경로
+- `GET /data/politicians.json` — 정치인 인물 DB (공공누리 1유형 + CC BY-SA 4.0)
+- `GET /data/assembly-22.json` — 제22대 국회의원 명부 (국회 OPEN API 기반)
+- `GET /data/glossary.json` — 용어 사전 (CC BY-SA 4.0)
+- `GET /data/economy.json` — 경제 지표 시계열 2015~ (CC BY 4.0)
+- `GET /data/election_2026_results.json` · `/data/local_elections.json` — 9회 지선 결과·역대 지방선거
+- `GET /data/world_compare.json` — 12개국 민주주의 비교 지표
+- `GET /data/risk-indicators.json` · `/data/party_history.json` — 국가 위기 지표·정당사
+
+### 자체 데이터 API (patchkr.com Origin 전용 — 위 정적 파일 사용 권장)
+- `GET /api/data?type=politicians|glossary|parties|info`
+
+### 공공데이터 프록시 (patchkr.com Origin 전용 — 원천 API 직접 이용 권장)
 - `GET /api/bill?billId={ID}` — 법안 상세 (국회 OPEN API)
 - `GET /api/law?target=law&query={Q}` — 법령·판례·헌재 (국가법령정보)
 - `GET /api/nec?endpoint=candidates&sgId=20260603&sgTypecode=3` — 9회 지선 후보 (data.go.kr)
