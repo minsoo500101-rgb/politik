@@ -11070,7 +11070,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.76</a>
+      <a href="/changelog" id="foot-year">V31.77</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11470,6 +11470,11 @@ async function loadExtraPoliticians() {
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
     PARTY_INFO  = j.parties     || {};
+    // V31.77 — 임기 만료 자동 표기. term_end가 오늘보다 과거면 현직이 아니므로
+    // 역할명에 '임기 만료'를 붙여 현직으로 오인되지 않게 한다(추측 없이 데이터로만 판단).
+    const _today = new Date().toISOString().slice(0, 10);
+    // former_* 는 이미 '역대' 분류라 만료 표기가 중복 — 현직 카테고리에만 적용
+    const _expired = p => !!(p.term_end && p.term_end < _today && !String(p.type || '').startsWith('former'));
     return (j.people || []).map(p => ({
       MONA_CD: p.id,
       HG_NM: p.name_ko,
@@ -11477,12 +11482,12 @@ async function loadExtraPoliticians() {
       ENG_NM: '',
       POLY_NM: p.party || '무소속',
       ORIG_NM: p.region || '—',
-      CMIT_NM: p.role || '',
+      CMIT_NM: (p.role || '') + (_expired(p) ? ` · 임기 만료(${p.term_end})` : ''),
       REELE_GBN_NM: p.type_label || '',
       ELECT_GBN_NM: p.type_label || '',
       BTH_DATE: '',
       SEX_GBN_NM: '',
-      MEM_TITLE: (p.career || '') + (p.career ? '\n\n' : '') + (p.role || '') + (p.term_start ? `\n임기: ${p.term_start} ~ ${p.term_end || '재임 중'}` : ''),
+      MEM_TITLE: (p.career || '') + (p.career ? '\n\n' : '') + (p.role || '') + (p.term_start ? `\n임기: ${p.term_start} ~ ${p.term_end || '재임 중'}` : '') + (_expired(p) ? '\n\n⚠ 이 임기는 이미 종료됐습니다. 후임자 정보는 아직 반영되지 않았을 수 있습니다.' : ''),
       TEL_NO: '', E_MAIL: '', HOMEPAGE: '', ASSEM_ADDR: '',
       STAFF: '', SECRETARY: '', SECRETARY2: '',
       UNITS: '',
@@ -18147,6 +18152,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.77', date: '2026-08-26', title: '⏳ 임기 만료 자동 표기 — 264명이 현직으로 오인되던 문제 해결', items: [
+    "도감에서 임기가 이미 끝난 인물이 현직처럼 보이던 문제를 고쳤다. term_end가 오늘보다 과거면 역할명에 '· 임기 만료(날짜)'를 자동으로 붙이고, 상세에는 '이 임기는 이미 종료됐습니다. 후임자 정보는 아직 반영되지 않았을 수 있습니다' 안내를 표시한다. 날짜 비교로만 판단하므로 추측이 없고, 시간이 지나면 자동으로 갱신된다.",
+    "적용 대상 264명 — 기초단체장 226(제9회 지방선거 미반영, 8회 이전 기준) · 지방의회 의장 17 · 교육감 17 · 국회 전반기 의장단 3 · 청장 1. 역대 인물(former_*) 카테고리는 이미 '역대'로 분류돼 있어 중복 표기를 제외했다.",
+    "⚠ 근본 해결은 아직: 기초단체장 226명의 제9회 지방선거(2026.6.3) 당선자 데이터가 반영되지 않은 상태로, 후임자 정보를 채우려면 중앙선거관리위원회 당선인 명단이 필요하다. 그전까지는 잘못된 현직 표기 대신 '임기 만료'를 명확히 알리는 방식으로 운영한다.",
+  ]},
   { v: 'V31.76', date: '2026-08-23', title: '🛡 공개 변경이력·저장소 보안 점검', items: [
     "공개 변경이력(182개 항목)과 저장소 전체에 보안 점검 실시. 변경이력에서 데이터 제공처의 이용 조건·내부 구현 세부와 관련된 표현 7건을 중립적 서술로 정비했다(변경 사실 자체는 그대로 보존).",
     "저장소 점검 결과 이상 없음: 법제처 OC·공공데이터포털 서비스키 등 비공개 자격증명은 작업트리는 물론 전체 커밋 히스토리(1,572개)에서도 발견되지 않았고, 자격증명 파일(.env·인증서·키)도 커밋된 적이 없다. 운영 상태 로그(health-log)에도 내부 경로·스택트레이스·IP·접속 파라미터가 포함돼 있지 않음을 확인했다.",
