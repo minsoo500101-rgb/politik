@@ -44,6 +44,40 @@ async function fetchWikiSummary(title) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// ─────────────────────────────────────────────────────────────
+// V31.75 — 동명이인 검증 게이트
+// 과거 이 게이트가 없어 제주도의회 의장 이상봉에 '패션 디자이너 이상봉',
+// 단양군수 김문근에 '조선 후기 외척 김문근(1801~1863)' 등 11건이 잘못 등록됐다.
+// 가져온 위키 요약이 '그 직책을 맡은 그 사람'인지 확인한 뒤에만 채택한다.
+// ─────────────────────────────────────────────────────────────
+const NON_POLITICAL = /패션 디자이너|성우|가수|배우|개그맨|아나운서|프로게이머|만화가|소설가|시인|화가|작곡가|야구 선수|축구 선수|농구 선수|배구 선수|수영 선수|골프 선수|씨름|바둑/;
+const POLITICAL = /정치인|국회의원|시장|군수|구청장|지사|교육감|의원|장관|차관|청장|공무원|관료|법조인|변호사|판사|검사|기업인|교육자|교수|의사|약사|군인|경찰/;
+
+function isSamePerson(extract, p) {
+  const c = extract || '';
+  const role = p.role || '';
+  const isCurrent = !String(p.type || '').startsWith('former');
+
+  // ① 사망자 배제 — 생몰 두 날짜가 적힌 인물은 현직자일 수 없다
+  const deceased = /\d{3,4}년\s*\d{1,2}월\s*\d{1,2}일\s*[~\-–]\s*\d{3,4}년\s*\d{1,2}월\s*\d{1,2}일/.test(c);
+  if (deceased && isCurrent) return false;
+
+  // ② 조선·일제강점기 등 역사 인물 배제
+  if (/조선 (후기|초기|중기)|일제강점기의|고려 시대|삼국시대/.test(c)) return false;
+
+  // ③ 명백한 비정치 직업 + 정치 이력 없음 → 동명이인
+  if (NON_POLITICAL.test(c) && !POLITICAL.test(c)) return false;
+
+  // ④ 직책 일치 확인 — role의 핵심 직책어가 요약에 등장하는지
+  //    (국회 간사·차관 등은 위키에 직책이 없을 수 있어, '정치인' 언급이면 통과)
+  const keys = role.match(/시장|군수|구청장|지사|교육감|의장|국회의원|장관|차관|청장|대법관|재판관/g);
+  if (keys && keys.length) {
+    const roleHit = [...new Set(keys)].some(k => c.includes(k));
+    if (!roleHit && !POLITICAL.test(c)) return false;
+  }
+  return true;
+}
+
 async function main() {
   const filePath = path.join(__dirname, '..', 'data', 'politicians.json');
   const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -74,12 +108,14 @@ async function main() {
     titles.push(`${p.name_ko} (정치인)`);
     let summary = null;
     for (const t of titles) {
-      summary = await fetchWikiSummary(t);
-      if (summary) break;
+      const s = await fetchWikiSummary(t);
+      // V31.75 — 동명이인 게이트: 그 직책의 그 사람인지 확인된 경우에만 채택
+      if (s && isSamePerson(s.extract, p)) { summary = s; break; }
+      if (s) console.log(`\n    ↳ 동명이인 의심 거부: "${t}" — ${s.extract.slice(0, 50)}…`);
       await sleep(120);
     }
     if (!summary) {
-      console.log('SKIP (no wiki)');
+      console.log('SKIP (no wiki / 동명이인 거부)');
       skipped++;
     } else {
       // extract을 정제 — 너무 길면 잘라냄 (~300자)

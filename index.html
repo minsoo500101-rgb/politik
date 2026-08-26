@@ -305,7 +305,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <!-- V28.2 — 사전투표율 라이브 fetch: /api/early-vote-rate 신규 (다중 fallback: NEC API·info.nec.go.kr·수동슬롯·8회참고) + 5분 폴링 라이브 카드 (52px 누적%·8회 비교·시도별 옵션) -->
-<link rel="prefetch" as="fetch" href="/data/politicians.json?v=30" crossorigin>
+<link rel="prefetch" as="fetch" href="/data/politicians.json?v=31" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
@@ -11070,7 +11070,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.74</a>
+      <a href="/changelog" id="foot-year">V31.75</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11429,7 +11429,7 @@ async function loadWikiOverrides() {
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 // 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
-const POLITICIANS_VER = 30;
+const POLITICIANS_VER = 31;
 // V27.4 — 22대 의원 286명 fetch (별도 파일, 별도 state)
 async function loadAssembly22() {
   try {
@@ -11465,7 +11465,7 @@ async function loadAssembly22() {
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
-    const r = await fetch('/data/politicians.json?v=30' + POLITICIANS_VER);
+    const r = await fetch('/data/politicians.json?v=31' + POLITICIANS_VER);
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};
@@ -18147,6 +18147,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.75', date: '2026-08-23', title: '🧹 도감 동명이인 오등록 11건 정정 + 재발 방지 게이트', items: [
+    "사용자 제보(제주도의회 의장 이상봉에 '패션 디자이너 이상봉' 약력이 붙어 있음)를 계기로 위키 자동수집 약력 233건을 전수 점검해 동명이인 오등록 11건을 찾아 정정: 이상봉(패션 디자이너)·이범석(독립운동가 1900~1972)·조병옥(독립운동가 1894~1960)·최상기(성우)·문승우(수영선수 2002년생)·김대중(제15대 대통령)·이병화(독립운동가 1906~1952)·김문근(조선 후기 외척 1801~1863, 철종 장인)·권익현(전 국회의원 1934~2017)·강영석(친일반민족행위자 1906~1991)·박종우(전 국회의원 1938~2024). 잘못된 약력·위키링크를 먼저 제거한 뒤, 11에이전트 병렬 검증으로 확인된 올바른 약력 10건을 기재(이상봉은 확인 실패로 약력 미기재 — 추측 금지 원칙).",
+    "재발 방지: scripts/wiki-auto-career.js에 동명이인 검증 게이트 신설 — ①생몰 두 날짜(사망자) 배제 ②조선·일제강점기 역사인물 배제 ③비정치 직업(디자이너·성우·선수 등)이면서 정치 이력 없음 배제 ④직책 키워드 일치 확인. 과거 오등록 11건 전부 차단·정상 인물 통과를 회귀 테스트로 검증(11/11 차단, 2/2 통과).",
+    "검증 과정에서 드러난 직책 오류도 함께 정정: 박종우 거제시장(2024.11 대법원 당선무효로 시장직 상실) · 이병화(현직 아님 — 환경부 차관 2024.6~2025.6) · 김대중(2026.7 전남광주통합특별시 교육감 취임) · 임기 종료 3건(이범석·강영석·문승우) 기간 명기. politicians v31.",
+  ]},
   { v: 'V31.74', date: '2026-08-23', title: '🔒 API CORS 정리 — 함수 API는 patchkr 전용, 정적 JSON은 개방 유지', items: [
     "외부 사이트가 브라우저에서 우리 함수 API를 자기 서비스에 직접 꽂아 쓰던 '무임승차'를 차단. api/*.js 10개의 CORS 전면허용(*)을 제거하고 patchkr.com·www·프리뷰 배포·localhost Origin만 허용(Vary: Origin 포함). quote·naver는 이미 허용목록 방식이라 유지 — 12개 전부 Origin 제한 완료.",
     "부작용 없음 확인: 우리 사이트는 same-origin이라 Origin 헤더 자체를 보내지 않아 무영향, 서버 간 호출·AI 크롤러도 CORS 무관. 정규식 로직 8케이스 런타임 검증(정상 도메인 허용·스푸핑/유사 도메인 차단) + 12개 파일 문법 검증 통과.",
