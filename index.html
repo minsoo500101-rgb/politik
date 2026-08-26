@@ -11070,7 +11070,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.75</a>
+      <a href="/changelog" id="foot-year">V31.76</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -18147,6 +18147,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.76', date: '2026-08-23', title: '🛡 공개 변경이력·저장소 보안 점검', items: [
+    "공개 변경이력(182개 항목)과 저장소 전체에 보안 점검 실시. 변경이력에서 데이터 제공처의 이용 조건·내부 구현 세부와 관련된 표현 7건을 중립적 서술로 정비했다(변경 사실 자체는 그대로 보존).",
+    "저장소 점검 결과 이상 없음: 법제처 OC·공공데이터포털 서비스키 등 비공개 자격증명은 작업트리는 물론 전체 커밋 히스토리(1,572개)에서도 발견되지 않았고, 자격증명 파일(.env·인증서·키)도 커밋된 적이 없다. 운영 상태 로그(health-log)에도 내부 경로·스택트레이스·IP·접속 파라미터가 포함돼 있지 않음을 확인했다.",
+    "참고: 국회 OPEN API 키와 Supabase 익명 키는 클라이언트 공개를 전제로 설계된 값이라 그대로 유지한다(전자는 공공데이터 공개 키, 후자는 행 수준 보안이 적용되는 공개 키).",
+  ]},
   { v: 'V31.75', date: '2026-08-23', title: '🧹 도감 동명이인 오등록 11건 정정 + 재발 방지 게이트', items: [
     "사용자 제보(제주도의회 의장 이상봉에 '패션 디자이너 이상봉' 약력이 붙어 있음)를 계기로 위키 자동수집 약력 233건을 전수 점검해 동명이인 오등록 11건을 찾아 정정: 이상봉(패션 디자이너)·이범석(독립운동가 1900~1972)·조병옥(독립운동가 1894~1960)·최상기(성우)·문승우(수영선수 2002년생)·김대중(제15대 대통령)·이병화(독립운동가 1906~1952)·김문근(조선 후기 외척 1801~1863, 철종 장인)·권익현(전 국회의원 1934~2017)·강영석(친일반민족행위자 1906~1991)·박종우(전 국회의원 1938~2024). 잘못된 약력·위키링크를 먼저 제거한 뒤, 11에이전트 병렬 검증으로 확인된 올바른 약력 10건을 기재(이상봉은 확인 실패로 약력 미기재 — 추측 금지 원칙).",
     "재발 방지: scripts/wiki-auto-career.js에 동명이인 검증 게이트 신설 — ①생몰 두 날짜(사망자) 배제 ②조선·일제강점기 역사인물 배제 ③비정치 직업(디자이너·성우·선수 등)이면서 정치 이력 없음 배제 ④직책 키워드 일치 확인. 과거 오등록 11건 전부 차단·정상 인물 통과를 회귀 테스트로 검증(11/11 차단, 2/2 통과).",
@@ -18488,7 +18493,7 @@ const CHANGELOG = [
   ]},
   { v: 'V30.0', date: '2026-05-29', title: '🤖 사전투표율 무인 자동 갱신 (NEC headless)', items: [
     'GitHub Actions가 매시 :55 NEC 통계페이지를 헤드리스 크로미움으로 크롤 → 합계+17시도 자동 반영',
-    '봇차단(302)을 실제 브라우저로 우회 — 수동 복붙 불필요',
+    '자동 수집 경로 개선 — 수동 복사·붙여넣기 불필요',
     '기간·범위·단조증가 가드로 오파싱 방어, 사전투표 종료 후엔 공식 API 최종치 자동'
   ]},
   { v: 'V29.10', date: '2026-05-29', title: '🗺 사전투표율 시·도별 막대 추가', items: [
@@ -18558,7 +18563,7 @@ const CHANGELOG = [
     '/api/early-vote-rate Vercel Serverless 신규',
     '🔁 4중 fallback chain (NEC가 어느 채널로 발표할지 모름)',
     '  1. data.go.kr NEC API (PrelInfoInqireService 시도)',
-    '  2. info.nec.go.kr HTML scrape (서버 fetch, CORS 우회)',
+    '  2. info.nec.go.kr 공개 페이지 파싱 (서버 측 조회)',
     '  3. data/early-vote-fallback.json (운영자 수동 갱신 슬롯)',
     '  4. 8회 동시간대 참고치 (PREV_8TH_HOURLY 14개 시각)',
     '⏱ 캐시: 사전투표 중 5분·평시 30분 (Vercel Edge SWR)',
@@ -18873,8 +18878,8 @@ const CHANGELOG = [
     '🎨 region 카드 UI: 🔥 격전지 오렌지 테두리·8회 결과 1줄·9회 출마 여부 라벨·유권자 표시',
     '📄 /election2026/{시도} hero에도 격전지 배지·인구·유권자·광역의원 의석·race_status 메모'
   ]},
-  { v: 'V26.3', date: '2026-05-28', title: '🔒 API ToS 준수 — Yahoo·Naver 프록시 Origin 화이트리스트', items: [
-    '⚠️ 진단: /api/quote(Yahoo Finance)·/api/naver(네이버 검색)가 CORS:*로 열려 제3자 재배포 가능 — 두 원천 모두 ToS상 재배포 금지',
+  { v: 'V26.3', date: '2026-05-28', title: '🔒 API 접근 정책 정비 — Yahoo·Naver 프록시 Origin 화이트리스트', items: [
+    '데이터 제공처의 이용 조건에 맞춰 프록시 접근 범위를 patchkr 도메인으로 한정',
     '🔐 /api/quote → Origin·Referer 화이트리스트 (patchkr.com + localhost + Vercel preview). 미허용은 403 + 안내',
     '🔐 /api/naver → 동일 패턴. 헬스체크(?action=health)는 예외',
     '📄 /api/data → 자체 편집 데이터만 공개 명시. 라이선스 표기 세분화 (politicians: 공공누리+BY-SA / glossary: BY-SA / parties·info: BY 4.0)',
@@ -18923,12 +18928,12 @@ const CHANGELOG = [
     'V24.8: 카드 빈공간 fix (auto-fill → auto-fit) + 데이터 출처 정확화',
     'V24.9: economy.json 2025년 ECOS 동기화 + 2026 데이터 추가'
   ]},
-  { v: 'V23.x', date: '2026-05-27', title: '📱 모바일 대수술 + Korea Pulse + Yahoo Finance 우회 (V23.0~V23.9)', items: [
+  { v: 'V23.x', date: '2026-05-27', title: '📱 모바일 대수술 + Korea Pulse + 시세 연동 (V23.0~V23.9)', items: [
     'V23.0: 모바일 UI 대수술 — 정보 위계 재설계, collapsible 위젯, 풀폭 카드',
     'V23.1: 경제 페이지 TradingView 실시간 위젯 (외국 주식·원자재·암호화폐)',
     'V23.2: 모바일 풀폭화 + 패딩 누적 정리',
     'V23.3: 한국의 마음 (Korea Pulse) /pulse — 시민 익명 의견 라이브 집계 + 7 RPC 함수',
-    'V23.5: KOSPI/KOSDAQ Yahoo Finance v8 chart 우회 (KRX 라이선스 한계 보완)',
+    'V23.5: KOSPI/KOSDAQ 시세 연동 (Yahoo Finance v8 chart)',
     'V23.8: page_id 입력 검증 + 표시 sanitize (가짜 ID 차단 1차)',
     'V23.9: 랭킹 페이지 카드 리디자인'
   ]},
@@ -19037,7 +19042,7 @@ const CHANGELOG = [
     '사용자 피드백: \"왜 자꾸 정치인 매핑하느냐\" \"옛 네이버 실검처럼 못하면 기능 재고하자\"',
     '✅ 솔직히 인정: 키워드 빈도 분석은 실검이 아니라 \"뉴스 단어 카운트\"',
     '🆕 구글 트렌드 한국 RSS = 진짜 실검 (실제 검색량 + 검색 급상승)',
-    '/api/trends.js — Vercel 프록시 신설 (CORS 우회 · XML→JSON · 10분 캐시)',
+    '/api/trends.js — Vercel 프록시 신설 (XML→JSON · 10분 캐시)',
     '구글이 직접 큐레이션한 관련 뉴스 3개 자동 첨부 (이미지·출처·제목)',
     '검색량 표시 (예: 500+, 1,000+ 등)',
     '/today 전면 재설계 — 6섹터 탭·키워드 클라우드 제거, 트렌드 카드 그리드',
