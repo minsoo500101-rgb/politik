@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-sitemap.xml 생성기 — 클린 경로(History API)만 출력.
+sitemap.xml 생성기 - 클린 경로(History API)만 출력.
 구 #/ 해시 URL은 레거시(구글이 # 무시 → 홈 중복)라 전부 제외.
 politicians.json의 주요 인물/정당을 클린 경로로 포함.
 """
 import json
 import urllib.parse
+import os
+import io
+import re
 from datetime import datetime
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -71,6 +74,26 @@ STATIC_PAGES = [
 ]
 
 
+def real_lastmod(path):
+    """실제 수정일을 lastmod로 사용.
+
+    기존에는 모든 URL에 TODAY를 찍어, 바뀌지 않은 기사까지 매 빌드마다
+    '오늘 갱신됨'으로 보내는 잘못된 신호를 줬다. 기사 HTML은 ld+json의
+    dateModified를, 그 외 파일은 파일 mtime을 쓴다. 파일이 없으면 TODAY.
+    """
+    f = path.lstrip('/') or 'index.html'
+    if not os.path.exists(f):
+        return TODAY
+    if f.endswith('.html'):
+        try:
+            h = io.open(f, encoding='utf-8').read(200000)
+            m = re.search(r'"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})', h)
+            if m:
+                return m.group(1)
+        except Exception:
+            pass
+    return datetime.fromtimestamp(os.path.getmtime(f)).strftime('%Y-%m-%d')
+
 def url_entry(path, priority="0.5", freq="weekly", lastmod=None):
     loc = BASE + path
     out = ["  <url>"]
@@ -90,20 +113,22 @@ def build():
     # 1) 메인 + 정적 + 그룹 페이지 (클린 경로)
     out.append("\n  <!-- 메인 + 정적/그룹 페이지 (클린 경로, History API) -->")
     for p in STATIC_PAGES:
-        out.append(url_entry(p["path"], p["priority"], p["freq"], TODAY))
+        out.append(url_entry(p["path"], p["priority"], p["freq"], real_lastmod(p["path"])))
 
+    POL_LASTMOD = TODAY
     try:
         pj = json.load(open("data/politicians.json", encoding="utf-8"))
+        POL_LASTMOD = (pj.get("syncedAt") or TODAY)[:10]
 
-        # 2) 정당 페이지 — /party/{name}
+        # 2) 정당 페이지 - /party/{name}
         parties = list(pj.get("parties", {}).keys())
         if parties:
             out.append("\n  <!-- 정당 페이지 (/party/) -->")
             for name in parties:
                 enc = urllib.parse.quote(name, safe='')
-                out.append(url_entry(f"/party/{enc}", "0.55", "weekly", TODAY))
+                out.append(url_entry(f"/party/{enc}", "0.55", "weekly", POL_LASTMOD))
 
-        # 3) 주요 인물 detail — /m/{id}  (큐레이션: 핵심 직책자만)
+        # 3) 주요 인물 detail - /m/{id}  (큐레이션: 핵심 직책자만)
         IMPORTANT_TYPES = {
             'president', 'prime_minister', 'minister', 'vice_minister',
             'chief_of_staff', 'agency_head', 'judge',
@@ -123,7 +148,7 @@ def build():
             for person in people:
                 enc = urllib.parse.quote(person["id"], safe='')
                 pri = PRI.get(person.get("type", ""), "0.45")
-                out.append(url_entry(f"/m/{enc}", pri, "monthly", TODAY))
+                out.append(url_entry(f"/m/{enc}", pri, "monthly", POL_LASTMOD))
     except Exception as e:
         print(f"[WARN] politicians.json 파싱 실패: {e}")
 
@@ -136,7 +161,7 @@ def build():
     url_count = content.count("<url>")
     hash_count = content.count("/#/")
     size_kb = len(content.encode("utf-8")) / 1024
-    print(f"[OK] sitemap.xml 생성 — URL {url_count}개, 해시(/#/) {hash_count}개, {size_kb:.1f} KB")
+    print(f"[OK] sitemap.xml 생성 - URL {url_count}개, 해시(/#/) {hash_count}개, {size_kb:.1f} KB")
 
 
 if __name__ == "__main__":
