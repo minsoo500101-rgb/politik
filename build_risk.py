@@ -257,7 +257,19 @@ h1{{font-size:30px;margin:8px 0 6px;letter-spacing:-.8px;line-height:1.2}}
 .share{{display:inline-block;margin-left:8px;font-size:14px;font-weight:700;color:var(--ac);background:transparent;border:1px solid var(--ac);padding:12px 18px;border-radius:10px;text-decoration:none;cursor:pointer}}
 footer{{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid var(--bd);padding-top:14px;line-height:1.7}}
 @media(max-width:640px){{h1{{font-size:24px}}.grid{{grid-template-columns:1fr}}.big .val{{font-size:34px}}}}
-</style><script defer src="/_vercel/insights/script.js"></script></head><body><div class="wrap">
+</style><script defer src="/_vercel/insights/script.js"></script><link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968" crossorigin="anonymous"></script>
+<style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
+@view-transition{{navigation:auto}}
+h1,h2,h3{{text-wrap:balance}}p,li{{text-wrap:pretty}}
+html{{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}}
+::selection{{background:rgba(79,70,229,.2)}}
+[data-theme=dark] ::selection{{background:rgba(129,140,248,.32)}}
+::-webkit-scrollbar{{width:10px;height:10px}}::-webkit-scrollbar-track{{background:transparent}}
+::-webkit-scrollbar-thumb{{background:#d1cfc8;border-radius:999px;border:3px solid transparent;background-clip:padding-box}}
+@media (prefers-reduced-motion:no-preference){{::view-transition-old(root),::view-transition-new(root){{animation-duration:.18s}}}}
+</style>
+</head><body><div class="wrap">
 <div class="top"><a href="/">← 대한민국 패치노트</a><button class="tt" onclick="(function(){{var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{{localStorage.setItem('politik:theme',n)}}catch(e){{}}}})()">🌓</button></div>
 <div class="hero">
   <h1>🚨 대한민국, 지금 괜찮은가</h1>
@@ -275,6 +287,7 @@ footer{{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid v
   본 지표판은 정보 제공용이며, 모든 수치는 아래 공식 출처의 가장 최근 공표값입니다. 신호등(🔴 위험 / 🟡 경고 / 🟢 양호)은 국제 기준선·추세를 근거로 한 편집부 분류이며 특정 정파의 입장이 아닙니다.<br>
   · 인구: 통계청 · 가계부채·금리·환율·신용등급: 한국은행 ECOS / 기획재정부 · 잠재성장률: 한국은행·OECD · 곡물자급률: 농림축산식품부 · 에너지: 에너지경제연구원<br>
   최종 데이터 갱신: {updated} · © 대한민국 패치노트
+<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--bd,#e5e7eb);font-size:11.5px"><a href="/" style="color:var(--ac,#4F46E5);text-decoration:none">홈</a> · <a href="/analysis.html" style="color:var(--ac,#4F46E5);text-decoration:none">분석·기록</a> · <a href="/about" style="color:var(--ac,#4F46E5);text-decoration:none">소개</a> · <a href="/business" style="color:var(--ac,#4F46E5);text-decoration:none">광고·문의</a> · <a href="/privacy" style="color:var(--ac,#4F46E5);text-decoration:none">개인정보처리방침</a></div>
 </footer>
 <script>
 (function(){{

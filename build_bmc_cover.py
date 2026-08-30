@@ -10,8 +10,10 @@
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent  # 저장소 루트 — CI(리눅스)에서도 동작하도록 절대경로 하드코딩 금지
+
 W, H = 1500, 500
-OUT = Path("D:/politik/bmc-cover.png")
+OUT = ROOT / "bmc-cover.png"
 
 # 폰트 후보 (Windows 한글)
 FONT_CANDIDATES = [

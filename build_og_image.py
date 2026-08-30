@@ -4,8 +4,10 @@
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent  # 저장소 루트 — CI(리눅스)에서도 동작하도록 절대경로 하드코딩 금지
+
 W, H = 1200, 630
-OUT = Path("D:/politik/og-image.png")
+OUT = ROOT / "og-image.png"
 
 # 폰트 검색 (Windows 기본 한글 폰트들)
 FONT_CANDIDATES = [

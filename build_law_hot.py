@@ -110,7 +110,7 @@ def main():
 <link rel="canonical" href="{BASE}/law-changes.html">
 <meta property="og:type" content="website"><meta property="og:title" content="🔥 2025년 가장 많이 바뀐 법 TOP 20 · 곧 시행되는 개정">
 <meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{BASE}/law-changes.html">
-<meta property="og:image" content="{BASE}/og-image.png"><meta property="og:site_name" content="대한민국 패치노트">
+<meta property="og:image" content="{BASE}/og-image.png?v=2"><meta property="og:site_name" content="대한민국 패치노트">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{ld}</script>
 <style>
@@ -129,7 +129,19 @@ section{{margin:26px 0}}h2{{font-size:18px;margin:0 0 4px}}.sd{{font-size:12.5px
 .rr{{text-align:right;font-size:12.5px;color:var(--dim);white-space:nowrap}}.rr b{{font-size:18px;color:var(--tx)}}.rr .cnt{{color:var(--hot)}}.rr .u{{font-size:11px;margin-left:2px}}.rr .dd{{color:var(--hot)}}
 .cta{{display:inline-block;margin:8px 0 0;font-size:13.5px;font-weight:700;color:#fff;background:var(--ac);padding:10px 16px;border-radius:9px;text-decoration:none}}
 footer{{margin-top:30px;font-size:11.5px;color:var(--dim);border-top:1px solid var(--bd);padding-top:12px}}
-</style></head><body><div class="wrap">
+</style><script defer src="/_vercel/insights/script.js"></script><link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968" crossorigin="anonymous"></script>
+<style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
+@view-transition{{navigation:auto}}
+h1,h2,h3{{text-wrap:balance}}p,li{{text-wrap:pretty}}
+html{{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}}
+::selection{{background:rgba(79,70,229,.2)}}
+[data-theme=dark] ::selection{{background:rgba(129,140,248,.32)}}
+::-webkit-scrollbar{{width:10px;height:10px}}::-webkit-scrollbar-track{{background:transparent}}
+::-webkit-scrollbar-thumb{{background:#d1cfc8;border-radius:999px;border:3px solid transparent;background-clip:padding-box}}
+@media (prefers-reduced-motion:no-preference){{::view-transition-old(root),::view-transition-new(root){{animation-duration:.18s}}}}
+</style>
+</head><body><div class="wrap">
 <div class="top"><a href="/law-diff.html">← 법령 신구비교 (전체 검색)</a> · <a href="/">대한민국 패치노트</a></div>
 <h1>🔥 법령 변경 추적 — 지금 가장 뜨거운 개정</h1>
 <div class="sub">2025년 이후 대한민국 법, 이렇게 바뀌고 있다 · <b>법제처 국가법령정보 공식 신구조문대비표</b> 기반 · 매일 자동 갱신</div>

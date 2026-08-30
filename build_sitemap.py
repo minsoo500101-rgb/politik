@@ -13,6 +13,8 @@ from datetime import datetime
 from pathlib import Path
 from xml.sax.saxutils import escape
 
+ROOT = Path(__file__).resolve().parent  # 저장소 루트 — CI(리눅스)에서도 동작하도록 절대경로 하드코딩 금지
+
 BASE = "https://patchkr.com"
 TODAY = datetime.now().strftime("%Y-%m-%d")
 
@@ -154,9 +156,9 @@ def build():
 
     out.append("</urlset>")
     content = "\n".join(out)
-    if open("D:/politik/sitemap.xml", "rb").read().endswith(b"\n"):
+    if open(ROOT / "sitemap.xml", "rb").read().endswith(b"\n"):
         content += "\n"
-    open("D:/politik/sitemap.xml", "w", encoding="utf-8", newline="").write(content)
+    open(ROOT / "sitemap.xml", "w", encoding="utf-8", newline="").write(content)
 
     url_count = content.count("<url>")
     hash_count = content.count("/#/")

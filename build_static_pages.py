@@ -16,6 +16,8 @@
 import json
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent  # 저장소 루트 — CI(리눅스)에서도 동작하도록 절대경로 하드코딩 금지
+
 PAGES = [
     {
         "file": "bills.html",
@@ -32,23 +34,10 @@ PAGES = [
             "**페이지네이션**: 30개씩, '더 보기' 버튼으로 +50씩 추가",
         ],
     },
-    {
-        "file": "election2026.html",
-        "hash": "#/election2026",
-        "title": "🔴 제9회 전국동시지방선거 — 2026년 6월 3일 (LIVE)",
-        "desc": "제9회 전국동시지방선거 정보. 광역단체장 17·기초단체장 226·광역의원·기초의원·교육감 등 총 4,040석 선출. D-day 카운트다운, 17개 광역 현직 단체장, 공식 후보·공약 직링크.",
-        "h1": "🗳 제9회 전국동시지방선거 (2026-06-03)",
-        "content": [
-            "**선거일**: 2026년 6월 3일 (수) 06:00 ~ 18:00",
-            "**사전투표**: 2026년 5월 29일~30일",
-            "**선거운동 기간**: 2026년 5월 21일 ~ 6월 2일 (13일)",
-            "**총 선출 의석**: 4,040석 — 광역단체장 17·기초단체장 226·광역의원 ~792·기초의원 ~2988·교육감 17",
-            "**유권자**: 약 4,426만명 (만 18세 이상)",
-            "**1인 7표** (광역단체장·기초단체장·광역의원 지역구·비례·기초의원 지역구·비례·교육감)",
-            "**현직 17 광역단체장 임기 만료**: 2026-06-30 → 새 당선자 2026-07-01 취임",
-            "각 광역별 후보자·공약 정보는 중앙선거관리위원회 공식 사이트(info.nec.go.kr, policy.nec.go.kr) 직링크 제공.",
-        ],
-    },
+    # election2026.html 은 이 생성기에서 제외한다.
+    # 제9회 지방선거(2026-06-03)가 끝난 뒤 해당 파일은 "선거 종료 → 결과 페이지로 이동"
+    # 리다이렉트 스텁으로 손수 교체됐다. 여기서 다시 생성하면 3개월 지난 선거가
+    # "🔴 LIVE" 페이지로 되살아나므로 목록에서 뺀다.
     {
         "file": "committees.html",
         "hash": "#/committees",
@@ -136,7 +125,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="https://patchkr.com/{file}">
-<meta property="og:image" content="https://patchkr.com/og-image.png">
+<meta property="og:image" content="https://patchkr.com/og-image.png?v=2">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:site_name" content="대한민국 패치 노트">
 
@@ -149,7 +138,6 @@ TEMPLATE = """<!DOCTYPE html>
 
 <!-- 검색엔진 인증 (메인과 동일) -->
 <meta name="naver-site-verification" content="e354b1694e63ff02edb65f01e966f5e0a555d754">
-<meta name="google-site-verification" content="REPLACE_WITH_GOOGLE_VERIFICATION_CODE">
 
 <!-- JS 활성: SPA로 즉시 리다이렉트 (GH Pages /politik/ + Vercel / 모두 호환) -->
 <script>
@@ -172,6 +160,7 @@ li {{ margin-bottom: 8px; color: #374151; font-size: 14px; }}
 .footer a {{ color: #4b5563; }}
 strong {{ color: #111827; }}
 </style>
+<script defer src="/_vercel/insights/script.js"></script><meta name="robots" content="noindex,follow">
 </head>
 <body>
 <h1>{h1}</h1>
@@ -209,7 +198,7 @@ def md_to_html(text):
     return out
 
 def build():
-    out_dir = Path("D:/politik")
+    out_dir = ROOT
     count = 0
     for page in PAGES:
         content_html = "\n".join(f"  <li>{md_to_html(c)}</li>" for c in page["content"])
