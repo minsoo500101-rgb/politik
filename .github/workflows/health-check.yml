@@ -33,7 +33,9 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add data/health-log.json
             git commit -m "chore(health): $(date -u +%H:%M)Z auto check"
-            git push
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break || (echo "재시도 $i"; sleep 5)
+            done
           fi
 
       - name: Critical 실패 시 issue 자동 생성

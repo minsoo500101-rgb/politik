@@ -57,4 +57,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/politicians.json index.html llms.txt llms-full.txt
           git commit -m "chore(data): 위키 career 보충 + llms 동기화 (cron) — v${NEW_VER}"
-          git push
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push && break || (echo "재시도 $i"; sleep 5)
+          done
