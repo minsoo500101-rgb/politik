@@ -25,12 +25,19 @@ async function drf(path, params, tries = 5) {
   let lastErr;
   for (let a = 0; a < tries; a++) {
     try {
-      const r = await fetch(u, { headers: { Referer: REFERER, 'User-Agent': 'Mozilla/5.0 (compatible; patchkr/1.0)' } });
+      // law.go.kr는 간헐적으로 연결을 끊거나 응답이 지연된다. 요청별 타임아웃을 걸어
+      // 멈춘 연결이 잡 전체를 잡아먹지 않게 한다.
+      const r = await fetch(u, {
+        headers: { Referer: REFERER, 'User-Agent': 'Mozilla/5.0 (compatible; patchkr/1.0)' },
+        signal: AbortSignal.timeout(20000),
+      });
       const t = await r.text();
       if (t && t.trim()) return JSON.parse(t);
       lastErr = new Error('빈 응답(' + r.status + ')');
     } catch (e) { lastErr = e; }
-    await sleep(700);
+    // 고정 700ms 5회(총 3.5초)로는 업스트림 장애 구간을 넘기지 못해 잡이 실패했다.
+    // 지수 백오프(0.7→1.4→2.8→5.6초, 합 10.5초)로 재시도 구간을 3배로 늘린다.
+    if (a < tries - 1) await sleep(700 * Math.pow(2, a));
   }
   throw lastErr || new Error('재시도 초과');
 }
