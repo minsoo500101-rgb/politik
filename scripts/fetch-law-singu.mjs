@@ -18,7 +18,7 @@ if (!OC) { console.error('❌ LAW_OC 필요'); process.exit(1); }
 const asArr = x => Array.isArray(x) ? x : (x == null ? [] : [x]);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function drf(path, params, tries = 5) {
+async function drf(path, params, tries = 7) {
   const u = new URL(`${BASE}/${path}`);
   u.searchParams.set('OC', OC); u.searchParams.set('type', 'json');
   for (const [k, v] of Object.entries(params)) u.searchParams.set(k, String(v));
@@ -36,7 +36,8 @@ async function drf(path, params, tries = 5) {
       lastErr = new Error('빈 응답(' + r.status + ')');
     } catch (e) { lastErr = e; }
     // 고정 700ms 5회(총 3.5초)로는 업스트림 장애 구간을 넘기지 못해 잡이 실패했다.
-    // 지수 백오프(0.7→1.4→2.8→5.6초, 합 10.5초)로 재시도 구간을 3배로 늘린다.
+    // 지수 백오프(0.7→…→22.4초, 7회 합 44초)로 늘린다. 5회(10.5초)로도 9/2 새벽 장애를
+    // 못 넘겨 한 번 더 실패했기에 7회로 상향.
     if (a < tries - 1) await sleep(700 * Math.pow(2, a));
   }
   throw lastErr || new Error('재시도 초과');
