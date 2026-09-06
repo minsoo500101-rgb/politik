@@ -24989,8 +24989,9 @@ function route() {
     if (_mem && _mem.HG_NM && _mem.HG_NM.length >= 2) {
       fetch('/data/articles.json?v=' + Math.floor(Date.now() / 3600000)).then(r => r.ok ? r.json() : null).then(j => {
         if (!j || !Array.isArray(j.items) || currentRoute() !== hash) return;
-        const nm = _mem.HG_NM;
-        const hits = j.items.filter(a => a.lang !== 'en' && ((a.people || []).includes(nm) || (a.title || '').includes(nm))).slice(0, 5);
+        // 이름이 아니라 인물 ID로만 매칭 — 동명이인(예: 김민석 대표 vs 김민석 차관) 오연결 방지.
+        // ID는 빌드 시 '이름 + 직책 토큰 근접' 조건을 통과한 경우에만 articles.json에 들어간다.
+        const hits = j.items.filter(a => a.lang !== 'en' && (a.people || []).includes(memberId)).slice(0, 5);
         const box = document.getElementById('detail-related'), list = document.getElementById('detail-related-list');
         if (!hits.length || !box || !list) return;
         list.innerHTML = hits.map(a => `

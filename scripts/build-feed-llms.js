@@ -139,16 +139,52 @@ fs.writeFileSync(path.join(ROOT, 'feed.xml'), buildFeed(arts), 'utf8');
 // 이름 매칭은 meta description만으로는 부족해(본문에만 등장하는 인물이 많다) 기사 본문을 훑어
 // 인물 DB(politicians.json + assembly-22.json)에 있는 이름을 people 배열로 뽑아 둔다.
 const kickerOf = f => ((fs.readFileSync(path.join(ROOT, f), 'utf8').match(/<div class="kicker">([^<]*)</) || [])[1] || '').trim();
-const NAMES = (() => {
-  const s = new Set();
-  try { for (const p of JSON.parse(fs.readFileSync(path.join(ROOT, 'data/politicians.json'), 'utf8')).people || []) if (p.name_ko) s.add(p.name_ko); } catch {}
-  try { const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/assembly-22.json'), 'utf8')); for (const m of (Array.isArray(j) ? j : (j.members || j.people || j.data || []))) if (m.HG_NM || m.name_ko) s.add(m.HG_NM || m.name_ko); } catch {}
-  // 두 글자 이름은 일반 단어와 충돌이 잦아(예: '이재'·'김건') 세 글자 이상만 사용
-  return [...s].filter(n => n && n.length >= 3);
+// ⚠ 동명이인 주의: 이름만으로 매칭하면 '김민석'(민주당 대표) 기사가 도감의 '김민석'(고용노동부 차관)
+// 페이지에 붙는다(이상봉 사건과 같은 유형). 그래서 이름이 등장한 자리 앞뒤 40자 안에 그 인물의
+// 직책·정당 토큰이 함께 있어야만 매칭하고, 결과는 이름이 아니라 인물 ID로 저장한다(정밀도 우선).
+const PEOPLE = (() => {
+  const out = [];
+  // 직책 토큰만 쓴다. 정당명·연도·'제N대'는 동명이인을 가르지 못해 오탐만 늘린다
+  // (예: 역대 인물 '이재명(전 경기지사)'가 정당명 토큰으로 현직 대통령 기사에 붙음).
+  const tok = s => String(s || '').split(/[^가-힣A-Za-z0-9]+/)
+    .filter(t => t.length >= 2 && !/^\d+$/.test(t) && !/^(전직|현직|제\d+대|사퇴|당선무효|임기|만료)$/.test(t) && !/(당|정의|혁신|미래|국민의힘|더불어민주)/.test(t));
+  try {
+    for (const p of JSON.parse(fs.readFileSync(path.join(ROOT, 'data/politicians.json'), 'utf8')).people || []) {
+      if (!p.name_ko || p.name_ko.length < 3 || !p.id) continue;
+      const tokens = [...new Set([...tok(p.role), ...tok(p.title)])];
+      if (tokens.length) out.push({ id: p.id, name: p.name_ko, tokens });
+    }
+  } catch {}
+  try {
+    const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/assembly-22.json'), 'utf8'));
+    for (const m of (Array.isArray(j) ? j : (j.members || []))) {
+      const name = m.name || m.HG_NM, id = m.mona_cd || m.MONA_CD;
+      if (!name || name.length < 3 || !id) continue;
+      out.push({ id, name, tokens: ['의원', '국회의원', '원내대표', '위원장', '간사', '후보자'] });
+    }
+  } catch {}
+  return out;
 })();
 const peopleIn = f => {
   const body = fs.readFileSync(path.join(ROOT, f), 'utf8').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
-  return NAMES.filter(n => body.includes(n));
+  const ids = new Set();
+  for (const p of PEOPLE) {
+    let i = body.indexOf(p.name);
+    while (i >= 0) {
+      // 한국어는 직책이 이름 뒤에 온다("김민석 대표", "이재명 대통령").
+      // ① 이름 바로 앞이 한글이면 합성어("친이재명계")라 인물 언급이 아님 → 건너뜀
+      // ② 뒤쪽 창은 문장·절 경계(. , · ( ) 줄바꿈)에서 끊는다 — "…이재명계로 분류된다. 즉 대표는 김민석"처럼
+      //    다음 문장의 직책이 넘어와 붙는 오탐을 막는다. 앞쪽 창은 두지 않는다 — "김민석 대표는 이재명 정부"처럼
+      //    바로 앞 인물의 직책이 섞이기 때문.
+      const prev = i > 0 ? body[i - 1] : ' ';
+      if (!/[가-힣]/.test(prev)) {
+        const after = body.slice(i + p.name.length, i + p.name.length + 28).split(/[.,·()\n]/)[0];
+        if (p.tokens.some(t => after.includes(t))) { ids.add(p.id); break; }
+      }
+      i = body.indexOf(p.name, i + p.name.length);
+    }
+  }
+  return [...ids];
 };
 fs.writeFileSync(path.join(ROOT, 'data', 'articles.json'), JSON.stringify({
   generatedAt: new Date().toISOString().slice(0, 10),
