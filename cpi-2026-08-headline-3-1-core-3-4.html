@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">📈 경제 · 소비자물가</div>
 <h1>8월 소비자물가 3.1%, 근원물가는 3.4%로 3년3개월 만에 최고…통신 기저효과 0.58%p</h1>
-<p class="dek">국가데이터처가 9월 2일 발표한 2026년 8월 소비자물가동향에서 헤드라인 상승률은 3.1%로 두 달 만에 3%대로 올라섰다. 정부는 지난해 통신요금 감면의 기저효과(약 0.58%p)를 빼면 2.5% 수준이라고 설명했다. 그러나 같은 발표에서 식료품·에너지 제외 근원물가는 3.4%로 2023년 5월 이후 최고, 공공서비스는 6.5%로 2001년 8월 이후 최고를 기록했다.</p>
-<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-02 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">국가데이터처가 9월 2일 발표한 2026년 8월 소비자물가동향에서 헤드라인 상승률은 3.1%로 두 달 만에 3%대로 올라섰다.</p>
+<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-02 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 8월 소비자물가 상승률은 <b>3.1%</b>(전년동월비)였다. 그런데 같은 발표에서 식료품·에너지를 뺀 <b>근원물가는 3.4%</b>로 <b>2023년 5월 이후 3년 3개월 만의 최고</b>였다. 헤드라인과 기조지표가 서로 다른 방향을 가리킨 셈이다. 표면 상승분에는 지난해 8월 통신요금 감면의 <b>기저효과 약 0.58%p</b>가 섞여 있고, 정부는 이를 빼면 2.5% 수준이라고 설명했다. 무엇이 일회성이고 무엇이 남는 흐름인지 나눠 본다.
@@ -193,9 +195,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <p>정부는 이 제도가 8월 소비자물가 상승률을 0.5%p 낮췄고 제도가 없었다면 3.6%였을 것이라고 추산했다. 이는 재정경제부의 정책효과 추산치이며, 검증 주체와 방법론은 공개되지 않았다. 이 제도는 2026년 국정감사에서 실효성 검증 대상으로 거론되고 있다.</p>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 14가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">통신 요인 수치는 두 가지를 구분해 병기한다. 0.58%p는 국가데이터처 이두원 경제동향통계심의관이 밝힌 휴대전화 요금감면 기저효과 추산치(제거 시 약 2.5%)이고, 0.63%p는 일부 매체가 계산한 통신 부문 기여도다. 매체 간 용어가 혼재하므로 국가데이터처 보도자료 원문의 기여도 표를 확인하기 전까지 두 수치를 병기하고 산출 개념 차이를 밝힌다.</li>
 <li style="margin:6px 0">석유 최고가격제 상한액을 쓸 경우 (1) 정유사가 주유소에 공급하는 가격 기준이며 주유소 판매가에는 적용되지 않는다는 점, (2) 2주마다 조정되므로 3월 13일 시행 첫 상한은 8월 적용치가 아니라는 점을 함께 밝힌다. 8월에 적용된 상한액은 확인하지 못했다.</li>
 <li style="margin:6px 0">6월 27일 적용 상한액(휘발유 1,784원·경유 1,773원·등유 1,380원)은 정책브리핑 보도 기준으로 옮긴 것이며, 3월 13일 첫 상한과의 증감 관계는 별도 확인이 필요하다.</li>
@@ -211,7 +213,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">한국은행 전망과 재정경제부 발언은 모두 전망·방침이며 확정치가 아니다. 9월 물가 둔화 전망은 기저효과 소멸에 따른 예상치다.</li>
 <li style="margin:6px 0">직책 표기는 이두원 국가데이터처 경제동향통계심의관, 이지호 한국은행 부총재보, 강기룡 재정경제부 차관보다. 부처명은 기획재정부가 아니라 재정경제부다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">

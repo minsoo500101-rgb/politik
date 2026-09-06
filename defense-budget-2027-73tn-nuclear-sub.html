@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">🛡 안보 · 2027년 국방예산</div>
 <h1>2027년 국방예산 정부안 73조2777억…창군 첫 70조 돌파, 핵추진잠수함 설계에 966억</h1>
-<p class="dek">국방부가 2027년도 국방예산 정부안을 전년 대비 8.2%(5조5737억원) 늘린 73조2777억원으로 편성해 9월 3일 국회에 제출했다. 국방예산이 70조원을 넘은 것은 창군 이래 처음이다. 핵추진잠수함 착수·설계 예산이 정부안에 직접 반영된 것도 이번이 처음이며, 전작권 전환·자주국방 예산은 34.9% 늘었다. 다만 이는 모두 국회 심사를 남긴 '정부안'이다.</p>
-<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-03 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">국방부가 2027년도 국방예산 정부안을 전년 대비 8.2%(5조5737억원) 늘린 73조2777억원으로 편성해 9월 3일 국회에 제출했다.</p>
+<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-03 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 국방부가 2027년도 국방예산 정부안 <b>73조2777억원</b>을 국회에 제출했다. <b>창군 이래 처음 70조원을 넘었고</b> 전년 본예산 대비 <b>8.2%</b> 늘었다. 무기 도입·개발에 쓰는 방위력개선비가 <b>22조7112억원(+13.8%)</b>으로 증가액 기준 역대 최대이며, <b>핵추진잠수함 설계 착수 예산 966억원</b>이 정부안에 처음 반영됐다. 다만 이것은 <b>정부안</b>이고, 국회 심사에서 바뀔 수 있다.
@@ -174,9 +176,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <p>육·해·공 3군 사관학교 통합 관련 예산은 이번 정부안에 반영되지 않았다. 사업타당성 조사를 거쳐 2028년 예산 편성 단계에서 검토한다는 방침이다.</p>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 17가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">이 수치는 모두 '2027년도 국방예산 정부안'이며 확정치가 아니다. 국회 국방위원회 예비심사와 예산결산특별위원회 종합심사에서 증·감액될 수 있고 법정 처리시한은 2026년 12월 2일이다.</li>
 <li style="margin:6px 0">증감 비교 기준은 2026년 '본예산' 67조7040억원이며, 추경 반영 여부는 확인되지 않았다.</li>
 <li style="margin:6px 0">핵추진잠수함 예산 표기는 언론별로 966억원(서울경제·디지털타임스)과 '약 1000억원'(연합뉴스·헤럴드경제·아시아경제·한국경제·VOA)으로 갈린다. 국방부 보도자료 원문(mnd.go.kr)을 직접 확인하지 못해 966억원을 쓰되 '일부 언론은 약 1000억원으로 표기'를 병기한다.</li>
@@ -195,7 +197,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">국방부 보도자료 원문(mnd.go.kr)은 직접 열람하지 못했다. 표의 항목별 금액은 국방부 보도자료를 전재한 보안뉴스·뉴스후플러스(2026-09-03)와 개별 언론 보도에 기반한다.</li>
 <li style="margin:6px 0">방위력개선비 증가액은 22조7112억원·+13.8%로 역산하면 약 2조7500억원이며, '약 2조8000억원'은 반올림 표현이다. '역대 최대폭'은 국방부 설명이다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">

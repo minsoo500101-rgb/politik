@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">⚖️ 사법 · 검찰개편</div>
 <h1>공소청 정원 8412명 조직도 첫 공개…직접수사 43개 부·수사조사과 67곳 폐지</h1>
-<p class="dek">법무부가 9월 4일 '공소청과 그 소속기관 직제' 제정안을 입법예고하며 10월 2일 출범할 공소청의 조직과 정원을 처음 숫자로 공개했다. 총 정원 8412명(검사 2292명), 인지·합동수사 43개 부와 일선 수사과·조사과 67개 과 폐지, 불송치 사건을 전담하는 '사법통제부' 신설이 뼈대다. 의견수렴은 9월 9일 마감이며 아직 확정된 안이 아니다.</p>
-<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-04 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">법무부가 9월 4일 '공소청과 그 소속기관 직제' 제정안을 입법예고하며 10월 2일 출범할 공소청의 조직과 정원을 처음 숫자로 공개했다.</p>
+<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-04 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 법무부가 <b>9월 4일</b> '공소청과 그 소속기관 직제' 제정안을 입법예고하면서, 10월 2일 출범할 <b>공소청의 조직과 정원이 처음 숫자로</b> 공개됐다. 총 정원 <b>8412명</b>(검사 2292명), 직접수사를 맡던 인지·합동수사 <b>43개 부</b>와 일선 <b>수사과·조사과 67개 과 폐지</b>, 불송치 사건을 전담하는 <b>'사법통제부' 신설</b>이 뼈대다. 의견수렴은 <b>9월 9일 마감</b>이며 아직 <b>확정된 안이 아니다</b>.
@@ -152,9 +154,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <p>일부 보도에서 '70만 건 이관'으로 요약된 수치는 이관 대상 규모가 아니다. 대검찰청이 검찰이 직접 청구한 체포영장 사건을 추려내기 위해 검토하겠다고 밝힌 전체 사건군 규모다. 대검은 수사 중 사건을 ①10월 2일까지 처리 ②90일 유예기간(2026년 12월 30일) 내 처리 ③불가피한 이관으로 3분류했고, 검찰이 직접 청구한 체포영장은 법원 반환과 지명수배 해제를 거쳐 경찰이 재신청하는 절차를 밟는다.</p>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 14가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">이 수치는 모두 2026년 9월 4일 법무부가 입법예고한 '공소청과 그 소속기관 직제' 제정안과 '검사정원법 시행령' 개정안의 내용이며 확정치가 아니다. 의견수렴은 9월 9일 마감이고 이후 법제처 심사·차관회의·국무회의 의결·공포를 거치며 부서 수와 정원이 바뀔 수 있다.</li>
 <li style="margin:6px 0">기사에 인용한 모든 수치는 언론 보도(아시아경제·이투데이·세계일보·국민일보·헤럴드경제·머니투데이·아시아투데이·법률방송뉴스·경향신문·파이낸셜뉴스 등, 2026-09-04) 교차 확인에 근거한 것이며, 법무부 보도자료 원문과 국민참여입법센터 입법예고 번호는 확인하지 못했다.</li>
 <li style="margin:6px 0">'사법통제부'가 전국 몇 곳에 설치되는지는 확인되지 않았다. 보도는 '각 지방공소청에 신설'이라고만 밝혔으므로 '지방공소청 18곳 = 사법통제부 18개'로 단정하지 않는다.</li>
@@ -170,7 +172,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">대검 과학수사부 개편은 매체별로 법과학기획관 및 3개 과를 '유지'(세계일보)와 '신설'(청년일보)로 달리 적었다. '축소'라는 평가어 대신 '개편'으로 쓴다.</li>
 <li style="margin:6px 0">전국경찰직장협의회가 2026년 9월 4일 낸 반발 성명은 인용으로만 전달하며, 개편의 옳고 그름에 대한 평가는 하지 않는다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">

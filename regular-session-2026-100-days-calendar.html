@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">🏛 국회 · 정기국회</div>
 <h1>제430회 정기국회 100일 개막 — 9월 3일까지 넘어오는 2027년 예산안 820조9000억원</h1>
-<p class="dek">제22대 국회 후반기 첫 정기국회가 9월 1일 개회해 12월 9일까지 100일간 이어진다. 같은 날 국무회의는 총지출 820조9000억원 규모의 2027년도 예산안을 의결했고, 국가재정법상 제출 시한인 9월 3일까지 국회로 넘어온다. 대표연설·대정부질문·국정감사 날짜는 8월 25일 여야 합의로 정해졌지만, 그것은 합의이지 공고가 아니다. 무엇이 법정시한이고 무엇이 협의사항인지 갈라 정리했다.</p>
-<div class="byline">2026년 9월 1일 작성 · 사건일 2026-09-01 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">제22대 국회 후반기 첫 정기국회가 9월 1일 개회해 12월 9일까지 100일간 이어진다.</p>
+<div class="byline">2026년 9월 1일 작성 · 사건일 2026-09-01 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 제22대 국회 후반기 첫 정기국회인 <b>제430회 정기국회</b>가 2026년 9월 1일 오후 2시 개회했다. 회기는 <b>12월 9일까지 100일</b>이다. 같은 날 국무회의에서 <b>2027년도 예산안</b>이 의결돼 국가재정법상 시한인 <b>9월 3일</b>까지 국회로 넘어온다. 총지출은 <b>820조9000억원</b>, 전년 본예산 대비 <b>12.8%</b> 증가다. 8월 25일 여야 원내 합의로 주요 일정이 이미 날짜 단위로 잡혀 있어, 앞으로 100일에 무슨 일이 언제 벌어지는지 표로 정리했다.
@@ -179,9 +181,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <tr><td>국민의힘 입법과제</td><td>7개 분야 133개 과제 채택</td><td>의원 연찬회에서 당이 채택한 자체 목록이며 발의·통과된 법안이 아님</td></tr>
 </table>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 14가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">국회 공식 의사일정(assembly.go.kr) 원문 대조에 실패했다. 9월 3일·17일·10월 1일 본회의, 9월 7~8일 대표연설, 9월 9~11·14일 대정부질문 일정은 8월 25일 여야 합의를 전한 언론 보도에 근거한 것이며 국회 공식 공고로 최종 확인된 것이 아니다.</li>
 <li style="margin:6px 0">10월 1일 본회의는 머니투데이 8월 31일 기사에서만 확인된 단일 출처다.</li>
 <li style="margin:6px 0">의사일정은 여야 합의사항이며 쟁점 법안 충돌·필리버스터 등으로 변경될 수 있다. 국민의힘이 첫 본회의부터 필리버스터를 검토 중이라는 보도가 있다.</li>
@@ -197,7 +199,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">9월 3일 본회의 상정 법안은 확정되지 않았다. 경북일보가 거론한 법안(용산공원 특별법·공소청법·형사소송법)과 8월 27일 당정 협의의 메가프로젝트 입법과제는 별개 묶음이다.</li>
 <li style="margin:6px 0">장동혁 국민의힘 대표 취임일(2025년 8월 26일) 등 일부 사실은 1~2건의 자료로만 확인했다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">

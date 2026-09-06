@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">🏛 정치 · 개각·인사청문</div>
 <h1>8·30 개각, 6개 부처 장관 후보자 6인 지명 — 9월 1일 현재 임명은 0명</h1>
-<p class="dek">이재명 대통령이 8월 30일 재정경제부·법무부·국방부·국토교통부·중소벤처기업부·성평등가족부 6개 부처 장관 후보자를 지명했다. 관료·군 출신 3명과 현역 의원 3명, 최고령 1968년생과 최연소 1990년생이 함께 묶였다. 다만 이날 발표는 '지명'이며, 9월 1일 개막한 제430회 정기국회에서 6명 전원이 인사청문을 거쳐야 한다. 청문회 날짜는 아직 하나도 정해지지 않았다.</p>
-<div class="byline">2026년 9월 1일 작성 · 사건일 2026-08-30 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">이재명 대통령이 8월 30일 재정경제부·법무부·국방부·국토교통부·중소벤처기업부·성평등가족부 6개 부처 장관 후보자를 지명했다.</p>
+<div class="byline">2026년 9월 1일 작성 · 사건일 2026-08-30 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 이재명 대통령이 <b>2026년 8월 30일</b> 재정경제부·법무부·국방부·국토교통부·중소벤처기업부 등 <b>6개 부처 장관 후보자</b>를 지명했다. 강훈식 대통령비서실장이 청와대 춘추관 브리핑에서 발표했다. 다만 이날 발표는 <b>'지명'이지 '임명'이 아니다</b>. 6명 전원이 국회 인사청문을 거쳐야 하고, <b>9월 1일 현재 임명이 끝난 사람은 없다</b>. 후보자 구성은 관료·군 출신 3명과 현역 국회의원 3명, 최고령 1968년생과 최연소 1990년생으로 <b>22년의 연령 폭</b>을 담았다.
@@ -160,9 +162,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <p>자세한 내용은 중앙선거여론조사심의위원회 홈페이지를 참조.</p>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 13가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">8월 30일 발표는 '장관 후보자 지명'이며 임명이 아니다. 6인 모두 국회 인사청문 절차를 거쳐야 하고, 9월 1일 현재 임명된 사람은 없다.</li>
 <li style="margin:6px 0">전임(현직) 장관 구윤철·정성호·안규백·김윤덕·원민경은 후임 임명 시까지 직을 유지한다. '교체됐다'가 아니라 '교체 대상으로 지명됐다'가 정확하다.</li>
 <li style="margin:6px 0">6명 각각의 인사청문회 개최 날짜는 2026년 9월 1일 기준 미확정이며 상임위별 여야 협의 사항이다.</li>
@@ -177,7 +179,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">여야 발언과 여성단체 성명은 모두 정치적 평가·주장이며, 인용으로만 처리했다.</li>
 <li style="margin:6px 0">여론조사 2건은 모두 개각 발표(8월 30일) 이전에 실시됐다. 개각에 대한 여론 반응으로 해석할 수 없으며, 조사 방식이 달라 두 수치를 직접 비교할 수 없다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">

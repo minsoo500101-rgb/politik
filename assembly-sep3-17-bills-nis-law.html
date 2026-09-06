@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">📜 국회 · 정기국회 본회의</div>
 <h1>정기국회 첫 본회의 17건 처리…국정원법 반대·기권 57표, 부동산 공급법은 상정 불발</h1>
-<p class="dek">국회는 9월 3일 제439회 국회(정기회) 제2차 본회의에서 민생법안 17건을 처리했다. 이태원참사특별법은 재석 231명 중 220명 찬성으로 통과했지만, 국정원 정보수집 직무에 '경제안보'를 명시한 국가정보원법 개정안에는 반대 17표·기권 40표가 나왔다. 여당이 추진하던 도시 및 주거환경정비법 등 부동산 공급 법안은 상정조차 되지 않았다.</p>
-<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-03 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">국회는 9월 3일 제439회 국회(정기회) 제2차 본회의에서 민생법안 17건을 처리했다.</p>
+<div class="byline">2026년 9월 5일 작성 · 사건일 2026-09-03 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 정기국회 첫 본회의가 <b>9월 3일</b> 열려 법안 <b>17건</b>을 처리했다. 이태원참사특별법 개정안은 재석 231명 중 <b>찬성 220</b>으로 사실상 만장일치에 가까웠지만, 국가정보원법 개정안은 재석 252명 중 찬성 195에 <b>반대 17·기권 40</b>으로 <b>반대·기권이 57표</b> 나왔다. 같은 날 처리가 예상됐던 <b>부동산 공급 관련 법안은 상정되지 못했다</b>. 표결 수치가 확인된 법안만 추려 정리한다.
@@ -149,9 +151,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <p>국정원법 개정안은 2026년 9월 5일 현재 본회의 통과 단계이며, 정부 이송·공포 및 시행일은 확인되지 않았다. 통과는 공포·시행과 다르다.</p>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 14가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">국정원법 비판을 인용할 때 주체는 '참여연대'가 아니라 '국정원감시네트워크(국감넷, 참여연대 참여)'이며 발표일은 9월 4일이다. '무죄추정 원칙 위배'는 국감넷 성명에 없는 표현으로, 언론(굿모닝충청) 논평의 서술임을 구분한다.</li>
 <li style="margin:6px 0">처리된 17건 전체 목록을 단일 1차 자료(국회 의안정보시스템·국회사무처 보도자료)로 완결 확인하지 못했다. 언론 교차로 약 12건이 확인되며 나머지는 확인되지 않았다.</li>
 <li style="margin:6px 0">'경영지도사 및 기술지도사에 관한 법률' 개정안과 '중소기업기술 보호 지원에 관한 법률' 개정안은 단일 출처(브레이크뉴스 2026-09-03) 외 개별 확인을 하지 못했다. 표에 실을 경우 '단일 출처'를 표기하거나 미확인으로 둔다.</li>
@@ -167,7 +169,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">항만재개발법은 곽규택 의원 대표발의안 자체가 아니라 그 핵심 내용이 반영된 위원회 대안이 통과된 것이다. 벤처투자 촉진법은 수정안이 통과됐다.</li>
 <li style="margin:6px 0">여야와 시민단체의 입장은 인용으로만 전달하며 법안의 옳고 그름에 대한 평가는 하지 않는다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">

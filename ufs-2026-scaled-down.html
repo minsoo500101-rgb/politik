@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">🛡 안보 · 한미연합연습</div>
 <h1>UFS 2026, 훈련 도중 11일에서 5일로 — 합참 발표문에 없던 '2부 취소'</h1>
-<p class="dek">트럼프 대통령의 8월 16일 공개 지시 이후 사흘 만에 합참이 을지 자유의 방패(UFS) 연습 기간을 8월 17~21일로 조정한다고 발표했고, 연습은 21일 종료됐다. 다만 '2부 반격 연습 취소'는 합참 공식 발표문에 없는 표현이다. 발표문·장관 발언·미 전쟁부 설명·언론 해석은 층위가 다르다. 축소 기간에도 북한은 미사일을 쐈고, 8월 31일 담화로 '최강경 대미정책 불변'을 재확인했다.</p>
-<div class="byline">2026년 9월 1일 작성 · 사건일 2026-08-21 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">트럼프 대통령의 8월 16일 공개 지시 이후 사흘 만에 합참이 을지 자유의 방패(UFS) 연습 기간을 8월 17~21일로 조정한다고 발표했고, 연습은 21일 종료됐다.</p>
+<div class="byline">2026년 9월 1일 작성 · 사건일 2026-08-21 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 한미 연합연습 <b>을지프리덤실드(UFS) 2026</b>이 진행 도중 기간이 <b>11일에서 5일로</b> 줄었다. 트럼프 미국 대통령이 8월 16일(현지시각) 소셜미디어에 축소 지시를 밝힌 뒤, 합동참모본부는 8월 19일 "연습 기간을 17일부터 <b>21일까지로 조정</b>"한다고 발표했다. 야외기동훈련은 <b>14건 중 7건</b>이 조정됐다. 발표문에 없던 '2부 반격훈련 취소' 여부를 포함해, 확인된 것과 확인되지 않은 것을 나눠 정리한다.
@@ -166,9 +168,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <p>후속 정황으로, 2026년 8월 22일 한미 군 수뇌부가 관례인 '빅토리 파티' 대신 축소된 팀빌딩 오찬을 열었고 진영승 합참의장과 브런슨 사령관이 행사 형식을 두고 이견을 보였다는 보도가 있다(한국경제 2026-08-31). 단일 매체 보도다.</p>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 13가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">'2부 반격 연습 취소'는 합참이 공식 문안으로 발표한 내용이 아니다. 합참 발표는 '연습 기간을 8월 17~21일로 조정'까지이며, 국방부는 2부 시나리오 시행 여부 확인을 거부했다. 합참 발표·장관 발언·미 전쟁부 설명·언론 해석을 층위별로 구분해 읽어야 한다.</li>
 <li style="margin:6px 0">2부 연습 일정이 매체별로 8월 23~27일과 24~27일로 엇갈린다. 합참이 2부 일정을 공식 발표문에 명시한 적이 없기 때문이며, 특정 일자를 단정할 수 없다.</li>
 <li style="margin:6px 0">연습 기간 표기도 다르다. 합참 기준 8월 17~21일(포함 계산 5일, 원계획 11일 대비 6일 단축)이지만 일부 매체는 '4일로 반토막', 미 전쟁부는 '당초 계획보다 일주일 앞선 종료'로 표현했다.</li>
@@ -183,7 +185,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">8월 22일 한미 군 수뇌부의 '빅토리 파티' 축소와 이견 보도는 한국경제 단일 매체 보도다.</li>
 <li style="margin:6px 0">이 기사에는 여론조사 수치가 포함되지 않는다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">

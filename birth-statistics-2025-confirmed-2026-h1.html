@@ -39,7 +39,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.8px;line-height:1.28;margin:0
 h2{font-size:20px;font-weight:800;margin:32px 0 10px;letter-spacing:-.4px;padding-top:6px;border-top:1px solid var(--bd)}
 p{font-size:15px;margin:0 0 13px}
 b{color:var(--tx)}
-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table tbody,table thead{display:table;width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--bd);padding:8px 10px;text-align:left}
 th{background:var(--bg);font-weight:800}
 td.r{text-align:right;white-space:nowrap}
@@ -65,6 +66,7 @@ footer a{color:var(--ac);text-decoration:none}
 .tl2{list-style:none;padding:0;margin:16px 0}
 .tl2 li{padding:8px 0 8px 15px;border-left:2px solid var(--bd);position:relative;font-size:14px}
 .tl2 li b{color:var(--ac)}
+.cav summary{cursor:pointer;list-style:none;font-size:13.5px}.cav summary::-webkit-details-marker{display:none}.cav summary::before{content:"▸ ";color:var(--ac)}.cav[open] summary::before{content:"▾ "}
 </style><script defer src="/_vercel/insights/script.js"></script><style id="trend-polish">/* V31.71 2026 CSS 폴리시 */
 @view-transition{navigation:auto}
 h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
@@ -80,8 +82,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <div class="kicker">📊 사회 · 인구통계</div>
 <h1>2025년 합계출산율 0.80명 확정 — 4년 만의 0.8명대, 출생아 25만4341명</h1>
-<p class="dek">국가데이터처가 8월 26일 '2025년 출생 통계'와 '2026년 6월 및 2분기 인구동향'을 같은 날 공표했다. 2025년 확정치는 출생아 25만4341명(+6.7%), 합계출산율 0.80명으로 2021년 이후 4년 만에 0.8명대를 회복했다. 진행 중인 2026년은 6월까지 24개월 연속 증가했지만, 이 수치들은 잠정 집계다. 그리고 출생이 늘어도 인구는 계속 줄고 있다.</p>
-<div class="byline">2026년 9월 1일 작성 · 사건일 2026-08-26 · 공식 발표·1차 자료와 복수 언론 보도를 대조해 정리했으며, 확인되지 않은 사항은 그대로 밝혔습니다</div>
+<p class="dek">국가데이터처가 8월 26일 '2025년 출생 통계'와 '2026년 6월 및 2분기 인구동향'을 같은 날 공표했다.</p>
+<div class="byline">2026년 9월 1일 작성 · 사건일 2026-08-26 · 1차 자료·복수 보도 대조 · 미확인 사항은 본문에 명시</div>
 
 <div class="lead">
 국가데이터처가 <b>2026년 8월 26일</b> 2025년 출생통계(확정)와 2026년 6월·2분기 인구동향을 함께 공표했다. 2025년 출생아는 <b>25만4341명</b>, 합계출산율은 <b>0.80명</b>으로 <b>4년 만에 0.8명대</b>를 회복했다. 그동안 '반등'은 월별 잠정치로 이야기되던 것이었는데, 이번에 연간 확정치로 굳어졌다. 다만 같은 통계는 <b>인구 자연감소</b>가 이어지고 있다는 사실도 함께 보여준다.
@@ -185,9 +187,9 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 
 <p>확정된 최신 연간 수치는 2025년 0.80명이다. 0.9명대 회복 여부는 2027년 발표될 통계로만 확인할 수 있다.</p>
 
-<h2>읽을 때 유의할 점</h2>
-<div class="note">
-<ul style="margin:0;padding-left:18px">
+<details class="note cav">
+<summary><b>읽을 때 유의할 점</b> — 확인하지 못했거나 유보가 필요한 10가지 (펼치기)</summary>
+<ul style="margin:10px 0 0;padding-left:18px">
 <li style="margin:6px 0">8월 26일 '2025년 출생 통계'는 출생 항목의 확정치다. 2025년 사망자 수와 자연감소는 이 발표에 포함되지 않았고, 2026년 2월 25일 '2025년 출생·사망통계(잠정)'의 잠정치이므로 확정치로 쓰지 않는다.</li>
 <li style="margin:6px 0">2026년 6월·2분기·상반기 수치는 인구동향조사 잠정 집계이며 확정치가 아니다. 향후 확정 공표에서 조정될 수 있다(2025년도 잠정 25만4500명에서 확정 25만4341명으로 159명 하향됐다).</li>
 <li style="margin:6px 0">'2026년 연간 합계출산율 0.9명대 회복'은 언론·전문가의 전망이며 확정 수치가 아니다. 확정된 최신 연간 수치는 2025년 0.80명이다.</li>
@@ -199,7 +201,7 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
 <li style="margin:6px 0">2026년 상반기 사망자 총수는 이번 검증에서 확인하지 못했다.</li>
 <li style="margin:6px 0">발표 기관명은 '국가데이터처'다(보도자료 게시판 도메인 mods.go.kr). 옛 통계청 표기와 혼용하지 않는다.</li>
 </ul>
-</div>
+</details>
 
 <h2>출처</h2>
 <ul class="src">
