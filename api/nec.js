@@ -103,6 +103,12 @@ export default async function handler(req, res) {
   if (!params.has('pageNo')) params.set('pageNo', '1');
 
   const targetUrl = `${NEC_BASE}${spec.path}?${params}`;
+  // V31.84 — 끝난 선거(sgId가 오늘보다 과거)의 후보·공약 데이터는 더 바뀌지 않으므로 하루 캐시.
+  //   선관위 API 장애 때 홈이 10초씩 5번 실패를 기다리던 문제의 절반은 여기서(CDN 캐시 적중), 나머지 절반은 타임아웃으로.
+  const sgId = String(rest.sgId || '');
+  const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const finished = /^\d{8}$/.test(sgId) && sgId < todayYmd;
+  const cacheSecs = finished ? 86400 : spec.cacheSecs;
 
   try {
     const r = await fetch(targetUrl, {
@@ -110,6 +116,8 @@ export default async function handler(req, res) {
         'User-Agent': 'Mozilla/5.0 (compatible; KoreaPatchNotes/1.0; +https://patchkr.com)',
         'Accept': 'application/json, application/xml, */*',
       },
+      // 요청별 6초 타임아웃 — 업스트림이 멈추면 10초 넘게 함수가 잡혀 있었다
+      signal: AbortSignal.timeout(6000),
     });
     const ct = r.headers.get('content-type') || '';
     let body = await r.text();
@@ -120,7 +128,7 @@ export default async function handler(req, res) {
     }
 
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Cache-Control', `public, max-age=${spec.cacheSecs}, s-maxage=${spec.cacheSecs}`);
+    res.setHeader('Cache-Control', `public, max-age=${Math.min(cacheSecs, 3600)}, s-maxage=${cacheSecs}, stale-while-revalidate=86400`);
     res.setHeader('X-NEC-Path', spec.path);
     res.status(r.status).send(body);
   } catch (e) {

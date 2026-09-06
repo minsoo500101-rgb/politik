@@ -24693,9 +24693,17 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
       if (currentRoute().startsWith('#/m/')) route();
     }).catch(e => console.warn('elections load failed:', e.message));
     // 9회 지선 NEC 데이터 — 홈 LIVE 카드에 사용
-    loadNec2026Governors().then(() => {
-      if (currentPath() === '/' || currentRoute() === '#/election2026') route();
-    }).catch(e => console.warn('nec2026 load failed:', e.message));
+    // V31.84 — 선거 시즌(선거일 ±30일)이나 선거 페이지에서만 부른다. 선거가 끝난 뒤에도 홈 접속마다
+    //   선관위 API를 5번 호출해, 업스트림 장애 시 10초씩 실패(502)를 기다리며 콘솔을 채우고 함수 비용만 냈다.
+    //   선거 페이지는 자기 라우트에서 따로 로드하고, 캐시(localStorage)도 있어 홈에서 미리 부를 이유가 없다.
+    {
+      const _e = new Date('2026-06-03T00:00:00+09:00'), _d = Math.abs((_e - new Date()) / 86400000);
+      if (_d <= 30 || currentRoute().startsWith('#/election2026')) {
+        loadNec2026Governors().then(() => {
+          if (currentPath() === '/' || currentRoute() === '#/election2026') route();
+        }).catch(e => console.warn('nec2026 load failed:', e.message));
+      }
+    }
   } catch (e) {
     console.warn('데이터 로드 실패:', e.message);
     document.getElementById('view').innerHTML = `<div class="empty">일시적으로 데이터를 불러올 수 없습니다.<br><br>잠시 후 새로고침해 주세요.</div>`;
