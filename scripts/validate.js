@@ -138,6 +138,69 @@ apiFiles.forEach(f => {
   } catch {}
 });
 
+// 7. 기사(NewsArticle) 정적 페이지 무결성 — V31.83
+//    ld+json 파싱, canonical, 애드센스 로더, 트렌드 폴리시, 바이라인 날짜 ↔ datePublished 일치
+try {
+  const files = fs.readdirSync(ROOT).filter(f => f.endsWith('.html') && f !== 'index.html');
+  let articles = 0, bad = 0;
+  for (const f of files) {
+    const h = fs.readFileSync(path.join(ROOT, f), 'utf8');
+    const blocks = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => m[1]);
+    let first = null;
+    for (const b of blocks) { try { const j = JSON.parse(b); if (!first) first = j; } catch { err(`${f}: ld+json 파싱 실패`); bad++; } }
+    if (!first || (first['@type'] !== 'NewsArticle' && first['@type'] !== 'Article')) continue;
+    articles++;
+    if (!/rel="canonical"/.test(h)) { err(`${f}: canonical 없음`); bad++; }
+    if (!/adsbygoogle/.test(h)) { err(`${f}: 애드센스 로더 없음`); bad++; }
+    if (!/trend-polish/.test(h)) { warn(`${f}: 트렌드 폴리시 CSS 없음`); }
+    const by = (h.match(/<div class="byline">([^<]*)/) || [])[1] || '';
+    const d = by.match(/(20\d\d)년\s*(\d{1,2})월\s*(\d{1,2})일/);
+    if (d && first.datePublished) {
+      const bd = `${d[1]}-${String(d[2]).padStart(2, '0')}-${String(d[3]).padStart(2, '0')}`;
+      // 바이라인 첫 날짜는 작성일(datePublished) 또는 갱신일(dateModified) 중 하나와 같아야 한다.
+      // 둘 다 아니면 화면 표기와 구조화 데이터가 어긋난 것 — 검색·AI가 날짜를 다르게 읽는다.
+      if (bd !== first.datePublished && bd !== (first.dateModified || first.datePublished)) {
+        warn(`${f}: 바이라인 ${bd} ≠ datePublished ${first.datePublished} / dateModified ${first.dateModified || '-'}`);
+      }
+    }
+  }
+  ok(`기사 ${articles}편 무결성 검사 (오류 ${bad})`);
+} catch (e) { warn('기사 검사 실패: ' + e.message); }
+
+// 8. 내부 링크 검사 — index.html(홈·내비)·analysis.html·기사에서 가리키는 경로가 실제로 존재하는가.
+//    제거된 라우트(리다이렉트만 남은 것)는 홈·내비에서 다시 노출되면 오류.
+try {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const cl0 = html.indexOf('const CHANGELOG = ['), cl1 = html.indexOf('\n];', cl0);
+  const live = html.slice(0, cl0) + html.slice(cl1); // 변경이력은 과거 기록이라 제외
+  const routes = new Set([...live.matchAll(/^\s*'(\/[^']*)':\s*\{\s*title:/gm)].map(m => m[1]));
+  const RETIRED = ['/me', '/share', '/stances', '/bookmarks', '/play', '/pulse', '/polling', '/compare-cand', '/election2026/live'];
+  const navSeg = (() => { const i = live.indexOf('const NAV_TREE = ['); return live.slice(i, live.indexOf('\n];', i)); })();
+  const homeSeg = (() => { const i = live.search(/^function renderHome\(\)/m); const j = live.slice(i + 10).search(/^(?:async\s+)?function\s+[A-Za-z]/m); return live.slice(i, i + 10 + j); })();
+  let retiredHits = 0;
+  for (const r of RETIRED) {
+    const re = new RegExp(`href=["']${r.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&')}["'?#]`);
+    if (re.test(navSeg) || re.test(homeSeg)) { err(`제거된 라우트 ${r} 가 홈/내비에 다시 노출됨`); retiredHits++; }
+  }
+  if (!retiredHits) ok(`제거된 라우트 ${RETIRED.length}개 — 홈·내비 미노출 확인`);
+  // 정적 파일 링크 존재 확인 (홈·내비·analysis·기사)
+  const targets = new Set();
+  const collect = s => { for (const m of s.matchAll(/href="(\/[a-zA-Z0-9\-_\/\.]+\.html)["#?]/g)) targets.add(m[1]); };
+  collect(navSeg); collect(homeSeg);
+  for (const f of fs.readdirSync(ROOT).filter(f => f.endsWith('.html') && f !== 'index.html')) collect(fs.readFileSync(path.join(ROOT, f), 'utf8'));
+  let missing = 0;
+  for (const t of targets) { if (!fs.existsSync(path.join(ROOT, t.slice(1)))) { err(`깨진 내부 링크: ${t}`); missing++; } }
+  if (!missing) ok(`정적 내부 링크 ${targets.size}개 — 모두 존재`);
+  // SEO 라우트 테이블에 없는 클린 경로가 홈/내비에서 링크되면 경고 (404 아님, SPA fallback이지만 메타 누락)
+  for (const m of (navSeg + homeSeg).matchAll(/href="(\/[a-z0-9\-\/]*)"/g)) {
+    const p = m[1];
+    // vercel.json rewrite로 정적 파일에 매핑되는 클린 경로는 SPA 라우트가 아니므로 제외
+    const REWRITES = ['/about', '/privacy', '/business', '/en'];
+    if (p === '/' || p.endsWith('.html') || routes.has(p) || REWRITES.includes(p) || /^\/(m|bill|party|group|election2026)\//.test(p)) continue;
+    warn(`SEO 메타 테이블에 없는 경로 링크: ${p}`);
+  }
+} catch (e) { warn('내부 링크 검사 실패: ' + e.message); }
+
 // 결과 요약
 console.log('\n' + '='.repeat(50));
 if (errors > 0) {

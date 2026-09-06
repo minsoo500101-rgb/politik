@@ -135,6 +135,26 @@ function injectInto(file, section, anchor) {
 const arts = collectArticles();
 if (!arts.length) { console.error('기사를 찾지 못했습니다.'); process.exit(1); }
 fs.writeFileSync(path.join(ROOT, 'feed.xml'), buildFeed(arts), 'utf8');
+// data/articles.json — 인물 상세 '관련 분석·기록' 블록이 쓰는 경량 인덱스.
+// 이름 매칭은 meta description만으로는 부족해(본문에만 등장하는 인물이 많다) 기사 본문을 훑어
+// 인물 DB(politicians.json + assembly-22.json)에 있는 이름을 people 배열로 뽑아 둔다.
+const kickerOf = f => ((fs.readFileSync(path.join(ROOT, f), 'utf8').match(/<div class="kicker">([^<]*)</) || [])[1] || '').trim();
+const NAMES = (() => {
+  const s = new Set();
+  try { for (const p of JSON.parse(fs.readFileSync(path.join(ROOT, 'data/politicians.json'), 'utf8')).people || []) if (p.name_ko) s.add(p.name_ko); } catch {}
+  try { const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/assembly-22.json'), 'utf8')); for (const m of (Array.isArray(j) ? j : (j.members || j.people || j.data || []))) if (m.HG_NM || m.name_ko) s.add(m.HG_NM || m.name_ko); } catch {}
+  // 두 글자 이름은 일반 단어와 충돌이 잦아(예: '이재'·'김건') 세 글자 이상만 사용
+  return [...s].filter(n => n && n.length >= 3);
+})();
+const peopleIn = f => {
+  const body = fs.readFileSync(path.join(ROOT, f), 'utf8').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
+  return NAMES.filter(n => body.includes(n));
+};
+fs.writeFileSync(path.join(ROOT, 'data', 'articles.json'), JSON.stringify({
+  generatedAt: new Date().toISOString().slice(0, 10),
+  count: arts.length,
+  items: arts.map(a => ({ url: '/' + a.file, title: a.title, desc: a.desc.slice(0, 200), date: a.published || a.modified, kicker: kickerOf(a.file), lang: a.lang, people: peopleIn(a.file) })),
+}), 'utf8');
 const section = buildLlmsSection(arts);
 injectInto("llms.txt", section, "## 공개 API");
 injectInto("llms-full.txt", section, "## API 호출 예시");
