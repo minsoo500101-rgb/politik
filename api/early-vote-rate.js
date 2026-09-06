@@ -96,7 +96,8 @@ async function tryNecOpenApi() {
     let allItems = [];
     const MAX_PAGES = 6; // 안전 상한 (지선 268건이면 3p)
     for (let page = 1; page <= MAX_PAGES; page++) {
-      const r = await fetch(`${base}&pageNo=${page}`, { headers: { 'User-Agent': 'Mozilla/5.0 (patchkr)' } });
+      // 요청별 6초 타임아웃 — data.go.kr가 느릴 때 함수 전체가 걸려 건강 점검이 실패하지 않도록
+      const r = await fetch(`${base}&pageNo=${page}`, { headers: { 'User-Agent': 'Mozilla/5.0 (patchkr)' }, signal: AbortSignal.timeout(6000) });
       if (!r.ok) break;
       const xml = await r.text();
       if (page === 1 && !/INFO-00|NORMAL SERVICE/.test(xml)) return null; // INFO-03(진행 중) → fallback
@@ -148,6 +149,22 @@ export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
   const now = new Date();
+  // V31.84 — 선거 종료 후에는 폴백 파일의 중앙선관위 최종 공식값을 즉시 반환한다.
+  // 종료 뒤에도 매 요청마다 data.go.kr을 최대 6페이지 순차 호출해 타임아웃(건강 점검 실패)이 났는데,
+  // 최종값은 더 바뀌지 않으므로 외부 호출 자체가 불필요하다. 캐시도 하루로 늘린다.
+  if (phase === '종료') {
+    const fbFinal = readFallback();
+    if (fbFinal && fbFinal.rate != null && fbFinal.phase === '종료') {
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400');
+      return res.status(200).json({
+        rate: fbFinal.rate, phase: '종료', announcedAt: fbFinal.announcedAt || null,
+        byRegion: fbFinal.byRegion || null, turnoutCount: fbFinal.turnoutCount || null,
+        totalVoters: fbFinal.totalVoters || 44650000, source: 'nec-final',
+        prev8th: { rate: 20.62, label: '2022.6 8회 지선 최종 (참고)' }, nextUpdate: null,
+        note: fbFinal._source || '중앙선관위 공식 최종', generatedAt: now.toISOString(),
+      });
+    }
+  }
   const result = {
     rate: null,
     phase,
