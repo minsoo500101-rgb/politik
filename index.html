@@ -11017,30 +11017,27 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     <div class="foot-col">
       <div class="foot-h">📊 데이터</div>
       <a href="/bills">22대 법안 1,595건</a>
-      <a href="/election2026">🗳 9회 지선 결과</a>
-      <a href="/polling">📍 투표소 찾기</a>
-      <a href="/economy">경제 지표</a>
       <a href="/dex">정치인 도감 약 780명</a>
+      <a href="/economy">경제 지표</a>
+      <a href="/election2026">🗳 9회 지선 결과</a>
       <a href="/map">정치 분포 지도</a>
+      <a href="/committees">위원회 25</a>
       <a href="/history/parties">정당사 1948~</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-h">📂 읽을거리</div>
+      <a href="/analysis.html">분석·기록 전체</a>
+      <a href="/law-changes.html">⚖ 법령 개정 동향</a>
+      <a href="/law-diff.html">법령 신구비교</a>
+      <a href="/crisis.html">🚨 국가 지표 신호등</a>
+      <a href="/en">🇬🇧 Korea, Explained</a>
     </div>
     <div class="foot-col">
       <div class="foot-h">🔧 도구</div>
       <a href="/today">🔥 한국 실검</a>
-      <a href="/pledge-tracker">공약 이행 추적</a>
-      <a href="/compare-cand">9회 후보 비교</a>
       <a href="/rankings">활동 랭킹</a>
       <a href="/glossary">용어 사전</a>
-      <a href="/world">국제 비교</a>
-    </div>
-    <div class="foot-col">
-      <div class="foot-h">⭐ 내 활동</div>
-      <a href="/share">📤 인스타 공유 카드</a>
-      <a href="/me">📋 내 활동 대시보드</a>
-      <a href="/bookmarks">관심 의원</a>
-      <a href="/stances">내 정치 입장</a>
-      <a href="/play">실험실</a>
-      <span class="foot-mini">📋 익명 UUID로 다기기 동기화</span>
+      <a href="/pledge-tracker">8회 공약 이행 (아카이브)</a>
     </div>
     <div class="foot-col">
       <div class="foot-h">📩 사이트</div>
@@ -11098,17 +11095,17 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     <span class="mbn-icon">📜</span>
     <span class="mbn-label">법안</span>
   </a>
-  <a href="/election2026" class="mbn-item" data-path="/election2026" aria-label="9회 지선 결과">
-    <span class="mbn-icon">🗳</span>
-    <span class="mbn-label">9회 지선</span>
+  <a href="/dex" class="mbn-item" data-path="/dex" aria-label="정치인 도감">
+    <span class="mbn-icon">📕</span>
+    <span class="mbn-label">도감</span>
+  </a>
+  <a href="/analysis.html" class="mbn-item" data-path="/analysis.html" aria-label="분석·기록">
+    <span class="mbn-icon">📂</span>
+    <span class="mbn-label">분석</span>
   </a>
   <a href="/today" class="mbn-item" data-path="/today" aria-label="실검">
     <span class="mbn-icon">🔥</span>
     <span class="mbn-label">실검</span>
-  </a>
-  <a href="/me" class="mbn-item" data-path="/me" aria-label="내 활동">
-    <span class="mbn-icon">📋</span>
-    <span class="mbn-label">내 활동</span>
   </a>
 </nav>
 
@@ -11185,22 +11182,6 @@ function getBookmarks() {
     return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '{}');
   } catch { return {}; }
 }
-function isBookmarked(mid) {
-  return !!getBookmarks()[mid];
-}
-function toggleBookmark(mid, memberName) {
-  const bm = getBookmarks();
-  const wasBookmarked = !!bm[mid];
-  if (wasBookmarked) delete bm[mid];
-  else bm[mid] = { t: Date.now(), name: memberName };
-  try { localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bm)); } catch {}
-  // V21.7 — Supabase 동기화 (fire-and-forget)
-  if (typeof syncBookmarkToServer === 'function') {
-    if (wasBookmarked) removeBookmarkFromServer('politician', mid);
-    else syncBookmarkToServer({ type: 'politician', id: mid, name: memberName });
-  }
-  return !!bm[mid];
-}
 function bookmarkCount() {
   return Object.keys(getBookmarks()).length;
 }
@@ -11212,21 +11193,6 @@ function bookmarkCount() {
 function getStances() {
   try { return JSON.parse(localStorage.getItem(STANCES_KEY) || '{}'); } catch { return {}; }
 }
-function getStance(mid) {
-  return getStances()[mid]?.s || null; // 'support' | 'oppose' | null
-}
-function setStance(mid, name, stance) {
-  const all = getStances();
-  const willRemove = !stance || stance === all[mid]?.s;
-  if (willRemove) delete all[mid];
-  else all[mid] = { s: stance, t: Date.now(), name };
-  try { localStorage.setItem(STANCES_KEY, JSON.stringify(all)); } catch {}
-  // V21.7 — Supabase 동기화
-  if (typeof syncStanceToServer === 'function') {
-    syncStanceToServer(mid, name, willRemove ? null : stance);
-  }
-  return all[mid]?.s || null;
-}
 function stanceCounts() {
   const s = getStances();
   let sup = 0, opp = 0;
@@ -11237,16 +11203,6 @@ function stanceCounts() {
   return { support: sup, oppose: opp, total: sup + opp };
 }
 
-// 사용자 정치성향 자기 라벨 (선택사항, localStorage)
-function getUserLean() {
-  try { return localStorage.getItem(USER_LEAN_KEY) || null; } catch { return null; }
-}
-function setUserLean(lean) {
-  try {
-    if (lean) localStorage.setItem(USER_LEAN_KEY, lean);
-    else localStorage.removeItem(USER_LEAN_KEY);
-  } catch {}
-}
 const CACHE_TTL = 24 * 3600 * 1000; // 24h
 
 // 통합 schema 변환
@@ -12789,56 +12745,6 @@ async function cachePledges(sgId, huboid, pledges) {
   } catch {}
 }
 
-// 북마크 동기화 — Supabase
-async function syncBookmarkToServer(item) {
-  const userId = getOrCreateAnonUserId();
-  try {
-    await supabaseRest('/bookmarks?on_conflict=user_id,item_type,item_id', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify([{
-        user_id: userId,
-        item_type: item.type || 'politician',
-        item_id: item.id,
-        item_name: item.name || '',
-        meta: item.meta || null,
-      }]),
-    });
-  } catch {}
-}
-async function removeBookmarkFromServer(itemType, itemId) {
-  const userId = getOrCreateAnonUserId();
-  try {
-    await supabaseRest(
-      `/bookmarks?user_id=eq.${encodeURIComponent(userId)}&item_type=eq.${itemType}&item_id=eq.${encodeURIComponent(itemId)}`,
-      { method: 'DELETE' }
-    );
-  } catch {}
-}
-async function loadBookmarksFromServer() {
-  const userId = getOrCreateAnonUserId();
-  try {
-    return await supabaseRest(`/bookmarks?user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc`);
-  } catch { return []; }
-}
-
-// V22.6 — /me 대시보드: 사용자 본인 활동 fetch
-async function loadMyActivity() {
-  const userId = getOrCreateAnonUserId();
-  const enc = encodeURIComponent(userId);
-  // 병렬 fetch 모든 사용자 데이터
-  const [bookmarks, stances, ihaengVotes, ratings, socialVotes, myPageviews] = await Promise.all([
-    supabaseRest(`/bookmarks?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
-    supabaseRest(`/user_stances?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
-    supabaseRest(`/pledge_ihaeng_votes?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
-    supabaseRest(`/pledge_ratings?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
-    supabaseRest(`/social_votes?user_id=eq.${enc}&order=created_at.desc`).catch(() => []),
-    supabaseRest(`/page_views?user_id=eq.${enc}&select=page_type,viewed_at&order=viewed_at.desc&limit=50`).catch(() => []),
-  ]);
-  return { userId, bookmarks: bookmarks || [], stances: stances || [], ihaengVotes: ihaengVotes || [], ratings: ratings || [], socialVotes: socialVotes || [], myPageviews: myPageviews || [] };
-}
-
-// stance 동기화
 async function syncStanceToServer(politicianId, politicianName, stance) {
   const userId = getOrCreateAnonUserId();
   try {
@@ -13175,6 +13081,8 @@ window.loadPledgeNews = loadPledgeNews; // onclick에서 접근
 
 // 같은 지역 후보 비교 URL 생성 — sgTypecode 기준 (3=광역단체장, 4=시군구청장, 11=교육감)
 function buildRegionCompareUrl(currentCand, allCands) {
+  // V31.84 — 후보 공약 비교 페이지(/compare-cand) 제거로 배너를 만들지 않는다. 호출부는 null이면 배너를 생략한다.
+  return null;
   if (!currentCand) return null;
   const sgType = currentCand.sgTypecode;
   const isMuni = sgType === '4'; // 시군구청장은 시군구 단위로 매칭
@@ -14018,13 +13926,13 @@ function renderElection2026Page() {
           <p>${escapeHtml(ev.date)} 수요일 · ${escapeHtml(ev.voting_hours)} · 만 ${ev.voter_age}세 이상 · 1인 ${d.ballots_per_voter}표</p>
           <div class="e26-status"><span class="e26-status-dot" style="background:${phase.color}"></span>${escapeHtml(phase.tag)}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-            <a href="/early-voting" class="e26-live-cta" style="display:inline-block;padding:8px 14px;background:var(--brand);color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">🗳 사전투표 안내 (5/29·30) →</a>
-            <a href="/election2026/live" class="e26-live-cta" style="display:inline-block;padding:8px 14px;background:#ef4444;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;animation:pulse 2s ease-in-out infinite;">🔴 선거 당일 LIVE →</a>
+            <a href="/election-analysis-2026.html" class="e26-live-cta" style="display:inline-block;padding:8px 14px;background:var(--brand);color:#fff;border-radius:8px;font-weight:700;text-decoration:none">📂 데이터 분석 기사</a>
+            <a href="/early-voting" class="e26-live-cta" style="display:inline-block;padding:8px 14px;background:var(--bg-elev);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">🗳 사전투표·투표율 (기록) →</a>
           </div>
         </div>
         <div class="e26-hero-r">
           <div class="e26-dday">${dDay}</div>
-          <div class="e26-dday-label">${ev.date.replace(/-/g, '.')} 선거일까지</div>
+          <div class="e26-dday-label">${ev.date.replace(/-/g, '.')} ${dayDiff > 0 ? '선거일까지' : dayDiff === 0 ? '선거 당일' : '선거일로부터 · 결과 확정'}</div>
         </div>
       </div>
 
@@ -14700,334 +14608,6 @@ function _electionStage() {
   if (now < voteEnd)    return { stage: 'voting',      label: '본 투표 진행 중',       emoji: '🟢' };
   if (now < cutoff)     return { stage: 'counting',    label: '개표 진행 중',          emoji: '🔥' };
   return                       { stage: 'done',        label: '개표 완료 · 최종 결과', emoji: '✅' };
-}
-
-function renderElectionLivePage() {
-  const stage = _electionStage();
-  const now = new Date();
-  const eday = new Date('2026-06-03T06:00:00+09:00');
-  const dayDiff = Math.ceil((eday - now) / 86400000);
-  const dDay = dayDiff > 0 ? `D-${dayDiff}` : dayDiff === 0 ? 'D-Day' : `D+${Math.abs(dayDiff)}`;
-
-  // 시각 표시 (KST)
-  const hhmm = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Seoul' });
-  const ymd = now.toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' });
-
-  // 투표 진행 시각 시각화 (06~18)
-  let votingProgress = 0;
-  if (stage.stage === 'voting') {
-    const start = new Date('2026-06-03T06:00:00+09:00').getTime();
-    const end = new Date('2026-06-03T18:00:00+09:00').getTime();
-    votingProgress = Math.round((now.getTime() - start) / (end - start) * 100);
-  } else if (stage.stage === 'counting' || stage.stage === 'done') {
-    votingProgress = 100;
-  }
-
-  // 단계별 콘텐츠
-  function stageContent() {
-    if (stage.stage === 'pre' || stage.stage === 'early_done') {
-      return `
-        <div class="live-section">
-          <h2>📋 9회 지방선거 안내 — 투표 전 체크리스트</h2>
-          <div class="live-checklist">
-            <div class="live-check-item">
-              <div class="live-check-icon">🆔</div>
-              <div class="live-check-body">
-                <b>신분증 지참 필수</b><br>
-                <span class="live-check-sub">주민등록증·운전면허증·여권·청소년증·장애인등록증 등 정부 발급 사진 신분증</span>
-              </div>
-            </div>
-            <div class="live-check-item">
-              <div class="live-check-icon">📍</div>
-              <div class="live-check-body">
-                <b>본인 투표소 확인</b><br>
-                <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" class="live-link-inline">중앙선관위 통합선거정보 → 내 투표소 찾기 ↗</a>
-              </div>
-            </div>
-            <div class="live-check-item">
-              <div class="live-check-icon">🕒</div>
-              <div class="live-check-body">
-                <b>투표 시간 — 6월 3일 (수) 06:00 ~ 18:00</b><br>
-                <span class="live-check-sub">법정 공휴일. 사전투표는 5/29~30 (금·토) 06:00~18:00 전국 어디서나.</span>
-              </div>
-            </div>
-            <div class="live-check-item">
-              <div class="live-check-icon">🗳</div>
-              <div class="live-check-body">
-                <b>1인 7표</b><br>
-                <span class="live-check-sub">광역단체장 · 교육감 · 기초단체장 · 광역의원(지역) · 광역의원(비례) · 기초의원(지역) · 기초의원(비례)</span>
-              </div>
-            </div>
-            <div class="live-check-item">
-              <div class="live-check-icon">📚</div>
-              <div class="live-check-body">
-                <b>공약 미리 확인</b><br>
-                <a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener" class="live-link-inline">정책공약마당 → 지역별 후보 공약 비교 ↗</a> · <a href="/election2026" class="live-link-inline">우리 사이트 시도별 페이지 →</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-    if (stage.stage === 'early') {
-      return `
-        <div class="live-section live-section-active">
-          <h2>🗳 사전투표 진행 중 — 5월 29일(금) ~ 30일(토) 06:00~18:00</h2>
-          <div class="live-banner">
-            <b>전국 어디서나 가능</b> — 본인 신분증만 있으면 ID 등록된 주소지 외 어디서든 사전투표 가능.
-            <br><a href="https://si.nec.go.kr/" target="_blank" rel="noopener" class="live-link-inline">선관위 통합선거정보 → 가까운 사전투표소 찾기 ↗</a>
-          </div>
-          <div class="live-info-row">
-            <div class="live-info-card">
-              <div class="live-info-label">사전투표율 (실시간)</div>
-              <div class="live-info-val">실시간은 NEC →</div>
-              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-link-inline">중앙선관위 통계 ↗</a>
-            </div>
-            <div class="live-info-card">
-              <div class="live-info-label">현재 시각 (KST)</div>
-              <div class="live-info-val live-clock" id="live-clock">${hhmm}</div>
-              <div class="live-info-sub">${escapeHtml(ymd)}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-    if (stage.stage === 'voting') {
-      const t = state.liveTurnout;
-      const tEmpty = !(t && t.rate != null);
-      const tRate = tEmpty ? '집계 대기' : t.rate.toFixed(1) + '%';
-      const tSub = !tEmpty
-        ? `합계(사전+본투표) · ${t.turnoutCount ? Number(t.turnoutCount).toLocaleString() + '명' : ''}${t.announcedAt ? (t.turnoutCount ? ' · ' : '') + '갱신 ' + new Date(t.announcedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}`
-        : (t && t.note ? t.note : '중앙선관위 집계 대기 · 아래 라이브에서 실시간 확인');
-      const bd = (!tEmpty && t.breakdown) ? t.breakdown : null;
-      const splitHtml = bd ? `
-            <div class="tv-live-split">
-              <div class="tv-split-item"><div class="tv-split-l">🗳 사전투표</div><div class="tv-split-v">${bd.early && bd.early.rate != null ? bd.early.rate.toFixed(1) + '%' : '—'}</div></div>
-              <div class="tv-split-item live"><div class="tv-split-l">📩 본투표(당일)</div><div class="tv-split-v">${bd.dayOf && bd.dayOf.rate != null ? bd.dayOf.rate.toFixed(1) + '%' : '—'}</div></div>
-            </div>` : '';
-      const tSrc = ({ 'nec-headless-auto': '📊 선관위 통계 자동수집', 'nec-stat': '📊 중앙선관위 통계', 'historical': '⏳ 집계 대기', 'pending': '⏳ 투표 시작 전' })[(t && t.source)] || '🔴 LIVE';
-      const SD_SHORT = { '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주' };
-      const tReg = (t && t.byRegion) ? Object.entries(t.byRegion).filter(e => e[1] != null) : [];
-      let tRegHtml = '';
-      if (tReg.length) {
-        tReg.sort((a, b) => b[1] - a[1]);
-        const mx = Math.max(...tReg.map(e => e[1])) || 1;
-        tRegHtml = `<div class="tv-live-region">${tReg.map(([n, rt], i) => {
-          const c = i === 0 ? 'var(--ok)' : i === tReg.length - 1 ? 'var(--dim)' : '#ef4444';
-          return `<div style="display:flex;align-items:center;gap:10px;padding:4px 0">
-            <span style="flex:0 0 38px;font-size:12px;font-weight:${i===0||i===tReg.length-1?'800':'600'};color:var(--text)">${SD_SHORT[n] || n}</span>
-            <span style="flex:1;height:8px;background:var(--bg-elev);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:${(rt / mx * 100).toFixed(1)}%;background:${c};border-radius:5px"></span></span>
-            <span style="flex:0 0 44px;text-align:right;font-size:12px;font-weight:800;color:${c}">${Number(rt).toFixed(1)}</span>
-          </div>`;
-        }).join('')}</div>`;
-      }
-      return `
-        <div class="live-section live-section-live">
-          <div class="live-pulse-banner">
-            <span class="live-pulse-dot"></span>
-            <b>본 투표 진행 중</b> — 6월 3일 (수) · 06:00 ~ 18:00 · 신분증 지참
-          </div>
-
-          <div class="tv-live-card">
-            <div class="tv-live-top">
-              <span class="tv-live-badge"><span class="live-pulse-dot"></span>실시간 투표율</span>
-              <span class="tv-live-src">${tSrc}</span>
-            </div>
-            <div class="tv-live-rate${tEmpty ? ' is-empty' : ''}">${tRate}</div>
-            <div class="tv-live-sub">${tSub}</div>
-            ${splitHtml}
-            <div class="tv-live-cmp">📊 8회(2022) 지선 최종 <b>50.9%</b> · 올해 사전투표 최종 23.51%(역대 최고)</div>
-            ${tRegHtml}
-            <a class="tv-live-link" href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener">중앙선관위 실시간 통계 ↗</a>
-          </div>
-
-          <div class="live-progress-wrap">
-            <div class="live-progress-label">투표 시간 진행률 — <b>${votingProgress}%</b></div>
-            <div class="live-progress-bar"><div class="live-progress-fill" style="width:${votingProgress}%"></div></div>
-            <div class="live-progress-marks">
-              <span>06:00</span><span>09</span><span>12</span><span>15</span><span>18:00 마감</span>
-            </div>
-          </div>
-          <div class="live-info-row">
-            <div class="live-info-card">
-              <div class="live-info-label">현재 시각 (KST)</div>
-              <div class="live-info-val live-clock" id="live-clock">${hhmm}</div>
-            </div>
-            <div class="live-info-card">
-              <div class="live-info-label">총 선거인수</div>
-              <div class="live-info-val">${(((t && t.totalVoters) || 44649908) / 10000).toFixed(0)}만</div>
-              <div class="live-info-sub">9회 선거인명부</div>
-            </div>
-            <div class="live-info-card">
-              <div class="live-info-label">개표 시작 (예상)</div>
-              <div class="live-info-val">18:00 (마감 직후)</div>
-              <div class="live-info-sub">출구조사 18시 발표</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="live-section">
-          <h2>📺 개표 방송 (18시 시작)</h2>
-          <div class="live-broadcast-grid">
-            <a href="https://www.kbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
-              <div class="live-bc-name">KBS</div>
-              <div class="live-bc-sub">개표방송</div>
-            </a>
-            <a href="https://imnews.imbc.com/" target="_blank" rel="noopener" class="live-broadcast">
-              <div class="live-bc-name">MBC</div>
-              <div class="live-bc-sub">선택 2026</div>
-            </a>
-            <a href="https://news.sbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
-              <div class="live-bc-name">SBS</div>
-              <div class="live-bc-sub">2026 국민의 선택</div>
-            </a>
-            <a href="https://news.jtbc.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
-              <div class="live-bc-name">JTBC</div>
-              <div class="live-bc-sub">우리의 선택</div>
-            </a>
-            <a href="https://news.ytn.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
-              <div class="live-bc-name">YTN</div>
-              <div class="live-bc-sub">24시간 개표</div>
-            </a>
-            <a href="https://www.yna.co.kr/" target="_blank" rel="noopener" class="live-broadcast">
-              <div class="live-bc-name">연합뉴스TV</div>
-              <div class="live-bc-sub">실시간 개표</div>
-            </a>
-          </div>
-        </div>
-      `;
-    }
-    if (stage.stage === 'counting') {
-      const cnt = state.liveCount;
-      const cRegions = (cnt && Array.isArray(cnt.regions)) ? cnt.regions : [];
-      const CNT_SHORT = { '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주' };
-      const CNT_COL = { '더불어민주당':'#152484','국민의힘':'#E61E2B','개혁신당':'#FF7210','조국혁신당':'#06275E','진보당':'#D6001C','정의당':'#FFCC00','무소속':'#888888' };
-      const cntTime = (cnt && cnt.updatedAt) ? new Date(cnt.updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
-      const wonN = cRegions.filter(r => r.won).length;
-      let countInner;
-      if (cRegions.length) {
-        countInner = `<div class="cnt-grid">${cRegions.map(rg => {
-          const lp = (rg.leader && rg.leader.party) ? rg.leader.party : '';
-          const col = CNT_COL[lp] || 'var(--accent)';
-          return `<div class="cnt-card${rg.won ? ' won' : ''}">
-            <div class="cnt-sido">${escapeHtml(CNT_SHORT[rg.sido] || rg.sido)}<span class="cnt-prog">${rg.progress != null ? '개표 ' + rg.progress.toFixed(1) + '%' : ''}</span></div>
-            ${rg.leader ? `<div class="cnt-lead" style="border-left-color:${col}"><span class="cnt-dot" style="background:${col}"></span><span class="cnt-lp">${escapeHtml(lp || '1위')}</span><span class="cnt-lr">${rg.leader.rate != null ? rg.leader.rate.toFixed(1) + '%' : ''}</span>${rg.won ? '<span class="cnt-won">당선</span>' : '<span class="cnt-lead-tag">유력</span>'}</div>` : '<div class="cnt-lead cnt-wait">집계 중</div>'}
-            ${rg.second ? `<div class="cnt-second">2위 ${escapeHtml(rg.second.party || '')} ${rg.second.rate != null ? rg.second.rate.toFixed(1) + '%' : ''}</div>` : ''}
-          </div>`;
-        }).join('')}</div>`;
-      } else {
-        countInner = `<p class="live-sub">${cnt && cnt.note ? escapeHtml(cnt.note) : '개표 집계 대기'} — 집계되면 자동 표시됩니다. 아래 선관위·방송에서 실시간 확인.</p>
-          <div class="r-other-grid" style="margin-top:8px">${Object.entries(REGION_SLUG_MAP).map(([slug, info]) => `<a href="/election2026/${slug}" class="r-other-link" data-region="${slug}">${escapeHtml(info.short)}</a>`).join('')}</div>`;
-      }
-      return `
-        <div class="live-section live-section-counting">
-          <div class="live-pulse-banner">
-            <span class="live-pulse-dot"></span>
-            <b>개표 진행 중</b> — 18시 종료 직후 시작 · 새벽까지 진행 · 정확한 결과는 NEC 공식 발표
-          </div>
-          <div class="live-info-row">
-            <div class="live-info-card">
-              <div class="live-info-label">최종 투표율</div>
-              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 통계 ↗</a>
-            </div>
-            <div class="live-info-card">
-              <div class="live-info-label">실시간 개표</div>
-              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 결과 ↗</a>
-            </div>
-            <div class="live-info-card">
-              <div class="live-info-label">출구조사</div>
-              <div class="live-info-val">방송 3사</div>
-              <div class="live-info-sub">KBS·MBC·SBS 공동</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="live-section">
-          <h2>📊 17 시도지사 실시간 개표${cntTime ? ` <span style="font-size:11px;color:var(--dim);font-weight:400">· 갱신 ${cntTime}</span>` : ''}${wonN ? ` <span class="cnt-wonbadge">당선 확정 ${wonN}</span>` : ''}</h2>
-          <p class="live-sub">중앙선관위 개표진행상황 실시간 집계 · 최종 결과는 NEC 공식 발표 기준</p>
-          ${countInner}
-        </div>
-
-        <div class="live-section">
-          <h2>📺 실시간 개표 방송</h2>
-          <div class="live-broadcast-grid">
-            <a href="https://www.kbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">KBS</div><div class="live-bc-sub">개표방송</div></a>
-            <a href="https://imnews.imbc.com/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">MBC</div><div class="live-bc-sub">선택 2026</div></a>
-            <a href="https://news.sbs.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">SBS</div><div class="live-bc-sub">2026</div></a>
-            <a href="https://news.jtbc.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">JTBC</div><div class="live-bc-sub">우리의 선택</div></a>
-            <a href="https://news.ytn.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">YTN</div><div class="live-bc-sub">24시간</div></a>
-            <a href="https://www.yna.co.kr/" target="_blank" rel="noopener" class="live-broadcast"><div class="live-bc-name">연합뉴스TV</div><div class="live-bc-sub">실시간</div></a>
-          </div>
-        </div>
-      `;
-    }
-    if (stage.stage === 'done') {
-      return `
-        <div class="live-section live-section-done">
-          <div class="live-banner">
-            <b>✅ 개표 완료</b> — 9회 전국동시지방선거 최종 결과 확정. 당선자는 2026.7.1 취임.
-          </div>
-          <div class="live-info-row">
-            <div class="live-info-card">
-              <div class="live-info-label">최종 결과</div>
-              <a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener" class="live-info-val live-link">선관위 ↗</a>
-            </div>
-            <div class="live-info-card">
-              <div class="live-info-label">우리 사이트 9회 페이지</div>
-              <a href="/election2026" class="live-info-val live-link">전국 →</a>
-            </div>
-            <div class="live-info-card">
-              <div class="live-info-label">8회 (2022) 비교</div>
-              <a href="/elections" class="live-info-val live-link">역대 →</a>
-            </div>
-          </div>
-        </div>
-        <div class="live-section">
-          <h2>📊 17 시도지사 — 시도별 결과</h2>
-          <div class="r-other-grid" style="margin-top:0">
-            ${Object.entries(REGION_SLUG_MAP).map(([slug, info]) => `
-              <a href="/election2026/${slug}" class="r-other-link" data-region="${slug}">${escapeHtml(info.short)}</a>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-    return '';
-  }
-
-  return `
-    <div class="group-back" id="back-e26">← 9회 지선 전국</div>
-    <div class="e26-page live-page">
-      <div class="e26-hero live-hero">
-        <div class="e26-hero-l">
-          <div class="e26-eye">9회 전국동시지방선거 · 선거 당일 LIVE</div>
-          <h1>${stage.emoji} ${escapeHtml(stage.label)}</h1>
-          <p>2026년 6월 3일 (수) · 6시~18시 · 만 18세 이상 · 1인 7표 · 광역 17 + 기초 226 + 교육감 17 + 광역의원·기초의원</p>
-        </div>
-        <div class="e26-hero-r">
-          <div class="e26-dday">${dDay}</div>
-          <div class="e26-dday-label">${dayDiff > 0 ? '선거일까지' : dayDiff === 0 ? '오늘' : '선거일 지남'}</div>
-        </div>
-      </div>
-
-      ${stageContent()}
-
-      <div class="live-section live-section-sources">
-        <h2>📚 공식 출처</h2>
-        <ul class="e26-sources">
-          <li><a href="https://www.nec.go.kr/" target="_blank" rel="noopener"><b>중앙선거관리위원회 (NEC)</b> →</a></li>
-          <li><a href="https://si.nec.go.kr/" target="_blank" rel="noopener"><b>통합선거정보 — 내 투표소 찾기</b> →</a></li>
-          <li><a href="https://info.nec.go.kr/electioninfo/electionInfo_report.xhtml" target="_blank" rel="noopener"><b>실시간 선거 통계</b> →</a></li>
-          <li><a href="https://policy.nec.go.kr/svc/policy/PolicyContentMain.do" target="_blank" rel="noopener"><b>정책공약마당</b> →</a></li>
-        </ul>
-        <div class="e26-foot">
-          <b>실시간 데이터 안내</b><br>
-          개표 결과는 중앙선관위 공식 데이터가 가장 정확합니다. 본 사이트는 후보·공약·역대 결과 정보 + 가이드 + 빠른 진입점을 제공합니다.
-          실시간 개표 결과는 위 NEC 공식 링크나 방송 3사를 통해 확인해 주세요.
-        </div>
-      </div>
-    </div>
-  `;
 }
 
 // ============================================================
@@ -19256,14 +18836,7 @@ function renderEarlyVotingPage() {
         ${phaseBadge}
       </header>
 
-      <!-- V29.9 — 사전투표소 찾기 진입 -->
-      <a href="/polling" class="ev-find-cta" style="display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:14px 18px;background:linear-gradient(135deg,var(--brand-deep),var(--brand));color:#fff;border-radius:var(--rd-xl);text-decoration:none;box-shadow:var(--sh-brand)">
-        <span style="font-size:30px" aria-hidden="true">📍</span>
-        <span style="flex:1;min-width:0">
-          <span style="display:block;font-size:15px;font-weight:800">내 투표소 찾기</span>
-          <span style="display:block;font-size:12px;opacity:0.92;margin-top:2px">시·도 → 구·시·군으로 가까운 사전투표소 검색 →</span>
-        </span>
-      </a>
+      <!-- V29.9 사전투표소 찾기 진입 → V31.84 제거 (선거 종료, /polling 은 결과 페이지로 리다이렉트) -->
 
       <!-- V28.2 — 라이브 사전투표율 카드 (V29.0 aria-live 적용) -->
       <section class="ev-section ev-live-section" id="ev-live-section" aria-labelledby="ev-live-heading">
@@ -19305,7 +18878,6 @@ function renderEarlyVotingPage() {
           <li><span class="ev-check">✅</span> <b>시간</b> — 5/29(금) · 5/30(토) <b>06:00 ~ 18:00</b></li>
           <li><span class="ev-check">✅</span> <b>장소</b> — <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" class="ev-link">선관위 통합선거정보 → 가까운 사전투표소 찾기 ↗</a></li>
           <li><span class="ev-check">✅</span> <b>지역 제한 없음</b> — 주소지 외 전국 어디서나 가능 (관내·관외 모두 OK)</li>
-          <li><span class="ev-check">✅</span> <b>후보 미리 비교</b> — <a href="/compare-cand" class="ev-link">우리 사이트 후보 공약 비교 →</a></li>
         </ul>
       </section>
 
@@ -19340,10 +18912,10 @@ function renderEarlyVotingPage() {
       <section class="ev-section ev-cta-section">
         <h2>🚀 지금 바로 준비</h2>
         <div class="ev-cta-grid">
-          <a href="/compare-cand" class="ev-cta-card">
-            <div class="ev-cta-icon">🆚</div>
-            <div class="ev-cta-h">후보 공약 비교</div>
-            <div class="ev-cta-d">최대 3명 옆에 옆에 — 5대 공약·학력·경력·재산</div>
+          <a href="/election-analysis-2026.html" class="ev-cta-card">
+            <div class="ev-cta-icon">📂</div>
+            <div class="ev-cta-h">9회 지선 데이터 분석</div>
+            <div class="ev-cta-d">광역단체장 민주 11·국힘 5 — 7·8·9회 비교</div>
           </a>
           <a href="/election2026" class="ev-cta-card">
             <div class="ev-cta-icon">📋</div>
@@ -19554,188 +19126,9 @@ function renderChangelogPage() {
 // ============================================================
 // 내 stance 페이지 (/stances) — 지지/반대 + 정치성향 자기 라벨
 // ============================================================
-function renderStancesPage() {
-  const stances = getStances();
-  const entries = Object.entries(stances).sort((a, b) => b[1].t - a[1].t);
-  const supports = entries.filter(([_, v]) => v.s === 'support');
-  const opposes = entries.filter(([_, v]) => v.s === 'oppose');
-  const counts = stanceCounts();
-  const currentLean = getUserLean();
-
-  // 지지 의원들의 정당 분포 (사용자 자가 분류 보조 데이터)
-  const partyDistro = {};
-  supports.forEach(([mid, v]) => {
-    const m = state.members?.find(x => x.MONA_CD === mid);
-    const p = m?.POLY_NM || '무소속';
-    partyDistro[p] = (partyDistro[p] || 0) + 1;
-  });
-  const sortedParties = Object.entries(partyDistro).sort((a, b) => b[1] - a[1]);
-
-  const leanOptions = [
-    { id: 'left', label: '좌파', icon: '◀', color: 'var(--party-민주)' },
-    { id: 'center-left', label: '중도좌파', icon: '◁', color: '#3b82f6' },
-    { id: 'center', label: '중도', icon: '⬚', color: 'var(--text-2)' },
-    { id: 'center-right', label: '중도우파', icon: '▷', color: '#f97316' },
-    { id: 'right', label: '우파', icon: '▶', color: 'var(--party-국힘)' },
-  ];
-
-  function stanceCardGrid(list, kind) {
-    if (!list.length) return `<div class="empty" style="padding:20px;font-size:13px;color:var(--dim)">${kind === 'support' ? '아직 지지한 의원이 없습니다' : '아직 반대 표시한 의원이 없습니다'}</div>`;
-    return `<div class="bm-grid">${list.map(([mid, info]) => {
-      const m = state.members?.find(x => x.MONA_CD === mid);
-      const party = m?.POLY_NM || '—';
-      const color = partyColor(party);
-      const initial = (info.name || '?').charAt(0);
-      const photo = m ? state.photos.get(mid) : null;
-      const avatar = (photo?.thumb)
-        ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(info.name)}">`
-        : `<span>${escapeHtml(initial)}</span>`;
-      const ago = Math.round((Date.now() - info.t) / 86400000);
-      return `
-        <div class="bm-card" data-mid="${escapeHtml(mid)}">
-          <div class="bm-card-bar" style="background:${color}"></div>
-          <div class="bm-card-body">
-            <div class="bm-avatar">${avatar}</div>
-            <div class="bm-info">
-              <div class="bm-name">${escapeHtml(info.name)}</div>
-              <div class="bm-meta" style="color:${color}">${escapeHtml(party)}${m?.ORIG_NM ? ' · ' + escapeHtml(m.ORIG_NM) : ''}</div>
-              <div class="bm-added">${ago === 0 ? '오늘' : ago + '일 전'}</div>
-            </div>
-          </div>
-          <button class="bm-remove" data-mid="${escapeHtml(mid)}" data-name="${escapeHtml(info.name)}" title="해제">✕</button>
-        </div>
-      `;
-    }).join('')}</div>`;
-  }
-
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="bm-page">
-      <h1 class="bm-h1">🗳 내 정치 입장</h1>
-      <p class="bm-lead">로컬 저장 · 서버 X · 익명. 누구도 볼 수 없는 본인만의 기록입니다.</p>
-
-      <!-- 사용자 정치성향 자가 라벨 -->
-      <div class="lean-section">
-        <h2>🧭 정치성향 자가 라벨 (선택)</h2>
-        <p class="lean-sub">현재 본인 성향이 어디라고 생각하시나요? (변경 가능 · 본인만 보임)</p>
-        <div class="lean-options">
-          ${leanOptions.map(o => `
-            <button class="lean-opt ${currentLean === o.id ? 'active' : ''}" data-lean="${o.id}" style="--lean-color:${o.color}">
-              <span class="lean-icon">${o.icon}</span>
-              <span class="lean-label">${o.label}</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- 통계 -->
-      <div class="stance-stats">
-        <div class="stance-stat-card">
-          <div class="stance-stat-big" style="color:var(--ok)">👍 ${counts.support}</div>
-          <div class="stance-stat-l">지지 표시한 의원</div>
-        </div>
-        <div class="stance-stat-card">
-          <div class="stance-stat-big" style="color:#dc2626">👎 ${counts.oppose}</div>
-          <div class="stance-stat-l">반대 표시한 의원</div>
-        </div>
-        ${sortedParties.length ? `
-        <div class="stance-stat-card stance-distro">
-          <div class="stance-stat-l" style="margin-bottom:8px">지지한 의원 정당 분포</div>
-          ${sortedParties.slice(0, 4).map(([p, n]) => `
-            <div class="lean-distro-row">
-              <span style="color:${partyColor(p)};font-weight:700;font-size:11px">${escapeHtml(p)}</span>
-              <span style="font-variant-numeric:tabular-nums;font-size:11px;color:var(--text-2)">${n}명</span>
-            </div>
-          `).join('')}
-        </div>` : ''}
-      </div>
-
-      <!-- 지지 의원 -->
-      <div class="d-section">
-        <h2 style="color:var(--ok)">👍 지지하는 의원 (${supports.length}명)</h2>
-        ${stanceCardGrid(supports, 'support')}
-      </div>
-
-      <!-- 반대 의원 -->
-      <div class="d-section">
-        <h2 style="color:#dc2626">👎 반대하는 의원 (${opposes.length}명)</h2>
-        ${stanceCardGrid(opposes, 'oppose')}
-      </div>
-
-      <p style="text-align:center;color:var(--dim);font-size:11.5px;margin-top:30px;line-height:1.6">
-        ⚠ 모든 기록은 본인 브라우저에만 저장됩니다 (localStorage).<br>
-        서버 전송 X · 다른 사용자에게 보이지 X · 익명.<br>
-        브라우저 데이터 삭제 시 함께 사라집니다.
-      </p>
-    </div>
-  `;
-}
-
 // ============================================================
 // 북마크 페이지 (/bookmarks)
 // ============================================================
-function renderBookmarksPage() {
-  const bm = getBookmarks();
-  const entries = Object.entries(bm).sort((a, b) => b[1].t - a[1].t);
-  if (!entries.length) {
-    return `
-      <div class="group-back" id="back-home">← 홈</div>
-      <div class="bm-page">
-        <h1 class="bm-h1">⭐ 내 관심 의원</h1>
-        <div class="bm-empty">
-          <div class="bm-empty-icon">☆</div>
-          <h2>아직 북마크한 의원이 없습니다</h2>
-          <p>의원 페이지에 들어가서 이름 옆 <b>☆</b> 버튼을 클릭하면 여기에 추가됩니다.<br>
-          관심 의원을 모아두면 활동·뉴스·통과 법안을 빠르게 확인할 수 있어요.</p>
-          <a href="/bills" class="bm-cta">법안 보러 가기 →</a>
-        </div>
-      </div>
-    `;
-  }
-  // 의원 데이터 매칭
-  const items = entries.map(([mid, info]) => {
-    const m = state.members?.find(x => x.MONA_CD === mid);
-    return { mid, name: info.name, t: info.t, member: m };
-  });
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="bm-page">
-      <h1 class="bm-h1">⭐ 내 관심 의원 <span style="color:var(--dim);font-size:18px;font-weight:600">${entries.length}명</span></h1>
-      <p class="bm-lead">북마크한 의원의 활동을 한 곳에서 확인. 브라우저 로컬에 저장 (서버 X · 개인정보 안전).</p>
-
-      <div class="bm-grid">
-        ${items.map(item => {
-          const m = item.member;
-          const party = m?.POLY_NM || '—';
-          const color = partyColor(party);
-          const score = m ? computeMpScore(item.name) : null;
-          const photo = m ? state.photos.get(item.mid) : null;
-          const initial = (item.name || '?').charAt(0);
-          const avatar = (photo?.thumb)
-            ? `<img src="${escapeHtml(photo.thumb)}" loading="lazy" alt="${escapeHtml(item.name)}">`
-            : `<span>${escapeHtml(initial)}</span>`;
-          const ago = Math.round((Date.now() - item.t) / 86400000);
-          return `
-            <div class="bm-card" data-mid="${escapeHtml(item.mid)}">
-              <div class="bm-card-bar" style="background:${color}"></div>
-              <div class="bm-card-body">
-                <div class="bm-avatar">${avatar}</div>
-                <div class="bm-info">
-                  <div class="bm-name">${escapeHtml(item.name)}</div>
-                  <div class="bm-meta" style="color:${color}">${escapeHtml(party)}${m?.ORIG_NM ? ' · ' + escapeHtml(m.ORIG_NM) : ''}</div>
-                  ${score ? `<div class="bm-score">활동 점수 <b>${score.total}</b>/100 · 발의 ${score.raw.leadCount}건</div>` : ''}
-                  <div class="bm-added">${ago === 0 ? '오늘' : ago + '일 전'} 추가</div>
-                </div>
-              </div>
-              <button class="bm-remove" data-mid="${escapeHtml(item.mid)}" data-name="${escapeHtml(item.name)}" title="북마크 해제">✕</button>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-  `;
-}
-
 // ============================================================
 // V22.6 — /me 내 활동 대시보드
 // ============================================================
@@ -19745,46 +19138,6 @@ function renderBookmarksPage() {
 // "사이트 데이터를 1080x1080 PNG로 → 인스타·SNS 바로 공유"
 // 기술: html2canvas (DOM → PNG) + Web Share API (모바일 인스타 직접 전송)
 // ============================================================
-const SHARE_CARD_TYPES = {
-  earlyvote: {
-    id: 'earlyvote',
-    label: '🗳 사전투표 잊지마세요',
-    desc: '5/29·5/30 사전투표 안내 (전국 어디서나)',
-    color: '#4F46E5',
-  },
-  dday: {
-    id: 'dday',
-    label: '🗳 9회 지선 D-Day',
-    desc: '선거 카운트다운 + 후보 통계',
-    color: '#ef4444',
-  },
-  kospi: {
-    id: 'kospi',
-    label: '📊 KOSPI 데일리',
-    desc: '코스피·코스닥 시세 카드',
-    color: '#0ea5e9',
-  },
-  bill: {
-    id: 'bill',
-    label: '📜 오늘의 법안',
-    desc: '최신 통과 법안 1건',
-    color: '#10b981',
-  },
-  member: {
-    id: 'member',
-    label: '👤 정치인 카드',
-    desc: '도감 스타일 인물 프로필',
-    color: '#a855f7',
-  },
-  ranking: {
-    id: 'ranking',
-    label: '🏆 발의 Top 5',
-    desc: '주간 활동 랭킹',
-    color: '#f59e0b',
-  },
-};
-
-// 카드 컨테이너 (오프스크린 렌더링용)
 function _getShareCardHost() {
   let host = document.getElementById('share-card-host');
   if (!host) {
@@ -20231,105 +19584,6 @@ function _triggerDownload(blob, filename) {
   }, 200);
 }
 
-// V24.2 — 큰 카드 모달 (미리보기 + 다운로드/공유 옵션)
-function _showCardModal({ canvas, blob, filename, type, label }) {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const canShare = navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] });
-  const cardUrl = `https://patchkr.com/share`;
-  const overlay = document.createElement('div');
-  overlay.className = 'card-modal-overlay';
-  overlay.innerHTML = `
-    <div class="card-modal" role="dialog" aria-labelledby="cm-title">
-      <button class="card-modal-close" aria-label="닫기">✕</button>
-      <h3 id="cm-title">${escapeHtml(label || '카드 생성 완료')}</h3>
-      <div class="card-modal-preview">
-        <img src="${canvas.toDataURL('image/png')}" alt="card preview" />
-      </div>
-      <div class="card-modal-info">
-        <b>1080×1080 PNG</b> · ${Math.round(blob.size / 1024)}KB · 인스타 정사각형 권장 사이즈
-      </div>
-      <div class="card-modal-actions">
-        ${canShare ? `
-          <button class="cm-btn cm-btn-share" data-action="share">📤 공유</button>
-        ` : ''}
-        <button class="cm-btn cm-btn-download" data-action="download">⬇ 다운로드</button>
-        <button class="cm-btn cm-btn-copy" data-action="copy">📋 복사</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  document.body.style.overflow = 'hidden';
-
-  const close = () => {
-    overlay.remove();
-    document.body.style.overflow = '';
-  };
-  overlay.querySelector('.card-modal-close').addEventListener('click', close);
-  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
-
-  // 액션 핸들러
-  overlay.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const action = btn.dataset.action;
-      const orig = btn.textContent;
-      try {
-        if (action === 'download') {
-          _triggerDownload(blob, filename);
-          btn.textContent = '✓ 다운로드 시작됨';
-          setTimeout(() => { btn.textContent = orig; }, 2000);
-        } else if (action === 'share') {
-          const file = new File([blob], filename, { type: 'image/png' });
-          await navigator.share({
-            files: [file],
-            title: '대한민국 패치노트',
-            text: 'patchkr.com — 한국 정치·경제 종합 데이터',
-          });
-          close();
-        } else if (action === 'copy') {
-          if (navigator.clipboard?.write && window.ClipboardItem) {
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            btn.textContent = '✓ 클립보드 복사됨 (Ctrl+V로 붙여넣기)';
-            setTimeout(() => { btn.textContent = orig; }, 2500);
-          } else {
-            btn.textContent = '❌ 이 브라우저는 미지원';
-            setTimeout(() => { btn.textContent = orig; }, 2000);
-          }
-        }
-      } catch (e) {
-        if (e.name !== 'AbortError') {
-          btn.textContent = '❌ 실패';
-          setTimeout(() => { btn.textContent = orig; }, 2000);
-        }
-      }
-    });
-  });
-  // ESC 닫기
-  const escHandler = e => { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', escHandler); } };
-  document.addEventListener('keydown', escHandler);
-}
-
-// 카드 생성 → 모달 표시 (PC·모바일 통합)
-async function shareCardToInstagram(type, opts = {}) {
-  try {
-    const element = await buildShareCard(type, opts);
-    if (!element) return 'failed';
-    // 사진 로딩 대기
-    await new Promise(r => setTimeout(r, 800));
-    const canvas = await _captureToCanvas(element);
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/png', 0.95));
-    if (!blob) throw new Error('PNG 변환 실패');
-    const filename = `patchkr-${type}-${new Date().toISOString().slice(0,10)}.png`;
-    const label = SHARE_CARD_TYPES[type]?.label || '카드 생성 완료';
-    _showCardModal({ canvas, blob, filename, type, label });
-    return 'modal-shown';
-  } catch (e) {
-    console.error('[ShareCard] failed:', e);
-    alert('카드 생성 실패: ' + (e.message || e));
-    return 'failed';
-  }
-}
-
-// V24.5 — 개발자·AI 공개 API 가이드 페이지
 function renderDevelopersPage() {
   const endpoints = [
     { method: 'GET', path: '/api/data/politicians.json', desc: '자체 DB 537명 (22대 의원은 국회 OpenAPI에서 라이브 fetch)', example: '/api/data/politicians.json' },
@@ -20450,284 +19704,9 @@ curl "https://patchkr.com/api/quote?symbols=^KS11,^KQ11,KRW=X"</code></pre>
   `;
 }
 
-// /share 페이지 렌더
-function renderSharePage() {
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="share-page">
-      <div class="share-hero">
-        <h1>📤 공유 카드</h1>
-        <p>사이트 데이터를 1080×1080 카드로.</p>
-      </div>
-
-      <div class="share-grid-v2">
-        ${Object.values(SHARE_CARD_TYPES).map(t => `
-          <div class="share-tile-v2" data-card-type="${escapeHtml(t.id)}">
-            <div class="share-tile-v2-preview" data-tile-preview="${escapeHtml(t.id)}" style="background:linear-gradient(135deg,${t.color}33,${t.color}11);">
-              <div class="share-tile-v2-loading">
-                <span class="loading-spinner"></span>
-              </div>
-            </div>
-            <div class="share-tile-v2-body" style="border-top:3px solid ${t.color}">
-              <div class="share-tile-v2-label">${escapeHtml(t.label)}</div>
-              <button class="share-tile-v2-btn" data-card="${escapeHtml(t.id)}" style="background:linear-gradient(135deg,${t.color},${t.color}cc)">
-                만들기 →
-              </button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-}
-
-// 작은 썸네일 미리보기 생성 (페이지 진입 시 백그라운드 순차)
-async function _generateSharePreview(type) {
-  const target = document.querySelector(`[data-tile-preview="${type}"]`);
-  if (!target) return;
-  try {
-    const element = await buildShareCard(type);
-    if (!element) return;
-    await new Promise(r => setTimeout(r, 400));
-    if (typeof html2canvas !== 'function') {
-      target.innerHTML = `<div style="font-size:11px;color:var(--dim);padding:20px;text-align:center">html2canvas 로딩 중</div>`;
-      return;
-    }
-    const canvas = await html2canvas(element, {
-      width: 1080, height: 1080, scale: 0.25,
-      useCORS: true, allowTaint: true, logging: false,
-      backgroundColor: null, imageTimeout: 4000,
-    });
-    target.innerHTML = `<img src="${canvas.toDataURL('image/png')}" alt="${escapeHtml(type)} preview" style="width:100%;height:100%;object-fit:cover;display:block">`;
-  } catch (e) {
-    console.warn('[Share preview]', type, 'failed:', e.message);
-    target.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;color:var(--dim);padding:20px;text-align:center">미리보기 준비 중<br><span style="font-size:10px;opacity:0.7">버튼 눌러서 직접 생성</span></div>`;
-  }
-}
-
-
-function renderMePage() {
-  const userId = getOrCreateAnonUserId();
-  const shortId = userId.slice(0, 8) + '…' + userId.slice(-4);
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="me-page">
-      <div class="me-hero">
-        <div class="me-eye">📋 익명 사용자 ID · ${escapeHtml(shortId)}</div>
-        <h1 class="me-h1">내 활동 대시보드</h1>
-        <p class="me-sub">
-          이 사이트에서 한 모든 활동을 한 곳에 모았습니다. 다른 기기에서도 동일하게 표시 (Supabase 동기화).<br>
-          <b>익명 유지</b>: 이름·이메일·전화 어떤 개인정보도 수집 안 함. UUID만으로 식별.
-        </p>
-      </div>
-      <div id="me-stats" class="me-stats">
-        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">⭐ 관심 의원</div></div>
-        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">🗳 정치 입장</div></div>
-        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">★ 공약 평점</div></div>
-        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">📋 이행 투표</div></div>
-        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">✅ 소셜 투표</div></div>
-        <div class="me-stat-card"><div class="me-stat-val is-empty">0</div><div class="me-stat-lbl">👁 누적 조회</div></div>
-      </div>
-      <div class="me-loading"><span class="loading-spinner"></span> 내 활동 불러오는 중…</div>
-      <div id="me-body" style="display:none">
-        <div class="me-section" id="me-bookmarks-section">
-          <h2 class="me-section-h">⭐ 관심 의원 <span id="me-bookmarks-count" class="me-count">0</span></h2>
-          <div id="me-bookmarks-body" class="me-grid"></div>
-        </div>
-        <div class="me-section" id="me-stances-section">
-          <h2 class="me-section-h">🗳 내 정치 입장 <span id="me-stances-count" class="me-count">0</span></h2>
-          <div id="me-stances-body" class="me-grid"></div>
-        </div>
-        <div class="me-section" id="me-ratings-section">
-          <h2 class="me-section-h">★ 9회 후보 공약 평점 <span id="me-ratings-count" class="me-count">0</span></h2>
-          <div id="me-ratings-body" class="me-list-simple"></div>
-        </div>
-        <div class="me-section" id="me-ihaeng-section">
-          <h2 class="me-section-h">📋 8회 공약 이행 투표 <span id="me-ihaeng-count" class="me-count">0</span></h2>
-          <div id="me-ihaeng-body" class="me-list-simple"></div>
-        </div>
-        <div class="me-section" id="me-social-section">
-          <h2 class="me-section-h">✅ 소셜 투표 (정치인·법안·경제) <span id="me-social-count" class="me-count">0</span></h2>
-          <div id="me-social-body" class="me-list-simple"></div>
-        </div>
-      </div>
-      <div class="me-foot">
-        🔒 모든 데이터는 익명 UUID로 저장됩니다 (Supabase). 브라우저 localStorage 삭제 시 새 UUID 발급 (이전 데이터 사라짐). 다른 기기로 ID 동기화는 미지원 — 같은 브라우저에서만 유지.
-      </div>
-    </div>
-  `;
-}
-
-async function setupMePageEvents() {
-  try {
-    const data = await loadMyActivity();
-    const body = document.getElementById('me-body');
-    const loading = document.querySelector('.me-page .me-loading');
-    if (loading) loading.style.display = 'none';
-    if (body) body.style.display = 'block';
-
-    // 통계 카드 갱신
-    const stats = [
-      data.bookmarks.length, data.stances.length, data.ratings.length,
-      data.ihaengVotes.length, data.socialVotes.length, data.myPageviews.length,
-    ];
-    document.querySelectorAll('#me-stats .me-stat-val').forEach((el, i) => {
-      el.textContent = (stats[i] || 0).toLocaleString();
-    });
-
-    // 북마크
-    document.getElementById('me-bookmarks-count').textContent = data.bookmarks.length;
-    const bmBody = document.getElementById('me-bookmarks-body');
-    if (data.bookmarks.length) {
-      bmBody.innerHTML = data.bookmarks.slice(0, 20).map(b => {
-        const m = (state.members || []).find(x => x.MONA_CD === b.item_id);
-        const partyColor_ = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
-        return `
-          <a class="me-card" href="/m/${encodeURIComponent(b.item_id)}" style="border-left-color:${partyColor_}">
-            <div class="me-card-name">${escapeHtml(b.item_name || m?.HG_NM || b.item_id)}</div>
-            <div class="me-card-meta" style="color:${partyColor_}">${escapeHtml(m?.POLY_NM || m?._type_label || '—')}</div>
-            <div class="me-card-date">${new Date(b.created_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })} 추가</div>
-          </a>`;
-      }).join('');
-    } else {
-      bmBody.innerHTML = '<div class="me-empty">관심 의원 없음 — 정치인 페이지에서 ⭐ 클릭해 추가</div>';
-    }
-
-    // Stance
-    document.getElementById('me-stances-count').textContent = data.stances.length;
-    const stBody = document.getElementById('me-stances-body');
-    if (data.stances.length) {
-      stBody.innerHTML = data.stances.slice(0, 20).map(s => {
-        const m = (state.members || []).find(x => x.MONA_CD === s.politician_id);
-        const partyColor_ = m?.POLY_NM ? partyColor(m.POLY_NM) : 'var(--text-2)';
-        const stanceEmoji = s.stance === 'support' ? '👍 지지' : '👎 반대';
-        const stanceColor = s.stance === 'support' ? '#16a34a' : '#dc2626';
-        return `
-          <a class="me-card" href="/m/${encodeURIComponent(s.politician_id)}" style="border-left-color:${partyColor_}">
-            <div class="me-card-name">${escapeHtml(s.politician_name || m?.HG_NM || s.politician_id)}</div>
-            <div class="me-card-meta" style="color:${partyColor_}">${escapeHtml(m?.POLY_NM || m?._type_label || '—')}</div>
-            <div class="me-card-stance" style="color:${stanceColor}">${stanceEmoji}</div>
-          </a>`;
-      }).join('');
-    } else {
-      stBody.innerHTML = '<div class="me-empty">정치 입장 표명 없음 — 정치인 페이지에서 지지/반대 클릭</div>';
-    }
-
-    // Ratings (9회 공약)
-    document.getElementById('me-ratings-count').textContent = data.ratings.length;
-    const rtBody = document.getElementById('me-ratings-body');
-    if (data.ratings.length) {
-      rtBody.innerHTML = data.ratings.slice(0, 30).map(r => {
-        const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-        return `
-          <div class="me-row">
-            <div class="me-row-main">
-              <div class="me-row-name">${escapeHtml(r.candidate_name || '')} <span class="me-row-meta">${escapeHtml(r.region || '')} · ${escapeHtml(r.party || '')}</span></div>
-              <div class="me-row-sub">${escapeHtml(r.pledge_title || '').slice(0, 60)}</div>
-            </div>
-            <div class="me-row-val me-stars">${stars}</div>
-          </div>`;
-      }).join('');
-    } else {
-      rtBody.innerHTML = '<div class="me-empty">공약 평점 없음 — 9회 후보 모달에서 ★ 클릭</div>';
-    }
-
-    // 이행 투표 (8회)
-    document.getElementById('me-ihaeng-count').textContent = data.ihaengVotes.length;
-    const ihBody = document.getElementById('me-ihaeng-body');
-    if (data.ihaengVotes.length) {
-      const voteColors = { '이행':'#16a34a', '일부이행':'#0ea5e9', '추진중':'#f59e0b', '미이행':'#dc2626' };
-      ihBody.innerHTML = data.ihaengVotes.slice(0, 30).map(v => `
-        <div class="me-row">
-          <div class="me-row-main">
-            <div class="me-row-name">${escapeHtml(v.candidate_name || '')} <span class="me-row-meta">${escapeHtml(v.region || '')} · ${escapeHtml(v.party || '')}</span></div>
-            <div class="me-row-sub">${escapeHtml(v.pledge_title || '').slice(0, 60)}</div>
-          </div>
-          <div class="me-row-val" style="color:${voteColors[v.vote] || 'var(--text-2)'};font-weight:800">${escapeHtml(v.vote || '')}</div>
-        </div>
-      `).join('');
-    } else {
-      ihBody.innerHTML = '<div class="me-empty">이행 투표 없음 — /pledge-tracker 광역단체장 카드 클릭 → 공약별 4지선다</div>';
-    }
-
-    // 소셜 투표
-    document.getElementById('me-social-count').textContent = data.socialVotes.length;
-    const svBody = document.getElementById('me-social-body');
-    if (data.socialVotes.length) {
-      const typeLabels = { politician: '🏛 정치인', bill: '📜 법안', economy: '💼 경제', pledge: '📋 공약', trend: '🔥 트렌드', news: '📰 뉴스', topic: '✅ 이슈' };
-      svBody.innerHTML = data.socialVotes.slice(0, 30).map(v => {
-        const voteColor = v.vote === 'support' ? '#16a34a' : '#dc2626';
-        const voteLabel = v.vote === 'support' ? '✓ 찬성/지지' : '✗ 반대/우려';
-        let href = '#';
-        if (v.target_type === 'politician') href = '/m/' + encodeURIComponent(v.target_id);
-        else if (v.target_type === 'bill') href = '/bill/' + encodeURIComponent(v.target_id);
-        else if (v.target_type === 'economy') href = '/economy';
-        return `
-          <a class="me-row" href="${escapeHtml(href)}">
-            <div class="me-row-main">
-              <div class="me-row-name">${escapeHtml(typeLabels[v.target_type] || v.target_type)} · ${escapeHtml(v.target_label || v.target_id)}</div>
-              <div class="me-row-sub">${new Date(v.created_at).toLocaleDateString('ko-KR')}</div>
-            </div>
-            <div class="me-row-val" style="color:${voteColor};font-weight:800">${voteLabel}</div>
-          </a>
-        `;
-      }).join('');
-    } else {
-      svBody.innerHTML = '<div class="me-empty">소셜 투표 없음 — 정치인·법안·경제 페이지에서 찬반 클릭</div>';
-    }
-  } catch (e) {
-    const loading = document.querySelector('.me-page .me-loading');
-    if (loading) loading.textContent = '오류: ' + e.message;
-  }
-}
-
 // ============================================================
 // 실험실 (/play) — 부가·재미 기능 모음
 // ============================================================
-function renderPlayPage() {
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="play-page">
-      <div class="play-hero">
-        <h1>🧪 실험실 (Play)</h1>
-        <p>핵심 데이터 외 부가적·실험적 기능 모음. 재미로 둘러보거나, 깊이 있게 분석하고 싶을 때.</p>
-      </div>
-
-      <div class="play-grid">
-        <a class="play-card" href="/insights">
-          <div class="play-icon">🔬</div>
-          <div class="play-h">출신 분석</div>
-          <div class="play-meta">정치인 ${(state.members||[]).filter(p=>p.MEM_TITLE&&p.MEM_TITLE.length>30).length}명 데이터 기반</div>
-          <div class="play-desc">학교·직업·세대·지역 통계.<br>"어느 대학이 정치인을 가장 많이 배출했나?" 같은 흥미로운 패턴 찾기.</div>
-          <div class="play-tag">통계</div>
-        </a>
-
-        <a class="play-card" href="/compare">
-          <div class="play-icon">⚖</div>
-          <div class="play-h">의원 vs 의원</div>
-          <div class="play-meta">두 의원 나란히</div>
-          <div class="play-desc">학력·경력·발의량·통과율 동시 비교.<br>URL로 공유 가능 (예: ?a=ID1&b=ID2).</div>
-          <div class="play-tag">비교</div>
-        </a>
-
-        <a class="play-card" href="/relations">
-          <div class="play-icon">🔗</div>
-          <div class="play-h">발의 관계도</div>
-          <div class="play-meta">법안-의원 연결</div>
-          <div class="play-desc">의원이 발의한 법안과 정당색 분포를 그래프로.<br>※ 시각화가 다소 복잡할 수 있음.</div>
-          <div class="play-tag">시각화</div>
-        </a>
-
-      </div>
-
-      <div class="play-note">
-        💡 여기 있는 기능은 <b>실험적</b>이거나 일부 사용자에게만 유용한 것들입니다.<br>
-        핵심 데이터는 <a href="/">홈</a>·<a href="/bills">법안</a>·<a href="/election2026">9회 지선</a>·<a href="/glossary">용어 사전</a>에서 확인하세요.
-      </div>
-    </div>
-  `;
-}
-
 // ============================================================
 // 용어 사전 (/glossary)
 // ============================================================
@@ -20914,170 +19893,6 @@ function getAllNecCandidates() {
     }
   }
   return out;
-}
-
-function renderCandComparePage() {
-  const params = new URLSearchParams(location.search || '');
-  const ids = [params.get('a'), params.get('b'), params.get('c')].filter(Boolean);
-  const allCands = getAllNecCandidates();
-  if (!allCands.length) {
-    return `
-      <div class="group-back" id="back-home">← 홈</div>
-      <div class="cmp-page">
-        <h1 class="cmp-h1">🆚 9회 지선 후보자 비교</h1>
-        <div class="loading"><span class="loading-spinner"></span>9회 지선 후보자 데이터 불러오는 중…</div>
-      </div>
-    `;
-  }
-  const picked = ids.map(id => allCands.find(c => c.huboid === id)).filter(Boolean);
-  // 같은 지역(같은 sdName + 같은 sggName) 자동 그룹화
-  // 후보자 선택 옵션 — 같은 지역 후보들 자동 묶음
-  const byRegion = new Map();
-  for (const c of allCands) {
-    const key = (c.sdName || '') + '|' + (c.sggName || c.sdName || '') + '|' + c._kind;
-    if (!byRegion.has(key)) byRegion.set(key, []);
-    byRegion.get(key).push(c);
-  }
-  // 추천 (같은 지역 후보들 묶음)
-  const recommendations = [];
-  for (const [key, cands] of byRegion.entries()) {
-    if (cands.length >= 2) recommendations.push({ key, cands });
-  }
-  recommendations.sort((a, b) => {
-    const aOrder = a.cands[0]._kind === '광역단체장' ? 0 : a.cands[0]._kind === '교육감' ? 1 : 2;
-    const bOrder = b.cands[0]._kind === '광역단체장' ? 0 : b.cands[0]._kind === '교육감' ? 1 : 2;
-    if (aOrder !== bOrder) return aOrder - bOrder;
-    return (b.cands.length - a.cands.length);
-  });
-
-  // 선택 UI (datalist 사용)
-  const candOptions = allCands.map(c => {
-    const region = [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ');
-    return `<option value="${escapeHtml(c.huboid)}">${escapeHtml(c.name)} (${escapeHtml(c.jdName || '무소속')}, ${escapeHtml(region)}, ${escapeHtml(c._kind)})</option>`;
-  }).join('');
-
-  const slotIds = ['a', 'b', 'c'];
-
-  function candCard(c) {
-    if (!c) return '<div class="cmp-col cmp-empty"><span>후보 선택</span><span style="font-size:11px;color:var(--dim);display:block;margin-top:8px">← 위 입력에서 선택</span></div>';
-    const pc = partyColor(c.jdName || '무소속');
-    const region = [c.sdName, c.sggName && c.sggName !== c.sdName ? c.sggName : ''].filter(Boolean).join(' ');
-    return `
-      <div class="cmp-col" style="border-top-color:${pc}">
-        <div class="cmp-cand-head">
-          ${c.giho ? `<div class="cmp-cand-giho">${escapeHtml(c.giho)}</div>` : ''}
-          <div>
-            <div class="cmp-name" style="color:${pc}">${escapeHtml(c.name)}</div>
-            <div class="cmp-party">${escapeHtml(c.jdName || '무소속')}</div>
-          </div>
-        </div>
-        <div class="cmp-rows">
-          <div class="cmp-row"><span class="cmp-k">지역</span><span class="cmp-v">${escapeHtml(region)}</span></div>
-          <div class="cmp-row"><span class="cmp-k">직책</span><span class="cmp-v">${escapeHtml(c._kind)}</span></div>
-          ${c.gender ? `<div class="cmp-row"><span class="cmp-k">성별</span><span class="cmp-v">${escapeHtml(c.gender)}</span></div>` : ''}
-          ${c.age ? `<div class="cmp-row"><span class="cmp-k">연령</span><span class="cmp-v">${escapeHtml(c.age)}세</span></div>` : ''}
-          ${c.job ? `<div class="cmp-row"><span class="cmp-k">직업</span><span class="cmp-v" style="font-size:12px">${escapeHtml(c.job)}</span></div>` : ''}
-          ${c.edu ? `<div class="cmp-row"><span class="cmp-k">학력</span><span class="cmp-v" style="font-size:11.5px;line-height:1.4">${escapeHtml(c.edu)}</span></div>` : ''}
-        </div>
-        <div class="cmp-pledge-block" id="cmp-pledges-${escapeHtml(c.huboid)}">
-          <div class="cmp-pledge-h">📋 5대 공약</div>
-          <div class="cmp-pledge-body"><span class="loading-spinner"></span> 공약 불러오는 중…</div>
-        </div>
-        <a href="/election2026" class="cmp-detail-link" data-huboid="${escapeHtml(c.huboid)}" data-sg="${escapeHtml(c._sg)}" data-name="${escapeHtml(c.name)}" data-party="${escapeHtml(c.jdName || '무소속')}" data-region="${escapeHtml(region)}">👤 상세 보기 →</a>
-      </div>
-    `;
-  }
-
-  const slots = [picked[0] || null, picked[1] || null, picked[2] || null];
-
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div class="cmp-page">
-      <h1 class="cmp-h1">🆚 9회 지선 후보자 비교</h1>
-      <p class="cmp-lead">최대 3명 동시 비교 — 학력·직업·5대 공약 옆에 옆에. 같은 지역 후보 자동 묶음 추천. <span style="color:var(--dim)">평가·해석 없음 (객관 데이터만).</span></p>
-
-      <div class="cmp-slots">
-        ${slotIds.map((sid, i) => `
-          <div class="cmp-slot-wrap">
-            <label class="cmp-slot-label">후보 ${String.fromCharCode(65 + i)} ${slots[i] ? '✓' : ''}</label>
-            <input type="text" class="cmp-slot-input" id="cmp-input-${sid}" list="cand-list-${sid}" placeholder="이름 검색…" value="${slots[i] ? escapeHtml(slots[i].name) : ''}" data-slot="${sid}">
-            <datalist id="cand-list-${sid}">${candOptions}</datalist>
-          </div>
-        `).join('')}
-      </div>
-
-      ${recommendations.length ? `
-        <div class="cmp-recos">
-          <div class="cmp-reco-h">⚡ 같은 지역 추천 (자동 묶음)</div>
-          <div class="cmp-reco-list">
-            ${recommendations.slice(0, 8).map(r => {
-              const [sd, sgg, kind] = r.key.split('|');
-              const label = [sd, sgg !== sd ? sgg : '', kind].filter(Boolean).join(' · ');
-              const url = '/compare-cand?' + r.cands.slice(0, 3).map((c, i) => 'abc'[i] + '=' + encodeURIComponent(c.huboid)).join('&');
-              return `<a class="cmp-reco-pill" href="${url}">${escapeHtml(label)} <b>(${r.cands.length}명)</b></a>`;
-            }).join('')}
-          </div>
-        </div>
-      ` : ''}
-
-      <div class="cmp-grid" style="grid-template-columns:repeat(${Math.max(slots.filter(Boolean).length, 2)}, 1fr)">
-        ${slots.slice(0, Math.max(slots.filter(Boolean).length, 2)).map(candCard).join('')}
-      </div>
-
-      <div class="cmp-foot">
-        후보자 정보·공약은 <a href="https://policy.nec.go.kr" target="_blank" rel="noopener" style="color:var(--link)">중앙선관위 정책공약마당</a> 공식 데이터.
-        본 사이트는 객관 표시만 — 비교·판단·선택은 유권자 본인의 몫입니다.
-      </div>
-    </div>
-  `;
-}
-
-function setupCandCompareEvents() {
-  // 입력 변경 → URL 갱신
-  document.querySelectorAll('.cmp-slot-input').forEach(el => {
-    el.addEventListener('change', () => {
-      const slot = el.dataset.slot;
-      const params = new URLSearchParams(location.search || '');
-      if (el.value) params.set(slot, el.value);
-      else params.delete(slot);
-      const qs = params.toString();
-      nav('/compare-cand' + (qs ? '?' + qs : ''));
-    });
-  });
-  // 공약 lazy fetch
-  document.querySelectorAll('[id^="cmp-pledges-"]').forEach(block => {
-    const huboid = block.id.replace('cmp-pledges-', '');
-    const cand = getAllNecCandidates().find(c => c.huboid === huboid);
-    if (!cand) return;
-    const body = block.querySelector('.cmp-pledge-body');
-    fetchCandPledges(huboid, cand._sg).then(pledges => {
-      if (!body) return;
-      if (!pledges.length) {
-        body.innerHTML = '<span style="color:var(--dim);font-size:12px">5대 공약 등록 안 됨 또는 NEC 미반영</span>';
-        return;
-      }
-      body.innerHTML = pledges.slice(0, 5).map(p => `
-        <div class="cmp-pledge-item">
-          <div class="cmp-pledge-realm">${escapeHtml(p.realm || '미분류')}</div>
-          <div class="cmp-pledge-title">${escapeHtml(p.title || '—')}</div>
-          ${p.cont ? `<div class="cmp-pledge-cont">${escapeHtml(p.cont.slice(0, 200))}${p.cont.length > 200 ? '…' : ''}</div>` : ''}
-        </div>
-      `).join('');
-    });
-  });
-  // 상세 링크 클릭 → 공약 모달
-  document.querySelectorAll('.cmp-detail-link').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      openPromiseModal({
-        cnddtId: el.dataset.huboid,
-        sgTypecode: el.dataset.sg,
-        name: el.dataset.name,
-        party: el.dataset.party,
-        region: el.dataset.region,
-      });
-    });
-  });
 }
 
 // ============================================================
@@ -23984,107 +22799,6 @@ function updateMeta() {
 // V29.9 — 사전투표소 찾기 (/polling) — data.go.kr 중앙선관위 사전투표소 API
 const PS_SIDO = ['서울특별시','부산광역시','대구광역시','인천광역시','광주광역시','대전광역시','울산광역시','세종특별자치시','경기도','강원특별자치도','충청북도','충청남도','전북특별자치도','전라남도','경상북도','경상남도','제주특별자치도'];
 
-function renderPollingStationPage() {
-  return `
-    <div class="group-back" id="back-home">← 홈</div>
-    <div style="max-width:880px;margin:0 auto;padding:8px 4px 60px">
-      <div style="margin-bottom:18px">
-        <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--accent);margin-bottom:6px">POLLING STATION · 9회 지선</div>
-        <h1 style="font-size:26px;font-weight:900;color:var(--text);margin:0 0 8px;letter-spacing:-0.5px">📍 내 투표소 찾기</h1>
-        <p style="font-size:13.5px;color:var(--text-2);line-height:1.6;margin:0">
-          제9회 지방선거 <b>본투표 6/3(수)</b> · 사전투표 5/29~30 (06:00~18:00). 아래에서 <b>본투표소·사전투표소</b>를 시·도·구로 검색하세요.
-          <span style="color:var(--dim)">내 지정 투표소 확인은 <a href="https://si.nec.go.kr/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">선관위 ‘내 투표소 찾기’ ↗</a> · 출처: 중앙선거관리위원회</span>
-        </p>
-      </div>
-      <div id="ps-type" style="display:inline-flex;gap:4px;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:12px">
-        <button type="button" data-pstype="day" class="ps-tbtn" style="border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:7px 13px;border-radius:8px;background:var(--accent);color:#fff">🗳 본투표소 6/3</button>
-        <button type="button" data-pstype="pre" class="ps-tbtn" style="border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:7px 13px;border-radius:8px;background:none;color:var(--text-2)">📋 사전투표소 5/29~30</button>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <select id="ps-sido" aria-label="시도 선택" style="flex:1;min-width:150px;padding:11px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;font-weight:600">
-          <option value="">시 · 도 선택</option>
-          ${PS_SIDO.map(s => `<option value="${s}">${s}</option>`).join('')}
-        </select>
-        <select id="ps-gu" aria-label="구시군 선택" disabled style="flex:1;min-width:150px;padding:11px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;font-weight:600">
-          <option value="">구 · 시 · 군</option>
-        </select>
-      </div>
-      <input id="ps-search" type="search" placeholder="🔍 동 · 투표소 · 주소로 검색" aria-label="투표소 검색" style="width:100%;padding:11px 13px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-card);color:var(--text);font-size:14px;margin-bottom:16px;box-sizing:border-box" />
-      <div id="ps-results" aria-live="polite" style="min-height:120px"></div>
-    </div>
-  `;
-}
-
-function setupPollingStationEvents() {
-  const sido = document.getElementById('ps-sido');
-  const gu = document.getElementById('ps-gu');
-  const search = document.getElementById('ps-search');
-  const results = document.getElementById('ps-results');
-  if (!sido || !gu || !search || !results) return;
-  let stations = [];
-  let curType = 'day'; // day=본투표소(6/3) / pre=사전투표소(5/29~30)
-  const typeBox = document.getElementById('ps-type');
-  const typeLabel = () => curType === 'pre' ? '사전투표소' : '본투표소';
-  const esc = (s) => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const msg = (t) => `<div style="text-align:center;color:var(--dim);padding:32px 12px;font-size:13.5px;line-height:1.6">${t}</div>`;
-
-  function renderList() {
-    if (!stations.length) { results.innerHTML = ''; return; }
-    const guVal = gu.value, q = (search.value || '').trim();
-    if (!guVal && !q) { results.innerHTML = msg(`구·시·군을 선택하거나 검색해보세요.<br>이 지역 ${typeLabel()} <b style="color:var(--text)">${stations.length}</b>곳`); return; }
-    let list = stations;
-    if (guVal) list = list.filter(s => s.wiw === guVal);
-    if (q) list = list.filter(s => (s.emd || '').includes(q) || (s.ps || '').includes(q) || (s.place || '').includes(q) || (s.addr || '').includes(q));
-    if (!list.length) { results.innerHTML = msg(`조건에 맞는 ${typeLabel()}가 없어요.`); return; }
-    results.innerHTML = `<div style="font-size:12.5px;color:var(--dim);margin-bottom:10px">${list.length}곳</div>`
-      + list.map(s => {
-        const mapQ = encodeURIComponent(((s.addr || '') + ' ' + (s.place || '')).trim());
-        return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:var(--bg-card)">
-          <div style="font-weight:800;font-size:14.5px;color:var(--text);margin-bottom:4px">${esc(s.place || s.ps)}</div>
-          <div style="font-size:12px;color:var(--text-2);margin-bottom:3px">${esc(s.wiw)} ${esc(s.emd)} · ${esc(s.ps)}${s.floor ? ' · ' + esc(s.floor) : ''}</div>
-          <div style="font-size:12.5px;color:var(--dim);margin-bottom:9px">${esc(s.addr)}</div>
-          <a href="https://map.naver.com/p/search/${mapQ}" target="_blank" rel="noopener" style="display:inline-block;font-size:12px;font-weight:700;color:var(--accent);text-decoration:none">🗺 지도에서 보기 →</a>
-        </div>`;
-      }).join('');
-  }
-
-  async function loadSido(sd) {
-    gu.disabled = true; gu.innerHTML = '<option value="">구 · 시 · 군</option>'; stations = []; search.value = '';
-    results.innerHTML = msg('불러오는 중…');
-    try {
-      const r = await fetch(`/api/polling-station?sd=${encodeURIComponent(sd)}&type=${curType}`);
-      const d = await r.json();
-      stations = d.stations || [];
-      if (!stations.length) { results.innerHTML = msg(`${typeLabel()} 데이터를 불러오지 못했어요.${d.note ? '<br><span style="font-size:11.5px">(' + esc(d.note) + ')</span>' : ''}`); return; }
-      const gus = [...new Set(stations.map(s => s.wiw).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ko'));
-      gu.innerHTML = `<option value="">전체 (${stations.length}곳)</option>` + gus.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
-      gu.disabled = false;
-      renderList();
-    } catch (e) {
-      results.innerHTML = msg('오류로 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
-    }
-  }
-
-  if (typeBox) typeBox.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-pstype]'); if (!b || b.dataset.pstype === curType) return;
-    curType = b.dataset.pstype;
-    typeBox.querySelectorAll('.ps-tbtn').forEach(btn => {
-      const on = btn.dataset.pstype === curType;
-      btn.style.background = on ? 'var(--accent)' : 'none';
-      btn.style.color = on ? '#fff' : 'var(--text-2)';
-    });
-    if (sido.value) loadSido(sido.value); else results.innerHTML = '';
-  });
-  sido.addEventListener('change', () => {
-    if (sido.value) loadSido(sido.value);
-    else { stations = []; gu.disabled = true; gu.innerHTML = '<option value="">구 · 시 · 군</option>'; results.innerHTML = ''; }
-  });
-  gu.addEventListener('change', renderList);
-  search.addEventListener('input', renderList);
-}
-
-// V30.6 — 선거 2026 공용 탭바 (라우트는 유지 = SEO 보호, 페이지 간 이동만 연결)
-// V31.83 — 선거 종료 후 정리: 투표소 찾기·후보 공약 비교·개표 LIVE 탭은 결과 페이지로 통합(라우트는 리다이렉트로 유지 = 기존 링크 보호)
 const ELECTION_TABS = [
   { key: 'election2026', href: '/election2026',      label: '🗳 지선 종합' },
   { key: 'early-voting', href: '/early-voting',      label: '📊 사전투표·투표율 (기록)' },
@@ -24578,37 +23292,8 @@ function route() {
     }
     return;
   }
-  // V22.9 — 선거 당일 개표 페이지 (/election2026/live)
-  if (hash === '#/election2026/live') {
-    nav('/election2026'); return; // V31.27 — 선거 종료, 결과 페이지로 통합
-    const renderLive = () => {
-      view.innerHTML = renderElectionLivePage();
-      injectElectionTabs('live');
-      document.getElementById('back-e26')?.addEventListener('click', () => { nav('/election2026'); });
-      // 시도 칩 클릭
-      document.querySelectorAll('.r-other-link').forEach(el => {
-        el.addEventListener('click', e => {
-          e.preventDefault();
-          nav('/election2026/' + el.dataset.region);
-        });
-      });
-    };
-    renderLive();
-    if (filterBar) filterBar.style.display = 'none';
-    window.scrollTo(0, 0);
-    // V31.17 — 실시간 본투표율: 진입 시 fetch 후 재렌더
-    Promise.all([fetchTurnout(), fetchCount()]).then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
-    // 60초마다 자동 갱신 (시계·진행률·단계 + 투표율 재fetch)
-    clearInterval(window._liveRefreshTimer);
-    window._liveRefreshTimer = setInterval(() => {
-      if (currentRoute() !== '#/election2026/live') {
-        clearInterval(window._liveRefreshTimer);
-        return;
-      }
-      Promise.all([fetchTurnout(), fetchCount()]).then(() => { if (currentRoute() === '#/election2026/live') renderLive(); });
-    }, 60000);
-    return;
-  }
+  // V22.9 → V31.83 — 선거 당일 개표 페이지는 결과 페이지로 통합 (리다이렉트)
+  if (hash === '#/election2026/live') { nav('/election2026'); return; }
   // V22.7 — 시도별 9회 지선 페이지 (/election2026/{slug})
   const e26RegionMatch = hash.match(/^#\/election2026\/([a-z]+)$/);
   if (e26RegionMatch) {

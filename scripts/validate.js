@@ -187,11 +187,22 @@ try {
   const navSeg = (() => { const i = live.indexOf('const NAV_TREE = ['); return live.slice(i, live.indexOf('\n];', i)); })();
   const homeSeg = (() => { const i = live.search(/^function renderHome\(\)/m); const j = live.slice(i + 10).search(/^(?:async\s+)?function\s+[A-Za-z]/m); return live.slice(i, i + 10 + j); })();
   let retiredHits = 0;
+  // V31.84 — 홈 함수·내비 트리만 보던 검사를 라이브 HTML 전체(변경이력 제외)로 넓힌다. 모바일 하단 내비(정적 HTML)에
+  // 남아 있던 /me 링크를 이전 검사가 놓쳤다. 라우터의 리다이렉트 분기와 SEO 메타 테이블 키는 허용.
+  const routerStart = live.indexOf('function route()'), routerEnd = live.indexOf('\n}', routerStart);
+  const metaStart = live.indexOf('const ROUTE_META = {'), metaEnd = live.indexOf('\n};', metaStart);
+  const scan = live.slice(0, routerStart) + live.slice(routerEnd, metaStart) + live.slice(metaEnd);
+  const lineOf = idx => scan.slice(0, idx).split('\n').length;
   for (const r of RETIRED) {
-    const re = new RegExp(`href=["']${r.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&')}["'?#]`);
-    if (re.test(navSeg) || re.test(homeSeg)) { err(`제거된 라우트 ${r} 가 홈/내비에 다시 노출됨`); retiredHits++; }
+    const esc = r.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
+    const re = new RegExp(`(href|data-path)=["']${esc}["'?#]|nav\\(['"]${esc}['"]`, 'g');
+    let m; while ((m = re.exec(scan))) {
+      // 주석 줄은 제외
+      const ls = scan.lastIndexOf('\n', m.index) + 1; if (/^\s*(\/\/|<!--)/.test(scan.slice(ls, m.index))) continue;
+      err(`제거된 라우트 ${r} 링크가 남아 있음 (${lineOf(m.index)}행 근처): ${scan.slice(ls, ls + 90).trim()}`); retiredHits++;
+    }
   }
-  if (!retiredHits) ok(`제거된 라우트 ${RETIRED.length}개 — 홈·내비 미노출 확인`);
+  if (!retiredHits) ok(`제거된 라우트 ${RETIRED.length}개 — 전체 HTML(변경이력·라우터·메타 제외)에 링크 없음`);
   // 정적 파일 링크 존재 확인 (홈·내비·analysis·기사)
   const targets = new Set();
   const collect = s => { for (const m of s.matchAll(/href="(\/[a-zA-Z0-9\-_\/\.]+\.html)["#?]/g)) targets.add(m[1]); };
