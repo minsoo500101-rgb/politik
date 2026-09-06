@@ -23770,7 +23770,13 @@ function currentRoute() {
 // V31.71 — View Transitions API: 라우트 전환 크로스페이드 (미지원·모션축소 시 즉시 렌더)
 function runRoute() {
   if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.startViewTransition(() => route());
+    // V31.83 — 전환이 끝나기 전에 다음 라우트가 오면(연속 클릭·리다이렉트 체인) 브라우저가 이전 전환을
+    // InvalidStateError로 중단시키며 그 promise가 콘솔에 '미처리 거부'로 남는다. 렌더 자체는 정상이므로 조용히 삼킨다.
+    try {
+      const t = document.startViewTransition(() => route());
+      if (t && t.finished) t.finished.catch(() => {});
+      if (t && t.ready) t.ready.catch(() => {});
+    } catch (e) { route(); }
   } else {
     route();
   }
