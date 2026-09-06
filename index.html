@@ -11464,7 +11464,9 @@ async function loadAssembly22() {
 async function loadExtraPoliticians() {
   try {
     // 버전 기반 캐싱: 브라우저·CDN 캐시 1일 활용, 데이터 갱신 시 버전 bump
-    const r = await fetch('/data/politicians.json?v=31' + POLITICIANS_VER);
+    // ⚠ 아래 URL 문자열에 숫자를 직접 쓰지 말 것. daily-sync.yml이 'politicians.json?v=숫자'를 치환하는데
+    //   숫자 뒤에 + POLITICIANS_VER가 붙어 있으면 '?v=3131'이 되어 prefetch(?v=31)와 어긋나 파일을 두 번 받는다.
+    const r = await fetch('/data/politicians.json?v=' + POLITICIANS_VER);
     if (!r.ok) return [];
     const j = await r.json();
     PARTY_ROLES = j.party_roles || {};

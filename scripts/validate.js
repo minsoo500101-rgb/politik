@@ -87,6 +87,15 @@ try {
       warn(`<link preload> 버전 ${pv} ≠ data version ${data.version}`);
     }
   }
+  // V31.83 — fetch URL 드리프트 검사. daily-sync의 sed가 '?v=' + POLITICIANS_VER 를 '?v=31' + … 로 되돌리면
+  // 실제 요청이 ?v=3131 이 되어 prefetch(?v=31)와 어긋나 인물 데이터를 두 번 내려받는다(2026-08~09 두 번 재발).
+  if (/politicians\.json\?v=\d+['"]\s*\+\s*POLITICIANS_VER/.test(html)) {
+    err("politicians.json fetch URL에 숫자와 POLITICIANS_VER가 함께 있음 → 요청이 ?v=NNNN 으로 어긋남. '?v=' + POLITICIANS_VER 로 고칠 것");
+  } else if (!/politicians\.json\?v=['"]\s*\+\s*POLITICIANS_VER/.test(html)) {
+    warn("politicians.json fetch가 '?v=' + POLITICIANS_VER 형태가 아님 — prefetch와 일치하는지 확인");
+  } else {
+    ok('politicians.json fetch URL = prefetch URL (중복 다운로드 없음)');
+  }
 } catch (e) {
   warn('index.html 검사 실패: ' + e.message);
 }

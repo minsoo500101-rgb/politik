@@ -51,7 +51,9 @@ jobs:
           # politicians.json 버전이 올라갔으면 index.html의 POLITICIANS_VER도 동기화
           NEW_VER=$(node -e "console.log(JSON.parse(require('fs').readFileSync('data/politicians.json','utf8')).version)")
           sed -i "s|const POLITICIANS_VER = [0-9]*;|const POLITICIANS_VER = ${NEW_VER};|" index.html
-          sed -i "s|politicians.json?v=[0-9]*|politicians.json?v=${NEW_VER}|" index.html
+          # prefetch <link>의 고정 숫자만 바꾼다. 예전 패턴 'politicians.json?v=[0-9]*'는 [0-9]*가 빈 문자열에도
+          # 걸려 fetch 코드 '?v=' + POLITICIANS_VER 를 매일 '?v=NN' + … 로 되돌려 ?v=NNNN 중복 다운로드를 재발시켰다.
+          sed -i "s|href=\"/data/politicians.json?v=[0-9]\+\"|href=\"/data/politicians.json?v=${NEW_VER}\"|" index.html
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
