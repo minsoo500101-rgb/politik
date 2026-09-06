@@ -24994,8 +24994,14 @@ function route() {
     // V31.83 — 소셜 투표·북마크·지지/반대 버튼 제거(누적 사용 12·0·3건). 대신 이 인물이 등장하는
     // 분석·기록 기사를 연결한다 — 인물 상세가 전체 조회의 98%를 차지하는데 기사로 이어지는 링크가 없었다.
     const _mem = state.members?.find(x => x.MONA_CD === memberId);
-    if (_mem && _mem.HG_NM && _mem.HG_NM.length >= 2) {
-      fetch('/data/articles.json?v=' + Math.floor(Date.now() / 3600000)).then(r => r.ok ? r.json() : null).then(j => {
+    // 상세 렌더는 데이터 로드 단계마다 여러 번 실행되므로(네트워크 로그상 3회) 인덱스는 한 번만 받아 재사용하고,
+    // 같은 인물에 이미 채웠으면 건너뛴다.
+    const _relList = document.getElementById('detail-related-list');
+    if (_mem && _mem.HG_NM && _mem.HG_NM.length >= 2 && _relList && _relList.dataset.mid !== memberId) {
+      _relList.dataset.mid = memberId;
+      window._articlesIdx = window._articlesIdx || fetch('/data/articles.json?v=' + Math.floor(Date.now() / 3600000))
+        .then(r => r.ok ? r.json() : null).catch(() => null);
+      window._articlesIdx.then(j => {
         if (!j || !Array.isArray(j.items) || currentRoute() !== hash) return;
         // 이름이 아니라 인물 ID로만 매칭 — 동명이인(예: 김민석 대표 vs 김민석 차관) 오연결 방지.
         // ID는 빌드 시 '이름 + 직책 토큰 근접' 조건을 통과한 경우에만 articles.json에 들어간다.
