@@ -17354,17 +17354,27 @@ function formatTimeAgo(date) {
 }
 
 // 네이버 뉴스 검색 (Vercel Serverless 프록시)
+// V31.83 — 같은 검색을 5분 안에 다시 요청하지 않는다. 인물 상세는 데이터 로드 단계마다 재렌더되어
+// 한 페이지에서 동일 뉴스 검색이 3회 나갔다(네트워크 로그 확인). Pro 플랜은 함수 호출이 곧 비용이다.
+const _naverCache = new Map();
 async function loadNaverNews(keyword, display = 5, sort = 'date') {
   if (!keyword) return null;
-  try {
-    const r = await fetch(`/api/naver?q=${encodeURIComponent(keyword)}&display=${display}&sort=${sort}&type=news`);
-    if (!r.ok) return null;
-    const j = await r.json();
-    if (j.error) return null;
-    return j; // { items, total, start, display }
-  } catch {
-    return null;
-  }
+  const key = `${keyword}|${display}|${sort}`;
+  const hit = _naverCache.get(key);
+  if (hit && Date.now() - hit.t < 5 * 60 * 1000) return hit.p;
+  const p = (async () => {
+    try {
+      const r = await fetch(`/api/naver?q=${encodeURIComponent(keyword)}&display=${display}&sort=${sort}&type=news`);
+      if (!r.ok) return null;
+      const j = await r.json();
+      if (j.error) return null;
+      return j; // { items, total, start, display }
+    } catch {
+      return null;
+    }
+  })();
+  _naverCache.set(key, { t: Date.now(), p });
+  return p;
 }
 
 // 위키 페이지뷰 (Wikimedia REST — 무료, no auth) — 최근 N일 일별 조회수
