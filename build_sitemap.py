@@ -20,6 +20,12 @@ TODAY = datetime.now().strftime("%Y-%m-%d")
 
 # 색인 가능한 실제 페이지 (클린 경로). 구 #/그룹·#/history 도 클린으로 전환.
 STATIC_PAGES = [
+    {"path": "/chungmun-superweek-sep15-16-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/daejeongbu-questions-sep9-14-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/yoon-lee-jongsup-escape-acquittal-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/freedom-edge-end-nk-missile-sep12-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/employment-aug-2026-youth-46months.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/busan-tugboat-capsize-search-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/",                        "priority": "1.0",  "freq": "daily"},
     {"path": "/bills",                   "priority": "0.95", "freq": "daily"},
     {"path": "/analysis.html",           "priority": "0.92", "freq": "weekly"},

@@ -84,6 +84,13 @@
       "url": "https://patchkr.com/",
       "description": "한국 정치·경제 종합 데이터 플랫폼.",
       "inLanguage": "ko-KR",
+      "legalName": "한양텍(HYT)",
+      "taxID": "555-46-01185",
+      "founder": { "@type": "Person", "name": "차민수" },
+      "email": "minsoo500101@gmail.com",
+      "telephone": "+82-10-2320-8041",
+      "address": { "@type": "PostalAddress", "streetAddress": "도봉로 110다길 38", "addressLocality": "도봉구", "addressRegion": "서울특별시", "addressCountry": "KR" },
+      "contactPoint": { "@type": "ContactPoint", "contactType": "customer service", "email": "minsoo500101@gmail.com", "telephone": "+82-10-2320-8041", "availableLanguage": ["ko", "en"] },
       "sameAs": ["https://github.com/minsoo500101-rgb/politik"]
     },
     {
@@ -11064,9 +11071,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     <div class="foot-bottom-l">
       <span class="foot-brand">📋 대한민국 패치노트</span>
       <span class="foot-tag">객관 수치만 · 평가·해석·의견 없음 · 광고: 정치·종교·선거 차단</span>
+      <span class="foot-tag">한양텍(HYT) · 대표 차민수 · 사업자등록번호 555-46-01185 · 통신판매업 신고 2026-서울도봉-0358</span>
+      <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:minsoo500101@gmail.com">minsoo500101@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.85</a>
+      <a href="/changelog" id="foot-year">V31.86</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -17570,6 +17579,12 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.86', date: '2026-09-16', title: '📰 6개 분야 기사 6편 + 사업자 정보 공개', items: [
+    "신규 기사 6편 — ①장관 후보자 청문회가 9/15·16 이틀에 5명으로 몰렸다(이형일·이소영·김승원 / 강신철·홍지선). 장관은 본회의 표결 없이 임명되고 보고서 미채택도 임명을 막지 못한다는 절차를 함께 정리했다 ②대정부질문 나흘(9/9 정치·9/10 외교안보·9/11 경제·9/14 교육사회문화) 종료, 최대 충돌은 양도세 실거주 요건 ③'이종섭 호주 대사 임명' 범인도피 1심 무죄(9/11), 피고인 6명 전원 ④프리덤 에지 종료(9/11) 다음 날 새벽 북한 탄도미사일(9/12) ⑤8월 취업자 +18만4000명인데 청년은 46개월 연속 감소 ⑥부산 예인선 티엔에스캐처호 전복, 실종 7일 만에 1명 포항서 수습·남은 실종 5명. 6개 분야를 모두 채웠다.",
+    "운영 주체를 사이트에 공개했다. 그동안 about·llms.txt가 '익명 개인'으로 남아 있어 광고·제휴 문의에 답하기 어려웠다. 이제 모든 페이지 푸터와 소개·광고문의·개인정보 페이지에 상호(한양텍)·대표자·사업자등록번호·통신판매업 신고번호·사업장 주소·연락처를 표기하고, 홈의 구조화 데이터(Organization)에도 법인명·사업자번호·주소·연락처를 넣었다. 개인정보 처리방침에는 보호책임자 항목을 새로 만들었다.",
+    "확인하지 못한 것은 이번에도 남겼다. 청문회 질의응답과 보고서 채택 여부는 회의록 공개 전이라 쓰지 않았고, 후보자들에게 제기된 의혹은 '제기된 주장'으로만 적고 진위를 판정하지 않았다. 12일 북한 발사는 기종·발사 수·제원이 확인되지 않아 '탄도미사일 수 발'로만 적었고, 일부 보도의 '단거리' 특정은 교차 확인이 부족해 따르지 않았다. 예인선 사고 원인은 수사 중이라 어떤 원인도 단정하지 않았다.",
+    "8월 고용 기사에는 숫자를 읽는 법을 같이 넣었다. 실업률 2.0%가 낮은 것이 반드시 좋은 신호는 아니고(구직 포기자는 실업자에서 빠진다), 청년 고용은 취업자 수보다 고용률로 봐야 인구 감소 효과에 속지 않는다는 점이다."
+  ]},
   { v: 'V31.85', date: '2026-09-10', title: '📰 6개 분야 기사 6편 + 기사 안에 자체 서비스 소개 1칸', items: [
     "신규 기사 6편 — ①김민석 대표 첫 교섭단체 대표연설(9/7)과 정기국회 9월 일정 ②한미일 프리덤 에지 제주 해상 훈련(9/7~11), 한국 이지스함 2척 첫 동시 투입·미 항모 2년 연속 불참 ③대법관 재제청 요구 12일째, 공석 2자리와 멈춘 절차 ④이태원참사 특조위 활동 1년 연장(2027.9.16까지) ⑤자동차보험 '8주룰' 오늘 시행 ⑥코스피 7,051로 33거래일 만에 7000선 회복. 6개 분야를 모두 채웠다.",
     "기사 본문 한가운데에 자체 서비스 소개 한 칸을 넣었다. 모바일 카드 서비스 '모멘토'와 스포츠 경우의 수 계산 'Clinch' 두 곳이며, 기사 53편 전체에 한 편당 하나씩 번갈아 들어간다(27편·26편). 편집 콘텐츠로 오인되지 않도록 'AD · 한양텍 자체 서비스'로 표시하고 링크에 sponsored 표기를 달았다. 문단을 자르지 않게 섹션과 섹션 사이에만 놓았다.",
@@ -21321,6 +21336,12 @@ let _billsSeenBaseline; // V31.0 — 신규 법안 배지 기준선 (페이지 �
 function renderHomeIssueRows(){
   // 홈 주요 이슈 — 여기 배열에 항목만 추가하면 date(d) 기준 최신순 자동 정렬됨.
   var items=[
+    {d:"2026-09-15",ic:"🏛",href:"/chungmun-superweek-sep15-16-2026.html",tt:"장관 후보자 청문회 이틀에 5명 — 9/15 3명·9/16 2명",sub:"이형일·이소영·김승원 / 강신철·홍지선 · 임명 확정 <b>0명</b>"},
+    {d:"2026-09-14",ic:"📜",href:"/daejeongbu-questions-sep9-14-2026.html",tt:"대정부질문 나흘 종료 — 다음은 예산안 심사",sub:"양도세 실거주 요건 충돌 · 예산 <b>820.9조</b> · 의결기한 12/2"},
+    {d:"2026-09-12",ic:"🛡",href:"/freedom-edge-end-nk-missile-sep12-2026.html",tt:"프리덤 에지 종료 다음날 북한 탄도미사일",sub:"9/12 <b>05:20</b> 원산 일대 → 동해 · 안보실 \"안보리 결의 위반\""},
+    {d:"2026-09-11",ic:"⚖️",href:"/yoon-lee-jongsup-escape-acquittal-2026.html",tt:"'이종섭 호주 대사' 범인도피 1심 무죄",sub:"피고인 <b>6명 전원</b> · 구형 징역 5년 · 1심, 상소 절차 남음"},
+    {d:"2026-09-10",ic:"🌊",href:"/busan-tugboat-capsize-search-2026.html",tt:"부산 예인선 전복 — 실종 7일 만에 1명 포항서 발견",sub:"승선 8명 · 남은 실종 <b>5명</b> · 선체 수심 87m · 수색구역 확대"},
+    {d:"2026-09-09",ic:"📈",href:"/employment-aug-2026-youth-46months.html",tt:"8월 취업자 +18.4만 — 청년은 46개월 연속 감소",sub:"고용률 <b>63.3%</b> 8월 기준 최고 · 실업률 2.0% · 청년만 역주행"},
     {d:"2026-09-10",ic:"🚗",href:"/auto-insurance-8week-rule-2026.html",tt:"자동차보험 '8주룰' 오늘 시행",sub:"경상 <b>8주 초과</b> 치료는 자배원 검토 · 9/10 이후 사고부터"},
     {d:"2026-09-09",ic:"📈",href:"/kospi-7000-recovery-sep9-2026.html",tt:"코스피 7,051 — 33거래일 만에 7000선 회복",sub:"<b>+1.40%</b> · 기관 9,005억 순매수 · 코스닥 +2.28%"},
     {d:"2026-09-08",ic:"⚖️",href:"/supreme-court-nominee-standoff-day12.html",tt:"대법관 재제청 요구 12일째 — 대법원장 침묵",sub:"공석 <b>2자리</b> · 김성수 후보자 청문 9/14 · 절차 공백 정리"},
