@@ -26,6 +26,12 @@ jobs:
             node scripts/wiki-auto-career.js --write --type=$t --limit=30 || true
           done
 
+      # 22대 의원 명부는 재보궐·궐위·탈당으로 바뀐다. 어떤 크론도 이 파일을 갱신하지 않아
+      # 2026-05-28 시점 286명에 3개월 반 묶여 있었고(6·3 재보궐 당선 14명 누락) 사이트 표기·
+      # 분석 기사 통계까지 함께 틀려 있었다. 실패해도 나머지 동기화는 진행한다.
+      - name: 22대 국회 명부 동기화 (국회 OPEN API)
+        run: node scripts/fetch-assembly-22.js || echo "::warning::fetch-assembly-22.js 실패 — 기존 명부 유지"
+
       - name: V28.0 — llms.txt/llms-full.txt 자동 동기화
         run: node scripts/update-llms.js
 
@@ -35,7 +41,7 @@ jobs:
       - name: 변경사항 확인
         id: check
         run: |
-          if git diff --quiet data/politicians.json llms.txt llms-full.txt; then
+          if git diff --quiet data/politicians.json data/assembly-22.json llms.txt llms-full.txt; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -66,8 +72,8 @@ jobs:
           NEW_VER="${{ steps.ver.outputs.ver }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/politicians.json index.html llms.txt llms-full.txt
-          git commit -m "chore(data): 위키 career 보충 + llms 동기화 (cron) — v${NEW_VER}"
+          git add data/politicians.json data/assembly-22.json index.html llms.txt llms-full.txt
+          git commit -m "chore(data): 국회 명부·위키 career 보충 + llms 동기화 (cron) — v${NEW_VER}"
           for i in 1 2 3; do
             git pull --rebase --autostash origin main && git push && break || (echo "재시도 $i"; sleep 5)
           done
