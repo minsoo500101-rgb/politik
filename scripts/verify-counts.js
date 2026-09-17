@@ -25,6 +25,9 @@ function readJson(p) {
 // ─── 1. 실측 카운트 ───────────────────────────────────
 function countActual() {
   const pol = readJson(path.join(ROOT, 'data/politicians.json'));
+  // 22대 의원 명부는 재보궐·궐위로 바뀐다. 기대값을 문자열로 박아 두면 명부가 갱신될 때마다 검사기가 같이 틀린다.
+  const asmRaw = readJson(path.join(ROOT, 'data/assembly-22.json'));
+  const asm = Array.isArray(asmRaw) ? asmRaw : (asmRaw.members || []);
   const gl  = readJson(path.join(ROOT, 'data/glossary.json'));
   const e26 = readJson(path.join(ROOT, 'data/election_2026.json'));
   const eco = readJson(path.join(ROOT, 'data/economy.json'));
@@ -34,6 +37,7 @@ function countActual() {
 
   return {
     politicians_total: pol.people.length,
+    politicians_assembly: asm.length,
     politicians_by_group: byGroup,
     glossary_terms: gl.terms.length,
     glossary_categories: Object.keys(gl.categories).length,
@@ -49,20 +53,27 @@ function countActual() {
 function findChangelogRange(text) {
   const startIdx = text.indexOf('const CHANGELOG = [');
   if (startIdx < 0) return null;
-  // 매칭되는 닫는 ];를 찾기 (간단히 다음 \n];\n 으로)
-  const tail = text.indexOf('\n];\n', startIdx);
-  if (tail < 0) return null;
-  const beforeLines = text.slice(0, startIdx).split('\n').length;
-  const insideLines = text.slice(startIdx, tail).split('\n').length;
+  // 닫는 ];를 찾는다. ⚠ 작업 트리가 CRLF라 '\n];\n' 리터럴은 절대 매칭되지 않는다
+  // (매칭 실패 → null → 제외 범위 없음 → CHANGELOG 회고 기록 10건이 전부 stale로 오탐).
+  const m = /\r?\n\];\r?\n/.exec(text.slice(startIdx));
+  if (!m) return null;
+  const tail = startIdx + m.index;
+  const beforeLines = text.slice(0, startIdx).split(/\r?\n/).length;
+  const insideLines = text.slice(startIdx, tail).split(/\r?\n/).length;
   return { start: beforeLines, end: beforeLines + insideLines };
 }
 
 function findStaleNumbers(actual) {
+  // 도감에 실제로 보이는 인물 = 22대 라이브 명부 + 자체 DB(입법부 중복 제외)
+  const selfOnly = actual.politicians_total - (actual.politicians_by_group.legislative || 0);
+  const TRUTH_TOTAL = `${actual.politicians_assembly + selfOnly}명 (22대 ${actual.politicians_assembly} + 자체 ${selfOnly})`;
   const STALE_PATTERNS = [
     // [pattern, expected_truth, label]
-    ['772명',          '768명 (22대 286 + 자체 482)',         '정치인 (구: 772명)'],
-    ['744명',          '768명 (22대 286 + 자체 482)',         '정치인 (구: 744명)'],
-    ['536명',          '768명 (22대 286 + 자체 482)',         '정치인 (구: 536명, V27.3 보정 전)'],
+    ['772명',          TRUTH_TOTAL,                           '정치인 (구: 772명)'],
+    ['744명',          TRUTH_TOTAL,                           '정치인 (구: 744명)'],
+    ['536명',          TRUTH_TOTAL,                           '정치인 (구: 536명, V27.3 보정 전)'],
+    ['768명',          TRUTH_TOTAL,                           '정치인 (구: 768명 — 22대 286 시점)'],
+    ['22대 국회의원 286명', `22대 국회의원 ${actual.politicians_assembly}명`, '22대 명부 (구: 286명)'],
     ['136개 용어',     actual.glossary_terms + '개 용어',    '용어 (구: 136)'],
     ['213개 용어',     actual.glossary_terms + '개 용어',    '용어 (구: 213)'],
     ['250 시군구',     actual.e26_muni_sum + ' 시군구',      '시군구 (구: 250)'],

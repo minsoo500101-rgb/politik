@@ -312,7 +312,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 <!-- V28.2 — 사전투표율 라이브 fetch: /api/early-vote-rate 신규 (다중 fallback: NEC API·info.nec.go.kr·수동슬롯·8회참고) + 5분 폴링 라이브 카드 (52px 누적%·8회 비교·시도별 옵션) -->
-<link rel="prefetch" as="fetch" href="/data/politicians.json?v=31" crossorigin>
+<link rel="prefetch" as="fetch" href="/data/politicians.json?v=32" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
 <!-- V24.0 인스타 카드 생성용 (html → PNG) -->
 
@@ -11075,7 +11075,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.86</a>
+      <a href="/changelog" id="foot-year">V31.87</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11393,8 +11393,8 @@ async function loadWikiOverrides() {
 let PARTY_ROLES = {}; // party -> [{ role, mp_name, since, ... }]
 let PARTY_INFO = {};  // party -> { founded, predecessors, ideology, summary, ... }
 // 정치인 데이터 버전 — 데이터 업데이트 시 증가 (CDN/브라우저 캐시 갱신)
-const POLITICIANS_VER = 31;
-// V27.4 — 22대 의원 286명 fetch (별도 파일, 별도 state)
+const POLITICIANS_VER = 32;
+// V27.4 — 22대 의원 fetch (별도 파일, 별도 state). 인원수는 재보궐·궐위로 수시 변동하므로 주석에 박아 두지 않는다.
 async function loadAssembly22() {
   try {
     const r = await fetch('/data/assembly-22.json?v=27');
@@ -17579,6 +17579,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.87', date: '2026-09-17', title: '🔧 데이터 동기화 복구 + 국회 명부 299명 + 주가·환율 실측 보정', items: [
+    "매일 도는 데이터 동기화가 9월 12일부터 6일 내리 실패하고 있었다. 위키 경력 보충이 인물 데이터를 고치면 파일 버전이 +1 되는데, 버전 표기를 맞추는 단계가 검증보다 뒤에 있어서 매번 '버전 불일치'로 검증이 죽고 커밋까지 가지 못했다. 순서를 바로잡고, 밀려 있던 인물 데이터를 반영했다(경력 452→453명).",
+    "국회의원 명부가 5월 28일 이후 갱신되지 않아 286명에 멈춰 있었다. 국회 OPEN API로 다시 받으니 299명 — 6월 3일 재보궐선거로 당선된 14명(한동훈·송영길·이광재·김남국·김남준·전은수 등)이 빠져 있었다. 명부와 함께 입법부 페이지 표기, 데이터 라이선스 안내, 국회 구성 분석 기사의 통계를 전부 다시 집계했다(여성 63명 21.1%, 평균 58.6세, 초선 137명 45.8%, 민주 161·국힘 109).",
+    "경제 지표의 2026년 주가가 실제와 크게 달랐다. 코스피 9,052로 적혀 있었는데 한국은행 ECOS 실측으로는 연중 최고 종가가 6월 22일 9,114이고 9월 16일은 6,718이다. 코스닥은 967로 적혀 있었으나 연중 최고는 4월 27일 1,226, 9월 16일은 816이다. 환율도 '2026년 1,530원대 약세'로 써 있었지만 7월 2일 1,554원을 찍은 뒤 9월 10일 1,337원까지 내려온 상태다. 세 값을 ECOS 실측으로 바로잡고, 같은 숫자를 인용하던 경제 분석 기사도 함께 고쳤다.",
+    "앞으로 같은 일이 반복되지 않게 갱신 스크립트(scripts/refresh-economy.js)를 새로 뒀다. 연말 종가로 확정되는 시점형 지표만 최신값으로 갱신하고, 연평균·연합계 지표(물가·실업률·GDP·가계부채·수출)는 해가 끝나기 전에 월 단위 값을 넣으면 의미가 달라지므로 건드리지 않는다.",
+    "점검 도구 자체의 고장 세 건도 고쳤다. ①표기 검증기가 변경이력 구간을 제외하지 못해 회고 기록 10건을 계속 오탐하고 있었다(줄바꿈 문자 차이). ②시간별 건강 점검의 '사이트 버전' 항목이 늘 '미감지'였다 — 홈을 앞 5KB만 받는데 버전 표기는 푸터에 있어서다. 이제 배포가 멈추면 점검이 잡아낸다. ③기사 목록·RSS가 '수정일' 순이라, 옛 기사의 사소한 수치 정정 하나로 그 기사가 새 기사들을 제치고 맨 위로 올라왔다. 발행일 순으로 바꿨다.",
+    "그 밖에 — 검증기가 넉 달 가까이 경고하던 계엄 기록 페이지의 작성일 표기(6월 6일로 적혀 있었으나 실제 최초 발행은 6월 4일)를 바로잡아 전체 검증이 오류 0·경고 0이 됐다."
+  ]},
   { v: 'V31.86', date: '2026-09-16', title: '📰 6개 분야 기사 6편 + 사업자 정보 공개', items: [
     "신규 기사 6편 — ①장관 후보자 청문회가 9/15·16 이틀에 5명으로 몰렸다(이형일·이소영·김승원 / 강신철·홍지선). 장관은 본회의 표결 없이 임명되고 보고서 미채택도 임명을 막지 못한다는 절차를 함께 정리했다 ②대정부질문 나흘(9/9 정치·9/10 외교안보·9/11 경제·9/14 교육사회문화) 종료, 최대 충돌은 양도세 실거주 요건 ③'이종섭 호주 대사 임명' 범인도피 1심 무죄(9/11), 피고인 6명 전원 ④프리덤 에지 종료(9/11) 다음 날 새벽 북한 탄도미사일(9/12) ⑤8월 취업자 +18만4000명인데 청년은 46개월 연속 감소 ⑥부산 예인선 티엔에스캐처호 전복, 실종 7일 만에 1명 포항서 수습·남은 실종 5명. 6개 분야를 모두 채웠다.",
     "운영 주체를 사이트에 공개했다. 그동안 about·llms.txt가 '익명 개인'으로 남아 있어 광고·제휴 문의에 답하기 어려웠다. 이제 모든 페이지 푸터와 소개·광고문의·개인정보 페이지에 상호(한양텍)·대표자·사업자등록번호·통신판매업 신고번호·사업장 주소·연락처를 표기하고, 홈의 구조화 데이터(Organization)에도 법인명·사업자번호·주소·연락처를 넣었다. 개인정보 처리방침에는 보호책임자 항목을 새로 만들었다.",
@@ -22739,7 +22747,7 @@ const ROUTE_META = {
   '/insights': { title: '출신 분석 — 22대 의원 출신·학력·직업', desc: '제22대 국회의원 출신 지역·대학·전직 분포 분석. 정당별·연령별 통계.' },
   '/relations': { title: '관계도 — 공동발의 네트워크', desc: '제22대 국회의원 공동발의 관계 d3 네트워크 그래프. 정당 결속도·교차 협력 시각화.' },
   '/history/parties': { title: '정당사 1948~현재 — 45개 정당 타임라인', desc: '대한민국 정당사 1948년~현재 45개 정당 시각 타임라인. 창당·합당·해산 흐름.' },
-  '/group/legislative': { title: '입법부 — 22대 국회의원 286명 (정당별·위원회별)', desc: '제22대 국회의원 286명 전원 명단. 국회 OpenAPI 라이브 fetch. 정당별 분포·지역구·위원회·직책 (의장단·위원장·간사).' },
+  '/group/legislative': { title: '입법부 — 22대 국회의원 299명 (정당별·위원회별)', desc: '제22대 국회의원 299명 전원 명단. 국회 OpenAPI 라이브 fetch. 정당별 분포·지역구·위원회·직책 (의장단·위원장·간사).' },
   '/group/executive': { title: '행정부 — 대통령·총리·17부처 장관', desc: '대통령·국무총리·17개 부처 장관 및 차관·외청장·헌법기관장 종합.' },
   '/group/judicial': { title: '사법부 — 대법관·헌법재판관·검찰', desc: '대법원장·대법관·헌법재판관·검찰총장 등 사법부 핵심 인사 종합.' },
   '/group/local': { title: '지방 — 광역·기초단체장·교육감', desc: '17개 광역단체장·226개 기초단체장·17개 교육감 정보.' },

@@ -43,7 +43,7 @@ const APIS = [
   { path: '/api/naver?action=health',                                   critical: false },
 ];
 
-function fetchUrl(url, timeoutMs = 8000) {
+function fetchUrl(url, timeoutMs = 8000, full = false) {
   return new Promise(resolve => {
     const start = Date.now();
     const req = https.get(url, { headers: { 'User-Agent': 'patchkr-health/29.3' } }, res => {
@@ -54,7 +54,9 @@ function fetchUrl(url, timeoutMs = 8000) {
           status: res.statusCode,
           ms: Date.now() - start,
           bodyLen: body.length,
-          body: body.slice(0, 5000), // 처음 5KB만
+          // 기본은 처음 5KB만 본다(응답 크기 절약). 단 버전 표기는 푸터(≈980KB 지점)에 있어
+          // 5KB 샘플로는 절대 안 잡히므로, 버전 탐지는 full=true 로 전체를 받아야 한다.
+          body: full ? body : body.slice(0, 5000),
         });
       });
     });
@@ -108,8 +110,11 @@ async function checkApi(a) {
 }
 
 async function detectSiteVersion(homeBody) {
-  // 헤더 brand-sub의 version-pill 또는 changelog 첫 항목
-  const verMatch = homeBody.match(/V(\d+\.\d+)\s*·/);
+  // 푸터의 변경이력 링크가 배포된 버전의 정본이다: <a href="/changelog" id="foot-year">V31.86</a>
+  // ⚠ 예전에는 헤더 version-pill의 'V31.86 ·' 형태만 찾았는데, 마크업에서 뒤의 '·'가 사라진 뒤로
+  //    매 실행이 '미감지'였다 = 배포 정지·롤백을 건강 점검이 전혀 못 잡고 있었다.
+  const verMatch = homeBody.match(/id="foot-year"[^>]*>\s*V(\d+\.\d+)/)
+                || homeBody.match(/V(\d+\.\d+)\s*·/);
   return verMatch ? 'V' + verMatch[1] : null;
 }
 
@@ -122,7 +127,7 @@ async function main() {
 
   // 홈 body에서 버전 추출
   const homeResult = pageResults.find(r => r.url === '/');
-  const homeBodyFetch = await fetchUrl(BASE + '/');
+  const homeBodyFetch = await fetchUrl(BASE + '/', 8000, true);
   const siteVersion = await detectSiteVersion(homeBodyFetch.body || '');
 
   const summary = {

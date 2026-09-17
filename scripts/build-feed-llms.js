@@ -40,7 +40,12 @@ function collectArticles() {
       lang: j.inLanguage || 'ko',
     });
   }
-  out.sort((a, b) => (b.modified || '').localeCompare(a.modified || '') || b.file.localeCompare(a.file));
+  // 발행일(datePublished) 기준 최신순. ⚠ modified 기준으로 정렬하면 옛 기사의 사소한 수치 정정
+  // 하나로 그 기사가 피드·llms.txt 맨 위로 올라오고, RSS의 <pubDate>(발행일)와 순서가 어긋난다.
+  out.sort((a, b) =>
+    (b.published || b.modified || '').localeCompare(a.published || a.modified || '') ||
+    (b.modified || '').localeCompare(a.modified || '') ||
+    b.file.localeCompare(a.file));
   return out;
 }
 
@@ -59,7 +64,9 @@ function rfc822(ymd) {
 // ── 2) feed.xml 생성 ─────────────────────────────────────────────
 function buildFeed(arts) {
   const latest = arts.slice(0, 25);
-  const build = rfc822(latest[0]?.modified || new Date().toISOString().slice(0, 10));
+  // lastBuildDate는 '피드가 마지막으로 바뀐 시점'이므로 전체 기사 중 최신 수정일을 쓴다(정렬 키와 별개).
+  const newestMod = arts.map(a => a.modified).filter(Boolean).sort().pop();
+  const build = rfc822(newestMod || new Date().toISOString().slice(0, 10));
   const items = latest.map(a => `    <item>
       <title>${esc(a.title)}</title>
       <link>${esc(a.url)}</link>
@@ -95,13 +102,13 @@ ${items}
 function buildLlmsSection(arts) {
   const ko = arts.filter(a => a.lang !== 'en');
   const en = arts.filter(a => a.lang === 'en');
-  const line = a => `- [${a.title}](${a.url}) — ${a.desc.slice(0, 150)}${a.desc.length > 150 ? '…' : ''} (${a.modified})`;
+  const line = a => `- [${a.title}](${a.url}) — ${a.desc.slice(0, 150)}${a.desc.length > 150 ? '…' : ''} (${a.published || a.modified}${a.modified && a.published && a.modified !== a.published ? `, 수정 ${a.modified}` : ''})`;
   return [
     LLMS_START,
     '',
     '## 분석·기록 (원본 기사)',
     '',
-    `> patchkr가 공식 1차 자료(헌재·법원·국회·중앙선관위·통계청·한국은행 등)를 직접 확인해 작성한 기사다. 각 기사는 본문에 출처를 표기하고, 사실과 주장을 구분하며, 확정 전 판결에는 무죄추정을 명시한다. 인용 시 기사 URL과 함께 원 출처를 함께 확인할 것을 권장한다. 총 ${arts.length}편(한국어 ${ko.length}·영어 ${en.length}). 목록은 최신 수정순.`,
+    `> patchkr가 공식 1차 자료(헌재·법원·국회·중앙선관위·통계청·한국은행 등)를 직접 확인해 작성한 기사다. 각 기사는 본문에 출처를 표기하고, 사실과 주장을 구분하며, 확정 전 판결에는 무죄추정을 명시한다. 인용 시 기사 URL과 함께 원 출처를 함께 확인할 것을 권장한다. 총 ${arts.length}편(한국어 ${ko.length}·영어 ${en.length}). 목록은 발행일 최신순이며, 수정이 있었던 기사는 수정일을 함께 표기한다.`,
     '',
     '### 한국어',
     ...ko.map(line),
@@ -194,6 +201,6 @@ fs.writeFileSync(path.join(ROOT, 'data', 'articles.json'), JSON.stringify({
 const section = buildLlmsSection(arts);
 injectInto("llms.txt", section, "## 공개 API");
 injectInto("llms-full.txt", section, "## API 호출 예시");
-console.log(`✅ feed.xml — 기사 ${Math.min(arts.length, 25)}편 (lastBuildDate ${rfc822(arts[0].modified)})`);
+console.log(`✅ feed.xml — 기사 ${Math.min(arts.length, 25)}편 (lastBuildDate ${rfc822(arts.map(a => a.modified).filter(Boolean).sort().pop())})`);
 console.log(`✅ llms.txt · llms-full.txt — '분석·기록' 섹션 ${arts.length}편 반영`);
-console.log(`   최신: ${arts[0].modified} ${arts[0].title.slice(0, 40)}`);
+console.log(`   최신 발행: ${arts[0].published || arts[0].modified} ${arts[0].title.slice(0, 40)}`);
