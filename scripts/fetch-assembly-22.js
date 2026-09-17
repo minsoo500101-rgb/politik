@@ -15,9 +15,15 @@ const OUTPUT = path.resolve(__dirname, '../data/assembly-22.json');
 function fetchJson(url) {
   return new Promise((resolve, reject) => {
     https.get(url, { headers: { 'User-Agent': 'KoreaPatchNotes/1.0' } }, res => {
-      let body = '';
-      res.on('data', c => body += c);
+      // ⚠ `let body=''; body += chunk` 로 받으면 안 된다. 청크는 Buffer라 더할 때마다 개별 디코딩되는데,
+      //    한글 한 글자(UTF-8 3바이트)가 청크 경계에 걸리면 양쪽이 U+FFFD로 깨진다. 경계는 실행마다
+      //    달라지므로 매일 다른 의원의 이름·지역구·위원회가 무작위로 깨진 채 커밋된다
+      //    (실제 발생: 서왕진 '기후위원회' → '기후위���', 문진석 한자, 부산 금정구).
+      //    Buffer로 모아 마지막에 한 번만 디코딩한다.
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
       res.on('end', () => {
+        const body = Buffer.concat(chunks).toString('utf8');
         try { resolve(JSON.parse(body)); }
         catch (e) { reject(new Error('JSON parse: ' + e.message + ', body=' + body.slice(0, 200))); }
       });

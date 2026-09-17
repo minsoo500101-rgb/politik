@@ -47,9 +47,13 @@ function fetchUrl(url, timeoutMs = 8000, full = false) {
   return new Promise(resolve => {
     const start = Date.now();
     const req = https.get(url, { headers: { 'User-Agent': 'patchkr-health/29.3' } }, res => {
-      let body = '';
-      res.on('data', c => body += c);
+      // 청크를 문자열로 이어붙이면 한글이 청크 경계에서 깨진다(UTF-8 3바이트 분할).
+      // 여기선 정규식 매칭용이라 치명적이진 않지만, SPA_MARKER('패치노트' 등)가 경계에 걸리면
+      // 멀쩡한 페이지를 실패로 오판할 수 있다. Buffer로 모아 한 번에 디코딩한다.
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
       res.on('end', () => {
+        const body = Buffer.concat(chunks).toString('utf8');
         resolve({
           status: res.statusCode,
           ms: Date.now() - start,
