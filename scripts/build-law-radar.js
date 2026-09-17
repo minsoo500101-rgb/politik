@@ -96,6 +96,172 @@ function classify(law) {
   return tags;
 }
 
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const fmt = (y) => y.slice(0, 4) + '-' + y.slice(4, 6) + '-' + y.slice(6, 8);
+
+/** YYYYMMDD 차이(일). 시간대에 흔들리지 않게 UTC 정오 고정 — 페이지 JS와 같은 규칙. */
+function dayDiff(a, b) {
+  const p = (s) => Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8), 12);
+  return Math.round((p(a) - p(b)) / 86400000);
+}
+
+/** 목록 한 줄을 HTML로. 페이지의 JS 렌더와 같은 마크업이어야 필터링 시 튀지 않는다. */
+function rowHtml(it, today) {
+  const dd = dayDiff(it.ef, today);
+  const cls = dd <= 30 ? ' near' : (dd <= 90 ? ' soon' : '');
+  let arts = '';
+  if (it.arts && it.arts.length) {
+    const shown = it.arts.slice(0, 6);
+    arts = '<div class="arts">' + shown.map((a) => `<span class="art">${esc(a)}</span>`).join('') +
+           (it.n > shown.length ? `<span class="more">외 ${it.n - shown.length}개 조문</span>` : '') + '</div>';
+  } else if (it.rev === '제정') {
+    arts = '<div class="arts"><span class="art">신규 제정 — 전체 조문</span></div>';
+  }
+  const first = it.slug
+    ? `<a href="/law/${encodeURIComponent(it.slug)}.html">바뀌는 조문 보기 →</a>`
+    : `<a href="/law-diff.html?law=${encodeURIComponent(it.name)}">신구조문 비교 →</a>`;
+  return '<div class="row">' +
+    '<div class="row-h">' +
+      `<div class="dday${cls}"><div class="d">D-${dd}</div><div class="s">${fmt(it.ef).slice(5)}</div></div>` +
+      '<div style="min-width:0;flex:1">' +
+        `<div class="nm">${esc(it.name)}</div>` +
+        `<div class="meta">${esc(it.kind)}<span class="sep">·</span>${esc(it.rev)}` +
+          `<span class="sep">·</span>${esc(it.dept)}<span class="sep">·</span>공포 ${fmt(it.pub)}</div>` +
+      '</div>' +
+    '</div>' + arts +
+    '<div class="acts">' + first +
+      `<a href="https://www.law.go.kr/lsSc.do?menuId=1&amp;query=${encodeURIComponent(it.name)}" target="_blank" rel="noopener">법제처 원문 ↗</a>` +
+    '</div>' +
+  '</div>';
+}
+
+const MARK_START = '<!-- RADAR:START -->';
+const MARK_END = '<!-- RADAR:END -->';
+const CHIPS_START = '<!-- CHIPS:START -->';
+const CHIPS_END = '<!-- CHIPS:END -->';
+
+/** law-radar.html 안의 표시 영역을 빌드 시점 HTML로 채운다 */
+function injectStatic(items, today) {
+  const p = path.join(ROOT, 'law-radar.html');
+  let h = fs.readFileSync(p, 'utf8');
+  const nl = h.includes('\r\n') ? '\r\n' : '\n';
+
+  // 첫 화면 기본값(3개월 내)과 같은 조건. 전부 박으면 문서가 너무 커지므로 60건까지만.
+  const initial = items.filter((it) => dayDiff(it.ef, today) <= 90);
+  const shown = initial.slice(0, 60);
+  const rows = shown.map((it) => rowHtml(it, today)).join(nl) +
+    (initial.length > shown.length
+      ? `${nl}<p class="more-note">여기까지 ${shown.length}건입니다. 나머지 ${initial.length - shown.length}건과 분야별 추리기는 자바스크립트가 켜진 상태에서 볼 수 있습니다. <a href="/law-radar/labor.html">분야별 목록</a>도 있습니다.</p>`
+      : '');
+
+  const chips = DOMAINS.filter((d) => byTagCount[d.id])
+    .map((d) => `<a class="chip" href="/law-radar/${d.id}.html">${d.icon} ${esc(d.label)} <span class="c">${byTagCount[d.id]}</span></a>`)
+    .join('');
+
+  h = h.replace(new RegExp(MARK_START + '[\\s\\S]*?' + MARK_END),
+                MARK_START + nl + rows + nl + MARK_END);
+  h = h.replace(new RegExp(CHIPS_START + '[\\s\\S]*?' + CHIPS_END),
+                CHIPS_START + nl +
+                `<a class="chip" href="/law-radar.html" aria-pressed="true">전체 <span class="c">${items.length}</span></a>` +
+                chips + nl + CHIPS_END);
+  fs.writeFileSync(p, h, 'utf8');
+  console.log(`   ↳ law-radar.html 정적 목록 ${shown.length}건 주입`);
+}
+
+let byTagCount = {};
+
+/** 분야별 정적 페이지 law-radar/<id>.html — 색인 대상 URL을 분야 수만큼 늘린다 */
+function buildDomainPages(items, byTag, today) {
+  const dir = path.join(ROOT, 'law-radar');
+  fs.mkdirSync(dir, { recursive: true });
+  const tpl = fs.readFileSync(path.join(ROOT, 'law-radar.html'), 'utf8');
+  const style = tpl.match(/<style>([\s\S]*?)<\/style>/)[1];
+  let n = 0;
+
+  for (const d of DOMAINS) {
+    const rows = items.filter((it) => it.tags.includes(d.id));
+    if (!rows.length) continue;
+    const near = rows.filter((it) => dayDiff(it.ef, today) <= 90).length;
+    const url = `https://patchkr.com/law-radar/${d.id}.html`;
+    const names = rows.slice(0, 6).map((r) => r.name).join(', ');
+    const desc = `${d.label} 분야에서 공포는 끝났고 시행일만 남은 법령 ${rows.length}건` +
+      (near ? ` (3개월 내 시행 ${near}건)` : '') + `. ${names} 등. ` +
+      `시행일까지 남은 날짜와 바뀌는 조문을 법제처 국가법령정보 신구조문대비표로 확인하세요. 무료.`;
+
+    const list = {
+      '@context': 'https://schema.org', '@type': 'ItemList',
+      name: `${d.label} — 곧 시행되는 법령`, numberOfItems: rows.length,
+      itemListElement: rows.slice(0, 30).map((r, i) => ({
+        '@type': 'ListItem', position: i + 1, name: r.name,
+        url: r.slug ? `https://patchkr.com/law/${encodeURIComponent(r.slug)}.html` : url,
+      })),
+    };
+    const crumb = {
+      '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '홈', item: 'https://patchkr.com/' },
+        { '@type': 'ListItem', position: 2, name: '곧 시행되는 법령', item: 'https://patchkr.com/law-radar.html' },
+        { '@type': 'ListItem', position: 3, name: d.label, item: url },
+      ],
+    };
+
+    const others = DOMAINS.filter((o) => o.id !== d.id && byTag[o.id])
+      .map((o) => `<a class="chip" href="/law-radar/${o.id}.html">${o.icon} ${esc(o.label)} <span class="c">${byTag[o.id]}</span></a>`).join('');
+
+    const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(d.label)} — 곧 시행되는 법령 ${rows.length}건 | 대한민국 패치노트</title>
+<meta name="description" content="${esc(desc.slice(0, 300))}">
+<link rel="canonical" href="${url}">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${esc(d.icon + ' ' + d.label)} — 곧 시행되는 법령 ${rows.length}건">
+<meta property="og:description" content="${esc(desc.slice(0, 180))}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="https://patchkr.com/og-law-radar.png?v=1"><meta property="og:site_name" content="대한민국 패치노트">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968" crossorigin="anonymous"></script>
+<script type="application/ld+json">${JSON.stringify(list)}</script>
+<script type="application/ld+json">${JSON.stringify(crumb)}</script>
+<script>try{var t=localStorage.getItem('politik:theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
+<style>${style}</style><script defer src="/_vercel/insights/script.js"></script>
+</head><body><div class="wrap">
+<div class="top"><a href="/law-radar.html">← 곧 시행되는 법령</a><span><button class="tt" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('politik:theme',n)}catch(e){}})()">🌓</button></span></div>
+
+<div class="kicker">${d.icon} ${esc(d.label)} · 곧 시행되는 법령</div>
+<h1>${esc(d.label)}에서 곧 바뀌는 법령 ${rows.length}건</h1>
+<p class="dek">공포는 끝났고 <b>시행일만 남은</b> 법령입니다${near ? `. 이 가운데 <b>${near}건</b>은 3개월 안에 시행됩니다` : ''}. 시행일이 가까운 순서이며, 각 항목의 바뀌는 조문까지 함께 보여드립니다.</p>
+<div class="byline">법제처 국가법령정보 신구조문대비표 기준 · ${fmt(today)} 갱신 · 매일 자동 수집 · 법률 자문이 아닙니다</div>
+
+<div class="list">
+${rows.map((it) => rowHtml(it, today)).join('\n')}
+</div>
+
+<h2>다른 분야도 보기</h2>
+<div class="chips"><a class="chip" href="/law-radar.html">📡 전체 ${items.length}</a>${others}</div>
+
+<div class="note">
+<b>이 페이지가 하는 일과 하지 않는 일.</b><br>
+하는 일 — 법제처 국가법령정보의 공식 신구조문대비표에서 <b>공포 완료·시행 전</b> 법령을 모아, 시행일과 바뀌는 조문 제목을 그대로 보여드립니다.<br>
+하지 않는 일 — <b>법률 자문이 아닙니다.</b> 특정 사업장·계약·내규가 적법한지, 무엇을 어떻게 고쳐야 하는지는 판단하지 않습니다. 실제 적용에는 조문 원문 확인과 변호사·노무사 등 전문가의 검토가 필요합니다.<br>
+분야 분류는 법령명과 소관 부처를 기준으로 patchkr가 자동으로 붙인 것이라 <b>빠지거나 더 붙는 경우가 있습니다</b>. <a href="/law-radar.html">전체 목록</a>도 함께 확인해 주세요. 시행일은 부칙에 따라 조문별로 다를 수 있습니다.
+</div>
+
+<footer>
+<div class="ft-nav"><a href="/">홈</a><a href="/law-radar.html">곧 시행되는 법령</a><a href="/law-diff.html">법령 신구비교</a><a href="/law-changes.html">법령 변경 랭킹</a><a href="/about">소개</a><a href="/privacy">개인정보</a></div>
+대한민국 패치노트 · patchkr.com · 출처 <a href="https://www.law.go.kr" target="_blank" rel="noopener">법제처 국가법령정보센터</a> · 본 정리는 공식 기록에 근거한 정보 제공용이며 법률 자문이 아닙니다.<br>
+© 2026 대한민국 패치노트.<br>
+상호 한양텍(HYT) · 대표 차민수 · 사업자등록번호 555-46-01185 · 통신판매업 신고 2026-서울도봉-0358<br>
+사업장 서울특별시 도봉구 도봉로 110다길 38 · 전화 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a>
+</footer>
+</div></body></html>`;
+    fs.writeFileSync(path.join(dir, d.id + '.html'), html, 'utf8');
+    n++;
+  }
+  console.log(`   ↳ law-radar/*.html 분야 페이지 ${n}개 생성`);
+}
+
 function main() {
   const raw = JSON.parse(fs.readFileSync(IDX, 'utf8'));
   const all = Array.isArray(raw) ? raw : (raw.items || Object.values(raw)[0]);
@@ -138,6 +304,7 @@ function main() {
 
   const byTag = {};
   for (const d of DOMAINS) byTag[d.id] = items.filter((i) => i.tags.includes(d.id)).length;
+  byTagCount = byTag;   // injectStatic 이 칩 개수를 쓰기 위해
   const untagged = items.filter((i) => !i.tags.length).length;
 
   const out = {
@@ -149,6 +316,13 @@ function main() {
     items,
   };
   fs.writeFileSync(OUT, JSON.stringify(out), 'utf8');
+
+  // ── SEO: 자바스크립트 없이도 목록이 보이게 한다 ───────────────────────────
+  // 이 페이지의 가치는 전부 목록인데, 클라이언트에서 fetch로 그리면 크롤러·애드센스 심사는
+  // 205단어짜리 빈 껍데기만 본다(홈이 같은 이유로 '가치 없는 콘텐츠' 판정을 받았다).
+  // 초기 목록을 빌드 시점에 HTML로 박아 넣고, JS는 그 위에서 필터링만 맡는다.
+  injectStatic(items, today);
+  buildDomainPages(items, byTag, today);
 
   const kb = (fs.statSync(OUT).size / 1024).toFixed(0);
   console.log(`✅ radar.json — 시행 전 ${items.length}건 (${kb} KB, 기준일 ${today})`);
