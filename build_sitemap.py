@@ -80,6 +80,7 @@ STATIC_PAGES = [
     {"path": "/memorial-day.html",       "priority": "0.85", "freq": "monthly"},
     {"path": "/nvidia-huang.html",       "priority": "0.88", "freq": "weekly"},
     {"path": "/law-diff.html",           "priority": "0.95", "freq": "daily"},
+    {"path": "/law-radar.html",          "priority": "0.95", "freq": "daily"},
     {"path": "/law-changes.html",        "priority": "0.9",  "freq": "daily"},
     {"path": "/election2026",            "priority": "0.9",  "freq": "weekly"},
     {"path": "/crisis.html",             "priority": "0.9",  "freq": "weekly"},

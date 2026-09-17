@@ -10957,6 +10957,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     <li><a href="https://patchkr.com/economy">경제 지표 9종 라이브 (시계열 2015~2026)</a></li>
     <li><a href="https://patchkr.com/dex">정치인 도감 약 780명</a></li>
     <li><a href="https://patchkr.com/law-diff.html">법령 신구비교</a></li>
+    <li><a href="https://patchkr.com/law-radar.html">곧 시행되는 법령 — 업무 분야별</a></li>
     <li><a href="https://patchkr.com/committees">국회 위원회 25개</a></li>
     <li><a href="https://patchkr.com/map">정치 분포 지도 (17 시도 + 226 시군구)</a></li>
     <li><a href="https://patchkr.com/glossary">용어 사전 248개</a></li>
@@ -11036,6 +11037,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <a href="/analysis.html">분석·기록 전체</a>
       <a href="/law-changes.html">⚖ 법령 개정 동향</a>
       <a href="/law-diff.html">법령 신구비교</a>
+      <a href="/law-radar.html">곧 시행되는 법령</a>
       <a href="/crisis.html">🚨 국가 지표 신호등</a>
       <a href="/en">🇬🇧 Korea, Explained</a>
     </div>
@@ -11075,7 +11077,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.87</a>
+      <a href="/changelog" id="foot-year">V31.88</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -17579,6 +17581,14 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.88', date: '2026-09-18', title: '📡 곧 시행되는 법령 — 내 업무에 걸리는 것만', items: [
+    "새 페이지 '곧 시행되는 법령'(/law-radar.html)을 열었다. 국회를 통과해 공포까지 끝났지만 아직 시행되지 않은 법령이 지금 646건인데, 그중 내 일에 걸리는 것만 골라 보는 화면이다. 인사·노무, 안전·보건, 개인정보, 세무, 계약, 회사·자금, 건설, 환경, 식품, 의료, 물류, 교육, IT, 농림, 공공 15개 분야 중 하나를 고르면 시행일이 가까운 순서로, 시행까지 며칠 남았는지와 어떤 조문이 바뀌는지를 함께 보여준다.",
+    "예를 들어 인사·노무를 고르면 11월 27일 시행되는 남녀고용평등법 개정(직장 내 성희롱 예방 교육, 벌칙·과태료 조문까지 함께 개정)과 고용보험법 개정(난임치료휴가 급여 지급일이 최초 2일에서 4일로)이 나온다. 취업규칙이나 사내 교육을 미리 손봐야 하는 일들이다.",
+    "이 페이지는 판단을 하지 않는다. 법제처 공식 신구조문대비표에 있는 내용을 그대로 옮겨 언제 무엇이 바뀌는지만 보여주고, 특정 사업장이 적법한지나 무엇을 어떻게 고쳐야 하는지는 말하지 않는다. 법률 자문이 아니라는 점을 페이지에도 명시했다.",
+    "법령 하나를 누르면 그 법의 신구조문 비교 페이지로 바로 넘어간다(592건, 92%). 신구표가 없는 제정·일괄개정은 검색 도구나 법제처 원문으로 보낸다. 기존 신구비교 도구는 시행일 기간 필터가 '오늘까지'로 고정돼 있어 시행 전 개정이 걸러졌는데, 레이더에서 넘어올 때는 미래까지 열리도록 고쳤다.",
+    "목록은 한 번에 40건씩만 그리고 '더 보기'로 늘린다. 처음엔 전체를 한 번에 그려서 문서 높이가 6만 3천 픽셀이 됐고 휴대폰에서 버벅였다. 지금은 1만 픽셀로 시작한다.",
+    "색인 파일(radar.json)은 매일 새벽 신구표를 받는 작업에 붙여 함께 갱신한다. 원본 목록이 2.3MB라 브라우저가 통째로 받을 수 없어, 시행 전 법령만 추리고 분야 태그를 붙인 237KB짜리로 따로 만든다."
+  ]},
   { v: 'V31.87', date: '2026-09-17', title: '🔧 데이터 동기화 복구 + 국회 명부 299명 + 주가·환율 실측 보정', items: [
     "매일 도는 데이터 동기화가 9월 12일부터 6일 내리 실패하고 있었다. 위키 경력 보충이 인물 데이터를 고치면 파일 버전이 +1 되는데, 버전 표기를 맞추는 단계가 검증보다 뒤에 있어서 매번 '버전 불일치'로 검증이 죽고 커밋까지 가지 못했다. 순서를 바로잡고, 밀려 있던 인물 데이터를 반영했다(경력 452→453명).",
     "국회의원 명부가 5월 28일 이후 갱신되지 않아 286명에 멈춰 있었다. 국회 OPEN API로 다시 받으니 299명 — 6월 3일 재보궐선거로 당선된 14명(한동훈·송영길·이광재·김남국·김남준·전은수 등)이 빠져 있었다. 명부와 함께 입법부 페이지 표기, 데이터 라이선스 안내, 국회 구성 분석 기사의 통계를 전부 다시 집계했다(여성 63명 21.1%, 평균 58.6세, 초선 137명 45.8%, 민주 161·국힘 109).",
@@ -21911,6 +21921,7 @@ function renderHome() {
         </div>
         <div class="goal-more">
           <span class="goal-more-lbl">더보기</span>
+          <a class="goal-chip" href="/law-radar.html">📡 곧 시행되는 법령</a>
           <a class="goal-chip" href="/law-diff.html">⚖ 법령 신구비교</a>
           <a class="goal-chip" href="/glossary">📖 용어 사전</a>
           <a class="goal-chip" href="/committees">🏢 위원회 25</a>
@@ -24234,6 +24245,7 @@ const NAV_TREE = [
   { label: '9회 지선 결과', icon: '🗳', href: '/election2026' },
   { label: '법안', icon: '📜', children: [
     { label: '22대 통과 법안', href: '/bills' },
+    { label: '📡 곧 시행되는 법령', href: '/law-radar.html' },
     { label: '⚖ 법령 신구비교', href: '/law-diff.html' },
   ]},
   { label: '경제', icon: '💰', children: [

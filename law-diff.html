@@ -164,7 +164,8 @@ html{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}
     <div class="hint">※ <b>2025년 1월 이후 시행된 모든 개정</b>은 인앱에서 검색·시행일 기간 필터로 확인할 수 있어요(법제처 공식 신구표, 한 법의 여러 개정도 각각). 그 이전 이력은 비교 화면의 <b>「법제처 전체 연혁」</b> 링크에서.</div>
   </div>
 
-  <a href="/law-changes.html" class="hot-banner">🔥 <b>법령 변경 랭킹</b> — 2025년 가장 많이 바뀐 법 · 한 방에 200개+ 조 바뀐 개정 · 곧 시행되는 개정 보기 →</a>
+  <a href="/law-radar.html" class="hot-banner">📡 <b>곧 시행되는 법령</b> — 공포는 끝났고 시행일만 남은 646건을 업무 분야별로 · 인사·노무 / 안전 / 세무 / 건설 … →</a>
+  <a href="/law-changes.html" class="hot-banner">🔥 <b>법령 변경 랭킹</b> — 2025년 가장 많이 바뀐 법 · 한 방에 200개+ 조 바뀐 개정 →</a>
   <div id="results"></div>
   <div id="compare"></div>
 
@@ -462,7 +463,17 @@ $('#compare').addEventListener('click',e=>{
     try{ const m=await (await fetch('/data/law/meta.json',{cache:'no-cache'})).json(); if(m?.generatedAt) $('#updated').textContent='마지막 갱신: '+new Date(m.generatedAt).toLocaleString('ko-KR'); }catch(_){}
   }catch(e){ $('#results').innerHTML='<div class="empty">데이터를 불러올 수 없어요 (자동 수집 전이거나 일시 오류).</div>'; $('#updated').textContent=''; return; }
   renderFavs();
+  // /law-diff.html?law=<법령명> 으로 들어오면 검색어를 채우고 그 법령을 바로 펼친다.
+  // '곧 시행 레이더'(/law-radar.html)에서 개별 법령으로 넘어오는 진입점.
+  const want = new URLSearchParams(location.search).get('law');
+  if (want) {
+    $('#q').value = want;
+    // 기본 기간 필터는 '오늘까지'라 시행 전 개정이 걸러진다. 레이더에서 넘어온 경우 미래까지 연다.
+    const far = new Date(); far.setFullYear(far.getFullYear() + 5);
+    $('#to').value = far.toISOString().slice(0, 10);
+  }
   search();
+  if (want) { try { showLaw(want); } catch (_) {} }
 })();
 </script>
 </body></html>
