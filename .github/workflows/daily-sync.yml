@@ -32,6 +32,12 @@ jobs:
       - name: 22대 국회 명부 동기화 (국회 OPEN API)
         run: node scripts/fetch-assembly-22.js || echo "::warning::fetch-assembly-22.js 실패 — 기존 명부 유지"
 
+      # <title>·description·og:*·소개 카드의 "22대 통과 법안 N건"은 손으로 박은 값이라
+      # 화면(국회 API 라이브)과 따로 논다. 2026-09-21 점검에서 화면 1,847 vs 표기 1,595로
+      # 252건(-13.6%) 뒤처져 있었고, 그 문장이 그대로 검색결과에 노출되고 있었다.
+      - name: 법안 건수 표기 동기화 (국회 OPEN API)
+        run: node scripts/sync-bill-count.js --write || echo "::warning::sync-bill-count.js 실패 — 기존 표기 유지"
+
       - name: V28.0 — llms.txt/llms-full.txt 자동 동기화
         run: node scripts/update-llms.js
 
@@ -41,7 +47,7 @@ jobs:
       - name: 변경사항 확인
         id: check
         run: |
-          if git diff --quiet data/politicians.json data/assembly-22.json llms.txt llms-full.txt; then
+          if git diff --quiet data/politicians.json data/assembly-22.json index.html llms.txt llms-full.txt; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT

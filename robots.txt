@@ -128,6 +128,9 @@ Allow: /
 # 사이트맵 + LLM 안내 (Anthropic llmstxt.org 제안 표준)
 # ============================================================
 Sitemap: https://patchkr.com/sitemap.xml
+# 법령 개별 페이지 4,877개는 별도 사이트맵에 있다. 여기 선언이 빠져 있어
+# 2026-09-21까지 크롤러에 발견 경로가 없었다.
+Sitemap: https://patchkr.com/sitemap-law.xml
 
 # LLM 가이드:
 # /llms.txt      — 사이트 짧은 안내 + 주요 페이지·API 링크

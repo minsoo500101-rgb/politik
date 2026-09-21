@@ -114,6 +114,39 @@ try {
   warn('sitemap.xml 검사 실패: ' + e.message);
 }
 
+// robots.txt가 존재하는 모든 사이트맵을 선언하는지.
+// sitemap-law.xml(법령 4,877쪽)이 만들어지고도 robots.txt에 선언되지 않아
+// 크롤러에 발견 경로가 없는 상태로 방치돼 있었다(2026-09-21 발견).
+try {
+  const robots = fs.readFileSync(path.join(ROOT, 'robots.txt'), 'utf8');
+  const declared = [...robots.matchAll(/^Sitemap:\s*(\S+)/gim)].map(m => m[1].split('/').pop());
+  const onDisk = fs.readdirSync(ROOT).filter(f => /^sitemap.*\.xml$/i.test(f));
+  const missing = onDisk.filter(f => !declared.includes(f));
+  if (missing.length) {
+    err(`robots.txt에 선언되지 않은 사이트맵: ${missing.join(', ')} (크롤러가 발견하지 못함)`);
+  } else {
+    ok(`robots.txt 사이트맵 선언 ${declared.length}개 — 디스크의 ${onDisk.length}개 모두 포함`);
+  }
+} catch (e) {
+  warn('robots.txt 검사 실패: ' + e.message);
+}
+
+// 홈의 법안 건수 표기 일관성. <title>·og·소개 카드가 서로 다른 숫자를 말하면
+// 부분 갱신이 일어난 것이다. 실제 값과의 대조는 scripts/sync-bill-count.js(네트워크)가 맡는다.
+try {
+  const h = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const nums = new Set([...h.matchAll(/22대 (?:국회 )?(?:통과 )?법안 ([\d,]+)건/g)].map(m => m[1]));
+  const card = (h.match(/about-stat-n">([\d,]+)<\/div><div class="about-stat-l">22대 통과 법안/) || [])[1];
+  if (card) nums.add(card);
+  if (nums.size > 1) {
+    err(`홈 법안 건수 표기가 서로 다름: ${[...nums].join(' / ')} — sync-bill-count.js 실행 필요`);
+  } else if (nums.size === 1) {
+    ok(`법안 건수 표기 일관 (${[...nums][0]}건)`);
+  }
+} catch (e) {
+  warn('법안 건수 표기 검사 실패: ' + e.message);
+}
+
 // 5. index.html 인라인 script 안에 위험한 </script> 문자열 검사
 try {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
