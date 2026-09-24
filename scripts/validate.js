@@ -147,6 +147,35 @@ try {
   warn('법안 건수 표기 검사 실패: ' + e.message);
 }
 
+// Supabase 직접 접근 회귀 방지 — 2026-09-24.
+// 공개 anon 키로 8개 테이블 원본(user_id 포함) 전체 읽기·일괄 수정·삭제가 가능했다(정책이 전부 USING(true)).
+// 이제 투표·평점·찬반·조회수 집계는 RPC로만 다루고, 테이블 직접 권한은 page_views INSERT·nec_pledges_cache SELECT만 남겼다.
+// 프런트가 다시 원본 행을 SELECT하거나 PATCH/DELETE하면 DB가 거부해 기능이 조용히 깨지므로, 여기서 먼저 잡는다.
+try {
+  const h = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const LOCKED = ['social_votes', 'pledge_ihaeng_votes', 'pledge_ratings', 'user_stances', 'bookmarks', 'nec_candidates_cache'];
+  const hits = [];
+  for (const t of LOCKED) {
+    // 죽은 함수(loadCandidateCached·syncStanceToServer) 안의 흔적은 호출 0이라 허용 — 살아있는 함수 이름으로 판별
+    const re = new RegExp(`supabaseRest\\(\\s*[\`'"]/${t}[?\`'"]`, 'g');
+    let m;
+    while ((m = re.exec(h))) {
+      const fnStart = h.lastIndexOf('function ', m.index);
+      const fn = (h.slice(fnStart, fnStart + 80).match(/function\s+([A-Za-z0-9_]+)/) || [])[1] || '?';
+      const calls = (h.match(new RegExp(`\\b${fn}\\(`, 'g')) || []).length;   // 정의 포함
+      if (calls > 1) hits.push(`${t} ← ${fn}()`);
+    }
+  }
+  if (/\/page_views\?[^'"`]*select=/.test(h)) hits.push('page_views 원본 SELECT');
+  if (hits.length) {
+    err(`프런트가 잠긴 Supabase 테이블을 직접 접근함: ${hits.join(', ')} — RPC(supabaseRpc)로 바꿀 것`);
+  } else {
+    ok('Supabase 직접 접근 없음 — 투표·평점·찬반·조회수는 RPC 경유');
+  }
+} catch (e) {
+  warn('Supabase 접근 검사 실패: ' + e.message);
+}
+
 // 5. index.html 인라인 script 안에 위험한 </script> 문자열 검사
 try {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');

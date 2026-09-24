@@ -11097,7 +11097,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.90</a>
+      <a href="/changelog" id="foot-year">V31.91</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -12593,53 +12593,44 @@ async function supabaseRest(path, opts = {}) {
   return null;
 }
 
-// 이행 투표 제출 (upsert via Prefer: resolution=merge-duplicates)
+// ⚠ 2026-09-24 — 투표·평점·찬반은 테이블을 직접 읽고 쓰지 않고 RPC로만 다룬다.
+//   예전엔 공개 anon 키로 테이블 원본(user_id 포함)을 누구나 통째로 읽을 수 있었고,
+//   PATCH/DELETE에 필터만 걸면 남의 표까지 일괄 조작·삭제할 수 있었다(RLS 정책이 전부 USING(true)).
+//   RPC는 집계와 '내 표'만 돌려주고, 쓰기는 (대상, 내 user_id) 한 행으로만 제한한다.
+function supabaseRpc(fn, args) {
+  return supabaseRest('/rpc/' + fn, { method: 'POST', body: JSON.stringify(args) });
+}
+
+// 이행 투표 제출
 async function submitIhaengVote(meta, vote) {
-  const userId = getOrCreateAnonUserId();
-  const body = [{
-    pledge_key: meta.pledgeKey,
-    candidate_name: meta.name,
-    region: meta.region,
-    party: meta.party,
-    pledge_title: (meta.title || '').slice(0, 200),
-    user_id: userId,
-    vote: vote,
-  }];
-  return supabaseRest('/pledge_ihaeng_votes?on_conflict=pledge_key,user_id', {
-    method: 'POST',
-    headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-    body: JSON.stringify(body),
+  return supabaseRpc('ihaeng_vote_cast', {
+    p_pledge_key: meta.pledgeKey,
+    p_candidate_name: meta.name || null,
+    p_region: meta.region || null,
+    p_party: meta.party || null,
+    p_pledge_title: (meta.title || '').slice(0, 200),
+    p_user_id: getOrCreateAnonUserId(),
+    p_vote: vote,
   });
 }
 
-// 이행 결과 집계 (특정 공약)
+// 이행 결과 집계 (특정 공약) — 집계와 내 표만 받는다(남의 user_id는 받지 않음)
 async function loadIhaengResults(pledgeKey) {
-  const data = await supabaseRest(`/pledge_ihaeng_votes?pledge_key=eq.${encodeURIComponent(pledgeKey)}&select=vote,user_id`);
-  const counts = { '이행': 0, '일부이행': 0, '미이행': 0, '추진중': 0 };
-  for (const v of (data || [])) {
-    if (counts[v.vote] !== undefined) counts[v.vote]++;
-  }
-  const userId = getOrCreateAnonUserId();
-  const my = (data || []).find(v => v.user_id === userId);
-  return { counts, total: (data || []).length, myVote: my?.vote || null };
+  const r = await supabaseRpc('ihaeng_summary', { p_pledge_key: pledgeKey, p_user_id: getOrCreateAnonUserId() }) || {};
+  const counts = Object.assign({ '이행': 0, '일부이행': 0, '미이행': 0, '추진중': 0 }, r.counts || {});
+  return { counts, total: Number(r.total) || 0, myVote: r.my || null };
 }
 
 // 9회 공약 ★평점 제출
 async function submitRating(meta, rating) {
-  const userId = getOrCreateAnonUserId();
-  const body = [{
-    pledge_key: meta.pledgeKey,
-    candidate_name: meta.name,
-    region: meta.region,
-    party: meta.party,
-    pledge_title: (meta.title || '').slice(0, 200),
-    user_id: userId,
-    rating: rating,
-  }];
-  return supabaseRest('/pledge_ratings?on_conflict=pledge_key,user_id', {
-    method: 'POST',
-    headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-    body: JSON.stringify(body),
+  return supabaseRpc('rating_cast', {
+    p_pledge_key: meta.pledgeKey,
+    p_candidate_name: meta.name || null,
+    p_region: meta.region || null,
+    p_party: meta.party || null,
+    p_pledge_title: (meta.title || '').slice(0, 200),
+    p_user_id: getOrCreateAnonUserId(),
+    p_rating: rating,
   });
 }
 
@@ -12699,11 +12690,10 @@ async function loadTopByViews(pageType, days = 7, limit = 5) {
 
 // 페이지뷰 카운트 조회
 async function getPageViewCount(pageType, pageId) {
+  // 원본 행을 받아 세던 방식(select=id)은 page_views 전체 SELECT 권한이 필요해 폐기 — 집계 RPC만 쓴다.
   try {
-    const data = await supabaseRest(
-      `/page_views?page_type=eq.${encodeURIComponent(pageType)}&page_id=eq.${encodeURIComponent(pageId)}&select=id`
-    );
-    return (data || []).length;
+    const n = await supabaseRpc('get_page_view_count', { p_page_type: pageType, p_page_id: pageId });
+    return Number(n) || 0;
   } catch { return 0; }
 }
 
@@ -12718,29 +12708,10 @@ async function loadCandidateCached(huboid) {
   return null;
 }
 
-// NEC 후보자 캐시 저장 (upsert)
-async function cacheCandidate(c) {
-  if (!c?.huboid) return;
-  try {
-    await supabaseRest('/nec_candidates_cache?on_conflict=huboid', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify([{
-        huboid: c.huboid,
-        sg_id: c.sgId || c.sg_id || '',
-        sg_typecode: c.sgTypecode || c.sg_typecode || '',
-        name: c.name || '', party: c.jdName || c.party || '',
-        sd_name: c.sdName || '', sgg_name: c.sggName || '',
-        giho: c.giho || '', gender: c.gender || '',
-        age: parseInt(c.age) || null,
-        birthday: c.birthday || '',
-        job: c.job || '', edu: c.edu || '',
-        career1: c.career1 || '', career2: c.career2 || '',
-        addr: c.addr || '', status: c.status || '',
-      }]),
-    });
-  } catch {}
-}
+// NEC 후보자 캐시 저장 — 2026-09-24 중단(no-op).
+// 브라우저가 공개 키로 캐시를 채우던 구조라, 누구나 후보 정보(이름·정당·경력)를 임의로 덮어쓸 수 있었다.
+// 이 캐시는 읽는 곳도 없어(loadCandidateCached 호출 0) 쓰기만 하던 죽은 경로다. 호출부 호환을 위해 함수만 남긴다.
+async function cacheCandidate(c) { /* intentionally disabled */ }
 
 // NEC 공약 캐시 조회
 async function loadPledgesCached(sgId, huboid) {
@@ -12758,23 +12729,11 @@ async function loadPledgesCached(sgId, huboid) {
   return null;
 }
 
-// NEC 공약 캐시 저장 (배치 upsert)
-async function cachePledges(sgId, huboid, pledges) {
-  if (!pledges?.length) return;
-  try {
-    const rows = pledges.map(p => ({
-      pledge_key: `${sgId}-${huboid}-${p.ord}`,
-      huboid, sg_id: sgId,
-      ordinal: parseInt(p.ord) || 0,
-      realm: p.realm || '', title: p.title || '', content: p.cont || '',
-    }));
-    await supabaseRest('/nec_pledges_cache?on_conflict=pledge_key', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify(rows),
-    });
-  } catch {}
-}
+// NEC 공약 캐시 저장 — 2026-09-24 중단(no-op).
+// 캐시는 화면에 그대로 읽혀 나가는데(loadPledgesCached) 쓰기가 공개 키로 열려 있어,
+// 누구나 후보의 공약 문구를 바꿔 이 사이트에 띄울 수 있었다. 정치 데이터 사이트에서 가장 위험한 구멍.
+// 브라우저 쓰기를 끊고, 캐시 미스는 공식 출처(/api/nec → 중앙선관위)로 바로 간다. 기존 캐시 행은 읽기 전용으로 유지.
+async function cachePledges(sgId, huboid, pledges) { /* intentionally disabled */ }
 
 async function syncStanceToServer(politicianId, politicianName, stance) {
   const userId = getOrCreateAnonUserId();
@@ -12812,45 +12771,25 @@ const SOCIAL_VOTE_LABELS = {
   topic:      { support: '✅ 찬성', oppose: '❌ 반대' },
 };
 
+// 찬반 투표 — vote가 null이면 내 표 취소. RPC가 (대상, 내 user_id) 한 행만 건드린다.
 async function submitSocialVote(targetType, targetId, label, vote, meta) {
-  const userId = getOrCreateAnonUserId();
-  if (!vote) {
-    // 투표 제거
-    return supabaseRest(
-      `/social_votes?user_id=eq.${encodeURIComponent(userId)}&target_type=eq.${encodeURIComponent(targetType)}&target_id=eq.${encodeURIComponent(targetId)}`,
-      { method: 'DELETE' }
-    );
-  }
-  return supabaseRest('/social_votes?on_conflict=target_type,target_id,user_id', {
-    method: 'POST',
-    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify([{
-      target_type: targetType,
-      target_id: targetId,
-      target_label: (label || '').slice(0, 200),
-      meta: meta || null,
-      user_id: userId,
-      vote: vote,
-    }]),
+  return supabaseRpc('social_vote_cast', {
+    p_target_type: targetType,
+    p_target_id: String(targetId),
+    p_label: (label || '').slice(0, 200),
+    p_meta: meta || null,
+    p_user_id: getOrCreateAnonUserId(),
+    p_vote: vote || null,
   });
 }
 
 async function loadSocialVotes(targetType, targetId) {
   try {
-    const data = await supabaseRest(
-      `/social_votes?target_type=eq.${encodeURIComponent(targetType)}&target_id=eq.${encodeURIComponent(targetId)}&select=vote,user_id`
-    );
-    const counts = { support: 0, oppose: 0 };
-    for (const v of (data || [])) {
-      if (counts[v.vote] !== undefined) counts[v.vote]++;
-    }
-    const userId = getOrCreateAnonUserId();
-    const my = (data || []).find(v => v.user_id === userId);
-    return {
-      counts,
-      total: counts.support + counts.oppose,
-      myVote: my?.vote || null,
-    };
+    const r = await supabaseRpc('social_vote_summary', {
+      p_target_type: targetType, p_target_id: String(targetId), p_user_id: getOrCreateAnonUserId(),
+    }) || {};
+    const counts = { support: Number(r.support) || 0, oppose: Number(r.oppose) || 0 };
+    return { counts, total: counts.support + counts.oppose, myVote: r.my || null };
   } catch {
     return { counts: { support: 0, oppose: 0 }, total: 0, myVote: null };
   }
@@ -12931,13 +12870,8 @@ async function setupSocialVote(targetType, targetId, label, meta) {
 
 // 평점 결과 집계
 async function loadRating(pledgeKey) {
-  const data = await supabaseRest(`/pledge_ratings?pledge_key=eq.${encodeURIComponent(pledgeKey)}&select=rating,user_id`);
-  const total = (data || []).length;
-  const sum = (data || []).reduce((s, r) => s + (r.rating || 0), 0);
-  const avg = total > 0 ? sum / total : 0;
-  const userId = getOrCreateAnonUserId();
-  const my = (data || []).find(r => r.user_id === userId);
-  return { avg, total, myRating: my?.rating || null };
+  const r = await supabaseRpc('rating_summary', { p_pledge_key: pledgeKey, p_user_id: getOrCreateAnonUserId() }) || {};
+  return { avg: Number(r.avg) || 0, total: Number(r.total) || 0, myRating: r.my || null };
 }
 
 // NEC API — Vercel Serverless Function 내장 (/api/nec)
@@ -17601,6 +17535,12 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.91', date: '2026-09-24', title: '🔒 데이터베이스 공개 접근 차단', items: [
+    "외부 보안 스캐너에서 '공개 키로 데이터베이스를 로그인 없이 읽을 수 있다'는 메일이 왔다. 직접 재현해 보니 사실이었다. 사이트가 모든 방문자에게 보내는 공개 키만으로 8개 테이블 전부를 통째로 읽을 수 있었다. 보안 기능(RLS) 자체는 켜져 있었지만 규칙이 전부 '누구나 허용'이라 잠금이 없는 것과 같았고, Supabase 자체 보안 점검에서도 경고 0건으로 나와 드러나지 않았다.",
+    "메일이 말하지 않은 더 큰 문제는 쓰기였다. 누구나 남의 찬반 투표를 일괄 삭제·수정할 수 있었고, 특히 후보 공약 캐시는 화면에 그대로 읽혀 나가는데 쓰기가 열려 있어 누구든 후보의 공약 문구를 바꿔 이 사이트에 띄울 수 있었다. 확인해 보니 캐시 35건·후보 6건·투표 11건 모두 조작 흔적은 없었다.",
+    "투표·평점·찬반·조회수는 이제 테이블을 직접 다루지 않고 좁은 전용 함수로만 처리한다. 이 함수는 합계와 '내 표'만 돌려주고 다른 방문자의 식별값은 내주지 않으며, 쓰기는 자기 표 한 건만 바꿀 수 있다. 브라우저가 후보·공약 캐시를 채우던 경로는 끊었다 — 캐시에 없으면 중앙선관위 공식 출처에서 바로 가져온다.",
+    "사용자에게 보이는 기능은 그대로다(인기 순위·조회수·찬반 투표·공약 평가). 프런트가 다시 테이블을 직접 읽으면 검사에서 오류가 나도록 막아 두었다."
+  ]},
   { v: 'V31.90', date: '2026-09-21', title: '🔍 홈이 검색엔진에 보여주던 글 자동 생성 + 언어 표기', items: [
     "검색엔진이 홈에서 보는 글이 낡아 있었다. 홈은 자바스크립트로 그리는 화면이라, 크롤러와 애드센스 심사가 실제로 읽는 건 <noscript> 안의 글 하나뿐인데 그게 손으로 써 둔 고정 텍스트였다. 확인해 보니 환율 1,530원(실제 1,368원), 코스피 9,000pt(실제 6,718), 코스닥 960pt(실제 816), 가계부채 91.2%(실제 97.2%), 사이트맵 275건(실제 5,219건) — 가장 중요한 페이지의 유일한 본문이 가장 낡아 있었다.",
     "이제 이 글을 매일 실제 데이터에서 다시 만든다. 곧 시행되는 법령 10건, 최근 기사 12편, 경제 지표 9종, 국회·인물·선거 요약이 자동으로 들어간다. 분량도 706단어에서 1,399단어로 늘었다.",
