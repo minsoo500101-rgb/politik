@@ -11097,7 +11097,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.91</a>
+      <a href="/changelog" id="foot-year">V31.92</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -12665,6 +12665,20 @@ function logPageView(pageType, pageId) {
     return;
   }
   if (!['politician', 'bill', 'candidate', 'pledge', 'topic'].includes(pageType)) return;
+  // 2026-09-24 — 같은 탭에서 같은 페이지는 30분에 한 번만 기록한다.
+  // 인물 상세 라우트는 데이터 로딩 단계마다 다시 실행돼 한 번 방문에 3~6건씩 쌓였다
+  // (실측: 한 방문이 같은 초에 6건). 홈 인기 순위와 조회수가 그만큼 부풀려져 있었다.
+  // sessionStorage 라 새로고침으로도 다시 세지 않는다.
+  const _pvKey = 'pv:' + pageType + ':' + pageId;
+  try {
+    const last = Number(sessionStorage.getItem(_pvKey) || 0);
+    if (Date.now() - last < 30 * 60 * 1000) return;
+    sessionStorage.setItem(_pvKey, String(Date.now()));
+  } catch { /* 저장소 차단 환경 — 메모리로 대체 */
+    window._pvSeen = window._pvSeen || {};
+    if (window._pvSeen[_pvKey]) return;
+    window._pvSeen[_pvKey] = 1;
+  }
   const userId = getOrCreateAnonUserId();
   // 비동기 + silent fail (분석용이라 실패해도 UX 영향 없음)
   supabaseRest('/page_views', {
@@ -17535,6 +17549,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.92', date: '2026-09-24', title: '📊 조회수 중복 기록 수정', items: [
+    "조회 기록이 한 번 방문에 3~6건씩 중복으로 쌓이고 있었다. 인물 상세 화면이 데이터를 불러오는 단계마다 다시 그려지면서 그때마다 조회를 기록했기 때문이다. 누적 기록 1,998건을 중복 제거하면 실제 방문은 약 690건으로, 2.9배 부풀려져 있었다. 홈의 '많이 본 인물' 순위도 이 부풀린 값으로 매겨지고 있었다.",
+    "이제 같은 탭에서 같은 페이지는 30분에 한 번만 기록한다. 새로고침해도 다시 세지 않는다. 고유 방문자 수는 원래부터 중복의 영향을 받지 않아 그대로 정확하다."
+  ]},
   { v: 'V31.91', date: '2026-09-24', title: '🔒 데이터베이스 공개 접근 차단', items: [
     "외부 보안 스캐너에서 '공개 키로 데이터베이스를 로그인 없이 읽을 수 있다'는 메일이 왔다. 직접 재현해 보니 사실이었다. 사이트가 모든 방문자에게 보내는 공개 키만으로 8개 테이블 전부를 통째로 읽을 수 있었다. 보안 기능(RLS) 자체는 켜져 있었지만 규칙이 전부 '누구나 허용'이라 잠금이 없는 것과 같았고, Supabase 자체 보안 점검에서도 경고 0건으로 나와 드러나지 않았다.",
     "메일이 말하지 않은 더 큰 문제는 쓰기였다. 누구나 남의 찬반 투표를 일괄 삭제·수정할 수 있었고, 특히 후보 공약 캐시는 화면에 그대로 읽혀 나가는데 쓰기가 열려 있어 누구든 후보의 공약 문구를 바꿔 이 사이트에 띄울 수 있었다. 확인해 보니 캐시 35건·후보 6건·투표 11건 모두 조작 흔적은 없었다.",
