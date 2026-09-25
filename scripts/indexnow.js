@@ -107,7 +107,15 @@ async function waitLive(url) {
     urls = kept.map(fileToUrl);
   }
   if (sitemap !== null && !changed && !since) urls = urlsFromSitemap(sitemap || 'sitemap.xml');
-  urls.push(...args.filter((a) => !a.startsWith('--')).map((p) => (p.startsWith('http') ? p : `https://${HOST}${p.startsWith('/') ? p : '/' + p}`)));
+  // ⚠ Windows Git Bash 는 '/law-radar.html' 같은 인자를 'D:/Git/law-radar.html' 로 바꿔 넘긴다(MSYS 경로 변환).
+  //    그대로 쓰면 https://patchkr.com/D:/Git/... 같은 엉터리 주소가 검색엔진에 간다 — 드라이브 문자로 시작하면 거부.
+  for (const p of args.filter((a) => !a.startsWith('--'))) {
+    if (/^[A-Za-z]:[\\/]/.test(p)) {
+      console.log(`⚠️ '${p}' 는 셸이 바꾼 경로로 보여 건너뜀 — 'law-radar.html' 처럼 앞 슬래시 없이 쓰거나 MSYS_NO_PATHCONV=1`);
+      continue;
+    }
+    urls.push(p.startsWith('http') ? p : `https://${HOST}${p.startsWith('/') ? p : '/' + p}`);
+  }
   urls = [...new Set(urls)];
 
   if (!urls.length) { console.log('통지할 URL 없음'); return; }
@@ -117,8 +125,12 @@ async function waitLive(url) {
   if (DRY) { console.log('(dry) 전송하지 않음'); return; }
 
   if (WAIT) {
-    const ok = await waitLive(urls[0]);
-    console.log(ok ? '배포 반영 확인' : '⚠️ 4분 안에 확인 못 함 — 그래도 전송');
+    // 키 파일이 먼저 떠 있어야 한다 — 첫 배포 때 키 파일보다 통지가 먼저 가서 네이버가 422(Invalid urls)로 거절했다.
+    // 또 이미 떠 있는 주소(홈 등)는 옛 배포에서도 200 이라, 새 기사처럼 '없던 주소'를 기준으로 기다리는 게 정확하다.
+    const keyOk = await waitLive(`https://${HOST}/${KEY}.txt`);
+    const probe = urls.find((u) => !/\/$|\/index\.html$/.test(u)) || urls[0];
+    const ok = keyOk && await waitLive(probe);
+    console.log(ok ? '배포 반영 확인(키 파일·대상 주소)' : '⚠️ 4분 안에 확인 못 함 — 그래도 전송');
   }
 
   let failed = 0;

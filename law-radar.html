@@ -302,7 +302,9 @@ document.addEventListener('click', function (e) {
 // 데스크톱은 링크 복사가 가장 빠르다.
 (function shareInit() {
   var url = 'https://patchkr.com/law-radar.html';
-  var text = '공포는 끝났고 시행일만 남은 법령 646건 - 내 업무에 걸리는 것만 골라 보기';
+  // 건수는 빌드가 매일 주입하는 '전체' 칩에서 읽는다 — 문구에 숫자를 박아 두면 데이터만 갱신되고 공유 문구는 낡는다(646건으로 굳어 있었다).
+  var c = document.querySelector('.chip[aria-pressed="true"] .c');
+  var text = '공포는 끝났고 시행일만 남은 법령 ' + (c ? c.textContent + '건' : '') + ' - 내 업무에 걸리는 것만 골라 보기';
   var x = document.getElementById('shX');
   if (x) x.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
 
