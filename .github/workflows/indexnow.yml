@@ -1,0 +1,53 @@
+name: IndexNow
+# 새 기사·바뀐 페이지를 네이버·빙(IndexNow)에 즉시 통지한다. scripts/indexnow.js 참고.
+#
+# 두 경로가 필요한 이유: GitHub 기본 토큰(GITHUB_TOKEN)으로 한 푸시는 다른 워크플로를 트리거하지 않는다.
+#  - push: 사람이 올린 커밋(기사 발행 등) — 배포 반영을 기다렸다가 바로 통지
+#  - schedule: 크론 봇이 만든 페이지(법령 페이지·곧 시행 레이더·홈 본문) — 모든 크론이 끝난 뒤 하루치를 모아서
+on:
+  push:
+    branches: [main]
+    paths: ['**.html']
+  schedule:
+    - cron: '30 1 * * *'   # 매일 10:30 KST — law-singu(06:00)·build-static(06:30)·daily-sync(09:00) 이후
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'changed(직전 커밋) | sitemap(sitemap.xml 전체, 최초 1회용)'
+        required: false
+        default: 'changed'
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 푸시된 변경분 통지
+        if: github.event_name == 'push'
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then BEFORE="HEAD~1"; fi
+          node scripts/indexnow.js --changed="$BEFORE..${{ github.sha }}" --wait
+
+      - name: 크론 봇 변경분 통지 (최근 26시간)
+        if: github.event_name == 'schedule'
+        run: node scripts/indexnow.js --since="26 hours ago"
+
+      - name: 수동 실행
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "sitemap" ]; then
+            node scripts/indexnow.js --sitemap
+          else
+            node scripts/indexnow.js --changed=HEAD~1..HEAD
+          fi

@@ -47,6 +47,11 @@ jobs:
       - name: V28.0 — llms.txt/llms-full.txt 자동 동기화
         run: node scripts/update-llms.js
 
+      # AI 답변엔진(GEO)용 '지금 수치' 블록 — 기준일이 붙은 라이브 수치·답할 수 있는 질문·영어 요약·인용 방법.
+      # 손으로 적은 숫자가 낡아 AI가 틀린 값을 인용하던 문제(법안 1,595 → 실제 1,847)를 막는다.
+      - name: llms 라이브 블록 생성 (GEO)
+        run: node scripts/build-llms-live.js || echo "::warning::build-llms-live.js 실패"
+
       - name: V28.0 — 사이트 표기 ↔ 실제 데이터 검증
         run: node scripts/verify-counts.js || echo "::warning::verify-counts.js 발견된 stale 있음 (수동 확인)"
 
@@ -86,6 +91,11 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/politicians.json data/assembly-22.json index.html llms.txt llms-full.txt
           git commit -m "chore(data): 국회 명부·위키 career 보충 + llms 동기화 (cron) — v${NEW_VER}"
+          # 세 번 다 실패하면 스텝을 실패시킨다 — 예전 루프는 마지막 sleep 이 성공이라 실패를 삼켰다
+          # (law-singu 가 9/19~9/25 매일 푸시 실패했는데 전부 초록불이었다).
+          PUSHED=0
           for i in 1 2 3; do
-            git pull --rebase --autostash origin main && git push && break || (echo "재시도 $i"; sleep 5)
+            if git pull --rebase --autostash origin main && git push; then PUSHED=1; break; fi
+            echo "재시도 $i"; sleep 5
           done
+          if [ "$PUSHED" != "1" ]; then echo "::error::git push 3회 실패 — 이 실행의 커밋은 반영되지 않았다"; exit 1; fi

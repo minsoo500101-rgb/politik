@@ -51,27 +51,41 @@ function fetchJson(url) {
 
   const fmt = total.toLocaleString('en-US');           // 1,847
   const plain = String(total);                          // 1847
-  let h = fs.readFileSync(HTML, 'utf8');
-
-  // 현재 박혀 있는 숫자 — "법안 N,NNN건" / "N,NNN</div><div class=\"about-stat-l\">22대 통과 법안"
-  const cur = (h.match(/22대 (?:국회 )?(?:통과 )?법안 ([\d,]+)건/) || [])[1]
-           || (h.match(/about-stat-n">([\d,]+)<\/div><div class="about-stat-l">22대 통과 법안/) || [])[1];
-
   console.log(`국회 OPEN API 실측 : ${fmt}건 (22대 본회의 처리 의안)`);
-  console.log(`index.html 표기     : ${cur || '(없음)'}`);
 
-  if (cur === fmt) { console.log('✅ 이미 일치'); return; }
-  if (!WRITE) { console.log('\n(dry-run) 반영하려면 --write'); return; }
+  // ⚠ 문맥이 고정된 자리만 바꾼다. 예전엔 파일 전체에서 옛 숫자를 찾아 바꿨는데, 그러면 변경이력(CHANGELOG)에
+  //   "화면 1,847건 vs 표기 1,595건" 처럼 과거를 기록한 문장까지 다음 갱신 때 덮어쓰게 된다.
+  //   llms.txt·llms-full.txt 도 같은 숫자를 들고 있어 AI 답변엔진이 옛 값(1,595)을 인용하고 있었다 → 함께 맞춘다.
+  const RULES = [
+    [/(22대 (?:국회 )?(?:통과 )?법안 )([\d,]+)(건)/g, fmt],
+    [/(본회의 처리 의안 )([\d,]+)(건)/g, fmt],
+    [/(about-stat-n">)([\d,]+)(<\/div><div class="about-stat-l">22대 통과 법안)/g, fmt],
+    [/(, )(\d{3,5})(건 법안)/g, plain],                         // <meta keywords> 의 "1595건 법안"
+  ];
+  const FILES = ['index.html', 'llms.txt', 'llms-full.txt'];
+  let changedAny = false;
 
-  const before = h;
-  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  if (cur) {
-    h = h.split(esc(cur).replace(/\\/g, '')).join(fmt);      // "1,595" → "1,847"
-    h = h.split(cur.replace(/,/g, '')).join(plain);          // keywords 의 "1595건 법안"
+  for (const f of FILES) {
+    const p = path.join(ROOT, f);
+    if (!fs.existsSync(p)) continue;
+    let t = fs.readFileSync(p, 'utf8');
+    // index.html 의 변경이력 배열은 건드리지 않는다(과거 기록)
+    let head = t, cl = '', tail = '';
+    const s = t.indexOf('const CHANGELOG = [');
+    if (s >= 0) {
+      const m = /\r?\n\];\r?\n/.exec(t.slice(s));
+      if (m) { head = t.slice(0, s); cl = t.slice(s, s + m.index); tail = t.slice(s + m.index); }
+    }
+    const seen = new Set();
+    const apply = (x) => RULES.reduce((acc, [re, val]) =>
+      acc.replace(re, (all, a, n, b) => { if (n !== val) seen.add(n); return a + val + b; }), x);
+    const next = apply(head) + cl + (tail ? apply(tail) : '');
+    const stale = [...seen].filter((n) => n !== fmt && n !== plain);
+    console.log(`${f.padEnd(16)} 표기 ${stale.length ? stale.join('·') + ' → ' + fmt : fmt + ' (일치)'}`);
+    if (next !== t && WRITE) { fs.writeFileSync(p, next, 'utf8'); changedAny = true; }
+    else if (next !== t) changedAny = true;
   }
-  if (h === before) { console.log('⚠️  치환 대상을 찾지 못했습니다.'); return; }
-
-  fs.writeFileSync(HTML, h, 'utf8');
-  const n = (before.match(new RegExp(esc(cur), 'g')) || []).length;
-  console.log(`✅ index.html ${n}곳 갱신 — ${cur} → ${fmt}`);
+  if (!changedAny) { console.log('✅ 모두 일치'); return; }
+  if (!WRITE) { console.log('\n(dry-run) 반영하려면 --write'); return; }
+  console.log('✅ 갱신 완료');
 })().catch((e) => { console.error('❌', e.message); process.exit(1); });

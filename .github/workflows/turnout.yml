@@ -57,6 +57,11 @@ jobs:
           git add data/turnout-fallback.json
           if git diff --cached --quiet; then echo "변경 없음 — 종료"; exit 0; fi
           git commit -m "data: 본투표율 자동 갱신 (NEC headless) $(TZ=Asia/Seoul date '+%m/%d %H:%M' 2>/dev/null || date -u '+%m/%dT%H:%MZ')"
+          # 세 번 다 실패하면 스텝을 실패시킨다 — 예전 루프는 마지막 sleep 이 성공이라 실패를 삼켰다
+          # (law-singu 가 9/19~9/25 매일 푸시 실패했는데 전부 초록불이었다).
+          PUSHED=0
           for i in 1 2 3; do
-            git pull --rebase --autostash origin main && git push && break || (echo "재시도 $i"; sleep 5)
+            if git pull --rebase --autostash origin main && git push; then PUSHED=1; break; fi
+            echo "재시도 $i"; sleep 5
           done
+          if [ "$PUSHED" != "1" ]; then echo "::error::git push 3회 실패 — 이 실행의 커밋은 반영되지 않았다"; exit 1; fi

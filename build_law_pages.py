@@ -56,12 +56,22 @@ def changed_articles(body):
         out.append({"title": g["title"], "old": old_txt, "new": new_txt})
     return out
 
+# ── 얇은 페이지 기준 ──────────────────────────────────────────────
+# 바뀐 조문이 1개뿐이고 개정 전·후 본문을 합쳐 THIN_CHARS 자 미만이면 색인에서 뺀다(noindex,follow)·사이트맵 제외.
+# 대부분 인용 법률명만 바뀐 한 문장짜리 정비 개정이다(예: 「주택법」→「공동주택관리법」).
+# 이유: 새 사이트는 구글 수집량 자체가 적다(같은 사업자 Clinch 실측: 30일 495건). 5천 개 가까운 템플릿 페이지 중
+#       내용이 한 문장뿐인 것들이 그 적은 수집량을 먹고, 애드센스의 사이트 단위 "가치 낮은 콘텐츠" 판정에도 불리하다.
+#       페이지는 지우지 않는다 — 링크는 살아 있고(follow) 사람이 들어오면 그대로 본다.
+THIN_CHARS = 300
+
 TEMPLATE = """<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{base}/law/{slug}.html">
-<meta name="robots" content="index,follow">
+<meta name="robots" content="{robots}">
+<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968" crossorigin="anonymous"></script>
 <meta property="og:type" content="article"><meta property="og:title" content="{ogtitle}">
 <meta property="og:description" content="{desc}"><meta property="og:url" content="{base}/law/{slug}.html">
 <meta property="og:image" content="{base}/og-image.png"><meta property="og:site_name" content="대한민국 패치노트">
@@ -101,7 +111,7 @@ def main():
         if e.get("name"):
             by_name[e["name"]].append(e)
 
-    urls, gen, skip = [], 0, 0
+    urls, gen, skip, thin_n = [], 0, 0, 0
     for name, ams in by_name.items():
         ams.sort(key=lambda x: str(x.get("ef") or ""), reverse=True)
         main_am, arts = None, []
@@ -151,13 +161,18 @@ def main():
             "isBasedOn": "법제처 국가법령정보 (신구조문대비표)", "description": desc,
             "mainEntityOfPage": f"{BASE}/law/{slug}.html",
         }, ensure_ascii=False)
+        thin = len(arts) == 1 and sum(len(a["old"]) + len(a["new"]) for a in arts) < THIN_CHARS
         pageHtml = TEMPLATE.format(
+            robots="noindex,follow" if thin else "index,follow",
             title=esc(title), desc=esc(desc), ogtitle=esc(f"{name} 신구조문대비표 — {fmt_date(main_am['ef'])} 시행 개정"),
             slug=slug, base=BASE, ld=ld, h1name=esc(name), kind=esc(main_am.get("kind")),
             ef=esc(fmt_date(main_am.get("ef"))), pub=esc(fmt_date(main_am.get("pub"))), pubno=esc(main_am.get("pubNo")),
             rev=esc(main_am.get("rev")), lead=lead, arts=arts_html, others=others_html)
         (OUT / f"{slug}.html").write_text(pageHtml, encoding="utf-8")
-        urls.append((slug, iso_date(main_am.get("ef"))))
+        if thin:
+            thin_n += 1
+        else:
+            urls.append((slug, iso_date(main_am.get("ef"))))
         gen += 1
 
     # sitemap-law.xml
@@ -171,6 +186,7 @@ def main():
     sm.append("</urlset>")
     Path("sitemap-law.xml").write_text("\n".join(sm), encoding="utf-8")
     print(f"[law SEO] 생성 {gen}개 / 스킵(본문 없음·전부개정·별표) {skip} / 고유 법령명 {len(by_name)}")
+    print(f"[law SEO] 얇은 페이지 noindex·사이트맵 제외 {thin_n}개 (변경 조문 1개·{THIN_CHARS}자 미만)")
     print(f"[law SEO] sitemap-law.xml - {len(urls)} URL")
 
 if __name__ == "__main__":

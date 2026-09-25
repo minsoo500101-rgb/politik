@@ -131,6 +131,20 @@ try {
   warn('robots.txt 검사 실패: ' + e.message);
 }
 
+// IndexNow 키 — scripts/indexnow.js 의 KEY 와 루트 <KEY>.txt 내용이 같아야 네이버·빙이 소유 확인을 통과한다.
+// 키 파일을 지우거나 키만 바꾸면 통지가 조용히 전부 거절된다.
+try {
+  const src = fs.readFileSync(path.join(ROOT, 'scripts/indexnow.js'), 'utf8');
+  const key = (src.match(/const KEY = '([0-9a-f]{32})'/) || [])[1];
+  const kf = key && path.join(ROOT, key + '.txt');
+  if (!key) err('scripts/indexnow.js 에서 IndexNow KEY 를 찾지 못함');
+  else if (!fs.existsSync(kf)) err(`IndexNow 키 파일 ${key}.txt 가 루트에 없음 — 통지가 전부 거절된다`);
+  else if (fs.readFileSync(kf, 'utf8').trim() !== key) err(`IndexNow 키 파일 내용이 KEY 와 다름`);
+  else ok('IndexNow 키 파일 일치');
+} catch (e) {
+  warn('IndexNow 검사 실패: ' + e.message);
+}
+
 // 홈의 법안 건수 표기 일관성. <title>·og·소개 카드가 서로 다른 숫자를 말하면
 // 부분 갱신이 일어난 것이다. 실제 값과의 대조는 scripts/sync-bill-count.js(네트워크)가 맡는다.
 try {
