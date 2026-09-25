@@ -86,11 +86,15 @@ async function waitLive(url) {
 (async () => {
   let files = [];
   let urls = [];
+  let added = [];   // 이번 범위에서 새로 생긴 파일 — 배포 대기의 기준으로 쓴다
   const changed = flag('changed');
   const since = flag('since');
   const sitemap = flag('sitemap');
 
-  if (changed) files = htmlFromGit(`git diff --name-only ${changed}`);
+  if (changed) {
+    files = htmlFromGit(`git diff --name-only ${changed}`);
+    added = htmlFromGit(`git diff --name-only --diff-filter=A ${changed}`);
+  }
   else if (since) files = htmlFromGit(`git log --since="${since}" --name-only --pretty=format:`);
   // 템플릿 일괄 재생성(예: 법령 페이지 4,877개에 광고 코드 추가)은 내용 변경이 아니다.
   // 한 번에 수백 개가 바뀌면 법령 페이지는 통지하지 않는다 — 대량 재전송은 스팸 신호가 된다.
@@ -126,9 +130,12 @@ async function waitLive(url) {
 
   if (WAIT) {
     // 키 파일이 먼저 떠 있어야 한다 — 첫 배포 때 키 파일보다 통지가 먼저 가서 네이버가 422(Invalid urls)로 거절했다.
-    // 또 이미 떠 있는 주소(홈 등)는 옛 배포에서도 200 이라, 새 기사처럼 '없던 주소'를 기준으로 기다리는 게 정확하다.
+    // 또 이미 떠 있는 주소(홈·analysis.html 등)는 옛 배포에서도 200 이라 기다린 셈이 안 된다(V31.94 첫 실행에서 확인).
+    // 이번에 새로 생긴 파일이 있으면 그 주소가 200 이 될 때까지 기다린다 — 그게 '새 배포가 떴다'는 확실한 신호다.
     const keyOk = await waitLive(`https://${HOST}/${KEY}.txt`);
-    const probe = urls.find((u) => !/\/$|\/index\.html$/.test(u)) || urls[0];
+    const addedUrls = added.filter(isIndexable).map(fileToUrl);
+    const probe = addedUrls[0] || urls.find((u) => !/\/$|\/index\.html$/.test(u)) || urls[0];
+    console.log(`배포 대기 기준: ${decodeURIComponent(probe)}${addedUrls.length ? ' (새 파일)' : ' (기존 주소 — 새 파일 없음)'}`);
     const ok = keyOk && await waitLive(probe);
     console.log(ok ? '배포 반영 확인(키 파일·대상 주소)' : '⚠️ 4분 안에 확인 못 함 — 그래도 전송');
   }

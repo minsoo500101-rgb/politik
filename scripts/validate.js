@@ -238,7 +238,10 @@ try {
     if (!/rel="canonical"/.test(h)) { err(`${f}: canonical 없음`); bad++; }
     if (!/adsbygoogle/.test(h)) { err(`${f}: 애드센스 로더 없음`); bad++; }
     if (!/trend-polish/.test(h)) { warn(`${f}: 트렌드 폴리시 CSS 없음`); }
-    const by = (h.match(/<div class="byline">([^<]*)/) || [])[1] || '';
+    // 머리글만 있고 데이터 행이 없는 표 — V31.94 기사 5편이 이 상태로 배포됐다(생성기가 형식 안 맞는 행을 조용히 버림).
+    const emptyTables = [...h.matchAll(/<table>([\s\S]*?)<\/table>/g)].filter(m => !/<td[\s>]/.test(m[1])).length;
+    if (emptyTables) { err(`${f}: 데이터 행 없는 표 ${emptyTables}개`); bad++; }
+    const by =(h.match(/<div class="byline">([^<]*)/) || [])[1] || '';
     const d = by.match(/(20\d\d)년\s*(\d{1,2})월\s*(\d{1,2})일/);
     if (d && first.datePublished) {
       const bd = `${d[1]}-${String(d[2]).padStart(2, '0')}-${String(d[3]).padStart(2, '0')}`;

@@ -66,23 +66,31 @@ function houseAd(kind, en) {
 </a>`;
 }
 
-function renderTable(lines) {
+function renderTable(lines, en) {
   const head = lines[0].replace(/^(표|Table):\s*/i, '').split('|').map((s) => s.trim());
-  const rows = lines.slice(1).filter((l) => /^(행|Row)\s*\d+\s*:/i.test(l))
-    .map((l) => l.replace(/^(행|Row)\s*\d+\s*:\s*/i, '').split('|').map((s) => s.trim()));
+  // 행 형식 두 가지: "행1: a | b | c" 또는 "a: b | c"(첫 칸 뒤 콜론). V31.94에서 두 번째 형식을 버리는 바람에
+  // 기사 5편의 표가 머리글만 남은 채 배포됐다 — 이제 형식이 안 맞는 행은 조용히 버리지 않고 빌드를 멈춘다.
+  const rows = lines.slice(1).map((l) => {
+    if (/^(행|Row)\s*\d+\s*:/i.test(l)) return l.replace(/^(행|Row)\s*\d+\s*:\s*/i, '').split('|').map((s) => s.trim());
+    const cells = l.split('|').map((s) => s.trim());
+    if (cells.length === head.length) return cells;
+    const m = cells[0].match(/^(.+?):\s+(.*)$/) || cells[0].match(/^(.+?):(.*)$/);
+    if (m && cells.length === head.length - 1) return [m[1].trim(), m[2].trim(), ...cells.slice(1)];
+    throw new Error(`표 행 형식 오류(머리글 ${head.length}칸): ${l.slice(0, 80)}`);
+  });
   const numeric = (c) => /^[\d,.\-+%]+$|억|조|명$|일$|%$/.test(c);
   const table = `<table>\n<tr>${head.map((h) => `<th>${inline(h)}</th>`).join('')}</tr>\n` +
     rows.map((r) => `<tr>${r.map((c, i) => `<td${i > 0 && numeric(c) ? ' class="r"' : ''}>${inline(c)}</td>`).join('')}</tr>`).join('\n') +
     '\n</table>';
-  return head.length > 4 ? `<div class="tw">${table}</div>\n<p class="twn">↔ 좌우로 밀어서 보세요.</p>` : table;
+  return head.length > 4 ? `<div class="tw">${table}</div>\n<p class="twn">${en ? '↔ Swipe sideways to see the full table.' : '↔ 좌우로 밀어서 보세요.'}</p>` : table;
 }
 
-function renderContent(content) {
+function renderContent(content, en) {
   const out = [];
   for (const block of String(content).split(/\n\s*\n/)) {
     const lines = block.split('\n').map((s) => s.trim()).filter(Boolean);
     if (!lines.length) continue;
-    if (/^(표|Table):/i.test(lines[0])) { out.push(renderTable(lines)); continue; }
+    if (/^(표|Table):/i.test(lines[0])) { out.push(renderTable(lines, en)); continue; }
     if (/^(타임라인|Timeline):/i.test(lines[0])) {
       const steps = lines.join(' ').replace(/^(타임라인|Timeline):\s*/i, '').split('→').map((s) => s.trim()).filter(Boolean);
       out.push(`<ul class="tl2">${steps.map((s) => `<li>${inline(s)}</li>`).join('')}</ul>`);
@@ -130,7 +138,7 @@ function page(a) {
     mainEntity: a.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
   } : null;
 
-  const secs = a.sections.map((s) => `<h2>${inline(s.h2)}</h2>\n${renderContent(s.content)}`);
+  const secs = a.sections.map((s) => `<h2>${inline(s.h2)}</h2>\n${renderContent(s.content, en)}`);
   const mid = Math.max(1, Math.floor(secs.length / 2));
   const ad = en ? houseAd('clinchEn', true) : houseAd(adIdx++ % 2 === 0 ? 'momento' : 'clinch', false);
   const body = [...secs.slice(0, mid), ad, ...secs.slice(mid)].join('\n\n');
@@ -165,6 +173,7 @@ ${cav.map((c) => `<li style="margin:6px 0">${inline(c)}</li>`).join('\n')}
 <meta property="og:description" content="${esc(desc.slice(0, 180))}">
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${BASE}/og-image.png?v=2"><meta property="og:site_name" content="${en ? 'Korea Patch Notes' : '대한민국 패치노트'}">
+<meta property="og:locale" content="${en ? 'en_US' : 'ko_KR'}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968" crossorigin="anonymous"></script>
