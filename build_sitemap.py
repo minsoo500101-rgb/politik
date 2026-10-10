@@ -75,6 +75,7 @@ STATIC_PAGES = [
     {"path": "/dmz-frontline-2026.html",      "priority": "0.9", "freq": "weekly"},
     {"path": "/en",                           "priority": "0.85","freq": "weekly"},
     {"path": "/korea-martial-law-explained.html","priority": "0.9","freq": "weekly"},
+    {"path": "/north-korea-military-explained-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/yoon-suk-yeol-trials-verdict-tracker-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/south-korea-chip-exports-ai-boom-september-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/south-korea-birth-rate-rising-july-2026.html", "priority": "0.9", "freq": "weekly"},
