@@ -148,7 +148,11 @@ try {
 // 홈의 법안 건수 표기 일관성. <title>·og·소개 카드가 서로 다른 숫자를 말하면
 // 부분 갱신이 일어난 것이다. 실제 값과의 대조는 scripts/sync-bill-count.js(네트워크)가 맡는다.
 try {
-  const h = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  let h = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  // 변경이력(CHANGELOG)의 옛 숫자는 과거 기록이라 비교에서 뺀다 — sync-bill-count.js 도 그 구간은 안 바꾼다.
+  // 빼지 않으면 기록 속 '1,847건'이 남아 daily-sync 가 매일 실패한다(2026-10-03~10 실제 발생).
+  const cs = h.indexOf('const CHANGELOG = [');
+  if (cs >= 0) { const m = /\r?\n\];\r?\n/.exec(h.slice(cs)); if (m) h = h.slice(0, cs) + h.slice(cs + m.index); }
   const nums = new Set([...h.matchAll(/22대 (?:국회 )?(?:통과 )?법안 ([\d,]+)건/g)].map(m => m[1]));
   const card = (h.match(/about-stat-n">([\d,]+)<\/div><div class="about-stat-l">22대 통과 법안/) || [])[1];
   if (card) nums.add(card);

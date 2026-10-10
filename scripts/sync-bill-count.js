@@ -59,6 +59,7 @@ function fetchJson(url) {
   const RULES = [
     [/(22대 (?:국회 )?(?:통과 )?법안 )([\d,]+)(건)/g, fmt],
     [/(본회의 처리 의안 )([\d,]+)(건)/g, fmt],
+    [/(본회의 통과 법안 )([\d,]+)(건)/g, fmt],                // 법안 화면 로딩 문구·route desc
     [/(about-stat-n">)([\d,]+)(<\/div><div class="about-stat-l">22대 통과 법안)/g, fmt],
     [/(, )(\d{3,5})(건 법안)/g, plain],                         // <meta keywords> 의 "1595건 법안"
   ];
