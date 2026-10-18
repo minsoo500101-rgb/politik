@@ -22,6 +22,8 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_ARTICLE = 'chungmun-superweek-sep15-16-2026.html';   // 머리 스타일 기준 기사
 const BASE = 'https://patchkr.com';
+// 한국어 줄바꿈(UI 개편 0단계) — 원본 assets/ko-type.css
+const KO_TYPE_BLOCK = `<style id="ko-type">${fs.readFileSync(path.join(ROOT, 'assets/ko-type.css'), 'utf8').trim()}</style>`;
 
 const specPath = process.argv[2];
 const DRY = process.argv.includes('--dry');
@@ -34,7 +36,8 @@ const STYLE = TPL.match(/<style>\n([\s\S]*?)<\/style><script defer/)[1];
 const POLISH = TPL.match(/(<style id="trend-polish">[\s\S]*?<\/style>)/)[1];
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const inline = (s) => esc(s).replace(/&lt;b&gt;/g, '<b>').replace(/&lt;\/b&gt;/g, '</b>');
+const glue = (s) => s.replace(/(\d{1,2}월) (\d{1,2}일)/g, '<span class="nw">$1 $2</span>').replace(/(\d{1,2}시) (\d{1,2}분)/g, '<span class="nw">$1 $2</span>');
+const inline = (s) => glue(esc(s).replace(/&lt;b&gt;/g, '<b>').replace(/&lt;\/b&gt;/g, '</b>'));
 
 // ── 자체 서비스 광고(하우스 애드) — 기사당 정확히 1개, 섹션 사이에만, sponsored 표기 ──
 const ADS = {
@@ -181,7 +184,7 @@ ${cav.map((c) => `<li style="margin:6px 0">${inline(c)}</li>`).join('\n')}
 <script type="application/ld+json">${JSON.stringify(crumb)}</script>${faqLd ? `\n<script type="application/ld+json">${JSON.stringify(faqLd)}</script>` : ''}
 <script>try{var t=localStorage.getItem('politik:theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
 <style>
-${STYLE}</style><script defer src="/_vercel/insights/script.js"></script>${POLISH}
+${STYLE}</style><script defer src="/_vercel/insights/script.js"></script>${POLISH}${KO_TYPE_BLOCK}
 </head><body><div class="wrap">
 <div class="top"><a href="${en ? '/en' : '/'}">← ${en ? 'Korea Patch Notes' : '대한민국 패치노트'}</a><span><button class="tt" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('politik:theme',n)}catch(e){}})()">🌓</button></span></div>
 

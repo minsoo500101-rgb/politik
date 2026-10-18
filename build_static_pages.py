@@ -15,6 +15,9 @@
 """
 import json
 from pathlib import Path
+# 한국어 줄바꿈(UI 개편 0단계) — 원본은 assets/ko-type.css 하나, 모든 생성기가 같은 블록을 넣는다
+KO_TYPE_BLOCK = '<style id="ko-type">' + (Path(__file__).resolve().parent / "assets/ko-type.css").read_text(encoding="utf-8").strip() + "</style>"
+
 
 ROOT = Path(__file__).resolve().parent  # 저장소 루트 — CI(리눅스)에서도 동작하도록 절대경로 하드코딩 금지
 
@@ -161,7 +164,7 @@ li {{ margin-bottom: 8px; color: #374151; font-size: 14px; }}
 strong {{ color: #111827; }}
 </style>
 <script defer src="/_vercel/insights/script.js"></script><meta name="robots" content="noindex,follow">
-</head>
+{ko_type}</head>
 <body>
 <h1>{h1}</h1>
 <p class="lead">{desc}</p>
@@ -203,6 +206,7 @@ def build():
     for page in PAGES:
         content_html = "\n".join(f"  <li>{md_to_html(c)}</li>" for c in page["content"])
         html = TEMPLATE.format(
+            ko_type=KO_TYPE_BLOCK,
             title=page["title"],
             desc=page["desc"],
             h1=page["h1"],

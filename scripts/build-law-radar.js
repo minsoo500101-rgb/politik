@@ -15,6 +15,8 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
+// 한국어 줄바꿈(UI 개편 0단계) — 원본 assets/ko-type.css
+const KO_TYPE_BLOCK = `<style id="ko-type">${fs.readFileSync(path.join(ROOT, 'assets/ko-type.css'), 'utf8').trim()}</style>`;
 const IDX = path.join(ROOT, 'data/law/index.json');
 const BODY = path.join(ROOT, 'data/law/body');
 const OUT = path.join(ROOT, 'data/law/radar.json');
@@ -225,7 +227,7 @@ function buildDomainPages(items, byTag, today) {
 <script type="application/ld+json">${JSON.stringify(list)}</script>
 <script type="application/ld+json">${JSON.stringify(crumb)}</script>
 <script>try{var t=localStorage.getItem('politik:theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
-<style>${style}</style><script defer src="/_vercel/insights/script.js"></script>
+<style>${style}</style><script defer src="/_vercel/insights/script.js"></script>${KO_TYPE_BLOCK}
 </head><body><div class="wrap">
 <div class="top"><a href="/law-radar.html">← 곧 시행되는 법령</a><span><button class="tt" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('politik:theme',n)}catch(e){}})()">🌓</button></span></div>
 

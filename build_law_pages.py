@@ -12,6 +12,9 @@ data/law/index.json + data/law/body/<mst>.json → law/<slug>.html (법령당 1�
 """
 import json, re, html
 from pathlib import Path
+# 한국어 줄바꿈(UI 개편 0단계) — 원본은 assets/ko-type.css 하나, 모든 생성기가 같은 블록을 넣는다
+KO_TYPE_BLOCK = '<style id="ko-type">' + (Path(__file__).resolve().parent / "assets/ko-type.css").read_text(encoding="utf-8").strip() + "</style>"
+
 from collections import defaultdict
 
 BASE = "https://patchkr.com"
@@ -92,7 +95,7 @@ h1{{font-size:22px;margin:14px 0 4px;letter-spacing:-.4px}}
 .art .ov p{{margin:3px 0;color:var(--del)}}.art .nv p{{margin:3px 0;color:var(--ins)}}
 h2.sec{{font-size:16px;margin:22px 0 8px}}ul{{font-size:13.5px;color:var(--dim)}}
 footer{{margin-top:26px;font-size:11.5px;color:var(--dim);border-top:1px solid var(--bd);padding-top:10px}}
-</style></head><body><div class="wrap">
+</style>{ko_type}</head><body><div class="wrap">
 <div class="top"><a href="/law-diff.html">← 법령 신구비교 (전체 검색)</a> · <a href="/">대한민국 패치노트</a></div>
 <h1>{h1name} 신구조문대비표</h1>
 <div class="meta">{kind} · 시행 <b>{ef}</b> · 공포 {pub} 제{pubno}호 · {rev} · 출처 법제처 국가법령정보</div>
@@ -163,6 +166,7 @@ def main():
         }, ensure_ascii=False)
         thin = len(arts) == 1 and sum(len(a["old"]) + len(a["new"]) for a in arts) < THIN_CHARS
         pageHtml = TEMPLATE.format(
+            ko_type=KO_TYPE_BLOCK,
             robots="noindex,follow" if thin else "index,follow",
             title=esc(title), desc=esc(desc), ogtitle=esc(f"{name} 신구조문대비표 — {fmt_date(main_am['ef'])} 시행 개정"),
             slug=slug, base=BASE, ld=ld, h1name=esc(name), kind=esc(main_am.get("kind")),

@@ -250,6 +250,18 @@ try {
   ok(`hreflang 묶음 ${pairs}개 페이지 — 짝 일치 검사`);
 } catch (e) { warn('hreflang 검사 실패: ' + e.message); }
 
+// 한국어 줄바꿈 블록 — 모든 페이지가 assets/ko-type.css 와 같은 <style id="ko-type"> 를 가져야 한다(UI 개편 0단계).
+// 생성기 템플릿이 빠뜨리면 다음 재생성 때 조용히 사라진다. 법령 4,900쪽은 앞 40개만 표본으로 본다.
+try {
+  const css = fs.readFileSync(path.join(ROOT, 'assets/ko-type.css'), 'utf8').trim();
+  const want = `<style id="ko-type">${css}</style>`;
+  const pick = (d, n) => { const dir = path.join(ROOT, d); return fs.existsSync(dir) ? fs.readdirSync(dir).filter((x) => x.endsWith('.html')).slice(0, n).map((x) => path.join(d, x)) : []; };
+  const files = [...pick('.', Infinity), ...pick('law-radar', Infinity), ...pick('law', 40)];
+  const miss = files.filter((f) => { const h = fs.readFileSync(path.join(ROOT, f), 'utf8'); return h.includes('</head>') && !h.includes(want); });
+  if (miss.length) err(`한국어 줄바꿈 블록 없음·구버전 ${miss.length}개: ${miss.slice(0, 5).join(', ')} — node scripts/apply-ko-type.js`);
+  else ok(`한국어 줄바꿈 블록 ${files.length}개 페이지 일치`);
+} catch (e) { warn('ko-type 검사 실패: ' + e.message); }
+
 // 7. 기사(NewsArticle) 정적 페이지 무결성 — V31.83
 //    ld+json 파싱, canonical, 애드센스 로더, 트렌드 폴리시, 바이라인 날짜 ↔ datePublished 일치
 try {

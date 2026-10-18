@@ -12,6 +12,9 @@ data/law/index.json + body/<mst>.json → law-changes.html (+ sitemap 엔트리�
 """
 import json, re, html
 from pathlib import Path
+# 한국어 줄바꿈(UI 개편 0단계) — 원본은 assets/ko-type.css 하나, 모든 생성기가 같은 블록을 넣는다
+KO_TYPE_BLOCK = '<style id="ko-type">' + (Path(__file__).resolve().parent / "assets/ko-type.css").read_text(encoding="utf-8").strip() + "</style>"
+
 from collections import defaultdict
 from datetime import date
 
@@ -140,7 +143,7 @@ html{{accent-color:#4F46E5;scrollbar-color:#d1cfc8 transparent}}
 ::-webkit-scrollbar{{width:10px;height:10px}}::-webkit-scrollbar-track{{background:transparent}}
 ::-webkit-scrollbar-thumb{{background:#d1cfc8;border-radius:999px;border:3px solid transparent;background-clip:padding-box}}
 @media (prefers-reduced-motion:no-preference){{::view-transition-old(root),::view-transition-new(root){{animation-duration:.18s}}}}
-</style>
+</style>{KO_TYPE_BLOCK}
 </head><body><div class="wrap">
 <div class="top"><a href="/law-diff.html">← 법령 신구비교 (전체 검색)</a> · <a href="/">대한민국 패치노트</a></div>
 <h1>🔥 법령 변경 추적 — 지금 가장 뜨거운 개정</h1>
