@@ -20,6 +20,12 @@ TODAY = datetime.now().strftime("%Y-%m-%d")
 
 # 색인 가능한 실제 페이지 (클린 경로). 구 #/그룹·#/history 도 클린으로 전환.
 STATIC_PAGES = [
+    {"path": "/dp-chief-justice-impeachment-talks-oct16-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/jungsucheong-first-chief-kim-jiyong-oct16-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/national-audit-midpoint-seoul-high-court-warrant-oct16-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/employment-sep-2026-manufacturing-up-youth-47months-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/bucheon-factory-fire-firefighter-death-oct-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/nk-tactical-ballistic-missile-oct12-hgv-dispute-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/gallup-oct-6-8-approval-37-economy-reversal-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/yoon-myung-poll-appeal-acquittal-oct7-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/national-audit-opens-supreme-court-oath-refusal-oct6-2026.html", "priority": "0.9", "freq": "weekly"},
