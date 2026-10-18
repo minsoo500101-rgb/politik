@@ -91,7 +91,7 @@ function build() {
     `- **Korean laws taking effect soon**: ${num(radar.total)} laws already promulgated but not yet in force (${in30} within 30 days). Filterable by business area — https://patchkr.com/law-radar.html`,
     `- **National Assembly (22nd)**: ${asm.length} sitting members of 300 seats; ${bills} bills passed in plenary. Official source: National Assembly Open API.`,
     `- **Law change diffs**: ${num(lawMeta.total)} article-level before/after comparisons from the Ministry of Government Legislation.`,
-    '- **Explainers**: https://patchkr.com/en — martial law, trials and elections explained in English.',
+    '- **Explainers**: https://patchkr.com/en — English explainers: martial law and the Yoon trials tracker, the North Korean military, the birth-rate rebound, chip exports, the 2026 ballot shortage.',
     '',
     '## 인용 방법 (Citation)',
     '',

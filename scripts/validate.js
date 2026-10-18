@@ -227,6 +227,29 @@ apiFiles.forEach(f => {
   } catch {}
 });
 
+// hreflang 짝 일관성 — 한 묶음(ko·en·x-default)은 모든 구성원 페이지에서 같아야 한다.
+// 2026-10-19 점검: 계엄 해설 한·영이 서로 다른 x-default 를, 영어 허브는 답신 없는 analysis.html 을 ko 로 가리키고 있었다.
+try {
+  const PAGE = (u) => { const p = u.replace('https://patchkr.com', '') || '/'; return p === '/' ? 'index.html' : p === '/en' ? 'english.html' : p.replace(/^\//, ''); };
+  let pairs = 0;
+  for (const f of fs.readdirSync(ROOT).filter((x) => x.endsWith('.html'))) {
+    const h = fs.readFileSync(path.join(ROOT, f), 'utf8').slice(0, 8000);
+    const alt = Object.fromEntries([...h.matchAll(/hreflang="([^"]+)" href="([^"]+)"/gi)].map((m) => [m[1], m[2]]));
+    if (!Object.keys(alt).length) continue;
+    pairs++;
+    for (const [lang, url] of Object.entries(alt)) {
+      if (lang === 'x-default') continue;
+      const other = PAGE(url);
+      if (other === f) continue;
+      if (!fs.existsSync(path.join(ROOT, other))) { err(`${f}: hreflang ${lang} → ${url} 파일 없음`); continue; }
+      const oh = fs.readFileSync(path.join(ROOT, other), 'utf8').slice(0, 8000);
+      const back = Object.fromEntries([...oh.matchAll(/hreflang="([^"]+)" href="([^"]+)"/gi)].map((m) => [m[1], m[2]]));
+      if (JSON.stringify(Object.entries(back).sort()) !== JSON.stringify(Object.entries(alt).sort())) err(`${f} ↔ ${other}: hreflang 묶음 불일치`);
+    }
+  }
+  ok(`hreflang 묶음 ${pairs}개 페이지 — 짝 일치 검사`);
+} catch (e) { warn('hreflang 검사 실패: ' + e.message); }
+
 // 7. 기사(NewsArticle) 정적 페이지 무결성 — V31.83
 //    ld+json 파싱, canonical, 애드센스 로더, 트렌드 폴리시, 바이라인 날짜 ↔ datePublished 일치
 try {
