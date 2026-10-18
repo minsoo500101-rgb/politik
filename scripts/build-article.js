@@ -186,7 +186,7 @@ ${cav.map((c) => `<li style="margin:6px 0">${inline(c)}</li>`).join('\n')}
 <style>
 ${STYLE}</style><script defer src="/_vercel/insights/script.js"></script>${POLISH}${KO_TYPE_BLOCK}
 </head><body><div class="wrap">
-<div class="top"><a href="${en ? '/en' : '/'}">← ${en ? 'Korea Patch Notes' : '대한민국 패치노트'}</a><span><button class="tt" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('politik:theme',n)}catch(e){}})()">🌓</button></span></div>
+<div class="top"><a href="${en ? '/en' : '/'}">← ${en ? 'Korea Patch Notes' : '대한민국 패치노트'}</a><span><!--LANG--><a class="lang-link" href="${en ? '/' : '/en'}" hreflang="${en ? 'ko' : 'en'}" lang="${en ? 'ko' : 'en'}" style="font-size:13px;margin-right:10px">${en ? '한국어' : 'English'}</a><!--/LANG--><button class="tt" onclick="(function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='dark'?'light':'dark';d.setAttribute('data-theme',n);try{localStorage.setItem('politik:theme',n)}catch(e){}})()">🌓</button></span></div>
 
 <div class="kicker">${inline(a.kicker)}</div>
 <h1>${inline(a.headline)}</h1>

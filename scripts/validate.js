@@ -280,6 +280,8 @@ try {
     // 머리글만 있고 데이터 행이 없는 표 — V31.94 기사 5편이 이 상태로 배포됐다(생성기가 형식 안 맞는 행을 조용히 버림).
     const emptyTables = [...h.matchAll(/<table>([\s\S]*?)<\/table>/g)].filter(m => !/<td[\s>]/.test(m[1])).length;
     if (emptyTables) { err(`${f}: 데이터 행 없는 표 ${emptyTables}개`); bad++; }
+    // UI 개편 2단계 — 한국어 기사는 '이어서 볼 것'이 있어야 한다(검색으로 들어온 사람의 다음 갈 곳)
+    if (/<html[^>]*lang="ko"/.test(h) && /class="byline"/.test(h) && !h.includes('<!-- RELATED:START -->')) warn(`${f}: '이어서 볼 것' 없음 — node scripts/build-related.js`);
     const by =(h.match(/<div class="byline">([^<]*)/) || [])[1] || '';
     const d = by.match(/(20\d\d)년\s*(\d{1,2})월\s*(\d{1,2})일/);
     if (d && first.datePublished) {

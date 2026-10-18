@@ -5903,6 +5903,23 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
   }
 
   /* V30.7 — 홈 상단 KPI 스트립 (대시보드 시그니처: 벤토 + 관제탑 혼합) */
+  /* UI 개편 3단계 — 홈 '오늘 볼 것' (시안 A). 한 카드 = 한 질문 + 한 숫자. */
+  .home-today { margin: 4px 0 18px; }
+  .ht-date { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .ht-date b { font-size:13px; letter-spacing:.04em; color:var(--text-2); font-weight:600; }
+  .ht-date span { font-size:12px; color:var(--text-3, var(--text-2)); white-space:nowrap; }
+  .ht-rail { display:flex; gap:8px; overflow-x:auto; padding:10px 0 4px; scrollbar-width:none; }
+  .ht-rail::-webkit-scrollbar { display:none; }
+  .ht-chip { flex:0 0 auto; border:1px solid var(--border-strong); background:var(--bg-card); color:var(--text); border-radius:999px; padding:6px 12px; font-size:13.5px; text-decoration:none; white-space:nowrap; }
+  .ht-chip:hover { border-color:var(--accent); color:var(--accent); }
+  .ht-chip-all { color:var(--text-2); }
+  .ht-lead { display:block; margin-top:12px; background:var(--bg-card); border:1px solid var(--border-strong); border-radius:6px; padding:18px 20px; text-decoration:none; color:var(--text); }
+  .ht-lead:hover { border-color:var(--accent); }
+  .ht-tt { font-size:22px; line-height:1.32; letter-spacing:-.4px; margin:0; text-wrap:balance; }
+  .ht-big { font-size:34px; font-weight:800; letter-spacing:-1px; margin:10px 0 2px; font-variant-numeric:tabular-nums; color:var(--accent); }
+  .ht-sub { margin:8px 0 0; color:var(--text-2); font-size:14.5px; line-height:1.6; border-left:3px solid var(--text); padding-left:10px; }
+  .ht-go { display:inline-flex; align-items:center; min-height:40px; margin-top:12px; font-weight:700; font-size:14px; color:var(--accent); }
+  @media (max-width:600px){ .ht-tt{font-size:20px} .ht-big{font-size:30px} }
   .kpi-strip {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -10020,8 +10037,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     line-height: 1;
     margin-bottom: 2px;
   }
+  /* UI 개편 3단계 — 글자 라벨만. 현재 위치는 위쪽 막대로 표시(색 하나에 기대지 않게) */
+  .mobile-bottom-nav .mbn-item { min-height: 48px; border-radius: 0; }
+  .mobile-bottom-nav .mbn-item.active { box-shadow: inset 0 2px 0 var(--accent); font-weight: 700; }
   .mbn-label {
-    font-size: 10.5px;
+    font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -11009,7 +11029,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input class="search" id="search" type="search" role="searchbox" aria-label="정치인·법안·9회 지선 후보·용어 통합 검색" aria-describedby="search-hint" placeholder="정치인·법안·9회 지선 후보·용어 통합 검색 (Ctrl+K)" autocomplete="off">
+      <input class="search" id="search" type="search" role="searchbox" aria-label="정치인·법안·법령·용어 검색" aria-describedby="search-hint" placeholder="정치인·법안·법령·용어 검색 (Ctrl+K)" autocomplete="off">
       <span id="search-hint" class="sr-only">Ctrl+K 단축키로 빠른 열기. 검색 결과는 아래 드롭다운에 표시됩니다.</span>
       <div class="ac-dropdown" id="ac-dropdown" role="listbox" aria-label="검색 자동완성"></div>
     </div>
@@ -11059,7 +11079,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <a href="/law-diff.html">법령 신구비교</a>
       <a href="/law-radar.html">곧 시행되는 법령</a>
       <a href="/crisis.html">🚨 국가 지표 신호등</a>
-      <a href="/en">🇬🇧 Korea, Explained</a>
+      <a href="/en" hreflang="en" lang="en">English · Korea, Explained</a>
     </div>
     <div class="foot-col">
       <div class="foot-h">🔧 도구</div>
@@ -11097,7 +11117,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V31.97</a>
+      <a href="/changelog" id="foot-year">V31.98</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -11118,26 +11138,11 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 
 <!-- V22.8 — 모바일 하단 nav (mobile only) -->
 <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="모바일 주요 페이지">
-  <a href="/" class="mbn-item" data-path="/" aria-label="홈">
-    <span class="mbn-icon">🏠</span>
-    <span class="mbn-label">홈</span>
-  </a>
-  <a href="/bills" class="mbn-item" data-path="/bills" aria-label="법안">
-    <span class="mbn-icon">📜</span>
-    <span class="mbn-label">법안</span>
-  </a>
-  <a href="/dex" class="mbn-item" data-path="/dex" aria-label="정치인 도감">
-    <span class="mbn-icon">📕</span>
-    <span class="mbn-label">도감</span>
-  </a>
-  <a href="/analysis.html" class="mbn-item" data-path="/analysis.html" aria-label="분석·기록">
-    <span class="mbn-icon">📂</span>
-    <span class="mbn-label">분석</span>
-  </a>
-  <a href="/today" class="mbn-item" data-path="/today" aria-label="실검">
-    <span class="mbn-icon">🔥</span>
-    <span class="mbn-label">실검</span>
-  </a>
+  <a href="/" class="mbn-item" data-path="/"><span class="mbn-label">홈</span></a>
+  <a href="/bills" class="mbn-item" data-path="/bills"><span class="mbn-label">법안</span></a>
+  <a href="/law-radar.html" class="mbn-item" data-path="/law-radar.html"><span class="mbn-label">법령</span></a>
+  <a href="/dex" class="mbn-item" data-path="/dex"><span class="mbn-label">인물</span></a>
+  <a href="/analysis.html" class="mbn-item" data-path="/analysis.html"><span class="mbn-label">기사</span></a>
 </nav>
 
 <!-- V22.8 — 위로가기 버튼 (스크롤 시 표시) -->
@@ -17566,6 +17571,13 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V31.98', date: '2026-10-19', title: '🏠 홈 오늘 볼 것 · 기사 이어서 볼 것 · 한·영 링크 · 측정 시작', items: [
+    "홈 첫 화면을 '오늘 볼 것'으로 바꿨다(UI 개편 3단계). 맨 위에 날짜와 최근 사안 칩 한 줄, 그 아래 가장 최근 사안 하나를 큰 카드로 둔다 — 카드 하나에 질문 하나, 숫자 하나. 숫자 카드 6개가 먼저 보이던 지표 줄은 이슈 목록 아래로 내렸고, 넉 달 지난 '9회 지선 민주 11' 칸은 '곧 시행되는 법령'으로 바꿨다. 무엇을 앞에 둘지는 시계가 아니라 기사의 사건 날짜가 정한다.",
+    "하단 탭을 글자 라벨로 바꿨다: 홈·법안·법령·인물·기사. 이모지 아이콘을 뺐고, 지금 있는 곳은 위쪽 막대로 표시한다. 실검은 메뉴(☰)에 남아 있다. 검색창 안내 문구의 '9회 지선 후보'도 '법령'으로 바꿨다.",
+    "한국어 기사 75편에 '이어서 볼 것'을 붙였다(2단계). 같은 분야의 앞뒤 기사 3편과 분야별 데이터 페이지(경제 지표·법안 검색·재판 현황·안보 정리·정치인 도감·곧 시행되는 법령)로 이어지고, 바이라인 아래에는 그 데이터 페이지로 가는 버튼 하나를 뒀다. 검색으로 기사에 바로 들어온 사람에게 지금까지는 다음으로 갈 곳이 거의 없었다.",
+    "모든 기사 상단에 'English' / '한국어' 글자 링크를 넣었다(4단계). 짝이 있는 기사는 짝으로, 없으면 상대 언어 허브로 간다. 브라우저 언어로 자동 이동시키지 않고, 국기 아이콘은 쓰지 않는다. 영어 허브(/en)는 재판·정치 / 안보 / 경제·사회 세 묶음으로 나눴다.",
+    "측정을 시작했다(5단계). 지금까지 조회 기록은 인물·법안 화면만 남고 기사는 아예 남지 않아, 개편이 효과가 있었는지 잴 방법이 없었다. 이제 기사 조회와 '이어서 볼 것' 클릭을 익명으로 기록한다(로봇·자동화 브라우저 제외, 화면이 보일 때만, 같은 탭 30분에 한 번). 기록은 쓰기만 되고 공개 키로 읽을 수는 없다."
+  ]},
   { v: 'V31.97', date: '2026-10-19', title: '🔤 한국어 줄바꿈 정리 · 홈 제목 교체 · 코스피 급락 기사', items: [
     "UI 개편 0단계. 한국어 줄바꿈을 정리했다 — 폰에서 '제/조업', '청/년'처럼 음절 중간에서 줄이 끊기던 것을 어절 단위로 바꿨다. 사이트 5,043쪽(기사·법령 신구비교·레이더 포함) 전부와 페이지를 만드는 도구 6종에 같은 규칙을 넣었고, 기사에서는 '10월 16일'처럼 날짜가 두 줄로 갈리지 않게 묶었다. 원본 규칙은 파일 하나(assets/ko-type.css)라 다음에 바꿀 때도 한 곳만 고치면 된다.",
     "홈 제목과 공유 미리보기 문구가 넉 달째 '9회 지방선거 결과'로 시작하고 있었다. 지금 사이트가 실제로 답하는 것(22대 국회 법안·곧 시행되는 법령·정치인·경제 지표)으로 바꿨다.",
@@ -21413,6 +21425,7 @@ async function fillLawRadarCount() {
       _lawRadarSoon = soon;
     }
     el.textContent = _lawRadarN + "건";
+    var kv = document.getElementById("kpi-lawr-v"); if (kv) kv.textContent = _lawRadarN + "건";
     var em = el.closest(".lawr-tx") && el.closest(".lawr-tx").querySelector("em");
     if (em && _lawRadarSoon) em.textContent = "30일 안에 " + _lawRadarSoon + "건이 시행됩니다 · 내 업무에 걸리는 것만 골라 보기";
   } catch (e) {
@@ -21422,7 +21435,7 @@ async function fillLawRadarCount() {
 }
 var _lawRadarSoon = 0;
 
-function renderHomeIssueRows(){
+function homeIssueItems(){
   // 홈 주요 이슈 — 여기 배열에 항목만 추가하면 date(d) 기준 최신순 자동 정렬됨.
   var items=[
     {d:"2026-10-16",ic:"📉",href:"/kospi-october-2026-plunge-7000-to-5600-2026.html",tt:"코스피 7거래일 연속 하락 — 7,003에서 5,554까지",sub:"10/15 하루 <b>−7.57%</b> · 서킷브레이커 · 10/16 반등 5,668"},
@@ -21496,8 +21509,39 @@ function renderHomeIssueRows(){
     {d:"2026-02-19",ic:"🏛",href:"/martial-law.html",tt:"12·3 비상계엄 — 파면·내란 1심 무기징역",sub:"헌재 전원일치 파면 · 내란 우두머리 <b>무기징역</b>(항소심 진행 중) · 체포방해 징역 7년 확정(7/9)"}
   ];
   items.sort(function(a,b){return a.d<b.d?1:(a.d>b.d?-1:0);});
+  return items;
+}
+
+// UI 개편 3단계 — 홈 첫 화면 '오늘 볼 것': 날짜 줄 + 칩 한 줄 + 큰 카드 하나.
+// 무엇을 앞에 둘지는 시계가 아니라 데이터 날짜(기사 사건일)가 정한다. 큰 카드 = 가장 최근 사안, 숫자 하나(부제의 첫 <b>).
+function renderHomeToday(){
+  var items=homeIssueItems();
+  if(!items.length) return '';
+  var top=items[0];
+  var now=new Date(Date.now()+9*3600000);
+  var wd=['일','월','화','수','목','금','토'][now.getUTCDay()];
+  var dateTx=(now.getUTCMonth()+1)+'월 '+now.getUTCDate()+'일 '+wd+'요일';
+  var big=(top.sub.match(/<b>([^<]+)<\/b>/)||[])[1]||'';
+  var subTx=top.sub.replace(/<\/?b>/g,'');
+  var short=function(t){return String(t).split(/ — | - /)[0];};
+  var chips=items.slice(1,6).map(function(x){return '<a class="ht-chip" href="'+x.href+'">'+escapeHtml(short(x.tt))+'</a>';}).join('');
+  chips+='<a class="ht-chip" href="/law-radar.html">곧 시행되는 법령</a><a class="ht-chip ht-chip-all" href="/analysis.html">전체 →</a>';
+  var d=top.d.slice(5).replace('-','.');
+  return '<section class="home-today" aria-label="오늘 볼 것">'+
+    '<div class="ht-date"><b>'+dateTx+' · 오늘 볼 것</b><span>최근 사안 '+d+'</span></div>'+
+    '<nav class="ht-rail" aria-label="오늘 볼 것 목록">'+chips+'</nav>'+
+    '<a class="ht-lead" href="'+top.href+'">'+
+      '<h2 class="ht-tt">'+escapeHtml(top.tt)+'</h2>'+
+      (big?'<div class="ht-big">'+escapeHtml(big)+'</div>':'')+
+      '<p class="ht-sub">'+escapeHtml(subTx)+'</p>'+
+      '<span class="ht-go">기사 보기 →</span>'+
+    '</a></section>';
+}
+
+function renderHomeIssueRows(){
+  var items=homeIssueItems();
   var row=function(x){return '<a class="issue-row" href="'+x.href+'"><div class="issue-ic">'+x.ic+'</div><div class="issue-tx"><div class="issue-tt">'+x.tt+'</div><div class="issue-sub">'+x.sub+'</div></div><div class="issue-ar">→</div></a>';};
-  var html=items.slice(0,10).map(row).join(''); // 큐레이션: 최신 10개만, 나머지는 '전체 보기'로
+  var html=items.slice(1,11).map(row).join(''); // 맨 위 1건은 '오늘 볼 것' 큰 카드에 있으니 그다음 10건
   html+=row({ic:"📂",href:"/analysis.html",tt:"분석·기록 전체 보기",sub:"데이터 분석(지선·국회·경제) · 투표용지 부족 · 엔비디아 · 위기 지표판 · 이재명 1주년 등"});
   return html;
 }
@@ -21688,55 +21732,13 @@ function renderHome() {
 
   return `
     <div class="dash">
-      ${(() => {
-        // V30.7 — 상단 KPI 스트립 (대시보드 시그니처)
-        const dDayN = _ddiff > 0 ? `D-${_ddiff}` : _ddiff === 0 ? 'D-Day' : `D+${Math.abs(_ddiff)}`;
-        const billsCount = (state.bills?.length || 0).toLocaleString();
-        // 사전투표율 타일: 선거일까지만 노출, 그 후엔 정치인 도감으로 교체 (V31.31)
-        const evTileLive = _ddiff >= 0;
-        const evPlaceholder = _isEarlyVoting ? '집계 중' : _isEarlyD1 ? '5/29' : (_ddiff < 0 ? '집계 종료' : '대기');
-        const evSub = _isEarlyVoting ? '🔴 진행중' : _isEarlyD1 ? '내일 시작' : (_ddiff < 0 ? '사전투표 마감' : '5/29~30');
-        const evTile = evTileLive
-          ? `<a class="kpi-tile" href="/early-voting">
-               <div class="kpi-l">사전투표율</div>
-               <div class="kpi-v" id="kpi-ev-v">${evPlaceholder}</div>
-               <div class="kpi-d" id="kpi-ev-d">${evSub}</div>
-             </a>`
-          : `<a class="kpi-tile" href="/dex">
-               <div class="kpi-l">정치인 도감</div>
-               <div class="kpi-v">780</div>
-               <div class="kpi-d kpi-d--accent">약력·표결·재산</div>
-             </a>`;
-        return `
-          <div class="kpi-strip" id="home-kpi-strip">
-            <a class="kpi-tile kpi-tile--accent" href="/election2026">
-              <div class="kpi-l">9회 지선</div>
-              <div class="kpi-v">민주 11</div>
-              <div class="kpi-d kpi-d--accent">광역 결과 →</div>
-            </a>
-            ${evTile}
-            <a class="kpi-tile" href="/economy">
-              <div class="kpi-l">코스피</div>
-              <div class="kpi-v" id="kpi-kospi-v">—</div>
-              <div class="kpi-d" id="kpi-kospi-d">로딩…</div>
-            </a>
-            <a class="kpi-tile" href="/economy">
-              <div class="kpi-l">원/달러</div>
-              <div class="kpi-v" id="kpi-usd-v">—</div>
-              <div class="kpi-d" id="kpi-usd-d">로딩…</div>
-            </a>
-            <a class="kpi-tile" href="/economy">
-              <div class="kpi-l">기준금리</div>
-              <div class="kpi-v" id="kpi-rate-v">—</div>
-              <div class="kpi-d" id="kpi-rate-d">로딩…</div>
-            </a>
-            <a class="kpi-tile" href="/bills">
-              <div class="kpi-l">22대 통과 법안</div>
-              <div class="kpi-v">${billsCount}</div>
-              <div class="kpi-d kpi-d--up">누적</div>
-            </a>
-          </div>`;
-      })()}
+      ${renderHomeToday()}
+      <!-- V31.54 — 홈 주요 이슈 컴팩트 리스트 (피처 배너 제거, 이재명 1주년은 리스트 행으로 강등) -->
+      <div class="home-issues">
+        <div class="home-issues-h">새 기사</div>
+        ${renderHomeIssueRows()}
+      </div>
+
       <div class="dash-hero${_isElectionSeason ? ' dash-hero-election' : ''}">
         <div class="dash-hero-l">
           <div class="dash-hero-eye${_isElectionSeason ? ' dash-hero-eye-election' : ''}">${_heroEye}</div>
@@ -21791,11 +21793,55 @@ function renderHome() {
         <span class="lawr-go">보기 →</span>
       </a>
 
-      <!-- V31.54 — 홈 주요 이슈 컴팩트 리스트 (피처 배너 제거, 이재명 1주년은 리스트 행으로 강등) -->
-      <div class="home-issues">
-        <div class="home-issues-h">📌 지금 한국 · 주요 이슈</div>
-        ${renderHomeIssueRows()}
-      </div>
+      ${(() => {
+        // V30.7 — 상단 KPI 스트립 (대시보드 시그니처)
+        const dDayN = _ddiff > 0 ? `D-${_ddiff}` : _ddiff === 0 ? 'D-Day' : `D+${Math.abs(_ddiff)}`;
+        const billsCount = (state.bills?.length || 0).toLocaleString();
+        // 사전투표율 타일: 선거일까지만 노출, 그 후엔 정치인 도감으로 교체 (V31.31)
+        const evTileLive = _ddiff >= 0;
+        const evPlaceholder = _isEarlyVoting ? '집계 중' : _isEarlyD1 ? '5/29' : (_ddiff < 0 ? '집계 종료' : '대기');
+        const evSub = _isEarlyVoting ? '🔴 진행중' : _isEarlyD1 ? '내일 시작' : (_ddiff < 0 ? '사전투표 마감' : '5/29~30');
+        const evTile = evTileLive
+          ? `<a class="kpi-tile" href="/early-voting">
+               <div class="kpi-l">사전투표율</div>
+               <div class="kpi-v" id="kpi-ev-v">${evPlaceholder}</div>
+               <div class="kpi-d" id="kpi-ev-d">${evSub}</div>
+             </a>`
+          : `<a class="kpi-tile" href="/dex">
+               <div class="kpi-l">정치인 도감</div>
+               <div class="kpi-v">780</div>
+               <div class="kpi-d kpi-d--accent">약력·표결·재산</div>
+             </a>`;
+        return `
+          <div class="kpi-strip" id="home-kpi-strip">
+            <a class="kpi-tile kpi-tile--accent" href="/law-radar.html">
+              <div class="kpi-l">곧 시행되는 법령</div>
+              <div class="kpi-v" id="kpi-lawr-v">—</div>
+              <div class="kpi-d kpi-d--accent">업무별로 보기 →</div>
+            </a>
+            ${evTile}
+            <a class="kpi-tile" href="/economy">
+              <div class="kpi-l">코스피</div>
+              <div class="kpi-v" id="kpi-kospi-v">—</div>
+              <div class="kpi-d" id="kpi-kospi-d">로딩…</div>
+            </a>
+            <a class="kpi-tile" href="/economy">
+              <div class="kpi-l">원/달러</div>
+              <div class="kpi-v" id="kpi-usd-v">—</div>
+              <div class="kpi-d" id="kpi-usd-d">로딩…</div>
+            </a>
+            <a class="kpi-tile" href="/economy">
+              <div class="kpi-l">기준금리</div>
+              <div class="kpi-v" id="kpi-rate-v">—</div>
+              <div class="kpi-d" id="kpi-rate-d">로딩…</div>
+            </a>
+            <a class="kpi-tile" href="/bills">
+              <div class="kpi-l">22대 통과 법안</div>
+              <div class="kpi-v">${billsCount}</div>
+              <div class="kpi-d kpi-d--up">누적</div>
+            </a>
+          </div>`;
+      })()}
 
       <!-- V30.8 — 중간 카드 벤토 그리드 (2단): 여론판·인기랭킹·실검·경제 -->
       <div class="home-bento">
@@ -22028,7 +22074,7 @@ function renderHome() {
           <a class="goal-chip" href="/committees">🏢 위원회 25</a>
           <a class="goal-chip" href="/history/parties">📚 정당사 1948~</a>
           <a class="goal-chip" href="/today">🌍 지금 한국</a>
-          <a class="goal-chip" href="/en">🇬🇧 Korea, Explained</a>
+          <a class="goal-chip" href="/en" hreflang="en" lang="en">English · Korea, Explained</a>
           <a class="goal-chip" href="/ballot-shortage.html">🚨 투표용지 부족 사태</a>
           <a class="goal-chip" href="/pledge-tracker">🔥 8회 공약 이행 (아카이브)</a>
         </div>
