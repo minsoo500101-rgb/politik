@@ -32,12 +32,15 @@ jobs:
           python build_law_hot.py
           python build_risk.py
           python build_sitemap.py
+          # 생성기는 스타일을 인라인으로 쓴다 — 공통 블록은 assets/css/ 로 빼서 링크로 바꾼다(UI 개편 1단계).
+          # 이 단계가 빠지면 법령 4,930쪽에 같은 CSS가 다시 각각 들어간다.
+          node scripts/extract-css.js
 
       - name: Commit & push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A *.html sitemap.xml sitemap-law.xml law/
+          git add -A *.html sitemap.xml sitemap-law.xml law/ assets/css/ assets/app.css
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else

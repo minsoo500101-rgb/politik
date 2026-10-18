@@ -177,7 +177,11 @@ function buildDomainPages(items, byTag, today) {
   const dir = path.join(ROOT, 'law-radar');
   fs.mkdirSync(dir, { recursive: true });
   const tpl = fs.readFileSync(path.join(ROOT, 'law-radar.html'), 'utf8');
-  const style = tpl.match(/<style>([\s\S]*?)<\/style>/)[1];
+  // 인라인이 없으면(extract-css.js 가 링크로 바꿈) 링크된 공통 파일을 읽는다 — 출력 내용이 같으면 같은 파일로 다시 묶인다
+  const sm = tpl.match(/<style>([\s\S]*?)<\/style>/);
+  const sl = tpl.match(/<link rel="stylesheet" href="\/(assets\/css\/radar-[0-9a-f]+\.css)">/);
+  if (!sm && !sl) throw new Error('law-radar.html 스타일을 찾지 못함');
+  const style = sm ? sm[1] : fs.readFileSync(path.join(ROOT, sl[1]), 'utf8');
   let n = 0;
 
   for (const d of DOMAINS) {

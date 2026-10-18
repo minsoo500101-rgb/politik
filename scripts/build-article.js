@@ -32,8 +32,23 @@ const SPEC = JSON.parse(fs.readFileSync(specPath, 'utf8'));
 const PUB = SPEC.today;
 
 const TPL = fs.readFileSync(path.join(ROOT, TEMPLATE_ARTICLE), 'utf8').replace(/\r\n/g, '\n');
-const STYLE = TPL.match(/<style>\n([\s\S]*?)<\/style><script defer/)[1];
-const POLISH = TPL.match(/(<style id="trend-polish">[\s\S]*?<\/style>)/)[1];
+// 기준 기사의 스타일 — 인라인이면 그대로, extract-css.js 가 공통 파일 링크로 바꿨으면 그 파일을 읽는다.
+// 출력은 인라인으로 쓰고 extract-css.js 가 다시 공통 파일 링크로 바꾼다(내용이 같으면 해시도 같아 같은 파일).
+const readAsset = (href) => fs.readFileSync(path.join(ROOT, href.replace(/^\//, '').split('?')[0]), 'utf8').replace(/\r\n/g, '\n');
+const STYLE = (() => {
+  const m = TPL.match(/<style>\n([\s\S]*?)<\/style><script defer/);
+  if (m) return m[1];
+  const l = TPL.match(/<link rel="stylesheet" href="(\/assets\/css\/page-[0-9a-f]+\.css)"><script defer/);
+  if (!l) throw new Error('기준 기사 스타일을 찾지 못함');
+  return readAsset(l[1]).replace(/^\n/, '');
+})();
+const POLISH = (() => {
+  const m = TPL.match(/(<style id="trend-polish">[\s\S]*?<\/style>)/);
+  if (m) return m[1];
+  const l = TPL.match(/<link rel="stylesheet" href="([^"]+)" id="trend-polish">/);
+  if (!l) throw new Error('trend-polish 를 찾지 못함');
+  return `<style id="trend-polish">${readAsset(l[1])}</style>`;
+})();
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const glue = (s) => s.replace(/(\d{1,2}월) (\d{1,2}일)/g, '<span class="nw">$1 $2</span>').replace(/(\d{1,2}시) (\d{1,2}분)/g, '<span class="nw">$1 $2</span>');
@@ -121,7 +136,7 @@ function page(a) {
     publisher: { '@type': 'Organization', name: '대한민국 패치노트', alternateName: 'Korea Patch Notes', url: BASE,
       logo: { '@type': 'ImageObject', url: `${BASE}/og-image.png?v=2`, width: 1200, height: 630 } },
     about: a.domain || 'Korea',
-    image: { '@type': 'ImageObject', url: `${BASE}/og-image.png?v=2`, width: 1200, height: 630 },
+    image: { '@type': 'ImageObject', url: `${BASE}/${en ? 'og-image-en.png?v=1' : 'og-image.png?v=2'}`, width: 1200, height: 630 },
     author: { '@type': 'Organization', name: en ? 'Korea Patch Notes' : '대한민국 패치노트', url: BASE },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     isAccessibleForFree: true,
@@ -175,7 +190,7 @@ ${cav.map((c) => `<li style="margin:6px 0">${inline(c)}</li>`).join('\n')}
 <meta property="og:title" content="${esc(a.headline)}">
 <meta property="og:description" content="${esc(desc.slice(0, 180))}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${BASE}/og-image.png?v=2"><meta property="og:site_name" content="${en ? 'Korea Patch Notes' : '대한민국 패치노트'}">
+<meta property="og:image" content="${BASE}/${en ? 'og-image-en.png?v=1' : 'og-image.png?v=2'}"><meta property="og:site_name" content="${en ? 'Korea Patch Notes' : '대한민국 패치노트'}">
 <meta property="og:locale" content="${en ? 'en_US' : 'ko_KR'}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">

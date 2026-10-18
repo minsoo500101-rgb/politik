@@ -250,6 +250,29 @@ try {
   ok(`hreflang 묶음 ${pairs}개 페이지 — 짝 일치 검사`);
 } catch (e) { warn('hreflang 검사 실패: ' + e.message); }
 
+// 공통 CSS 링크 — 페이지가 가리키는 /assets/css/*.css·/assets/app.css 가 실제로 있어야 한다(UI 개편 1단계).
+// extract-css.js 가 안 쓰는 옛 파일을 지우므로, 커밋에서 assets/css 를 빠뜨리면 스타일 없는 페이지가 배포된다.
+// 또 같은 스타일 블록이 다시 여러 쪽에 인라인으로 들어왔는지(생성기 뒤에 extract-css 를 안 돌림)도 본다.
+try {
+  const crypto = require('crypto');
+  const pick = (d, n) => { const dir = path.join(ROOT, d); return fs.existsSync(dir) ? fs.readdirSync(dir).filter((x) => x.endsWith('.html')).slice(0, n).map((x) => path.join(d, x)) : []; };
+  const files = [...pick('.', Infinity), ...pick('law-radar', Infinity), ...pick('law', 60)];
+  const missing = new Set(); const dup = new Map();
+  for (const f of files) {
+    const h = fs.readFileSync(path.join(ROOT, f), 'utf8');
+    for (const m of h.matchAll(/href="\/(assets\/(?:css\/[a-z0-9-]+\.css|app\.css))(?:\?v=[0-9a-f]+)?"/g)) if (!fs.existsSync(path.join(ROOT, m[1]))) missing.add(m[1]);
+    for (const m of h.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)) {
+      if (/id="ko-type"/.test(m[1])) continue;
+      const k = crypto.createHash('sha1').update(m[2]).digest('hex').slice(0, 8);
+      dup.set(k, (dup.get(k) || 0) + 1);
+    }
+  }
+  if (missing.size) err(`공통 CSS 파일 없음: ${[...missing].slice(0, 5).join(', ')} — assets/css 커밋 누락?`);
+  const again = [...dup.values()].filter((n) => n >= 2).length;
+  if (again) warn(`같은 인라인 스타일이 여러 쪽에 다시 들어감 ${again}종 — node scripts/extract-css.js`);
+  if (!missing.size && !again) ok(`공통 CSS 링크 ${files.length}쪽 — 파일 모두 있음 · 인라인 중복 없음`);
+} catch (e) { warn('공통 CSS 검사 실패: ' + e.message); }
+
 // 한국어 줄바꿈 블록 — 모든 페이지가 assets/ko-type.css 와 같은 <style id="ko-type"> 를 가져야 한다(UI 개편 0단계).
 // 생성기 템플릿이 빠뜨리면 다음 재생성 때 조용히 사라진다. 법령 4,900쪽은 앞 40개만 표본으로 본다.
 try {
