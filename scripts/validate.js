@@ -290,10 +290,12 @@ try {
 try {
   const v = require('crypto').createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets/hud.css'))).digest('hex').slice(0, 8);
   const want = `/assets/hud.css?v=${v}`;
+  const jv = require('crypto').createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets/hud.js'))).digest('hex').slice(0, 8);
+  const has = (t) => t.includes(want) && t.includes(`/assets/hud.js?v=${jv}`);
   const ls = (d) => { const dir = path.join(ROOT, d); return fs.existsSync(dir) ? fs.readdirSync(dir).filter((x) => x.endsWith('.html')).map((x) => path.join(d, x)) : []; };
   const core = [...ls('.'), ...ls('law-radar')].filter((x) => path.basename(x) !== 'eye.html');
-  const miss = core.filter((x) => !fs.readFileSync(path.join(ROOT, x), 'utf8').includes(want));
-  const lawMiss = ls('law').slice(0, 40).filter((x) => !fs.readFileSync(path.join(ROOT, x), 'utf8').includes(want)).length;
+  const miss = core.filter((x) => !has(fs.readFileSync(path.join(ROOT, x), 'utf8')));
+  const lawMiss = ls('law').slice(0, 40).filter((x) => !has(fs.readFileSync(path.join(ROOT, x), 'utf8'))).length;
   if (miss.length) err(`HUD 테마 블록 없음·구버전 ${miss.length}쪽: ${miss.slice(0, 5).join(', ')} — node scripts/apply-hud.js`);
   else ok(`HUD 테마 ${core.length}쪽 일치 (v=${v})`);
   if (lawMiss) warn(`법령 표본 40쪽 중 ${lawMiss}쪽 HUD 구버전 — build-static-pages 실행 시 갱신`);

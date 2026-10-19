@@ -75,3 +75,24 @@ html[data-theme=dark] .art{background:rgba(10,24,26,.6)}
 html .lead,html .kpi,html .side,html .hax,html .note,html .art,html .nx a,html .tt{border-radius:2px}
 .wrap > .top > a[href="/"]:first-child,body > .top > a[href="/"]:first-child{white-space:nowrap}
 @media(max-width:420px){.wrap > .top > a[href="/"]:first-child::after,body > .top > a[href="/"]:first-child::after{display:none}}
+/* ── 기사 계기(assets/hud.js): 진행선 · 목차 레일 · 표 줄 강조 ── */
+.hud-prog{position:fixed;left:0;right:0;top:0;height:2px;background:var(--ac);transform-origin:0 50%;transform:scaleX(0);z-index:2147483001;pointer-events:none;box-shadow:0 0 8px var(--ac)}
+.hud-rail{position:fixed;z-index:2147482000;right:0;left:0;bottom:0;max-height:60vh;overflow:auto;background:var(--card,#0a1517);border-top:3px solid var(--amb,#f2c14e);padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -12px 40px rgba(0,0,0,.45);transform:translateY(105%);transition:transform .2s;font-size:13.5px}
+.hud-rail.open{transform:none}
+.hud-rail .hr-h{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;color:var(--dim);margin-bottom:6px}
+.hud-rail .hr-x{background:none;border:0;color:var(--dim);font-size:22px;width:44px;height:36px;cursor:pointer}
+.hud-rail ol{list-style:none;margin:0;padding:0}
+.hud-rail li{border-top:1px solid var(--bd)}
+.hud-rail a{display:grid;grid-template-columns:26px 1fr;gap:6px;padding:9px 0;color:var(--tx);text-decoration:none;line-height:1.4}
+.hud-rail a span{font-family:var(--f-mono);font-size:11px;color:var(--dim);padding-top:2px}
+.hud-rail a.on{color:var(--ac)}
+.hud-rail a.on span{color:var(--ac)}
+.hud-toc{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:2147481999;min-height:42px;padding:0 14px;background:var(--card,#0a1517);color:var(--ac);border:1px solid var(--ac);font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.35)}
+html.hud-wide .hud-toc{display:none}
+html.hud-wide .hud-rail{transform:none;left:auto;right:18px;top:96px;bottom:auto;width:230px;max-height:calc(100vh - 130px);border-top:0;border-left:1px solid var(--bd);box-shadow:none;background:transparent;padding:4px 0 4px 14px;font-size:12.5px}
+html.hud-wide .hud-rail .hr-x{display:none}
+html.hud-wide .hud-rail a{padding:6px 0}
+html.hud-wide .hud-rail li{border-top:0}
+html.hud-wide .hud-rail a.on{box-shadow:-15px 0 0 -13px var(--ac)}
+html .wrap h2[id]{scroll-margin-top:16px}
+html table tr:hover td{background:rgba(63,224,200,.06)}

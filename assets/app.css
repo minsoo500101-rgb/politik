@@ -10574,3 +10574,49 @@
   .ht-eye em{font-style:normal;font-size:13px;font-weight:700;color:#f2c14e;white-space:nowrap}
   .ht-eye:hover{border-color:#3fe0c8}
   @media(max-width:600px){.ht-eye span{display:none}}
+
+  /* ============ V32.4 관제 콘솔 (법안·인물) — 관제 화면(eye)과 같은 문법: 태그·판독 줄·계기·눌러서 거르기 ============ */
+  .hud-console { position: relative; border: 1px solid var(--border-strong); background: var(--bg-card); padding: 14px 16px 16px; margin: 0 0 18px; }
+  .hud-console::before { content: ""; position: absolute; left: -1px; top: -1px; width: 60px; height: 3px; background: var(--dan, var(--brand)); }
+  .hc-head { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; }
+  .hc-tag { font-family: var(--f-han, inherit); font-size: 15px; color: var(--brand); letter-spacing: .06em; }
+  .hud-console h1 { margin: 0; font-size: clamp(22px, 3vw, 30px); }
+  .hud-console h1 b { color: var(--brand); font-weight: 700; }
+  .hc-readout { grid-column: 1 / -1; font-size: 12.5px; color: var(--text-2); min-height: 20px; }
+  .hc-readout b { color: var(--warn); }
+  .hc-clear { margin-left: 8px; background: none; border: 1px solid var(--border-strong); color: var(--text-2); font: inherit; font-size: 11.5px; padding: 2px 8px; cursor: pointer; }
+  .hc-clear:hover { border-color: var(--brand); color: var(--text); }
+  .hc-meters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
+  .hc-meters div { border-top: 1px solid var(--border); padding-top: 6px; display: grid; grid-template-columns: 1fr auto; gap: 2px 6px; font-size: 11.5px; color: var(--dim); }
+  .hc-meters b { color: var(--text); font-size: 15px; }
+  .hc-meters i { grid-column: 1 / -1; height: 3px; background: var(--border); position: relative; }
+  .hc-meters i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); background: var(--brand); }
+  .hc-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; }
+  .hc-lbl { font-family: var(--f-mono, monospace); font-size: 11px; letter-spacing: .16em; color: var(--text-2); margin-bottom: 6px; }
+  .hc-lbl span { letter-spacing: 0; color: var(--dim); margin-left: 6px; font-family: var(--f-body, inherit); }
+  #bh-months { width: 100%; height: auto; aspect-ratio: 900 / 200; display: block; cursor: pointer; touch-action: pan-y; }
+  .hc-axis { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); }
+  .hc-axis #bh-hover { color: var(--warn); }
+  .bh-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 6px; }
+  .bh-tile { position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; gap: 6px; min-height: 40px; padding: 6px 9px; background: transparent; border: 1px solid var(--border); color: var(--text); font: inherit; font-size: 12.5px; text-align: left; cursor: pointer; }
+  .bh-tile::before { content: ""; position: absolute; inset: auto 0 0 0; height: 3px; width: var(--w); background: var(--c); opacity: .85; }
+  .bh-tile:hover { border-color: var(--c); }
+  .bh-tile.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 16%, transparent); }
+  .bh-tile b { font-size: 13px; }
+  .dh-wrap { max-width: 640px; margin: 6px auto 0; }
+  #dh-hemi { width: 100%; height: auto; display: block; }
+  .dh-seat { cursor: pointer; transition: opacity .15s; }
+  .dh-seat.off { opacity: .14; }
+  .dh-seat:hover { stroke: var(--warn); stroke-width: 1.6; }
+  .dh-c { font-family: var(--f-mono, monospace); font-size: 22px; font-weight: 700; fill: var(--text); }
+  .dh-cs { font-family: var(--f-mono, monospace); font-size: 9px; fill: var(--dim); letter-spacing: .1em; }
+  .dh-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 10px; }
+  .dh-party { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 10px; background: transparent; border: 1px solid var(--border); color: var(--text); font: inherit; font-size: 12.5px; cursor: pointer; }
+  .dh-party i { width: 10px; height: 10px; display: inline-block; }
+  .dh-party.on, .dh-party:hover { border-color: var(--brand); }
+  @media (max-width: 760px) {
+    .hc-grid { grid-template-columns: 1fr; }
+    .hc-head { grid-template-columns: 1fr; }
+    .hc-meters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bh-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }

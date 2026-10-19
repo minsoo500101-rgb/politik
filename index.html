@@ -332,8 +332,8 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
      crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/assets/app.css?v=4f536f43">
-<script defer src="/_vercel/insights/script.js"></script><style id="ko-type">body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}h1,h2,h3,h4,h5,h6,button{text-wrap:balance}p,li,td,dd,blockquote,figcaption{text-wrap:pretty}.nw{white-space:nowrap}</style><!--HUD--><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="/assets/hud.css?v=54e7e4a4" id="hud"><script>try{var d=document.documentElement;if(localStorage.getItem('politik:ui')==='light')d.removeAttribute('data-theme');else d.setAttribute('data-theme','dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script><!--/HUD--></head>
+<link rel="stylesheet" href="/assets/app.css?v=8e1d4c3d">
+<script defer src="/_vercel/insights/script.js"></script><style id="ko-type">body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}h1,h2,h3,h4,h5,h6,button{text-wrap:balance}p,li,td,dd,blockquote,figcaption{text-wrap:pretty}.nw{white-space:nowrap}</style><!--HUD--><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="/assets/hud.css?v=3983cb87" id="hud"><script>try{var d=document.documentElement;if(localStorage.getItem('politik:ui')==='light')d.removeAttribute('data-theme');else d.setAttribute('data-theme','dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script><script defer src="/assets/hud.js?v=27af1a6b"></script><!--/HUD--></head>
 <body>
 
 <!-- V29.0 — 키보드 사용자용 본문 바로가기 -->
@@ -549,7 +549,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V32.3</a>
+      <a href="/changelog" id="foot-year">V32.4</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -5673,9 +5673,12 @@ function renderCommitteeDetail(cmtName) {
 if (!state.billsFilter) state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, topic: 'all', q: '', page: 1, perPage: 50 };
 if (!state.homeFeedFilter) state.homeFeedFilter = { party: 'all' };
 
-function applyBillsFilter(bills) {
+// V32.4 — skip: { month, topic } 은 그 조건만 빼고 거른다(법안 관제의 월별 막대·분야 타일이 '나머지 조건' 기준 분포를 보여 주도록)
+const billYM = (d) => { const x = String(d || '').replace(/[^0-9]/g, ''); return x.length >= 6 ? `${x.slice(0, 4)}-${x.slice(4, 6)}` : ''; };
+function applyBillsFilter(bills, skip = {}) {
   const f = state.billsFilter;
   return bills.filter(b => {
+    if (f.month && !skip.month && billYM(b.PROC_DT) !== f.month) return false;
     if (f.result === 'pass' && !/가결/.test(b.PROC_RESULT_CD || '')) return false;
     if (f.result === 'orig' && b.PROC_RESULT_CD !== '원안가결') return false;
     if (f.result === 'amend' && b.PROC_RESULT_CD !== '수정가결') return false;
@@ -5689,7 +5692,7 @@ function applyBillsFilter(bills) {
       if (info.party !== f.party) return false;
     }
     if (f.committee && b.CURR_COMMITTEE !== f.committee) return false;
-    if (f.topic && f.topic !== 'all') {
+    if (f.topic && f.topic !== 'all' && !skip.topic) {
       if (getBillTopic(b).id !== f.topic) return false;
     }
     if (f.q) {
@@ -6841,7 +6844,17 @@ function renderDexBody() {
   const body = document.getElementById('dex-body');
   if (!body) return;
 
+  const anyF = !!(f.group || f.party || f.grade || f.q);
   body.innerHTML = `
+    <section class="hud-console" aria-label="국회 의석 관제">
+      <div class="hc-head">
+        <span class="hc-tag">의석 관제</span>
+        <h1>22대 국회 <b class="mono" id="dh-n">299</b>석</h1>
+        <div class="hc-readout mono" id="dh-readout" aria-live="polite">${anyF ? `조건에 맞는 의원만 밝게 · 인물 <b>${filtered.length.toLocaleString()}</b>명` : '점에 커서를 올리면 의원 · 누르면 상세 · 정당을 누르면 그 정당만'}</div>
+      </div>
+      <div class="dh-wrap"><svg id="dh-hemi" viewBox="0 0 400 214" role="img" aria-label="22대 국회 정당별 의석 반원도"></svg></div>
+      <div class="dh-legend" id="dh-legend"></div>
+    </section>
     <div class="dex-stats">
       <div class="dex-stat-card">
         <div class="dex-stat-big">${total.toLocaleString()}</div>
@@ -6935,6 +6948,38 @@ function renderDexBody() {
       nav(`/m/${encodeURIComponent(el.dataset.mid)}`);
     });
   });
+  renderDexHemicycle(anyF ? new Set(filtered.map(m => m.MONA_CD)) : null);
+}
+
+// V32.4 — 의석 관제: 국회 명부(data/assembly-22.json, 매일 동기화) 의석을 반원에 정당별로 배치.
+// 정당 순서는 의석수 많은 순(이념 좌우 배치를 임의로 하지 않는다). lit = 조건에 맞는 MONA_CD 집합(없으면 전부 밝게)
+async function renderDexHemicycle(lit) {
+  if (!document.getElementById('dh-hemi')) return;
+  const tok = state._dhTok = (state._dhTok || 0) + 1;
+  if (!state._asm22) { try { const j = await fetch('/data/assembly-22.json').then(r => r.json()); state._asm22 = Array.isArray(j) ? j : (j.members || []); } catch { state._asm22 = []; } }
+  const svg = document.getElementById('dh-hemi'); // await 사이에 도감이 다시 그려졌으면 새 svg 에 그린다
+  const mem = state._asm22; if (!mem.length || !svg || tok !== state._dhTok) return;
+  const N = mem.length, R = 9, rr = Array.from({ length: R }, (_, i) => 0.36 + i * 0.64 / (R - 1)), sr = rr.reduce((a, b) => a + b, 0);
+  const per = rr.map(r => Math.round(N * r / sr)); per[R - 1] += N - per.reduce((a, b) => a + b, 0);
+  const seats = []; rr.forEach((r, i) => { for (let j = 0; j < per[i]; j++) seats.push({ r, t: Math.PI - (per[i] > 1 ? j * Math.PI / (per[i] - 1) : Math.PI / 2) }); });
+  seats.sort((a, b) => b.t - a.t || a.r - b.r);
+  const cnt = {}; mem.forEach(m => { const p = m.party || '무소속'; cnt[p] = (cnt[p] || 0) + 1; });
+  const order = Object.keys(cnt).sort((a, b) => (a === '무소속') - (b === '무소속') || cnt[b] - cnt[a]);
+  const list = mem.slice().sort((a, b) => order.indexOf(a.party || '무소속') - order.indexOf(b.party || '무소속') || (a.name || '').localeCompare(b.name || '', 'ko'));
+  const cx = 200, cy = 206, RAD = 192, dot = 4.1, f = dexState.filter;
+  svg.innerHTML = list.map((m, i) => {
+    const s = seats[i], X = (cx + RAD * s.r * Math.cos(s.t)).toFixed(1), Y = (cy - RAD * s.r * Math.sin(s.t)).toFixed(1), p = m.party || '무소속';
+    const on = (!lit || lit.has(m.mona_cd)) && (!f.party || f.party === p);
+    return `<circle cx="${X}" cy="${Y}" r="${dot}" fill="${partyColor(p)}" class="dh-seat${on ? '' : ' off'}" data-i="${i}"><title>${escapeHtml(m.name)} · ${escapeHtml(p)} · ${escapeHtml(m.district || '')}</title></circle>`;
+  }).join('') + `<text x="200" y="192" text-anchor="middle" class="dh-c">${N}</text><text x="200" y="208" text-anchor="middle" class="dh-cs">과반 ${Math.floor(N / 2) + 1}</text>`;
+  const n = document.getElementById('dh-n'); if (n) n.textContent = N;
+  const lg = document.getElementById('dh-legend');
+  if (lg) lg.innerHTML = order.map(p => `<button type="button" class="dh-party${f.party === p ? ' on' : ''}" data-p="${escapeHtml(p)}"><i style="background:${partyColor(p)}"></i>${escapeHtml(p)} <b class="mono">${cnt[p]}</b></button>`).join('');
+  const out = document.getElementById('dh-readout'), base = out ? out.innerHTML : '';
+  svg.onpointermove = e => { const c = e.target.closest('.dh-seat'); if (!c || !out) return; const m = list[+c.dataset.i]; out.textContent = `${m.name} · ${m.party || '무소속'} · ${m.district || ''}${[].concat(m.committees || []).length ? ' · ' + [].concat(m.committees).slice(0, 2).join(', ') : ''}`; };
+  svg.onpointerleave = () => { if (out) out.innerHTML = base; };
+  svg.onclick = e => { const c = e.target.closest('.dh-seat'); if (!c) return; const m = list[+c.dataset.i]; if ((state.members || []).some(x => x.MONA_CD === m.mona_cd)) nav(`/m/${encodeURIComponent(m.mona_cd)}`); };
+  lg?.querySelectorAll('.dh-party').forEach(b => b.addEventListener('click', () => { f.party = f.party === b.dataset.p ? '' : b.dataset.p; renderDexBody(); }));
 }
 
 function renderDexCard(m, group) {
@@ -7003,6 +7048,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V32.4', date: '2026-10-19', title: '🛰 법안·인물·기사 화면 관제식 재설계', items: [
+    "법안 화면 맨 위에 '법안 관제'를 붙였다. 월별 처리 막대에서 흐린 막대는 전체, 밝은 막대는 지금 고른 조건의 건수이고, 막대를 누르면 그 달 법안만 남는다. 분야 타일(15개)을 누르면 그 분야만 남고, 타일 숫자는 지금 조건에서의 건수다. 고른 조건과 결과 건수는 판독 줄에 바로 나오고 '조건 지우기'로 한 번에 풀 수 있다. 가결률·정부안·의원안 비중·평균 출석률 계기도 함께 보인다.",
+    "인물(정치인 도감) 화면 맨 위에 22대 국회 의석 반원도를 넣었다. 매일 동기화하는 국회 명부 기준이고, 정당은 의석수 많은 순으로 배치했다(좌우 이념 배치가 아니다). 점에 커서를 올리면 의원 이름·정당·지역구·위원회가 나오고, 누르면 상세로 간다. 정당을 누르면 그 정당만 밝아지고 아래 카드도 그 정당으로 걸러진다. 검색하면 맞는 의원만 의석도에서 밝게 남는다.",
+    "기사 82편과 법령·레이더 페이지에 계기를 달았다. 맨 위 청록 선이 읽은 만큼 차오르고, 넓은 화면에서는 오른쪽에 목차가 붙어 지금 읽는 소제목을 표시한다. 휴대폰에서는 오른쪽 아래 '목차' 버튼으로 연다. 핵심 숫자 칸은 화면에 들어올 때 0부터 세어 올라간다(움직임 줄이기 설정이면 바로 표시)."
+  ]},
   { v: 'V32.3', date: '2026-10-19', title: '🛰 전체 기능 바로가기 · 사이트 전체 관제 테마', items: [
     "관제 화면(홈) 아래에 '전체 기능'을 붙였다. 예전 대시보드에서만 들어갈 수 있던 경제 지표·9회 지방선거·사전투표·정치 분포 지도·활동 랭킹·위원회·정당사·실검·용어 사전·공약 아카이브를 국회·법 / 사람·정당 / 선거 / 경제·국가 지표 / 읽을거리·도구 / 사이트 여섯 묶음으로 나눴고, 항목마다 한 줄 설명을 달았다. 위쪽 메뉴의 '전체 ☰'을 누르면 바로 내려간다.",
     "사이트 전체(법안·인물·경제 같은 앱 화면, 기사 82편, 법령 신구표 4,930쪽, 곧 시행 레이더, 위기 지표판)에 관제 화면과 같은 색과 글꼴을 입혔다. 어두운 바탕에 청록 강조색, 제목은 검은고딕 계열, 숫자는 고정폭 글꼴이고, 머리말에는 오방색 띠가 붙는다. 화면 구조와 내용은 그대로다.",
@@ -10406,6 +10456,34 @@ function renderBillsPagination(currentPage, totalPages, totalItems, perPage) {
   `;
 }
 
+// V32.4 — 법안 관제 상호작용: 월별 막대(캔버스) 호버·클릭, 분야 타일 클릭, 조건 지우기
+function bindBillsHud(view, rerender) {
+  const cv = view.querySelector('#bh-months'), data = state._billsHud || [];
+  const f = state.billsFilter;
+  const go = () => { f.page = 1; rerender(); };
+  view.querySelectorAll('.bh-tile').forEach(el => el.addEventListener('click', () => { f.topic = f.topic === el.dataset.topic ? 'all' : el.dataset.topic; go(); }));
+  view.querySelector('#bh-clear')?.addEventListener('click', () => { state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, topic: 'all', month: null, q: '', page: 1, perPage: 50 }; rerender(); });
+  if (!cv || !data.length) return;
+  const x = cv.getContext('2d'), W = cv.width, H = cv.height, pad = 6, n = data.length, bw = (W - pad * 2) / n, mx = Math.max(1, ...data.map(d => d[1]));
+  const css = getComputedStyle(document.documentElement), ac = css.getPropertyValue('--accent').trim() || '#3fe0c8', dim = css.getPropertyValue('--border-strong').trim() || '#24504b', hw = '#f2c14e';
+  let hv = -1;
+  const draw = () => {
+    x.clearRect(0, 0, W, H);
+    data.forEach(([m, all, cur], i) => {
+      const X = pad + i * bw, hA = (all / mx) * (H - 24), hC = (cur / mx) * (H - 24), sel = f.month === m;
+      x.fillStyle = dim; x.fillRect(X + 1, H - 4 - hA, bw - 2, hA);
+      x.fillStyle = sel ? hw : ac; x.globalAlpha = f.month && !sel ? 0.35 : 1; x.fillRect(X + 1, H - 4 - hC, bw - 2, hC); x.globalAlpha = 1;
+      if (i === hv) { x.strokeStyle = hw; x.lineWidth = 2; x.strokeRect(X + 1, 4, bw - 2, H - 8); }
+    });
+  };
+  const at = (e) => { const r = cv.getBoundingClientRect(); return Math.max(0, Math.min(n - 1, Math.floor(((e.clientX - r.left) * W / r.width - pad) / bw))); };
+  const hover = view.querySelector('#bh-hover');
+  cv.addEventListener('pointermove', e => { hv = at(e); const [m, all, cur] = data[hv]; if (hover) hover.textContent = `${m} · 전체 ${all}건${cur !== all ? ` · 조건 ${cur}건` : ''}`; draw(); });
+  cv.addEventListener('pointerleave', () => { hv = -1; if (hover) hover.textContent = ''; draw(); });
+  cv.addEventListener('click', e => { const m = data[at(e)][0]; f.month = f.month === m ? null : m; go(); });
+  draw();
+}
+
 function renderBillsPage() {
   const bills = state.bills || [];
   if (!bills.length) {
@@ -10530,14 +10608,50 @@ function renderBillsPage() {
     topicPartyMap[tid].set(p, (topicPartyMap[tid].get(p) || 0) + 1);
   }
 
+  // V32.4 — 법안 관제: 월별 막대(나머지 조건 기준 분포, 누르면 그 달만) + 분야 타일(누르면 그 분야만) + 판독 줄
+  const noMonth = applyBillsFilter(bills, { month: true });
+  const noTopic = applyBillsFilter(bills, { topic: true });
+  const hudMonths = monthArr.map(([m, c]) => [m, c, noMonth.filter(b => billYM(b.PROC_DT) === m).length]);
+  const tileCnt = {}; for (const b of noTopic) { const id = getBillTopic(b).id; tileCnt[id] = (tileCnt[id] || 0) + 1; }
+  const tileMax = Math.max(1, ...BILL_TOPICS.map(t => topicCounts[t.id] || 0));
+  const cond = [
+    f.month && `${f.month.replace('-', '.')}`,
+    f.topic && f.topic !== 'all' && (BILL_TOPICS.find(t => t.id === f.topic)?.label),
+    f.result !== 'all' && ({ pass: '가결', orig: '원안가결', amend: '수정가결', reject: '부결' }[f.result]),
+    f.kind !== 'all' && ({ gov: '정부 발의', chair: '위원장 발의', mp: '의원 발의' }[f.kind]),
+    f.party, f.committee, f.q && `"${f.q}"`,
+  ].filter(Boolean);
+  state._billsHud = hudMonths;
+  const pct = (a, b) => b ? (a / b * 100).toFixed(1) : '0';
   return `
     <div class="group-back" id="back-home">← 조직도</div>
     <div class="bills-page">
-      <div class="bills-hero">
-        <div class="bills-hero-eye">REPUBLIC OF KOREA · PATCH NOTES · v22</div>
-        <h1>전체 패치노트 ${totalCount.toLocaleString()}건</h1>
-        <p>22대 국회 본회의 처리 의안 · 발의자 종류·정당·위원회·키워드로 필터링</p>
-      </div>
+      <section class="hud-console" aria-label="법안 관제">
+        <div class="hc-head">
+          <span class="hc-tag">법안 관제</span>
+          <h1>22대 통과 법안 <b class="mono">${totalCount.toLocaleString()}</b>건</h1>
+          <div class="hc-readout mono" id="bh-readout" aria-live="polite">${cond.length ? `조건 ${escapeHtml(cond.join(' · '))} → <b>${filteredCount.toLocaleString()}</b>건 <button class="hc-clear" id="bh-clear" type="button">조건 지우기</button>` : '조건 없음 — 막대나 분야를 눌러 걸러 보세요'}</div>
+        </div>
+        <div class="hc-meters">
+          <div><span>가결률</span><b class="mono">${passRate}%</b><i style="--w:${passRate}%"></i></div>
+          <div><span>정부안 비중</span><b class="mono">${pct(kindCounts.gov || 0, total)}%</b><i style="--w:${pct(kindCounts.gov || 0, total)}%"></i></div>
+          <div><span>의원안 비중</span><b class="mono">${pct(kindCounts.mp || 0, total)}%</b><i style="--w:${pct(kindCounts.mp || 0, total)}%"></i></div>
+          <div><span>평균 출석률</span><b class="mono">${avgTurnout}%</b><i style="--w:${avgTurnout === '—' ? 0 : avgTurnout}%"></i></div>
+        </div>
+        <div class="hc-grid">
+          <div class="hc-cell">
+            <div class="hc-lbl">MONTHLY · 월별 처리 <span>흐린 막대 = 전체 · 밝은 막대 = 지금 조건 · 누르면 그 달만</span></div>
+            <canvas id="bh-months" width="900" height="200" aria-label="월별 처리 의안 막대 그래프"></canvas>
+            <div class="hc-axis mono"><span>${monthArr[0]?.[0] || ''}</span><span id="bh-hover"></span><span>${monthArr[monthArr.length - 1]?.[0] || ''}</span></div>
+          </div>
+          <div class="hc-cell">
+            <div class="hc-lbl">DOMAIN · 분야 <span>숫자 = 지금 조건에서 · 누르면 그 분야만</span></div>
+            <div class="bh-tiles">
+              ${BILL_TOPICS.map(t => `<button type="button" class="bh-tile${f.topic === t.id ? ' on' : ''}" data-topic="${t.id}" style="--c:${t.color};--w:${((topicCounts[t.id] || 0) / tileMax * 100).toFixed(1)}%"><span>${t.icon} ${escapeHtml(t.label)}</span><b class="mono">${(tileCnt[t.id] || 0).toLocaleString()}</b></button>`).join('')}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- 필터 바 -->
       <div class="patch-filters">
@@ -13211,6 +13325,7 @@ function route() {
         state.billsFilter = { result: 'all', kind: 'all', party: null, committee: null, q: '', page: 1, perPage: 50 };
         renderBills();
       });
+      bindBillsHud(view, renderBills); // V32.4 법안 관제
       // V22.1 — 페이지네이션 버튼 클릭 (무한 스크롤 제거)
       view.querySelectorAll('.pg-btn[data-page]').forEach(btn => {
         btn.addEventListener('click', () => {
