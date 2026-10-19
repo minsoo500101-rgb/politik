@@ -93,8 +93,9 @@
     sx.beginPath(); v.forEach((a, i) => (i ? sx.lineTo(X(i), Y(a)) : sx.moveTo(X(i), Y(a)))); sx.strokeStyle = '#ff4d3a'; sx.lineWidth = 2.5; sx.shadowColor = '#ff4d3a'; sx.shadowBlur = 8; sx.stroke(); sx.shadowBlur = 0;
     v.forEach((a, i) => { sx.fillStyle = i === hv ? '#f2c14e' : '#ff4d3a'; sx.beginPath(); sx.arc(X(i), Y(a), i === hv ? 6 : 3, 0, 7); sx.fill(); });
   }
-  sp.addEventListener('mousemove', (e) => { if (!KOSPI.length) return; const r = sp.getBoundingClientRect(), x = (e.clientX - r.left) * sp.width / r.width; let b = 0, bd = 1e9; KOSPI.forEach((k, i) => { const d = Math.abs(sp._X(i) - x); if (d < bd) { bd = d; b = i; } }); hv = b; const [d, v] = KOSPI[b], pc = b ? (v / KOSPI[b - 1][1] - 1) * 100 : 0; $('#readout').textContent = `${d} 종가 ${v.toLocaleString('ko-KR', { minimumFractionDigits: 2 })}${b ? ` · ${pc > 0 ? '+' : ''}${pc.toFixed(2)}%` : ''}`; spark(); });
-  sp.addEventListener('mouseleave', () => { hv = -1; if (KOSPI.length) spark(); });
+  const spHover = (e) => { if (!KOSPI.length) return; const r = sp.getBoundingClientRect(), x = (e.clientX - r.left) * sp.width / r.width; let b = 0, bd = 1e9; KOSPI.forEach((k, i) => { const d = Math.abs(sp._X(i) - x); if (d < bd) { bd = d; b = i; } }); hv = b; const [d, v] = KOSPI[b], pc = b ? (v / KOSPI[b - 1][1] - 1) * 100 : 0; $('#readout').textContent = `${d} 종가 ${v.toLocaleString('ko-KR', { minimumFractionDigits: 2 })}${b ? ` · ${pc > 0 ? '+' : ''}${pc.toFixed(2)}%` : ''}`; spark(); };
+  sp.addEventListener('pointermove', spHover); sp.addEventListener('pointerdown', spHover);
+  sp.addEventListener('pointerleave', () => { hv = -1; if (KOSPI.length) spark(); });
 
   // ── 곧 시행 ──
   function laws() {
@@ -105,15 +106,17 @@
 
   // ── 흐름 · 재판 ──
   function thread(h) {
-    $('#thread').innerHTML = ISSUES.map((it, i) => `<li data-i="${i}" aria-expanded="false" class="${h && h.includes(i) ? 'hit' : ''}"><button><span class="d">${it.d.slice(5).replace('-', '.')}</span><span class="t">${esc(it.tt)}</span></button><div class="more">${it.big ? `<div class="num">${esc(it.big)}</div>` : ''}<div class="sub">${esc(it.sub)}</div><a class="go" href="${esc(it.href)}">기사 열기 ›</a></div></li>`).join('');
+    $('#thread').innerHTML = ISSUES.map((it, i) => `<li data-i="${i}" aria-expanded="false" class="${h && h.includes(i) ? 'hit' : ''}"><button><span class="d">${it.d.slice(5).replace('-', '.')}</span><span class="t">${esc(it.tt)}</span></button><div class="more">${it.big ? `<div class="num">${esc(it.big)}</div>` : ''}<div class="sub">${esc(it.sub)}</div><a class="go" href="${esc(it.href)}">기사 열기 ›</a></div></li>`).join('') + (ISSUES.length > 6 ? `<li class="all"><button class="all-b">최근 사안 ${ISSUES.length - 6}건 더 보기</button></li>` : '');
+    $('#thread').classList.toggle('open', !!(h && h.length)); // 폰은 6건만 보이고, 검색 결과가 있으면 전부 펼친다
   }
-  $('#thread').addEventListener('click', (e) => { if (e.target.closest('a')) return; const li = e.target.closest('li[data-i]'); if (!li) return; const o = li.getAttribute('aria-expanded') === 'true'; document.querySelectorAll('#thread li').forEach((x) => x.setAttribute('aria-expanded', 'false')); li.setAttribute('aria-expanded', String(!o)); const r = ISSUES[+li.dataset.i].r; if (!o && r && GOV[r]) { sel = r; $('#htx').textContent = 'LOCK ' + r; } if (reduce) draw(0); });
+  $('#thread').addEventListener('click', (e) => { if (e.target.closest('a')) return; if (e.target.closest('.all-b')) { $('#thread').classList.add('open'); return; } const li = e.target.closest('li[data-i]'); if (!li) return; const o = li.getAttribute('aria-expanded') === 'true'; document.querySelectorAll('#thread li').forEach((x) => x.setAttribute('aria-expanded', 'false')); li.setAttribute('aria-expanded', String(!o)); const r = ISSUES[+li.dataset.i].r; if (!o && r && GOV[r]) { sel = r; $('#htx').textContent = 'LOCK ' + r; } if (reduce) draw(0); });
   function cases() {
     $('#cases').innerHTML = EYE.yoon.cases.map((c) => `<div class="case" title="${esc(c.note)}"><span>${esc(c.id)}</span><div class="bar">${[0, 1, 2].map((i) => (c.s[i] ? `<i class="${c.s[i][0]}">${esc(c.s[i][1].replace('징역', '').replace(' 집유', '·집유'))}</i>` : '<i class="p">—</i>')).join('')}</div></div>`).join('');
   }
 
   // ── 홀로테이블 ──
   const cv = $('#holo'), hx = cv.getContext('2d'), W = cv.width, H = cv.height, S = 58;
+  const HINT = matchMedia('(pointer:coarse)').matches ? '옆으로 밀어 돌리기 · 눌러서 고정' : '끌어서 돌리기 · 눌러서 고정';
   let cells = [], rot = -0.45, tilt = 0.56, drag = null, sel = null, hitR = [], NK = null, SEA = null, hasNK = false;
   function holoInit() {
     cells = HEX.map(([n, c, r]) => ({ n, x: c * S * 1.74 + (Math.floor(r) % 2 ? S * 0.87 : 0), y: r * S * 1.5 }));
@@ -122,13 +125,18 @@
     const gg = cells.find((c) => c.n === '경기'), gw = cells.find((c) => c.n === '강원');
     NK = { x: gg.x - 20, y: gg.y - 150 }; SEA = { x: gw.x + 330, y: gw.y - 20 };
     hasNK = ISSUES.some((i) => i.r === '북측');
-    reduce ? draw(0) : requestAnimationFrame(loop);
+    $('#htx').textContent = HINT; reduce ? draw(0) : requestAnimationFrame(loop);
   }
   function legend() {
     const nM = Object.values(GOV).filter((g) => g[1] === '민주').length, nG = Object.values(GOV).length - nM, nk = ISSUES.find((i) => i.r === '북측');
     $('#legend').innerHTML = `<span><i style="background:var(--minju)"></i>민주 단체장 ${nM}</span><span><i style="background:var(--gukim)"></i>국힘 단체장 ${nG}</span><span><i style="background:var(--hwang)"></i>최근 사안(빛기둥)</span>${nk ? `<span><i style="background:var(--jeok)"></i>북측 ${esc(nk.d.slice(5).replace('-', '/'))} ${esc(nk.tt.split('—')[0].trim())}</span>` : ''}`;
   }
-  const P = (x, y, z) => { const cs = Math.cos(rot), sn = Math.sin(rot), rx = x * cs - y * sn, ry = x * sn + y * cs; return { x: W / 2 + rx * 1.6, y: H * 0.5 + ry * 1.6 * tilt - z * 1.6, d: ry }; };
+  // 폰: 캔버스가 화면 폭(약 340px)으로 줄면 글자가 7px대가 된다 → 지도(Z)와 글자(F)를 키운다
+  const NARROW = matchMedia('(max-width:720px)');
+  let Z = 1.6, F = 1;
+  const fit = () => { Z = NARROW.matches ? 2.0 : 1.6; F = NARROW.matches ? 1.7 : 1; if (reduce) draw(0); };
+  fit(); NARROW.addEventListener ? NARROW.addEventListener('change', fit) : NARROW.addListener(fit);
+  const P = (x, y, z) => { const cs = Math.cos(rot), sn = Math.sin(rot), rx = x * cs - y * sn, ry = x * sn + y * cs; return { x: W / 2 + rx * Z, y: H * 0.5 + ry * Z * tilt - z * Z, d: ry }; };
   function hexPts(c, z) { const a = []; for (let i = 0; i < 6; i++) { const t = Math.PI / 180 * (60 * i - 30); a.push(P(c.x + S * 0.94 * Math.cos(t), c.y + S * 0.94 * Math.sin(t), z)); } return a; }
   function poly(pts) { hx.beginPath(); pts.forEach((p, i) => (i ? hx.lineTo(p.x, p.y) : hx.moveTo(p.x, p.y))); hx.closePath(); }
   function draw(t) {
@@ -141,35 +149,36 @@
       const g = GOV[c.n] || ['', '민주'], p = g[1] === '민주' ? [79, 140, 255] : [255, 77, 58], on = sel === c.n, hit = hitR.includes(c.n), top = hexPts(c, c.h), bot = hexPts(c, 0);
       for (let i = 0; i < 6; i++) { const j = (i + 1) % 6; poly([bot[i], bot[j], top[j], top[i]]); hx.fillStyle = `rgba(${p},${on ? 0.28 : 0.1})`; hx.fill(); hx.strokeStyle = `rgba(${p},.35)`; hx.lineWidth = 1; hx.stroke(); }
       poly(top); hx.fillStyle = `rgba(${p},${on ? 0.65 : 0.3})`; hx.fill(); hx.strokeStyle = hit ? '#f2c14e' : `rgba(${p},.95)`; hx.lineWidth = hit || on ? 3 : 1.5; hx.stroke();
-      const ct = P(c.x, c.y, c.h); hx.fillStyle = '#eef3ef'; hx.textAlign = 'center'; hx.font = '22px "Black Han Sans"'; hx.fillText(c.n, ct.x, ct.y + 7);
+      const ct = P(c.x, c.y, c.h); hx.fillStyle = '#eef3ef'; hx.textAlign = 'center'; hx.font = `${Math.round(22 * F)}px "Black Han Sans"`; hx.fillText(c.n, ct.x, ct.y + 7 * F);
       if (c.iss) { const k = reduce ? 0.5 : (t / 900) % 1, gr = hx.createLinearGradient(0, ct.y - 160, 0, ct.y); gr.addColorStop(0, 'rgba(242,193,78,0)'); gr.addColorStop(1, 'rgba(242,193,78,.75)'); hx.fillStyle = gr; hx.fillRect(ct.x - 3, ct.y - 160, 6, 160); hx.beginPath(); hx.arc(ct.x, ct.y - 160 * k, 4, 0, 7); hx.fillStyle = '#f2c14e'; hx.fill(); }
     });
     if (hasNK) {
       hx.strokeStyle = 'rgba(255,77,58,.85)'; hx.lineWidth = 2; hx.setLineDash([6, 6]); hx.lineDashOffset = reduce ? 0 : -t / 25; hx.beginPath();
       for (let i = 0; i <= 40; i++) { const u = i / 40, p = P(NK.x + (SEA.x - NK.x) * u, NK.y + (SEA.y - NK.y) * u, Math.sin(u * Math.PI) * 170); i ? hx.lineTo(p.x, p.y) : hx.moveTo(p.x, p.y); } hx.stroke(); hx.setLineDash([]);
       const pa = P(NK.x, NK.y, 0), pb = P(SEA.x, SEA.y, 0); hx.fillStyle = '#ff4d3a'; hx.fillRect(pa.x - 5, pa.y - 5, 10, 10); hx.beginPath(); hx.arc(pb.x, pb.y, 6, 0, 7); hx.fill();
-      hx.font = '16px "IBM Plex Sans KR"'; hx.textAlign = 'left'; hx.fillText('북측', pa.x + 10, pa.y - 10);
+      hx.font = `${Math.round(16 * F)}px "IBM Plex Sans KR"`; hx.textAlign = 'left'; hx.fillText('북측', pa.x + 10, pa.y - 10);
     }
     if (sel) { const c = cells.find((x) => x.n === sel), ct = P(c.x, c.y, c.h), r = 46 + (reduce ? 0 : Math.sin(t / 220) * 3); hx.strokeStyle = '#f2c14e'; hx.lineWidth = 2;
       [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([qx, qy]) => { hx.beginPath(); hx.moveTo(ct.x + qx * r, ct.y + qy * r - qy * 14); hx.lineTo(ct.x + qx * r, ct.y + qy * r); hx.lineTo(ct.x + qx * r - qx * 14, ct.y + qy * r); hx.stroke(); });
       hx.beginPath(); hx.moveTo(ct.x + r, ct.y - r); hx.lineTo(ct.x + r + 60, ct.y - r - 60); hx.lineTo(W - 30, ct.y - r - 60); hx.stroke();
-      hx.fillStyle = '#f2c14e'; hx.font = '14px "JetBrains Mono"'; hx.textAlign = 'right'; hx.fillText(`LOCK ${sel} · ${(GOV[sel] || [''])[0]}`, W - 34, ct.y - r - 68); }
-    hx.fillStyle = 'rgba(147,181,174,.85)'; hx.font = '15px "JetBrains Mono"'; hx.textAlign = 'left';
-    hx.fillText(`ROT ${String(Math.round((((rot % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) * 57.3)).padStart(3, '0')}°  TILT ${tilt.toFixed(2)}`, 16, H - 16);
+      hx.fillStyle = '#f2c14e'; hx.font = `${Math.round(14 * F)}px "JetBrains Mono"`; hx.textAlign = 'right'; hx.fillText(`LOCK ${sel} · ${(GOV[sel] || [''])[0]}`, W - 34, ct.y - r - 68); }
+    hx.fillStyle = 'rgba(147,181,174,.85)'; hx.font = `${Math.round(15 * F)}px "JetBrains Mono"`; hx.textAlign = 'left';
+    hx.fillText(`ROT ${String(Math.round((((rot % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) * 57.3)).padStart(3, '0')}°  TILT ${tilt.toFixed(2)}`, 16, H - 16 * F);
   }
   function loop(t) { if (!drag) rot += 0.0012; draw(t); requestAnimationFrame(loop); }
   cv.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, r: rot, t: tilt, moved: false }; cv.setPointerCapture(e.pointerId); });
   cv.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true; rot = drag.r + dx * 0.008; tilt = Math.max(0.3, Math.min(0.85, drag.t + dy * 0.002)); if (reduce) draw(0); });
+  cv.addEventListener('pointercancel', () => { drag = null; });
   cv.addEventListener('pointerup', (e) => {
     const was = drag && drag.moved; drag = null; if (was || !cells.length) return;
     const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
     const h = cells.map((c) => ({ c, p: P(c.x, c.y, c.h) })).filter((o) => Math.hypot(o.p.x - x, o.p.y - y) < S * 1.2).sort((a, b) => b.p.d - a.p.d)[0];
-    if (!h) { sel = null; $('#card').hidden = true; $('#htx').textContent = '끌어서 돌리기 · 눌러서 고정'; if (reduce) draw(0); return; }
+    if (!h) { sel = null; $('#card').hidden = true; $('#htx').textContent = HINT; if (reduce) draw(0); return; }
     sel = h.c.n; const g = GOV[sel] || ['—', '—'], iss = ISSUES.filter((i) => i.r === sel);
     $('#card').innerHTML = `<button class="x" aria-label="닫기">×</button><h3>${esc(sel)}</h3><div class="meta">광역단체장 · 9회 지선 2026.6.3</div><p><b style="color:var(--ink)">${esc(g[0])}</b> · ${g[1] === '민주' ? '더불어민주당' : '국민의힘'}</p>${iss.length ? iss.map((i) => `<p>▸ <a href="${esc(i.href)}" style="color:var(--ink-2)">${esc(i.tt)}</a></p>`).join('') : '<p>최근 사안 중 이 지역 지명이 나온 기사 없음</p>'}`;
     $('#card').hidden = false; $('#htx').textContent = 'LOCK ' + sel; if (reduce) draw(0);
   });
-  $('#card').addEventListener('click', (e) => { if (e.target.closest('.x')) { $('#card').hidden = true; sel = null; if (reduce) draw(0); } });
+  $('#card').addEventListener('click', (e) => { if (e.target.closest('.x')) { $('#card').hidden = true; sel = null; $('#htx').textContent = HINT; if (reduce) draw(0); } });
 
   // ── 명령줄 ──
   function suggest() {

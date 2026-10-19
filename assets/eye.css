@@ -74,7 +74,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;background:rep
 
 /* 홀로테이블 */
 .holo{position:relative;padding:10px 10px 10px 40px}
-.holo canvas{width:100%;height:auto;aspect-ratio:1/0.86;display:block;cursor:grab;touch-action:none}
+.holo canvas{width:100%;height:auto;aspect-ratio:1/0.86;display:block;cursor:grab;touch-action:pan-y}
 .holo canvas:active{cursor:grabbing}
 .hint{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3)}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--ink-2);margin-top:4px}
@@ -108,7 +108,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;background:rep
 /* 명령줄 */
 .cmd{border:1px solid var(--line-hi);background:rgba(4,12,13,.88);padding:10px 12px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
 .cmd label{font-family:var(--f-han);font-size:17px;color:var(--cheong)}
-.cmd input{all:unset;font-size:15px;min-width:0}
+.cmd input{all:unset;font-size:16px;min-width:0}
 .cmd input::placeholder{color:var(--ink-3)}
 .cmd .k{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3);border:1px solid var(--line);padding:2px 6px}
 .sugg{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
@@ -130,3 +130,45 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;background:rep
 .lawl small{display:block;color:var(--ink-3);font-size:11px}
 .src{font-size:10.5px;color:var(--ink-3);margin-top:6px}
 .src a{color:var(--ink-2)}
+/* 흐름 '더 보기' — 폰에서만 */
+.thread li.all{display:none;border-bottom:0}
+.thread .all-b{all:unset;cursor:pointer;display:block;width:100%;text-align:center;padding:12px 0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;color:var(--cheong);border:1px dashed var(--line-hi);margin-top:8px}
+
+/* 폰(720px 이하): 헤더 압축 · 세로 표제를 가로 띠로 · 지역 카드는 하단 시트 · 탭 영역 키움 */
+@media(max-width:720px){
+  .shell{padding-block:8px 16px;gap:10px;grid-template-columns:minmax(0,1fr)}
+  .top{gap:8px 10px;padding-bottom:8px}
+  .brand{flex:1;min-width:0}
+  .brand b{font-size:21px}
+  .brand span{font-size:10px;letter-spacing:.22em}
+  .top > .dan{display:none}
+  .clock{font-size:11.5px;color:var(--ink-2)}
+  .chips{flex:1 0 100%;order:3;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .chips::-webkit-scrollbar,.top nav::-webkit-scrollbar{display:none}
+  .top nav{flex:1 0 100%;order:4;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:0;margin:0 -4px}
+  .top nav a{padding:10px 9px;font-size:12px;white-space:nowrap}
+  .panel,.holo{padding:10px 12px 12px}
+  .holo{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(10,24,26,.84)} /* backdrop-filter가 있으면 fixed 하단 시트가 패널 기준이 된다 */
+  .panel > .v{position:static;width:auto;border-right:0;padding:0;margin-bottom:4px;justify-content:flex-start;align-items:center;gap:8px}
+  .panel > .v span{writing-mode:horizontal-tb;font-size:16px;letter-spacing:.08em}
+  .panel > .v .dan{position:static;width:30px;height:4px;flex-direction:row}
+  .ph{flex-wrap:wrap;row-gap:2px}
+  .holo canvas{aspect-ratio:1/0.95;margin-inline:-6px;width:calc(100% + 12px);max-width:none}
+  .legend{gap:6px 12px}
+  .card{position:fixed;left:0;right:0;top:auto;bottom:0;width:auto;max-height:58vh;overflow:auto;z-index:60;border-left:1px solid var(--line-hi);border-top:3px solid var(--hwang);padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -12px 40px rgba(0,0,0,.6)}
+  .card .x{width:44px;height:44px;right:4px;top:4px;font-size:22px}
+  .card p{font-size:13.5px}
+  .card p a{display:inline-block;padding:4px 0}
+  .thread button{padding:10px 0;grid-template-columns:38px 1fr}
+  .thread .more{padding-left:46px}
+  .thread:not(.open) li[data-i]:nth-child(n+7){display:none}
+  .thread:not(.open) li.all{display:block}
+  .case{grid-template-columns:76px 1fr}
+  .bar i{height:22px;font-size:10.5px}
+  .lawl li{padding:8px 0}
+  .cmd{grid-template-columns:auto 1fr;padding:12px}
+  .cmd .k{display:none}
+  .sugg button{padding:9px 12px;font-size:13px}
+  .src a{display:inline-block;padding:6px 0}
+  .ghost{font-size:62vw}
+}

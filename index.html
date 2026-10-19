@@ -332,7 +332,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
      crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/assets/app.css?v=a78d9905">
+<link rel="stylesheet" href="/assets/app.css?v=9a5a29b0">
 <script defer src="/_vercel/insights/script.js"></script><style id="ko-type">body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}h1,h2,h3,h4,h5,h6,button{text-wrap:balance}p,li,td,dd,blockquote,figcaption{text-wrap:pretty}.nw{white-space:nowrap}</style></head>
 <body>
 
@@ -549,7 +549,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V32.1</a>
+      <a href="/changelog" id="foot-year">V32.2</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -7003,6 +7003,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V32.2', date: '2026-10-19', title: '📱 관제 화면 휴대폰 정리', items: [
+    "휴대폰에서 관제 화면을 다시 짰다. 위쪽 머리말 높이를 186px에서 121px로 줄였고, 상태 칩과 메뉴는 한 줄로 두고 옆으로 밀어 넘기게 했다. 패널 왼쪽의 세로 제목 여백(40px)을 없애고 제목을 가로로 눕혔다.",
+    "지도 위에서 위아래로 쓸면 이제 페이지가 내려간다. 전에는 지도가 손가락을 붙잡아 화면이 움직이지 않았다. 옆으로 밀면 지도가 돌아간다. 폰에서는 지도와 지역 이름을 더 크게 그리고, 지역을 누르면 정보가 화면 아래에서 올라온다.",
+    "최근 사안은 폰에서 6건만 먼저 보여 주고 나머지는 '더 보기'로 펼친다(검색하면 전부 펼침). 코스피 그래프는 손가락으로 눌러도 날짜별 종가가 나온다. 입력창 글자를 16px로 키워 아이폰에서 입력할 때 화면이 확대되지 않게 했고, 버튼과 링크는 누르기 쉽게 키웠다."
+  ]},
   { v: 'V32.1', date: '2026-10-19', title: '🛰 홈 = 관제 화면 · 가계부채 BIS 기준', items: [
     "홈(patchkr.com)을 관제 화면으로 바꿨다. 첫 화면에서 최근 사안·곧 시행되는 법령·재판 3심·위기 지표·코스피·광역 16곳을 바로 보고 눌러 볼 수 있다. 기존 대시보드(인기 순위·최신 법안·탐색 도구)는 patchkr.com/home 으로 옮겼고, 관제 화면 위쪽 '대시보드'로 갈 수 있다. 법안·인물·선거 같은 다른 화면 주소는 그대로다. 검색엔진이 읽는 홈 본문(약 1,500단어)도 새 홈에 그대로 실었다.",
     "경제 지표의 가계부채/GDP 비율을 국제결제은행(BIS) 공식 시계열로 바꿨다(각 해 4분기 말 값). 2025년은 97.2%로 나가고 있었는데 BIS 기준으로는 88.1%다 — 기존 값은 GDP 기준년이 바뀌기 전 수치로 보인다. 정점은 2021년 3분기 99.1%, 최신은 2026년 1분기 85.1%다. 이 값을 쓰던 '2026 경제 결산' 기사에도 정정 표시를 붙였다."
