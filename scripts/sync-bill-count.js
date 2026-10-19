@@ -63,7 +63,7 @@ function fetchJson(url) {
     [/(about-stat-n">)([\d,]+)(<\/div><div class="about-stat-l">22대 통과 법안)/g, fmt],
     [/(, )(\d{3,5})(건 법안)/g, plain],                         // <meta keywords> 의 "1595건 법안"
   ];
-  const FILES = ['index.html', 'llms.txt', 'llms-full.txt'];
+  const FILES = ['index.html', 'eye.html', 'llms.txt', 'llms-full.txt'];   // eye.html = 홈(/) — V32.1
   let changedAny = false;
 
   for (const f of FILES) {

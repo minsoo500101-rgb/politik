@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "updatedAt": "2026-10-17",
   "_note": "한국 핵심 경제 지표 시계열 (2015~2026). 출처: 한국은행 ECOS, 통계청 KOSIS, 한국거래소 공식. 정부 공식 공개 데이터 인용 — 추가 라이선스 불필요. 2026년 시점형 지표(기준금리·환율·코스피·코스닥)는 연말 확정값이 아니라 2026-10-17 기준 최신 종가다 (기준금리 202609 / 원/달러 환율 20261016 / 코스피 종가 20261016 / 코스닥 종가 20261016). 연평균·연합계 지표(물가·실업률·GDP·가계부채·수출)는 연도가 끝나야 값이 확정돼 비워 둔다.",
   "indicators": [
@@ -449,60 +449,55 @@
       "id": "household_debt_ratio",
       "label": "가계부채/GDP 비율",
       "unit": "%",
-      "source": "한국은행",
-      "source_url": "https://ecos.bok.or.kr",
-      "desc": "가계신용 잔액의 명목 GDP 대비 비율 (연말).",
-      "interpretation": "한국은 OECD 최상위권. 100% 이상이면 위험 신호로 분류.",
+      "source": "국제결제은행(BIS)",
+      "source_url": "https://data.bis.org/topics/TOTAL_CREDIT",
+      "desc": "가계(비영리단체 포함) 부채의 명목 GDP 대비 비율. 각 해 4분기 말 값. BIS 신용통계(시계열 단절 조정).",
+      "interpretation": "2021년 3분기 99.1%가 정점. 2026년 1분기 85.1%(2018년 1분기 이후 최저). 비율 하락은 빚 감소보다 명목 GDP 증가 영향이 크다.",
       "higher_is_good": false,
-      "ecos": {
-        "stat": "903Y049",
-        "period": "Q",
-        "item": ""
-      },
       "data": [
         {
           "year": 2015,
-          "value": 79.7
+          "value": 79.2
         },
         {
           "year": 2016,
-          "value": 84.4
+          "value": 82.9
         },
         {
           "year": 2017,
-          "value": 88.4
+          "value": 84.8
         },
         {
           "year": 2018,
-          "value": 91.8
+          "value": 86.8
         },
         {
           "year": 2019,
-          "value": 95.4
+          "value": 89.6
         },
         {
           "year": 2020,
-          "value": 103.7
+          "value": 97.1
         },
         {
           "year": 2021,
-          "value": 105.5
-        },
-        {
-          "year": 2022,
-          "value": 104.5
-        },
-        {
-          "year": 2023,
-          "value": 100.4
-        },
-        {
-          "year": 2024,
           "value": 98.6
         },
         {
+          "year": 2022,
+          "value": 97.1
+        },
+        {
+          "year": 2023,
+          "value": 93
+        },
+        {
+          "year": 2024,
+          "value": 89.4
+        },
+        {
           "year": 2025,
-          "value": 97.2
+          "value": 88.1
         }
       ]
     },

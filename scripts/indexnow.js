@@ -44,7 +44,8 @@ const WAIT = flag('wait') !== null;
 /** 저장소 파일 경로 → 공개 URL. index.html 은 루트, 그 외 .html 은 그대로(사이트가 .html 주소를 정본으로 쓴다). */
 function fileToUrl(rel) {
   const p = rel.replace(/\\/g, '/');
-  if (p === 'index.html') return `https://${HOST}/`;
+  if (p === 'index.html') return `https://${HOST}/home`;      // V32.1 — SPA 대시보드는 /home
+  if (p === 'eye.html') return `https://${HOST}/`;            // 홈(/) = 관제 화면
   const enc = p.split('/').map(encodeURIComponent).join('/');
   return `https://${HOST}/${enc}`;
 }

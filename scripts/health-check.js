@@ -23,7 +23,9 @@ const MAX_LOG = 50;
 // → 정적 파일(llms·sitemap)만 고유 콘텐츠 검증.
 const SPA_MARKER = /patchkr|패치노트|9회 전국동시|정치인/;
 const PAGES = [
-  { path: '/',                     critical: true,  expect: SPA_MARKER },
+  // V32.1 — '/'는 관제 화면(eye.html, middleware.js), 기존 대시보드(SPA)는 /home
+  { path: '/',                     critical: true,  expect: /PATCH\/\/EYE|관제/ },
+  { path: '/home',                 critical: true,  expect: SPA_MARKER },
   { path: '/early-voting',         critical: true,  expect: SPA_MARKER },
   { path: '/election2026',         critical: true,  expect: SPA_MARKER },
   { path: '/economy',              critical: true,  expect: SPA_MARKER },
@@ -131,7 +133,8 @@ async function main() {
 
   // 홈 body에서 버전 추출
   const homeResult = pageResults.find(r => r.url === '/');
-  const homeBodyFetch = await fetchUrl(BASE + '/', 8000, true);
+  // 사이트 버전(foot-year)은 SPA(index.html)에 있다 — '/'는 관제 화면이라 /home 에서 읽는다
+  const homeBodyFetch = await fetchUrl(BASE + '/home', 8000, true);
   const siteVersion = await detectSiteVersion(homeBodyFetch.body || '');
 
   const summary = {

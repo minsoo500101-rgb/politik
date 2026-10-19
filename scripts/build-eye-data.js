@@ -78,7 +78,10 @@ if (fs.existsSync(ep)) {
     `<h2>곧 시행되는 법령</h2><p>공포는 끝났고 시행일만 남은 법령 ${laws.total}건, 30일 안에 ${laws.soon30}건(${asOf} 기준). <a href="/law-radar.html">업무 분야별로 보기</a></p>` +
     `<h2>22대 국회</h2><p>${Object.entries(seats).sort((x, y) => y[1] - x[1]).map(([p, n]) => `${esc(p)} ${n}`).join(' · ')}</p>` +
     `<h2>윤석열 전 대통령 형사사건</h2><ul>${out.yoon.cases.map((c) => `<li>${esc(c.id)}: ${c.s.filter(Boolean).map((x) => esc(x[1])).join(' → ')} — ${esc(c.note)}</li>`).join('')}</ul>` +
-    `</div><!-- EYE-NOSCRIPT:END -->`;
+    `</div>` +
+    // 홈(/)이 이 화면이 됐으므로(V32.1) 크롤러·애드센스 심사가 읽던 홈 본문(noscript, 약 1,200단어)도 함께 싣는다 — 원본은 build-home-noscript.js
+    ((idx.match(/<!-- HOME-NOSCRIPT:START -->([\s\S]*?)<!-- HOME-NOSCRIPT:END -->/) || [])[1] || '') +
+    `<!-- EYE-NOSCRIPT:END -->`;
   s = s.replace(/<!-- EYE-NOSCRIPT:START -->[\s\S]*?<!-- EYE-NOSCRIPT:END -->/, ns);
   fs.writeFileSync(ep, s);
 }

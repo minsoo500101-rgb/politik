@@ -104,7 +104,7 @@ STATIC_PAGES = [
     {"path": "/nvidia-huang.html",       "priority": "0.88", "freq": "weekly"},
     {"path": "/law-diff.html",           "priority": "0.95", "freq": "daily"},
     {"path": "/law-radar.html",          "priority": "0.95", "freq": "daily"},
-    {"path": "/eye.html",                "priority": "0.95", "freq": "daily"},
+    # /eye.html 은 홈(/)과 같은 페이지(정본 /) — 따로 싣지 않는다
     {"path": "/law-radar/labor.html", "priority": "0.85", "freq": "daily"},
     {"path": "/law-radar/safety.html", "priority": "0.85", "freq": "daily"},
     {"path": "/law-radar/privacy.html", "priority": "0.85", "freq": "daily"},
