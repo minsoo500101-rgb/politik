@@ -288,9 +288,10 @@ try {
 // 생성기는 이 블록을 모른다 → 생성 뒤 apply-hud.js 를 안 돌리면 조용히 옛 디자인으로 돌아간다.
 // 법령 4,930쪽은 CI(build-static-pages·law-singu)가 다시 입히므로 표본만 경고로 본다.
 try {
-  const v = require('crypto').createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets/hud.css'))).digest('hex').slice(0, 8);
+  const hh = (f) => require('crypto').createHash('sha1').update(fs.readFileSync(path.join(ROOT, f), 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 8); // apply-hud.js 와 같은 LF 기준
+  const v = hh('assets/hud.css');
   const want = `/assets/hud.css?v=${v}`;
-  const jv = require('crypto').createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets/hud.js'))).digest('hex').slice(0, 8);
+  const jv = hh('assets/hud.js');
   const has = (t) => t.includes(want) && t.includes(`/assets/hud.js?v=${jv}`);
   const ls = (d) => { const dir = path.join(ROOT, d); return fs.existsSync(dir) ? fs.readdirSync(dir).filter((x) => x.endsWith('.html')).map((x) => path.join(d, x)) : []; };
   const core = [...ls('.'), ...ls('law-radar')].filter((x) => path.basename(x) !== 'eye.html');

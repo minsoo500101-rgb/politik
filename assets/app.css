@@ -10620,3 +10620,43 @@
     .hc-meters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .bh-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
+
+  /* ============ V32.5 상세 화면 관제 콘솔 (의원·법안·경제) ============ */
+  .hc-sub { font-size: 13px; color: var(--dim); font-weight: 500; margin-left: 6px; font-family: var(--f-mono, monospace); }
+  .hc-note { font-size: 11.5px; color: var(--dim); margin: 6px 0 0; line-height: 1.6; }
+  .hc-meters b small { font-size: 11px; color: var(--dim); font-weight: 400; }
+  #mh-months, #bdh-speed { width: 100%; height: auto; display: block; touch-action: pan-y; }
+  #mh-months { aspect-ratio: 900 / 150; cursor: pointer; }
+  #bdh-speed { aspect-ratio: 900 / 170; }
+  .hud-list { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid var(--border); }
+  .hud-list li { border-bottom: 1px solid var(--border); }
+  .hud-list a { display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 9px 2px; color: var(--text); text-decoration: none; font-size: 13.5px; }
+  .hud-list a:hover b { color: var(--brand); }
+  .hud-list a span { font-size: 11.5px; color: var(--dim); }
+  .hud-list a b { font-weight: 600; min-width: 0; }
+  .hud-list a em { font-style: normal; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .hud-list li.more { padding: 9px 2px; font-size: 12px; color: var(--dim); }
+  .bdh-vote { width: 100%; max-width: 360px; display: block; margin: 0 auto; }
+  .bdh-v { font-family: var(--f-mono, monospace); font-size: 22px; font-weight: 700; fill: var(--text); }
+  .bdh-vs { font-family: var(--f-mono, monospace); font-size: 7.5px; fill: var(--dim); }
+  .bdh-same { display: flex; flex-wrap: wrap; gap: 6px; }
+  .bdh-same a { display: inline-flex; align-items: center; min-height: 32px; padding: 3px 10px; border: 1px solid var(--border); border-left: 3px solid var(--c); color: var(--text-2); text-decoration: none; font-size: 12.5px; }
+  .bdh-same a:hover { color: var(--text); border-color: var(--c); }
+  .bdh-same span { font-size: 12px; color: var(--dim); align-self: center; }
+  .eh-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin: 10px 0 12px; }
+  .eh-tile { display: grid; grid-template-columns: 1fr; gap: 1px; text-align: left; padding: 8px 10px; background: transparent; border: 1px solid var(--border); border-top: 3px solid var(--c, var(--border)); color: var(--text); font: inherit; cursor: pointer; }
+  .eh-tile span { font-size: 12px; color: var(--text-2); }
+  .eh-tile b { font-size: 17px; }
+  .eh-tile small { font-size: 11px; color: var(--dim); }
+  .eh-tile.on { background: color-mix(in srgb, var(--c, var(--brand)) 10%, transparent); }
+  .eh-tile:hover { border-color: var(--brand); }
+  #eh-chart { width: 100%; height: auto; aspect-ratio: 1100 / 320; display: block; cursor: crosshair; touch-action: pan-y; }
+  .eh-year { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 2px 14px; font-size: 12px; margin-top: 8px; color: var(--text); }
+  .eh-year span { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dashed var(--border); padding: 3px 0; }
+  .eh-year i { font-style: normal; color: var(--dim); font-family: var(--f-body, inherit); }
+  @media (max-width: 760px) {
+    .hud-list a { grid-template-columns: 1fr auto; }
+    .hud-list a span { grid-column: 1 / -1; }
+    .eh-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .eh-year { grid-template-columns: 1fr 1fr; }
+  }

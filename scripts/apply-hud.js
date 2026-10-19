@@ -18,9 +18,10 @@ const crypto = require('crypto');
 
 const ROOT = path.join(__dirname, '..');
 const CHECK = process.argv.includes('--check');
-const css = fs.readFileSync(path.join(ROOT, 'assets/hud.css'));
-const ver = crypto.createHash('sha1').update(css).digest('hex').slice(0, 8);
-const jver = crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets/hud.js'))).digest('hex').slice(0, 8);
+// 줄바꿈을 LF 로 맞춰 해시 — Windows(CRLF)와 CI(LF)가 같은 버전을 내야 CI 가 5,000쪽을 매번 다시 쓰지 않는다
+const h8 = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, f), 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 8);
+const ver = h8('assets/hud.css');
+const jver = h8('assets/hud.js');
 const FONTS = 'https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap';
 const THEME = "try{var d=document.documentElement;if(localStorage.getItem('politik:ui')==='light')d.removeAttribute('data-theme');else d.setAttribute('data-theme','dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}";
 const BLOCK = `<!--HUD--><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="${FONTS}" media="print" onload="this.media='all'"><link rel="stylesheet" href="/assets/hud.css?v=${ver}" id="hud"><script>${THEME}</script><script defer src="/assets/hud.js?v=${jver}"></script><!--/HUD-->`;

@@ -332,7 +332,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
      crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/assets/app.css?v=b4d1399e">
+<link rel="stylesheet" href="/assets/app.css?v=66175a83">
 <script defer src="/_vercel/insights/script.js"></script><style id="ko-type">body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}h1,h2,h3,h4,h5,h6,button{text-wrap:balance}p,li,td,dd,blockquote,figcaption{text-wrap:pretty}.nw{white-space:nowrap}</style><!--HUD--><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="/assets/hud.css?v=3983cb87" id="hud"><script>try{var d=document.documentElement;if(localStorage.getItem('politik:ui')==='light')d.removeAttribute('data-theme');else d.setAttribute('data-theme','dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script><script defer src="/assets/hud.js?v=27af1a6b"></script><!--/HUD--></head>
 <body>
 
@@ -549,7 +549,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V32.4</a>
+      <a href="/changelog" id="foot-year">V32.5</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -4493,7 +4493,7 @@ async function tryLoadLiveEconomy(onProgress) {
   // 페이지에 머물러 있으면 다시 렌더링
   if (currentRoute().startsWith('#/economy')) {
     const body = document.getElementById('econ-body');
-    if (body) body.innerHTML = renderEconomyBody();
+    if (body) body.innerHTML = renderEconomyBody(); bindEconHud();
   }
 }
 
@@ -4555,7 +4555,7 @@ function renderEconomyPage() {
     if (currentRoute().startsWith('#/economy')) {
       const body = document.getElementById('econ-body');
       if (body) {
-        body.innerHTML = renderEconomyBody();
+        body.innerHTML = renderEconomyBody(); bindEconHud();
         setupEconChartHover();
         _activateEconVotes();
       }
@@ -4564,7 +4564,7 @@ function renderEconomyPage() {
         if (currentRoute().startsWith('#/economy')) {
           const body2 = document.getElementById('econ-body');
           if (body2) {
-            body2.innerHTML = renderEconomyBody();
+            body2.innerHTML = renderEconomyBody(); bindEconHud();
             setupEconChartHover();
             _activateEconVotes();
           }
@@ -5229,6 +5229,7 @@ function renderEconomyBody() {
   }
 
   return `
+    ${econHudHTML(d)}
     <div class="econ-grid">
       ${indicators.map(sparkSVG).join('')}
     </div>
@@ -6465,7 +6466,9 @@ async function loadBillWiki(billName) {
 function computeMpScore(memberName) {
   if (!memberName || !state.bills?.length) return null;
   // 입법부 의원만 점수 적용 (사법·행정·역사 인물은 평가 부적절)
-  const m = state.members?.find(x => x.HG_NM === memberName);
+  // V32.5 — 동명이인(예: 교육감·의원 윤건영)이면 입법부 인물을 먼저 잡는다. 전에는 첫 번째 동명인이 비의원이면 점수가 통째로 빠졌다
+  const isLeg = (x) => x._group === 'legislative' || (x.UNITS && x._group !== 'historical');
+  const m = state.members?.find(x => x.HG_NM === memberName && isLeg(x)) || state.members?.find(x => x.HG_NM === memberName);
   if (m) {
     const isMp = m._group === 'legislative' || (m.UNITS && m._group !== 'historical');
     if (!isMp) return null;
@@ -6508,7 +6511,7 @@ function computeMpScore(memberName) {
   const diversityScore = Math.min(15, topicSet.size);
 
   // 5. 위원회 직책 (15점)
-  const member = state.members.find(m => m.HG_NM === memberName);
+  const member = m || state.members.find(x => x.HG_NM === memberName);
   let committeeScore = 0;
   const cmt = member?.CMIT_NM || '';
   const memTitle = member?.MEM_TITLE || '';
@@ -7048,6 +7051,12 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V32.5', date: '2026-10-19', title: '🛰 의원·법안 상세, 경제 지표 화면 관제식 재설계', items: [
+    "의원 상세에 '의원 관제'를 붙였다. 대표발의해 본회의에서 처리된 법안을 달마다 막대로 보여 주고(밝은 칸 = 가결), 막대나 분야를 누르면 아래 목록이 그 달·그 분야 법안으로 바로 바뀐다. 22대 의원 평균 대비 몇 배인지, 활동 점수가 발의 활동·통과율·분야 다양성·위원회 직책 중 어디서 나왔는지도 계기로 보인다. 점수는 본회의 처리 법안만 쓴 패치노트 자체 지표라고 화면에 함께 적었다.",
+    "법안 상세에 '법안 관제'를 붙였다. 같은 분야 법안들이 발의부터 처리까지 며칠 걸렸는지 점으로 찍고 이 법안을 노란 선으로 표시한다. 점에 커서를 올리면 그 법안 이름이, 누르면 그 법안으로 간다. 본회의 표결은 재적 대비 반원 계기(찬성·반대·기권, 과반 위치 점선)로 보이고, 같은 날 본회의에서 처리된 법안도 바로 옮겨 갈 수 있게 모았다.",
+    "경제 지표 화면에 '경제 관제'를 붙였다. 9개 지표 중 두 개를 골라 한 그래프에 겹쳐 보고, 그래프 위를 훑으면 그해 재임한 대통령과 9개 지표 값이 한 줄에 나온다. 대통령 임기는 띠로 깔았고(권한대행 제외), 겹쳐 보여 줄 뿐 인과를 뜻하지 않는다고 적었다.",
+    "고침: 동명이인이 있는 의원(예: 같은 이름의 교육감이 있는 경우)은 활동 점수가 통째로 빠지고 도감 등급 필터에서도 사라졌다. 이름으로 사람을 찾을 때 입법부 인물을 먼저 잡도록 바꿨다."
+  ]},
   { v: 'V32.4', date: '2026-10-19', title: '🛰 법안·인물·기사 화면 관제식 재설계', items: [
     "법안 화면 맨 위에 '법안 관제'를 붙였다. 월별 처리 막대에서 흐린 막대는 전체, 밝은 막대는 지금 고른 조건의 건수이고, 막대를 누르면 그 달 법안만 남는다. 분야 타일(15개)을 누르면 그 분야만 남고, 타일 숫자는 지금 조건에서의 건수다. 고른 조건과 결과 건수는 판독 줄에 바로 나오고 '조건 지우기'로 한 번에 풀 수 있다. 가결률·정부안·의원안 비중·평균 출석률 계기도 함께 보인다.",
     "인물(정치인 도감) 화면 맨 위에 22대 국회 의석 반원도를 넣었다. 매일 동기화하는 국회 명부 기준이고, 정당은 의석수 많은 순으로 배치했다(좌우 이념 배치가 아니다). 점에 커서를 올리면 의원 이름·정당·지역구·위원회가 나오고, 누르면 상세로 간다. 정당을 누르면 그 정당만 밝아지고 아래 카드도 그 정당으로 걸러진다. 검색하면 맞는 의원만 의석도에서 밝게 남는다.",
@@ -10279,6 +10288,8 @@ function renderBillDetailPage(billId) {
         </div>
       </div>
 
+      ${billDetailHudHTML(bill)}
+
       <!-- 표결 결과 -->
       ${y > 0 ? `
         <div class="bd-card">
@@ -12012,6 +12023,180 @@ function renderGrid() {
 // ============================================================
 // Render: Detail
 // ============================================================
+// ============================================================
+// V32.5 — 상세 화면 관제 콘솔 (의원 상세 · 법안 상세 · 경제 지표)
+// 목록 화면(V32.4 법안·의석 관제)과 같은 문법: 태그·판독 줄·계기·눌러서 거르기. 아래 기존 내용은 그대로 둔다.
+// ============================================================
+const hudCss = (k, fb) => (getComputedStyle(document.documentElement).getPropertyValue(k).trim() || fb);
+function hudCanvas(cv) { const x = cv.getContext('2d'); return { x, W: cv.width, H: cv.height, at: (e) => { const r = cv.getBoundingClientRect(); return { X: (e.clientX - r.left) * cv.width / r.width, Y: (e.clientY - r.top) * cv.height / r.height }; } }; }
+
+// ── 의원 관제: 대표발의 처리 법안의 월별 흐름·분야, 활동 점수 구성 ──
+function memberHudHTML(m) {
+  if (!m?.HG_NM || !state.bills?.length || !Object.keys(state.billProposers || {}).length) return '';
+  // 대표발의자는 이름으로만 이어진다 → 동명이인(단체장·역사 인물)에게 의원 법안이 붙지 않게 입법부 인물만
+  if (!(m._group === 'legislative' || (!m._group && m.UNITS))) return '';
+  const mine = state.bills.filter(b => { const i = getBillProposerInfo(b); return i.kind === 'mp' && i.name === m.HG_NM; })
+    .sort((a, b) => (b.PROC_DT || '').localeCompare(a.PROC_DT || ''));
+  if (!mine.length) return '';
+  const sc = computeMpScore(m.HG_NM);
+  const months = []; { const all = state.bills.map(b => billYM(b.PROC_DT)).filter(Boolean).sort(); let [y, mo] = all[0].split('-').map(Number); const [ey, em] = all[all.length - 1].split('-').map(Number); while (y < ey || (y === ey && mo <= em)) { months.push(`${y}-${String(mo).padStart(2, '0')}`); mo++; if (mo > 12) { mo = 1; y++; } } }
+  const topics = {}; mine.forEach(b => { const t = getBillTopic(b); topics[t.id] = (topics[t.id] || 0) + 1; });
+  state._mh = { mine, months, month: null, topic: null };
+  const passed = mine.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length;
+  const meter = (l, v, max) => `<div><span>${l}</span><b class="mono">${v}<small>/${max}</small></b><i style="--w:${(v / max * 100).toFixed(0)}%"></i></div>`;
+  return `
+    <section class="hud-console" aria-label="의원 관제" id="mh">
+      <div class="hc-head">
+        <span class="hc-tag">의원 관제</span>
+        <h1>대표발의 → 본회의 처리 <b class="mono">${mine.length}</b>건 <small class="hc-sub">가결 ${passed}</small></h1>
+        <div class="hc-readout mono" id="mh-readout" aria-live="polite">${sc ? `22대 의원 평균 ${sc.raw.avgLead.toFixed(1)}건 대비 ${(mine.length / Math.max(sc.raw.avgLead, 1)).toFixed(1)}배 · ` : ''}막대를 누르면 그 달, 분야를 누르면 그 분야 법안만</div>
+      </div>
+      ${sc ? `<div class="hc-meters">${meter('발의 활동', sc.activity, 40)}${meter('통과율', sc.pass, 30)}${meter('분야 다양성', sc.diversity, 15)}${meter('위원회 직책', sc.committee, 15)}</div><p class="hc-note">활동 점수 ${sc.total}점 — 22대 본회의 처리 법안 중 대표발의분만으로 계산한 패치노트 자체 지표다. 의정 활동 전체 평가가 아니다.</p>` : ''}
+      <div class="hc-grid">
+        <div class="hc-cell"><div class="hc-lbl">TIMELINE · 처리 월 <span>밝은 칸 = 가결</span></div><canvas id="mh-months" width="900" height="150" aria-label="월별 처리 법안"></canvas><div class="hc-axis mono"><span>${months[0]}</span><span id="mh-hover"></span><span>${months[months.length - 1]}</span></div></div>
+        <div class="hc-cell"><div class="hc-lbl">DOMAIN · 분야</div><div class="bh-tiles">${BILL_TOPICS.filter(t => topics[t.id]).sort((a, b) => topics[b.id] - topics[a.id]).map(t => `<button type="button" class="bh-tile" data-topic="${t.id}" style="--c:${t.color};--w:${(topics[t.id] / mine.length * 100).toFixed(0)}%"><span>${t.icon} ${escapeHtml(t.label)}</span><b class="mono">${topics[t.id]}</b></button>`).join('')}</div></div>
+      </div>
+      <ol class="hud-list" id="mh-list"></ol>
+    </section>`;
+}
+function bindMemberHud() {
+  const s = state._mh, cv = document.getElementById('mh-months'); if (!s || !cv) return;
+  const { x, W, H, at } = hudCanvas(cv), n = s.months.length, bw = W / n;
+  const cnt = s.months.map(mo => { const bs = s.mine.filter(b => billYM(b.PROC_DT) === mo); return [bs.length, bs.filter(b => /가결/.test(b.PROC_RESULT_CD || '')).length]; });
+  const mx = Math.max(1, ...cnt.map(c => c[0])), ac = hudCss('--accent', '#3fe0c8'), dim = hudCss('--border-strong', '#24504b'), hw = '#f2c14e';
+  let hv = -1;
+  const list = () => {
+    const bs = s.mine.filter(b => (!s.month || billYM(b.PROC_DT) === s.month) && (!s.topic || getBillTopic(b).id === s.topic));
+    const el = document.getElementById('mh-list'); if (!el) return;
+    el.innerHTML = bs.slice(0, 12).map(b => `<li><a href="/bill/${encodeURIComponent(b.BILL_ID)}" data-bill="${escapeHtml(b.BILL_ID)}"><span class="mono">${escapeHtml((b.PROC_DT || '').slice(0, 10))}</span><b>${escapeHtml(b.BILL_NAME || b.BILL_NM || '')}</b><em style="color:${PROC_RESULT_COLOR[b.PROC_RESULT_CD] || 'var(--text-2)'}">${escapeHtml(b.PROC_RESULT_CD || '')}</em></a></li>`).join('') + (bs.length > 12 ? `<li class="more mono">…외 ${bs.length - 12}건</li>` : '') || '<li class="more">조건에 맞는 법안 없음</li>';
+    const ro = document.getElementById('mh-readout'); if (ro && (s.month || s.topic)) ro.innerHTML = `조건 ${escapeHtml([s.month, s.topic && BILL_TOPICS.find(t => t.id === s.topic)?.label].filter(Boolean).join(' · '))} → <b>${bs.length}</b>건 <button type="button" class="hc-clear" id="mh-clear">조건 지우기</button>`;
+    document.querySelectorAll('#mh .bh-tile').forEach(t => t.classList.toggle('on', t.dataset.topic === s.topic));
+  };
+  const draw = () => { x.clearRect(0, 0, W, H); cnt.forEach(([a, p], i) => { const X = i * bw, ha = a / mx * (H - 10), hp = p / mx * (H - 10), sel = s.month === s.months[i]; x.fillStyle = dim; x.fillRect(X + 1, H - ha, Math.max(1, bw - 2), ha); x.fillStyle = sel ? hw : ac; x.fillRect(X + 1, H - hp, Math.max(1, bw - 2), hp); if (i === hv) { x.strokeStyle = hw; x.lineWidth = 2; x.strokeRect(X + 1, 1, bw - 2, H - 2); } }); };
+  const idx = (e) => Math.max(0, Math.min(n - 1, Math.floor(at(e).X / bw)));
+  cv.addEventListener('pointermove', e => { hv = idx(e); const h = document.getElementById('mh-hover'); if (h) h.textContent = `${s.months[hv]} · ${cnt[hv][0]}건${cnt[hv][0] ? ` (가결 ${cnt[hv][1]})` : ''}`; draw(); });
+  cv.addEventListener('pointerleave', () => { hv = -1; const h = document.getElementById('mh-hover'); if (h) h.textContent = ''; draw(); });
+  cv.addEventListener('click', e => { const mo = s.months[idx(e)]; if (!cnt[idx(e)][0]) return; s.month = s.month === mo ? null : mo; list(); draw(); });
+  document.getElementById('mh').addEventListener('click', e => {
+    const t = e.target.closest('.bh-tile'); if (t) { s.topic = s.topic === t.dataset.topic ? null : t.dataset.topic; list(); return; }
+    if (e.target.closest('#mh-clear')) { s.month = null; s.topic = null; list(); draw(); const ro = document.getElementById('mh-readout'); if (ro) ro.textContent = '막대를 누르면 그 달, 분야를 누르면 그 분야 법안만'; return; }
+    const a = e.target.closest('a[data-bill]'); if (a) { e.preventDefault(); nav(`/bill/${encodeURIComponent(a.dataset.bill)}`); }
+  });
+  list(); draw();
+}
+
+// ── 법안 관제: 처리 경로·속도(같은 분야 법안 사이 위치)·표결 반원 ──
+function billDetailHudHTML(bill) {
+  if (!bill) return '';
+  const pr = state.billProposers || {}, topic = getBillTopic(bill);
+  const dd = (b) => { const p = pr[b.BILL_ID]?.proposeDt; if (!p || !b.PROC_DT) return null; const d = Math.round((new Date(b.PROC_DT) - new Date(p)) / 86400000); return d >= 0 ? d : null; };
+  const me = dd(bill);
+  const peers = state.bills.filter(b => getBillTopic(b).id === topic.id).map(b => ({ b, d: dd(b) })).filter(o => o.d != null);
+  const faster = me == null ? null : peers.filter(o => o.d < me).length;
+  const sameDay = state.bills.filter(b => b.BILL_ID !== bill.BILL_ID && (b.PROC_DT || '').slice(0, 10) === (bill.PROC_DT || '').slice(0, 10));
+  state._bdh = { bill, peers, me };
+  const y = +bill.YES_TCNT || 0, n = +bill.NO_TCNT || 0, bl = +bill.BLANK_TCNT || 0, mem = +bill.MEMBER_TCNT || 300, tot = y + n + bl;
+  const arc = (a0, a1, c) => { const R = 90, cx = 100, cy = 98, p = (a) => [cx + R * Math.cos(Math.PI * (1 - a)), cy - R * Math.sin(Math.PI * (1 - a))]; const [x0, y0] = p(a0), [x1, y1] = p(a1); return a1 > a0 ? `<path d="M${x0.toFixed(1)},${y0.toFixed(1)} A${R},${R} 0 0 1 ${x1.toFixed(1)},${y1.toFixed(1)}" stroke="${c}" stroke-width="16" fill="none"/>` : ''; };
+  const vote = tot ? `<svg viewBox="0 0 200 110" class="bdh-vote" role="img" aria-label="찬성 ${y} 반대 ${n} 기권 ${bl} (재적 ${mem})">
+      ${arc(0, 1, 'var(--border)')}${arc(0, y / mem, 'var(--ok)')}${arc(y / mem, (y + n) / mem, 'var(--danger)')}${arc((y + n) / mem, tot / mem, 'var(--warn)')}
+      <line x1="100" y1="2" x2="100" y2="22" stroke="var(--text-2)" stroke-dasharray="2 2"/>
+      <text x="100" y="80" text-anchor="middle" class="bdh-v">${(y / tot * 100).toFixed(1)}%</text><text x="100" y="96" text-anchor="middle" class="bdh-vs">찬성 ${y} · 반대 ${n} · 기권 ${bl} / 재적 ${mem}</text></svg>` : '<div class="hc-note">기록된 표결 수 없음(무기명·위원회 대안 등)</div>';
+  return `
+    <section class="hud-console" aria-label="법안 관제" id="bdh">
+      <div class="hc-head">
+        <span class="hc-tag">법안 관제</span>
+        <div class="hc-readout mono" id="bdh-readout" aria-live="polite">${me != null ? `발의부터 처리까지 <b>${me}일</b> · ${escapeHtml(topic.label)} 분야 ${peers.length}건 중 이보다 빨리 처리된 법안 ${faster}건(빠른 순 ${Math.round((faster + 1) / peers.length * 100)}% 지점)` : '발의일 정보가 없어 처리 속도를 비교할 수 없음'}</div>
+      </div>
+      <div class="hc-grid">
+        <div class="hc-cell"><div class="hc-lbl">SPEED · 같은 분야 처리 일수 <span>점 = 법안 · 노란 점 = 이 법안 · 누르면 그 법안</span></div><canvas id="bdh-speed" width="900" height="170" aria-label="같은 분야 법안 처리 일수 분포"></canvas><div class="hc-axis mono"><span>0일</span><span id="bdh-hover"></span><span id="bdh-max"></span></div></div>
+        <div class="hc-cell"><div class="hc-lbl">VOTE · 본회의 표결 <span>점선 = 재적 과반 위치</span></div>${vote}</div>
+      </div>
+      ${sameDay.length ? `<div class="hc-lbl" style="margin-top:12px">SAME DAY · 같은 날 본회의 처리 <span>${sameDay.length}건</span></div><div class="bdh-same">${sameDay.slice(0, 14).map(b => `<a href="/bill/${encodeURIComponent(b.BILL_ID)}" data-bill="${escapeHtml(b.BILL_ID)}" style="--c:${getBillTopic(b).color}">${escapeHtml((b.BILL_NAME || '').replace(/\s*\(.*\)\s*$/, ''))}</a>`).join('')}${sameDay.length > 14 ? `<span class="mono">+${sameDay.length - 14}</span>` : ''}</div>` : ''}
+    </section>`;
+}
+function bindBillDetailHud() {
+  const s = state._bdh, root = document.getElementById('bdh'); if (!s || !root) return;
+  root.addEventListener('click', e => { const a = e.target.closest('a[data-bill]'); if (a) { e.preventDefault(); nav(`/bill/${encodeURIComponent(a.dataset.bill)}`); } });
+  const cv = document.getElementById('bdh-speed'); if (!cv || !s.peers.length) return;
+  const { x, W, H, at } = hudCanvas(cv), pad = 14;
+  const cap = Math.max(30, ...s.peers.map(o => o.d)), mxEl = document.getElementById('bdh-max'); if (mxEl) mxEl.textContent = `${cap.toLocaleString()}일`;
+  const X = (d) => pad + Math.sqrt(d / cap) * (W - pad * 2); // 제곱근 축 — 짧은 처리 기간이 몰려 있어 앞쪽을 넓힌다
+  const pts = s.peers.map((o, i) => ({ ...o, x: X(o.d), y: pad + ((i * 7919) % 97) / 97 * (H - pad * 2) }));
+  const ac = hudCss('--accent', '#3fe0c8'); let hv = null;
+  const draw = () => {
+    x.clearRect(0, 0, W, H); x.strokeStyle = hudCss('--border', '#173331'); x.lineWidth = 1;
+    [30, 90, 180, 365, 730].filter(d => d < cap).forEach(d => { x.beginPath(); x.moveTo(X(d), 0); x.lineTo(X(d), H); x.stroke(); x.fillStyle = hudCss('--dim', '#8aaaa3'); x.font = '18px "JetBrains Mono", monospace'; x.fillText(d >= 365 ? `${d / 365}년` : `${d}일`, X(d) + 4, H - 4); });
+    pts.forEach(p => { x.globalAlpha = p.b === s.bill ? 1 : 0.55; x.fillStyle = p === hv ? '#f2c14e' : ac; x.beginPath(); x.arc(p.x, p.y, p === hv ? 7 : 4, 0, 7); x.fill(); });
+    x.globalAlpha = 1;
+    if (s.me != null) { const mx = X(s.me); x.strokeStyle = '#f2c14e'; x.lineWidth = 2; x.beginPath(); x.moveTo(mx, 0); x.lineTo(mx, H); x.stroke(); x.fillStyle = '#f2c14e'; x.beginPath(); x.arc(mx, H / 2, 9, 0, 7); x.fill(); }
+  };
+  const near = (e) => { const { X: px, Y: py } = at(e); let b = null, bd = 400; pts.forEach(p => { const d = (p.x - px) ** 2 + (p.y - py) ** 2; if (d < bd) { bd = d; b = p; } }); return b; };
+  cv.addEventListener('pointermove', e => { hv = near(e); const h = document.getElementById('bdh-hover'); if (h) h.textContent = hv ? `${hv.d}일 · ${(hv.b.BILL_NAME || '').slice(0, 28)}` : ''; cv.style.cursor = hv ? 'pointer' : 'default'; draw(); });
+  cv.addEventListener('pointerleave', () => { hv = null; const h = document.getElementById('bdh-hover'); if (h) h.textContent = ''; draw(); });
+  cv.addEventListener('click', e => { const p = near(e); if (p && p.b !== s.bill) nav(`/bill/${encodeURIComponent(p.b.BILL_ID)}`); });
+  draw();
+}
+
+// ── 경제 관제: 지표 두 개를 겹쳐 보고, 연도를 훑으면 그해 모든 지표·대통령 임기가 판독 줄에 ──
+function econHudHTML(d) {
+  const inds = (d?.indicators || []).filter(i => i.data?.length > 2); if (!inds.length) return '';
+  if (!state._eh || !inds.some(i => i.id === state._eh.sel[0])) state._eh = { sel: [inds.find(i => i.id === 'kospi')?.id || inds[0].id, inds.find(i => i.id === 'base_rate')?.id || inds[1]?.id].filter(Boolean) };
+  const fmt = (i, v) => v == null ? '—' : `${Number(v).toLocaleString('ko-KR', { maximumFractionDigits: i.unit === '%' ? 1 : 1 })}${i.unit === '%' ? '%' : i.unit === 'pt' ? '' : i.unit}`;
+  return `
+    <section class="hud-console" aria-label="경제 관제" id="eh">
+      <div class="hc-head">
+        <span class="hc-tag">경제 관제</span>
+        <div class="hc-readout mono" id="eh-readout" aria-live="polite">지표 두 개를 골라 겹쳐 보세요 · 그래프 위를 훑으면 그해 모든 지표와 대통령 임기가 나온다</div>
+      </div>
+      <div class="eh-tiles">${inds.map(i => { const L = i.data[i.data.length - 1], P = i.data[i.data.length - 2], dl = L.value - P.value; return `<button type="button" class="eh-tile${state._eh.sel.includes(i.id) ? ' on' : ''}" data-id="${i.id}"><span>${escapeHtml(i.label)}</span><b class="mono">${fmt(i, L.value)}</b><small class="mono">${L.year} ${dl > 0 ? '▲' : dl < 0 ? '▼' : '='}${Math.abs(dl).toLocaleString('ko-KR', { maximumFractionDigits: 1 })}</small></button>`; }).join('')}</div>
+      <canvas id="eh-chart" width="1100" height="320" aria-label="선택한 경제 지표 연도별 추이와 대통령 임기"></canvas>
+      <div class="eh-year mono" id="eh-year"></div>
+      <p class="hc-note">연 단위 값(지표마다 연말·연평균 기준이 다르다 — 아래 카드의 출처 설명 참고). 띠는 대통령 재임 기간이며 권한대행은 표시하지 않는다. 임기와 지표를 겹쳐 보여 줄 뿐 인과를 뜻하지 않는다.</p>
+    </section>`;
+}
+function bindEconHud() {
+  const d = economyState.data, cv = document.getElementById('eh-chart'), s = state._eh; if (!d || !cv || !s) return;
+  const inds = d.indicators.filter(i => i.data?.length > 2), pres = (d.presidents || []).filter(p => !p.acting);
+  const years = [...new Set(inds.flatMap(i => i.data.map(p => p.year)))].sort((a, b) => a - b), y0 = years[0], y1 = years[years.length - 1] + 1;
+  const { x, W, H, at } = hudCanvas(cv), L = 60, R = 60, T = 34, B = 30, X = (yr) => L + (yr - y0) / (y1 - y0) * (W - L - R);
+  const ym = (s0) => { const [a, b] = String(s0).split('-').map(Number); return a + ((b || 1) - 1) / 12; };
+  const cols = ['#3fe0c8', '#f2c14e'], fmt = (i, v) => v == null ? '—' : `${Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 1 })}${i.unit === 'pt' ? '' : i.unit}`;
+  let hy = null;
+  const draw = () => {
+    x.clearRect(0, 0, W, H); x.font = '16px "IBM Plex Sans KR", sans-serif';
+    pres.forEach(p => { const a = Math.max(y0, ym(p.start)), b = Math.min(y1, p.end === '재임 중' ? y1 : ym(p.end)); if (b <= a) return; x.fillStyle = partyColor(p.party); x.globalAlpha = 0.09; x.fillRect(X(a), T, X(b) - X(a), H - T - B); x.globalAlpha = 0.9; x.fillRect(X(a), T - 4, X(b) - X(a), 3); x.globalAlpha = 1; x.fillStyle = hudCss('--text-2', '#b5cdc8'); x.fillText(p.name, X(a) + 6, T - 10); });
+    x.strokeStyle = hudCss('--border', '#173331'); x.fillStyle = hudCss('--dim', '#8aaaa3'); x.font = '15px "JetBrains Mono", monospace'; x.textAlign = 'center';
+    years.forEach(yr => { x.fillText(String(yr).slice(2), X(yr + 0.5), H - 8); });
+    x.textAlign = 'left';
+    s.sel.forEach((id, k) => {
+      const i = inds.find(v => v.id === id); if (!i) return;
+      const vs = i.data.map(p => p.value), mn = Math.min(...vs), mx = Math.max(...vs), pad = (mx - mn) * 0.1 || 1, Y = (v) => T + 8 + (1 - (v - mn + pad) / (mx - mn + pad * 2)) * (H - T - B - 16);
+      x.strokeStyle = cols[k]; x.lineWidth = 3; x.beginPath(); i.data.forEach((p, j) => { const px = X(p.year + 0.5), py = Y(p.value); j ? x.lineTo(px, py) : x.moveTo(px, py); }); x.stroke();
+      i.data.forEach(p => { x.fillStyle = cols[k]; x.beginPath(); x.arc(X(p.year + 0.5), Y(p.value), p.year === hy ? 7 : 4, 0, 7); x.fill(); });
+      x.fillStyle = cols[k]; x.font = '15px "JetBrains Mono", monospace'; x.textAlign = k ? 'right' : 'left';
+      x.fillText(fmt(i, mx), k ? W - 4 : 4, T + 14); x.fillText(fmt(i, mn), k ? W - 4 : 4, H - B - 4); x.textAlign = 'left';
+    });
+    if (hy != null) { x.strokeStyle = '#f2c14e'; x.lineWidth = 1.5; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(X(hy + 0.5), T); x.lineTo(X(hy + 0.5), H - B); x.stroke(); x.setLineDash([]); }
+  };
+  const yearAt = (e) => { const yr = Math.floor(y0 + (at(e).X - L) / (W - L - R) * (y1 - y0)); return Math.max(y0, Math.min(y1 - 1, yr)); };
+  const show = (yr) => {
+    const ps = pres.filter(q => ym(q.start) < yr + 1 && (q.end === '재임 중' || ym(q.end) > yr)); // 그해에 재임한 대통령 전부(교체된 해는 둘)
+    const ro = document.getElementById('eh-readout'); if (ro) ro.innerHTML = `<b>${yr}</b>${ps.length ? ` · ${ps.map(p => `${escapeHtml(p.name)}(${escapeHtml(p.party)})`).join(' → ')} 재임` : ''} · ${s.sel.map(id => { const i = inds.find(v => v.id === id); const v = i?.data.find(q => q.year === yr); return `${escapeHtml(i?.label || '')} ${fmt(i, v?.value)}`; }).join(' · ')}`;
+    const yb = document.getElementById('eh-year'); if (yb) yb.innerHTML = inds.map(i => { const v = i.data.find(q => q.year === yr); return `<span><i>${escapeHtml(i.label)}</i> ${fmt(i, v?.value)}</span>`; }).join('');
+  };
+  cv.addEventListener('pointermove', e => { const yr = yearAt(e); if (yr !== hy) { hy = yr; show(yr); draw(); } });
+  cv.addEventListener('pointerdown', e => { hy = yearAt(e); show(hy); draw(); });
+  document.getElementById('eh').addEventListener('click', e => {
+    const t = e.target.closest('.eh-tile'); if (!t) return;
+    const id = t.dataset.id, k = s.sel.indexOf(id);
+    if (k >= 0) { if (s.sel.length > 1) s.sel.splice(k, 1); } else { s.sel.push(id); if (s.sel.length > 2) s.sel.shift(); }
+    document.querySelectorAll('#eh .eh-tile').forEach(b => { const j = s.sel.indexOf(b.dataset.id); b.classList.toggle('on', j >= 0); b.style.setProperty('--c', j >= 0 ? cols[j] : ''); });
+    draw(); if (hy != null) show(hy);
+  });
+  document.querySelectorAll('#eh .eh-tile').forEach(b => { const j = s.sel.indexOf(b.dataset.id); if (j >= 0) b.style.setProperty('--c', cols[j]); });
+  hy = years[years.length - 1]; show(hy); draw();
+}
+
 function renderDetail(id) {
   const m = state.members.find(x => x.MONA_CD === id);
   if (!m) return '<div class="empty">해당 의원을 찾을 수 없습니다.</div>';
@@ -12196,6 +12381,7 @@ function renderDetail(id) {
           </div>
         </div>
       </div>
+      ${memberHudHTML(m)}
       <div class="d-body">
         <div class="d-section">
           <h2>연락처 · 사무실</h2>
@@ -12775,6 +12961,7 @@ function route() {
   if (bMatch) {
     const billId = decodeURIComponent(bMatch[1]);
     view.innerHTML = renderBillDetailPage(billId);
+    bindBillDetailHud(); // V32.5 법안 관제
     document.getElementById('back-bills')?.addEventListener('click', () => { nav('/bills'); });
     if (filterBar) filterBar.style.display = 'none';
     window.scrollTo(0, 0);
@@ -13459,6 +13646,7 @@ function route() {
   if (m) {
     const memberId = decodeURIComponent(m[1]);
     view.innerHTML = renderDetail(memberId);
+    bindMemberHud(); // V32.5 의원 관제
     // V21.7 — 페이지뷰 기록 + 카운트 표시
     logPageView('politician', memberId);
     getPageViewCount('politician', memberId).then(count => {

@@ -23,7 +23,8 @@ const crypto = require('crypto');
 const ROOT = path.resolve(__dirname, '..');
 const DRY = process.argv.includes('--dry');
 const OUT = path.join(ROOT, 'assets/css');
-const h8 = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 8);
+// 줄바꿈을 LF 로 맞춰 해시한다 — Windows 작업본(CRLF)과 CI(LF)가 같은 버전을 내야 CI 가 매번 ?v= 를 바꿔 쓰지 않는다
+const h8 = (s) => crypto.createHash('sha1').update(String(s).replace(/\r\n/g, '\n')).digest('hex').slice(0, 8);
 
 const files = [];
 for (const d of ['.', 'law-radar', 'law']) {
