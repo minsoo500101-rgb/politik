@@ -332,8 +332,8 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
 <!-- Google AdSense (승인 심사용) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968"
      crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/assets/app.css?v=9a5a29b0">
-<script defer src="/_vercel/insights/script.js"></script><style id="ko-type">body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}h1,h2,h3,h4,h5,h6,button{text-wrap:balance}p,li,td,dd,blockquote,figcaption{text-wrap:pretty}.nw{white-space:nowrap}</style></head>
+<link rel="stylesheet" href="/assets/app.css?v=b7b800f5">
+<script defer src="/_vercel/insights/script.js"></script><style id="ko-type">body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}h1,h2,h3,h4,h5,h6,button{text-wrap:balance}p,li,td,dd,blockquote,figcaption{text-wrap:pretty}.nw{white-space:nowrap}</style><!--HUD--><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="/assets/hud.css?v=54e7e4a4" id="hud"><script>try{var d=document.documentElement;if(localStorage.getItem('politik:ui')==='light')d.removeAttribute('data-theme');else d.setAttribute('data-theme','dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script><!--/HUD--></head>
 <body>
 
 <!-- V29.0 — 키보드 사용자용 본문 바로가기 -->
@@ -549,7 +549,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V32.2</a>
+      <a href="/changelog" id="foot-year">V32.3</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -7003,6 +7003,11 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V32.3', date: '2026-10-19', title: '🛰 전체 기능 바로가기 · 사이트 전체 관제 테마', items: [
+    "관제 화면(홈) 아래에 '전체 기능'을 붙였다. 예전 대시보드에서만 들어갈 수 있던 경제 지표·9회 지방선거·사전투표·정치 분포 지도·활동 랭킹·위원회·정당사·실검·용어 사전·공약 아카이브를 국회·법 / 사람·정당 / 선거 / 경제·국가 지표 / 읽을거리·도구 / 사이트 여섯 묶음으로 나눴고, 항목마다 한 줄 설명을 달았다. 위쪽 메뉴의 '전체 ☰'을 누르면 바로 내려간다.",
+    "사이트 전체(법안·인물·경제 같은 앱 화면, 기사 82편, 법령 신구표 4,930쪽, 곧 시행 레이더, 위기 지표판)에 관제 화면과 같은 색과 글꼴을 입혔다. 어두운 바탕에 청록 강조색, 제목은 검은고딕 계열, 숫자는 고정폭 글꼴이고, 머리말에는 오방색 띠가 붙는다. 화면 구조와 내용은 그대로다.",
+    "기본 화면이 어두운 판으로 바뀌었다. 밝은 화면이 편하면 오른쪽 위 🌓·🌙 버튼으로 바꿀 수 있고, 고른 값은 기억된다. 밝은 판도 같은 청록 계열이다."
+  ]},
   { v: 'V32.2', date: '2026-10-19', title: '📱 관제 화면 휴대폰 정리', items: [
     "휴대폰에서 관제 화면을 다시 짰다. 위쪽 머리말 높이를 186px에서 121px로 줄였고, 상태 칩과 메뉴는 한 줄로 두고 옆으로 밀어 넘기게 했다. 패널 왼쪽의 세로 제목 여백(40px)을 없애고 제목을 가로로 눕혔다.",
     "지도 위에서 위아래로 쓸면 이제 페이지가 내려간다. 전에는 지도가 손가락을 붙잡아 화면이 움직이지 않았다. 옆으로 밀면 지도가 돌아간다. 폰에서는 지도와 지역 이름을 더 크게 그리고, 지역을 누르면 정보가 화면 아래에서 올라온다.",
@@ -14251,8 +14256,10 @@ const AC = (() => {
 })();
 
 // 다크 모드 토글 (V29.0 — aria-pressed 동기화)
-const THEME_KEY = 'politik:theme';
-function applyTheme(name) {
+// V32.3 — 기본은 관제 화면과 같은 어두운 HUD. 'politik:ui' 에 직접 고른 값만 저장한다
+// (예전 'politik:theme' 는 첫 방문 때 OS 설정을 자동 저장해 고른 값과 구분이 안 됐다). 정적 페이지는 scripts/apply-hud.js 가 같은 규칙을 넣는다.
+const THEME_KEY = 'politik:ui';
+function applyTheme(name, save) {
   document.documentElement.setAttribute('data-theme', name);
   const btn = document.getElementById('theme-toggle');
   if (btn) {
@@ -14260,16 +14267,15 @@ function applyTheme(name) {
     btn.setAttribute('aria-pressed', name === 'dark' ? 'true' : 'false');
     btn.setAttribute('aria-label', name === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
   }
-  localStorage.setItem(THEME_KEY, name);
+  if (save) { try { localStorage.setItem(THEME_KEY, name); } catch {} }
 }
 (function initTheme() {
-  const saved = localStorage.getItem(THEME_KEY);
-  if (saved) applyTheme(saved);
-  else applyTheme(matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  let saved = null; try { saved = localStorage.getItem(THEME_KEY); } catch {}
+  applyTheme(saved === 'light' ? 'light' : 'dark');
 })();
 document.getElementById('theme-toggle').addEventListener('click', () => {
   const cur = document.documentElement.getAttribute('data-theme') || 'light';
-  applyTheme(cur === 'dark' ? 'light' : 'dark');
+  applyTheme(cur === 'dark' ? 'light' : 'dark', true);
 });
 
 // ============================================================

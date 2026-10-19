@@ -172,3 +172,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;background:rep
   .src a{display:inline-block;padding:6px 0}
   .ghost{font-size:62vw}
 }
+/* 전체 기능(디렉터리) — 예전 대시보드 기능을 목적별로 */
+.top nav a.all{color:var(--hwang)}
+.dir{margin-top:0}
+.dirg{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px 18px}
+@media(max-width:1150px){.dirg{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){.dirg{grid-template-columns:1fr 1fr;gap:12px 14px}}
+.dirg h3{margin:0 0 4px;font-family:var(--f-han);font-weight:400;font-size:15px;color:var(--cheong);letter-spacing:.04em}
+.dirg ul{list-style:none;margin:0;padding:0}
+.dirg li{border-top:1px solid var(--line)}
+.dirg a{display:block;padding:7px 0;color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:600;line-height:1.35}
+.dirg a:hover{color:var(--hwang)}
+.dirg small{display:block;font-weight:400;font-size:11px;color:var(--ink-3);margin-top:2px}

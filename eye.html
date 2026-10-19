@@ -20,7 +20,7 @@
 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1352114558631968" crossorigin="anonymous"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"관제 화면 — 대한민국 패치노트","url":"https://patchkr.com/","inLanguage":"ko","isPartOf":{"@type":"WebSite","name":"대한민국 패치노트","url":"https://patchkr.com"},"description":"최근 사안·곧 시행되는 법령·재판 3심·국가 위기 지표·코스피·광역 16곳을 한 화면에서 보는 인터랙티브 페이지"}</script>
-<link rel="stylesheet" href="/assets/eye.css?v=2">
+<link rel="stylesheet" href="/assets/eye.css?v=3">
 <script defer src="/_vercel/insights/script.js"></script>
 <style id="ko-type">body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}h1,h2,h3,h4,h5,h6,button{text-wrap:balance}p,li,td,dd,blockquote,figcaption{text-wrap:pretty}.nw{white-space:nowrap}</style></head><body>
 <div class="ghost" aria-hidden="true">관제</div>
@@ -29,7 +29,7 @@
     <div class="brand"><b>대한민국 패치노트</b><span>PATCH//EYE</span></div>
     <span class="dan" aria-hidden="true"><i style="background:#3fe0c8"></i><i style="background:#ff4d3a"></i><i style="background:#f2c14e"></i><i style="background:#eef3ef"></i><i style="background:#1d7f72"></i></span>
     <div class="chips" id="chips"><span class="chip">불러오는 중</span></div>
-    <nav aria-label="사이트"><a href="/home">대시보드</a><a href="/analysis.html">기사</a><a href="/law-radar.html">법령</a><a href="/bills">법안</a><a href="/dex">인물</a><a href="/en" lang="en" hreflang="en">ENGLISH</a></nav>
+    <nav aria-label="사이트"><a href="#all" class="all">전체 ☰</a><a href="/home">대시보드</a><a href="/analysis.html">기사</a><a href="/law-radar.html">법령</a><a href="/bills">법안</a><a href="/dex">인물</a><a href="/en" lang="en" hreflang="en">ENGLISH</a></nav>
     <span class="clock" id="clock">--:--:-- KST</span>
   </header>
 
@@ -79,6 +79,48 @@
       </div>
     </section>
   </main>
+
+  <section class="panel dir" id="all" aria-label="전체 기능">
+    <div class="v"><span>전체 기능</span><span class="dan"><i style="background:#3fe0c8"></i><i style="background:#ff4d3a"></i><i style="background:#f2c14e"></i></span></div>
+    <div class="ph"><h2>DIRECTORY · 목적별</h2><span>예전 대시보드 기능 전부</span></div>
+    <div class="dirg">
+      <div><h3>국회·법</h3><ul>
+        <li><a href="/bills">통과 법안<small>22대 본회의 통과 법안 검색·분야별</small></a></li>
+        <li><a href="/law-radar.html">곧 시행되는 법령<small>시행일 순 카운트다운 · 업무 분야별</small></a></li>
+        <li><a href="/law-diff.html">법령 신구비교<small>개정 전·후 조문을 나란히</small></a></li>
+        <li><a href="/law-changes.html">법령 개정 동향<small>최근 바뀐 법령 흐름</small></a></li>
+        <li><a href="/committees">위원회<small>상임위 25곳 · 위원 구성</small></a></li>
+      </ul></div>
+      <div><h3>사람·정당</h3><ul>
+        <li><a href="/dex">정치인 도감<small>의원·단체장·장관 약력과 기록</small></a></li>
+        <li><a href="/rankings">활동 랭킹<small>발의·통과로 본 의원 순위</small></a></li>
+        <li><a href="/map">정치 분포 지도<small>지역별 의석·단체장 정당</small></a></li>
+        <li><a href="/history/parties">정당사 1948~<small>창당·합당·해산 계보</small></a></li>
+      </ul></div>
+      <div><h3>선거</h3><ul>
+        <li><a href="/election2026">9회 지방선거 결과<small>2026.6.3 광역·기초 당선자</small></a></li>
+        <li><a href="/early-voting">사전투표<small>투표율·투표소</small></a></li>
+        <li><a href="/pledge-tracker">8회 공약 이행<small>지난 임기 공약 아카이브</small></a></li>
+      </ul></div>
+      <div><h3>경제·국가 지표</h3><ul>
+        <li><a href="/economy">경제 지표<small>환율·기준금리·코스피·가계부채</small></a></li>
+        <li><a href="/crisis.html">국가 지표 신호등<small>위기 지표 8종 해설</small></a></li>
+      </ul></div>
+      <div><h3>읽을거리·도구</h3><ul>
+        <li><a href="/analysis.html">분석·기록 기사<small>6개 분야 해설 기사 모음</small></a></li>
+        <li><a href="/today">한국 실검<small>지금 많이 찾는 말</small></a></li>
+        <li><a href="/glossary">용어 사전<small>정치·법률 용어 풀이</small></a></li>
+        <li><a href="/en" lang="en" hreflang="en">English<small>Korea explainers in English</small></a></li>
+      </ul></div>
+      <div><h3>사이트</h3><ul>
+        <li><a href="/home">대시보드<small>인기 순위·최신 법안·탐색 도구</small></a></li>
+        <li><a href="/about">소개<small>운영자·데이터 출처·원칙</small></a></li>
+        <li><a href="/developers">API·AI 가이드<small>데이터 재사용 방법</small></a></li>
+        <li><a href="/changelog">변경 이력<small>사이트가 바뀐 기록</small></a></li>
+        <li><a href="/donate">후원하기<small>운영비 지원</small></a></li>
+      </ul></div>
+    </div>
+  </section>
 
   <footer>
     <div class="cmd"><label for="q">무엇을?</label><input id="q" type="text" autocomplete="off" placeholder="예: 코스피, 출산율, 국가채무, 재판, 소방, 경기"><span class="k">ENTER</span></div>

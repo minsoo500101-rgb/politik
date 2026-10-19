@@ -11,8 +11,8 @@
     --text: #1f2937;         /* 본문 — 12.5:1 (충분), 검정 너무 진해 보이는 느낌 ↓ */
     --text-2: #4b5563;       /* 보조 — 그대로 (이미 7:1) */
     --dim: #6b7280;          /* V29.0 WCAG: 9ca3af 2.43 → 6b7280 3.94 (큰 글자 통과) */
-    --accent: #4F46E5;       /* V29.1 brand alias — 53곳 자동 통일 (이전 #1d4ed8 파랑) */
-    --accent-strong: #4338CA;
+    --accent: #0f766e;       /* V29.1 brand alias — 53곳 자동 통일 (이전 #1d4ed8 파랑) */
+    --accent-strong: #115e59;
     --danger: #b91c1c;       /* V29.0 WCAG: dc2626 4.63 → b91c1c 6.06 */
     --link: #1e40af;
     --ok: #047857;           /* V29.0 WCAG: 059669 3.61 → 047857 5.06 */
@@ -38,10 +38,10 @@
        V26.5 Design Tokens — 디자인 시스템 통일
        ───────────────────────────────────── */
     /* Brand — patchkr 정체성 컬러 (정당색과 충돌 X) */
-    --brand: #4F46E5;          /* 인디고 — 신뢰·데이터·중립 */
-    --brand-soft: #6366F1;
-    --brand-deep: #3730A3;
-    --brand-pale: #EEF2FF;     /* 배경용 */
+    --brand: #0f766e;          /* 인디고 — 신뢰·데이터·중립 */
+    --brand-soft: #14b8a6;
+    --brand-deep: #134e4a;
+    --brand-pale: #e6f6f4;     /* 배경용 */
 
     /* Spacing scale — 4의 배수만 */
     --sp-1: 4px;
@@ -86,13 +86,13 @@
     --sh-sm: 0 1px 2px rgba(15,23,42,0.06);
     --sh-md: 0 2px 6px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
     --sh-lg: 0 8px 24px rgba(15,23,42,0.10), 0 2px 6px rgba(15,23,42,0.05);
-    --sh-brand: 0 4px 14px rgba(79,70,229,0.18);
+    --sh-brand: 0 4px 14px rgba(15,118,110,0.18);
 
     /* Touch target — 모바일 접근성 */
     --touch-min: 44px;
 
     /* Focus ring — 키보드 접근성 */
-    --ring: 0 0 0 3px rgba(79,70,229,0.35);
+    --ring: 0 0 0 3px rgba(15,118,110,0.35);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
@@ -114,8 +114,8 @@
   h1, h2, h3 { text-wrap: balance; }
   p, li, .issue-sub, .art-desc { text-wrap: pretty; }
   html { accent-color: var(--brand); scrollbar-color: var(--border-strong) transparent; }
-  ::selection { background: rgba(79,70,229,0.20); }
-  [data-theme="dark"] ::selection { background: rgba(129,140,248,0.32); }
+  ::selection { background: rgba(15,118,110,0.20); }
+  [data-theme="dark"] ::selection { background: rgba(63,224,200,0.32); }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
@@ -126,11 +126,11 @@
   }
   ::-webkit-scrollbar-thumb:hover { background: var(--dim); background-clip: padding-box; border: 3px solid transparent; }
   body {
-    background-image: radial-gradient(1100px 480px at 50% -240px, rgba(79,70,229,0.05), transparent 70%);
+    background-image: radial-gradient(1100px 480px at 50% -240px, rgba(15,118,110,0.05), transparent 70%);
     background-repeat: no-repeat;
   }
   [data-theme="dark"] body {
-    background-image: radial-gradient(1100px 500px at 50% -240px, rgba(129,140,248,0.09), transparent 70%);
+    background-image: radial-gradient(1100px 500px at 50% -240px, rgba(63,224,200,0.09), transparent 70%);
   }
   @media (prefers-reduced-motion: no-preference) {
     ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.18s; }
@@ -192,10 +192,10 @@
   }
   .search:focus {
     border-color: var(--brand);
-    box-shadow: 0 0 0 4px rgba(79,70,229,0.15);
+    box-shadow: 0 0 0 4px rgba(15,118,110,0.15);
   }
   [data-theme="dark"] .search:focus {
-    box-shadow: 0 0 0 4px rgba(129,140,248,0.20);
+    box-shadow: 0 0 0 4px rgba(63,224,200,0.20);
   }
   .search::placeholder { color: var(--dim); }
   .search-icon { left: 12px !important; font-size: 15px !important; }
@@ -406,22 +406,22 @@
     --text: #e6edf3;
     --text-2: #b8c1cc;
     --dim: #7d858f;
-    --accent: #818CF8;       /* V29.1 brand-soft alias — 다크 통일 */
-    --accent-strong: #A5B4FC;
+    --accent: #3fe0c8;       /* V29.1 brand-soft alias — 다크 통일 */
+    --accent-strong: #7ff0de;
     --danger: #f85149;
     --link: #6cb8ff;
     --ok: #3fb950;
     --warn: #d29922;
     /* V26.5 brand 다크 variant */
-    --brand: #818CF8;
-    --brand-soft: #A5B4FC;
-    --brand-deep: #6366F1;
-    --brand-pale: #1E1B4B;
+    --brand: #3fe0c8;
+    --brand-soft: #7ff0de;
+    --brand-deep: #14b8a6;
+    --brand-pale: #0b2522;
     --sh-sm: 0 1px 2px rgba(0,0,0,0.3);
     --sh-md: 0 2px 6px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2);
     --sh-lg: 0 8px 24px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
-    --sh-brand: 0 4px 14px rgba(129,140,248,0.28);
-    --ring: 0 0 0 3px rgba(129,140,248,0.45);
+    --sh-brand: 0 4px 14px rgba(63,224,200,0.28);
+    --ring: 0 0 0 3px rgba(63,224,200,0.45);
   }
   [data-theme="dark"] header {
     background: rgba(17,22,30,0.92);
@@ -3200,7 +3200,7 @@
     background: linear-gradient(135deg, var(--brand-pale), #f0f4ff);
   }
   [data-theme="dark"] .explore-grid .tool-card:hover span {
-    background: linear-gradient(135deg, var(--brand-pale), rgba(129,140,248,0.10));
+    background: linear-gradient(135deg, var(--brand-pale), rgba(63,224,200,0.10));
   }
   .explore-grid .tool-card div {
     flex: 1;
@@ -3256,7 +3256,7 @@
     display: flex; align-items: center; gap: 12px;
     margin: 0 0 14px; padding: 13px 16px;
     border: 1px solid var(--border); border-radius: 12px;
-    background: linear-gradient(90deg, rgba(79,70,229,.10), rgba(79,70,229,.03));
+    background: linear-gradient(90deg, rgba(15,118,110,.10), rgba(15,118,110,.03));
     text-decoration: none; color: var(--text);
     transition: border-color .12s ease, transform .12s ease;
   }
@@ -4634,7 +4634,7 @@
     font-size: 10.5px; color: var(--dim);
   }
   /* 영역별 액센트 */
-  .domain-politics::before  { background: #6366f1; }
+  .domain-politics::before  { background: #14b8a6; }
   .domain-bills::before     { background: #10b981; }
   .domain-elections::before { background: #ef4444; }
   .domain-economy::before   { background: #0ea5e9; }
@@ -6040,7 +6040,7 @@
     line-height: var(--lh-base);
   }
   [data-theme="dark"] .e26-notice {
-    background: rgba(129,140,248,0.10);
+    background: rgba(63,224,200,0.10);
     border-color: var(--brand);
   }
   .e26-notice-icon { font-size: 20px; flex-shrink: 0; }
@@ -6227,7 +6227,7 @@
     padding: var(--sp-2) var(--sp-3);
   }
   [data-theme="dark"] .e26-cands {
-    background: rgba(129,140,248,0.10);
+    background: rgba(63,224,200,0.10);
     border-color: var(--brand);
   }
   .e26-cands-h {
@@ -10068,7 +10068,7 @@
   }
 
   .ev-cta-section { background: var(--brand-pale); border-color: var(--brand); }
-  [data-theme="dark"] .ev-cta-section { background: rgba(129,140,248,0.08); }
+  [data-theme="dark"] .ev-cta-section { background: rgba(63,224,200,0.08); }
   .ev-cta-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

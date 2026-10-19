@@ -1,0 +1,77 @@
+/* PATCH//EYE 공통 테마 (UI 개편 2단계)
+   관제 화면(eye.css)의 색·글꼴·머리말을 앱(index.html)과 정적 페이지 전체에 입힌다. 화면 구조는 건드리지 않는다.
+   - 앱 토큰(--bg --bg-card --text --brand …)과 정적 페이지 토큰(--bg --card --tx --ac …)을 함께 덮는다.
+   - html[...] 로 써서 각 페이지의 :root / [data-theme=dark] 정의(0,1,0)보다 한 단계 세게 이긴다.
+   - 기본은 어두운 HUD. 밝은 화면을 고른 사람에게는 같은 청록 계열 밝은 판을 준다.
+   scripts/apply-hud.js 가 모든 HTML 의 </head> 앞에 이 파일을 링크한다(생성기 수정 없이 CI 후처리). */
+html{
+  --f-han:'Black Han Sans','IBM Plex Sans KR','Malgun Gothic',sans-serif;
+  --f-body:'IBM Plex Sans KR','Pretendard','Malgun Gothic',-apple-system,system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Consolas,monospace;
+  --hud-cheong:#3fe0c8; --hud-jeok:#ff4d3a; --hud-hwang:#f2c14e;
+  --dan:linear-gradient(90deg,#3fe0c8 0 20%,#ff4d3a 20% 40%,#f2c14e 40% 60%,#eef3ef 60% 80%,#1d7f72 80%);
+  /* 모서리: 관제 화면처럼 각지게 */
+  --rd-sm:0px; --rd-md:2px; --rd-lg:2px; --rd-xl:3px; --rd-2xl:4px;
+}
+
+/* ── 어두운 HUD (기본) ── */
+html[data-theme=dark]{
+  color-scheme:dark;
+  /* 정적 페이지 */
+  --bg:#05080a; --card:#0a1517; --bd:#173331; --tx:#e8f4f1; --dim:#8aaaa3;
+  --ac:#3fe0c8; --red:#ff6a5a; --grn:#5fd38a; --amb:#f2c14e; --ins:#7cc4ff; --del:#ff6a5a; /* 법령 신구표: 새 조문 파랑·옛 조문 빨강 의미 유지 */
+  /* 앱 */
+  --bg-card:#0a1517; --bg-elev:#0e1d20; --border:#173331; --border-strong:#24504b;
+  --text:#e8f4f1; --text-2:#b5cdc8;
+  --accent:#3fe0c8; --accent-strong:#7ff0de; --link:#6fe6d4;
+  --danger:#ff6a5a; --ok:#5fd38a; --warn:#f2c14e;
+  --brand:#3fe0c8; --brand-soft:#7ff0de; --brand-deep:#1d7f72; --brand-pale:#0b2522;
+  --sh-sm:0 1px 2px rgba(0,0,0,.4); --sh-md:0 2px 8px rgba(0,0,0,.5); --sh-lg:0 10px 30px rgba(0,0,0,.6);
+  --sh-brand:0 0 14px rgba(63,224,200,.25); --ring:0 0 0 3px rgba(63,224,200,.42);
+  --hover:rgba(63,224,200,.06); --primary:#3fe0c8;
+}
+html[data-theme=dark] body{
+  background:radial-gradient(1100px 620px at 50% -120px,#0b1c1d 0%,#05080a 70%) fixed,#05080a;
+}
+/* 아주 옅은 주사선 — 읽기를 방해하지 않을 정도 */
+html[data-theme=dark] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;background:repeating-linear-gradient(0deg,rgba(63,224,200,.016) 0 1px,transparent 1px 3px)}
+html[data-theme=dark] ::selection{background:rgba(63,224,200,.28)}
+
+/* ── 밝은 판 (직접 고른 경우) ── */
+html:not([data-theme=dark]){
+  --ac:#0f766e; --accent:#0f766e; --accent-strong:#115e59; --link:#0e7490;
+  --brand:#0f766e; --brand-soft:#14b8a6; --brand-deep:#134e4a; --brand-pale:#e6f6f4;
+  --sh-brand:0 4px 14px rgba(15,118,110,.22); --ring:0 0 0 3px rgba(15,118,110,.35); --primary:#0f766e;
+}
+
+/* ── 글꼴 ── */
+html body{font-family:var(--f-body)}
+html h1{font-family:var(--f-han);font-weight:400;letter-spacing:.01em}
+html code,html kbd,html .mono{font-family:var(--f-mono)}
+
+/* ── 정적 페이지 머리말(.top) → 관제 띠 ── */
+.wrap > .top,body > .top{position:relative;padding:4px 0 12px;margin-bottom:6px;border-bottom:1px solid var(--bd);font-family:var(--f-mono)}
+.wrap > .top::after,body > .top::after{content:"";position:absolute;left:0;bottom:-1px;width:60px;height:3px;background:var(--dan)}
+.wrap > .top > a[href="/"]:first-child,body > .top > a[href="/"]:first-child{font-family:var(--f-han);font-weight:400;font-size:17px;letter-spacing:.02em;color:var(--tx)}
+.wrap > .top > a[href="/"]:first-child::after,body > .top > a[href="/"]:first-child::after{content:"PATCH//EYE";font-family:var(--f-mono);font-size:10px;letter-spacing:.3em;color:var(--ac);margin-left:9px;vertical-align:2px}
+.top .tt{border-radius:0;border-color:var(--bd)}
+/* 기사 표지(키커·핵심 숫자)도 관제 톤으로 */
+html .kicker{border-radius:0;font-family:var(--f-mono);letter-spacing:.14em;background:transparent;color:var(--ac);border:1px solid var(--ac);padding:3px 10px}
+html .kpi .n{font-family:var(--f-mono);letter-spacing:0;font-weight:700}
+html .lead,html[data-theme=dark] .lead{border-left-color:var(--ac)}
+html[data-theme=dark] .lead,html[data-theme=dark] .kpi,html[data-theme=dark] .side,html[data-theme=dark] .hax{background:rgba(10,24,26,.72)}
+
+/* ── 앱 머리말(header) → 관제 띠 ── */
+html[data-theme=dark] header:not([class]){background:rgba(5,10,12,.84);border-bottom-color:rgba(63,224,200,.22)}
+header:not([class])::after{content:"";position:absolute;left:24px;bottom:-1px;width:60px;height:3px;background:var(--dan)}
+header .brand{font-family:var(--f-han);font-weight:400;letter-spacing:.02em}
+header .brand-logo{background:transparent!important;border:1.5px solid var(--brand);color:var(--brand);box-shadow:var(--sh-brand);border-radius:0;font-family:var(--f-mono);font-weight:700}
+header .brand-sub{font-family:var(--f-mono);letter-spacing:.14em;font-size:10px}
+/* 법령 4,930쪽: 흰 바탕·연보라 상자 리터럴 */
+html[data-theme=dark] .cta{color:#05080a}
+html[data-theme=dark] .art{background:rgba(10,24,26,.6)}
+@media (prefers-reduced-motion:reduce){html[data-theme=dark] body::after{display:none}}
+/* 정적 페이지 상자: 관제 화면처럼 각지게 · 폰에서 머리말 브랜드가 두 줄로 깨지지 않게 */
+html .lead,html .kpi,html .side,html .hax,html .note,html .art,html .nx a,html .tt{border-radius:2px}
+.wrap > .top > a[href="/"]:first-child,body > .top > a[href="/"]:first-child{white-space:nowrap}
+@media(max-width:420px){.wrap > .top > a[href="/"]:first-child::after,body > .top > a[href="/"]:first-child::after{display:none}}

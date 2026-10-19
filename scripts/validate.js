@@ -284,6 +284,20 @@ try {
   if (miss.length) err(`한국어 줄바꿈 블록 없음·구버전 ${miss.length}개: ${miss.slice(0, 5).join(', ')} — node scripts/apply-ko-type.js`);
   else ok(`한국어 줄바꿈 블록 ${files.length}개 페이지 일치`);
 } catch (e) { warn('ko-type 검사 실패: ' + e.message); }
+// HUD 테마 블록 — 모든 페이지(관제 화면 제외)가 현재 assets/hud.css 버전을 링크해야 한다(UI 개편 2단계).
+// 생성기는 이 블록을 모른다 → 생성 뒤 apply-hud.js 를 안 돌리면 조용히 옛 디자인으로 돌아간다.
+// 법령 4,930쪽은 CI(build-static-pages·law-singu)가 다시 입히므로 표본만 경고로 본다.
+try {
+  const v = require('crypto').createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'assets/hud.css'))).digest('hex').slice(0, 8);
+  const want = `/assets/hud.css?v=${v}`;
+  const ls = (d) => { const dir = path.join(ROOT, d); return fs.existsSync(dir) ? fs.readdirSync(dir).filter((x) => x.endsWith('.html')).map((x) => path.join(d, x)) : []; };
+  const core = [...ls('.'), ...ls('law-radar')].filter((x) => path.basename(x) !== 'eye.html');
+  const miss = core.filter((x) => !fs.readFileSync(path.join(ROOT, x), 'utf8').includes(want));
+  const lawMiss = ls('law').slice(0, 40).filter((x) => !fs.readFileSync(path.join(ROOT, x), 'utf8').includes(want)).length;
+  if (miss.length) err(`HUD 테마 블록 없음·구버전 ${miss.length}쪽: ${miss.slice(0, 5).join(', ')} — node scripts/apply-hud.js`);
+  else ok(`HUD 테마 ${core.length}쪽 일치 (v=${v})`);
+  if (lawMiss) warn(`법령 표본 40쪽 중 ${lawMiss}쪽 HUD 구버전 — build-static-pages 실행 시 갱신`);
+} catch (e) { warn('HUD 검사 실패: ' + e.message); }
 
 // 7. 기사(NewsArticle) 정적 페이지 무결성 — V31.83
 //    ld+json 파싱, canonical, 애드센스 로더, 트렌드 폴리시, 바이라인 날짜 ↔ datePublished 일치

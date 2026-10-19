@@ -34,6 +34,8 @@ jobs:
           node scripts/build-law-radar.js
           # 레이더 분야 페이지의 공통 스타일을 assets/css/ 링크로(UI 개편 1단계)
           node scripts/extract-css.js
+          # 공통 HUD 테마(assets/hud.css·글꼴·어두운 기본 테마)를 모든 HTML 에 — 생성기는 이 블록을 모른다(UI 개편 2단계)
+          node scripts/apply-hud.js
 
       - name: 커밋 & 푸시
         run: |

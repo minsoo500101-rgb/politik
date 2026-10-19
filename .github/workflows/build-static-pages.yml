@@ -35,6 +35,8 @@ jobs:
           # 생성기는 스타일을 인라인으로 쓴다 — 공통 블록은 assets/css/ 로 빼서 링크로 바꾼다(UI 개편 1단계).
           # 이 단계가 빠지면 법령 4,930쪽에 같은 CSS가 다시 각각 들어간다.
           node scripts/extract-css.js
+          # 공통 HUD 테마(assets/hud.css·글꼴·어두운 기본 테마)를 모든 HTML 에 — 생성기는 이 블록을 모른다(UI 개편 2단계)
+          node scripts/apply-hud.js
 
       - name: Commit & push if changed
         run: |
