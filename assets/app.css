@@ -10566,3 +10566,11 @@
       --border-strong: #d1d5db;
     }
   }
+
+  /* 관제 화면(/eye.html) 진입 — 홈 오늘 볼 것 위 */
+  .ht-eye{display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px 14px;border:1px solid #1d7f72;background:linear-gradient(90deg,#05080a,#0b1c1d);color:#e8f4f1;text-decoration:none;border-radius:4px}
+  .ht-eye b{font-size:15px;color:#3fe0c8;white-space:nowrap}
+  .ht-eye span{flex:1;min-width:0;font-size:13px;color:#93b5ae}
+  .ht-eye em{font-style:normal;font-size:13px;font-weight:700;color:#f2c14e;white-space:nowrap}
+  .ht-eye:hover{border-color:#3fe0c8}
+  @media(max-width:600px){.ht-eye span{display:none}}

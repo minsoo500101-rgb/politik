@@ -59,4 +59,4 @@ edit('analysis.html', (s, nl) => {
 edit('build_sitemap.py', (s, nl) => insertAfter(s, 'STATIC_PAGES = [' + nl,
   HOME.map((h) => `    {"path": "/${h.slug}.html", "priority": "0.9", "freq": "weekly"},${nl}`).join(''), 'sitemap'));
 
-console.log(`등록 ${HOME.length}편 — 다음: build-feed-llms.js · build-related.js · build_sitemap.py · build-home-noscript.js · build-llms-live.js · validate.js`);
+console.log(`등록 ${HOME.length}편 — 다음: build-feed-llms.js · build-related.js · build-eye-data.js · build_sitemap.py · build-home-noscript.js · build-llms-live.js · validate.js`);
