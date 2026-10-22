@@ -4,7 +4,12 @@
 // - extract 50자 미만 스킵 (의미 있는 정보만)
 // - 출생·학력·경력 패턴 인식 + 정리
 //
-// 실행: node scripts/wiki-auto-career.js [--dry] [--type=local_gov_muni] [--limit=50]
+// 실행: node scripts/wiki-auto-career.js [--propose] [--type=local_gov_muni] [--limit=50]
+//
+// V32.6 — 자동 저장 중단. 위키 문서가 훼손(반달)된 순간 동기화가 돌면 거짓 약력이 검토 없이 도감에 실렸다.
+//   --propose : 결과를 data/wiki-career-proposals.json 에 '검토 대기'로만 쌓는다(politicians.json 은 건드리지 않음)
+//   반영은 사람이 내용을 보고 scripts/review-wiki-career.js --approve 로 한다.
+//   --write 는 더 이상 쓰지 않는다(호출되면 오류).
 //
 // 안전 가드:
 // - dry-run 기본 (--write로만 실제 저장)
@@ -17,7 +22,11 @@ const path = require('path');
 const WIKI_API = 'https://ko.wikipedia.org/api/rest_v1/page/summary/';
 
 const args = process.argv.slice(2);
-const dryRun = !args.includes('--write');
+if (args.includes('--write')) { console.error('❌ --write 는 폐지됐다(V32.6). --propose 로 제안을 쌓고 review-wiki-career.js 로 승인할 것.'); process.exit(2); }
+const propose = args.includes('--propose');
+const dryRun = !propose;
+const PROPOSALS = path.join(__dirname, '..', 'data', 'wiki-career-proposals.json');
+const loadProps = () => { try { return JSON.parse(fs.readFileSync(PROPOSALS, 'utf8')); } catch { return { _note: '위키백과 요약에서 뽑은 약력 제안. 사람이 읽고 review-wiki-career.js 로 승인·거절한다. 승인 전에는 사이트에 나가지 않는다.', items: [] }; } };
 const typeFilter = (args.find(a => a.startsWith('--type=')) || '').split('=')[1] || null;
 const limit = parseInt((args.find(a => a.startsWith('--limit=')) || '--limit=50').split('=')[1], 10);
 
@@ -82,14 +91,17 @@ async function main() {
   const filePath = path.join(__dirname, '..', 'data', 'politicians.json');
   const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
+  const props = loadProps();
+  const known = new Set(props.items.map(x => x.id)); // 대기·거절된 사람은 다시 제안하지 않는다(거절은 rejected 로 남는다)
   let candidates = data.people.filter(p =>
+    !known.has(p.id) &&
     p.name_ko &&
     (!p.career || p.career.length === 0) &&
     (typeFilter ? p.type === typeFilter : true)
   );
 
   console.log(`📊 후보: ${candidates.length}명 (limit ${limit})`);
-  console.log(`📝 모드: ${dryRun ? 'DRY-RUN (저장 안 함, --write로 활성화)' : '실제 저장'}`);
+  console.log(`📝 모드: ${dryRun ? 'DRY-RUN (저장 안 함, --propose 로 제안 쌓기)' : '제안만 쌓기 (도감 반영은 사람 승인 후)'}`);
   if (typeFilter) console.log(`🔍 type 필터: ${typeFilter}`);
   console.log('');
 
@@ -124,7 +136,7 @@ async function main() {
       // 끝에 출처 표기
       career += '\n\n[출처: 한국어 위키백과 CC BY-SA 4.0]';
       if (!dryRun) {
-        p.career = career;
+        props.items.push({ id: p.id, name_ko: p.name_ko, type: p.type, role: p.role || '', region: p.region || '', career, source: summary.url, fetchedAt: new Date().toISOString(), status: 'pending' });
       }
       console.log(`OK (${summary.extract.length}자)`);
       success++;
@@ -137,14 +149,11 @@ async function main() {
   console.log(`⏭  스킵: ${skipped}명`);
 
   if (!dryRun && success > 0) {
-    // version bump + syncedAt
-    data.version = (data.version || 11) + 1;
-    data.syncedAt = new Date().toISOString();
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
-    console.log(`📦 politicians.json version → ${data.version}`);
-    console.log(`📅 syncedAt: ${data.syncedAt}`);
-    console.log('');
-    console.log('⚠️  index.html의 POLITICIANS_VER 및 preload v= 도 업데이트 필요!');
+    props.updatedAt = new Date().toISOString();
+    fs.writeFileSync(PROPOSALS, JSON.stringify(props, null, 2) + '\n', 'utf8');
+    const pending = props.items.filter(x => x.status === 'pending').length;
+    console.log(`📥 제안 ${success}건 추가 → 검토 대기 ${pending}건 (data/wiki-career-proposals.json)`);
+    console.log('   승인: node scripts/review-wiki-career.js --list / --approve <id…> / --reject <id…>');
   }
 }
 

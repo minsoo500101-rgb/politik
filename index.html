@@ -549,7 +549,7 @@ if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
       <span class="foot-tag">서울특별시 도봉구 도봉로 110다길 38 · 010-2320-8041 · <a href="mailto:lyel1029@gmail.com">lyel1029@gmail.com</a></span>
     </div>
     <div class="foot-bottom-r">
-      <a href="/changelog" id="foot-year">V32.5</a>
+      <a href="/changelog" id="foot-year">V32.6</a>
       <span class="foot-dot">·</span>
       <a href="https://github.com/minsoo500101-rgb/politik" target="_blank" rel="noopener">MIT · GitHub</a>
       <span class="foot-dot">·</span>
@@ -1137,7 +1137,7 @@ function loadPhotoCache() {
     const raw = localStorage.getItem(CACHE_KEY_PHOTOS);
     if (!raw) return;
     const c = JSON.parse(raw);
-    for (const [k, v] of Object.entries(c.data || {})) state.photos.set(k, v);
+    for (const [k, v] of Object.entries(c.data || {})) state.photos.set(k, safePhoto(v));
   } catch {}
 }
 function savePhotoCache() {
@@ -1163,11 +1163,11 @@ async function findBio(hgnm) {
       const j = await r.json();
       if (j.type !== 'disambiguation' && (j.title === baseName || j.title === hgnm || j.titles?.canonical === hgnm.replace(/\s/g,'_'))) {
         return {
-          thumb: j.thumbnail?.source || null,
+          thumb: safeWikiImg(j.thumbnail?.source),
           title: j.title,
           description: j.description || '',
           extract: j.extract || '',
-          url: j.content_urls?.desktop?.page || `https://ko.wikipedia.org/wiki/${encodeURIComponent(hgnm)}`,
+          url: safeWikiUrl(j.content_urls?.desktop?.page, hgnm),
         };
       }
     }
@@ -1180,7 +1180,7 @@ async function findBio(hgnm) {
       const p = j.query.pages[k];
       if (titleMatches(p.title)) {
         return {
-          thumb: p.thumbnail?.source || null,
+          thumb: safeWikiImg(p.thumbnail?.source),
           title: p.title,
           description: p.description || '',
           extract: (p.extract || '').slice(0, 600),
@@ -1207,7 +1207,7 @@ async function findPortrait(hgnm) {
     const j = await (await fetch(url)).json();
     for (const k of Object.keys(j.query?.pages || {})) {
       const p = j.query.pages[k];
-      if (p.thumbnail?.source && titleMatches(p.title)) return { thumb: p.thumbnail.source, title: p.title };
+      if (safeWikiImg(p.thumbnail?.source) && titleMatches(p.title)) return { thumb: safeWikiImg(p.thumbnail.source), title: p.title };
     }
   } catch {}
   // 2) 검색에서 제목 정확 일치한 페이지
@@ -1216,7 +1216,7 @@ async function findPortrait(hgnm) {
     const j = await (await fetch(url)).json();
     for (const k of Object.keys(j.query?.pages || {})) {
       const p = j.query.pages[k];
-      if (p.thumbnail?.source && titleMatches(p.title)) return { thumb: p.thumbnail.source, title: p.title };
+      if (safeWikiImg(p.thumbnail?.source) && titleMatches(p.title)) return { thumb: safeWikiImg(p.thumbnail.source), title: p.title };
     }
   } catch {}
   return null;
@@ -1298,6 +1298,20 @@ const PROC_RESULT_COLOR = {
 // ============================================================
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+}
+// V32.6 — 위키 API 가 돌려준 주소는 그대로 믿지 않는다. 링크는 https://*.wikipedia.org, 사진은 https://*.wikimedia.org·wikipedia.org 만.
+// 이스케이프는 javascript: 같은 주소를 막지 못하므로(따옴표만 막음) 주소 자체를 검사한다. 위키 API 가 오염돼도 링크·이미지로 코드가 실행되지 않게.
+function safeWikiUrl(u, title) {
+  try { const x = new URL(String(u)); if (x.protocol === 'https:' && /(^|\.)wikipedia\.org$/.test(x.hostname)) return x.href; } catch {}
+  return 'https://ko.wikipedia.org/wiki/' + encodeURIComponent(String(title || '').replace(/\s/g, '_'));
+}
+function safeWikiImg(u) {
+  try { const x = new URL(String(u)); if (x.protocol === 'https:' && /(^|\.)(wikimedia|wikipedia)\.org$/.test(x.hostname)) return x.href; } catch {}
+  return null;
+}
+function safePhoto(v) { // 위키에서 온 인물 사진·링크 묶음을 저장·사용 전에 거른다
+  if (!v || typeof v !== 'object') return v;
+  return { ...v, thumb: v.thumb ? safeWikiImg(v.thumb) : v.thumb, url: v.url ? safeWikiUrl(v.url, v.title) : v.url };
 }
 function termAbbr(reele) {
   if (!reele) return '';
@@ -7051,6 +7065,10 @@ function renderDexCard(m, group) {
 // 변경 이력 (/changelog) — 투명성·신뢰
 // ============================================================
 const CHANGELOG = [
+  { v: 'V32.6', date: '2026-10-22', title: '🔒 위키 데이터 안전장치', items: [
+    "위키백과에서 받아 오는 링크와 사진 주소를 검사하도록 바꿨다. '한국어 위키에서 더 보기' 같은 링크는 위키백과 https 주소일 때만, 인물·법안 사진은 위키미디어 https 주소일 때만 쓴다. 위키 쪽 데이터가 오염되더라도 링크나 사진을 통해 코드가 실행되지 않는다. 브라우저에 저장해 둔 예전 사진 정보도 같은 기준으로 거른다.",
+    "도감 약력을 위키백과에서 매일 자동으로 채워 넣던 방식을 멈췄다. 위키 문서가 잠깐 훼손된 순간에 동기화가 돌면 거짓 약력이 검토 없이 실릴 수 있었기 때문이다. 이제 자동 동기화는 '약력 제안'만 모아 두고, 사람이 내용을 읽고 승인한 것만 도감에 반영한다. 승인 직전에 위키를 다시 확인해, 제안 뒤 문서가 바뀌었으면 승인을 멈춘다."
+  ]},
   { v: 'V32.5', date: '2026-10-19', title: '🛰 의원·법안 상세, 경제 지표 화면 관제식 재설계', items: [
     "의원 상세에 '의원 관제'를 붙였다. 대표발의해 본회의에서 처리된 법안을 달마다 막대로 보여 주고(밝은 칸 = 가결), 막대나 분야를 누르면 아래 목록이 그 달·그 분야 법안으로 바로 바뀐다. 22대 의원 평균 대비 몇 배인지, 활동 점수가 발의 활동·통과율·분야 다양성·위원회 직책 중 어디서 나왔는지도 계기로 보인다. 점수는 본회의 처리 법안만 쓴 패치노트 자체 지표라고 화면에 함께 적었다.",
     "법안 상세에 '법안 관제'를 붙였다. 같은 분야 법안들이 발의부터 처리까지 며칠 걸렸는지 점으로 찍고 이 법안을 노란 선으로 표시한다. 점에 커서를 올리면 그 법안 이름이, 누르면 그 법안으로 간다. 본회의 표결은 재적 대비 반원 계기(찬성·반대·기권, 과반 위치 점선)로 보이고, 같은 날 본회의에서 처리된 법안도 바로 옮겨 갈 수 있게 모았다.",
@@ -12351,7 +12369,7 @@ function renderDetail(id) {
   const bg = (photo && photo.thumb) ? `<div class="d-hero-bg" style="background-image:url('${escapeHtml(photo.thumb)}')"></div><div class="d-hero-overlay"></div>` : '';
   const wikiExtract = (photo && photo.extract) ? photo.extract : '';
   const wikiDesc = (photo && photo.description) ? photo.description : '';
-  const wikiUrl = (photo && photo.url) ? photo.url : `https://ko.wikipedia.org/wiki/${encodeURIComponent(m._wiki || m.HG_NM)}`;
+  const wikiUrl = safeWikiUrl(photo && photo.url, m._wiki || m.HG_NM);
 
   return `
     <div class="d-back" id="back-btn">← 돌아가기</div>
@@ -13249,9 +13267,9 @@ function route() {
         if (!body || currentRoute() !== hash) return;
         if (wiki && wiki.extract) {
           body.innerHTML = `
-            ${wiki.thumbnail ? `<img class="bd-wiki-thumb" src="${escapeHtml(wiki.thumbnail.source)}" alt="">` : ''}
+            ${safeWikiImg(wiki.thumbnail?.source) ? `<img class="bd-wiki-thumb" src="${escapeHtml(safeWikiImg(wiki.thumbnail.source))}" alt="">` : ''}
             <div class="bd-wiki-extract">${escapeHtml(wiki.extract)}</div>
-            <a class="bd-wiki-link" href="${escapeHtml(wiki.content_urls?.desktop?.page || ('https://ko.wikipedia.org/wiki/' + encodeURIComponent(wiki.title)))}" target="_blank" rel="noopener">한국어 위키 전체 →</a>
+            <a class="bd-wiki-link" href="${escapeHtml(safeWikiUrl(wiki.content_urls?.desktop?.page, wiki.title))}" target="_blank" rel="noopener">한국어 위키 전체 →</a>
           `;
         } else {
           body.innerHTML = `<div class="bd-content-empty">관련 위키 항목 없음. 외부 자료 링크 확인.</div>`;
