@@ -20,6 +20,12 @@ TODAY = datetime.now().strftime("%Y-%m-%d")
 
 # 색인 가능한 실제 페이지 (클린 경로). 구 #/그룹·#/history 도 클린으로 전환.
 STATIC_PAGES = [
+    {"path": "/cho-heedae-impeachment-draft-oct-19-22-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/assembly-steering-committee-audit-witnesses-oct-21-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/park-sung-jae-appeal-9-years-kim-keon-hee-full-bench-oct-21-22-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/korea-ukraine-embassy-staff-withdrawal-oct-20-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/exports-oct-1-20-616bn-semiconductor-2026.html", "priority": "0.9", "freq": "weekly"},
+    {"path": "/industrial-accident-deaths-q3-366-oct-20-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/kospi-october-2026-plunge-7000-to-5600-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/dp-chief-justice-impeachment-talks-oct16-2026.html", "priority": "0.9", "freq": "weekly"},
     {"path": "/jungsucheong-first-chief-kim-jiyong-oct16-2026.html", "priority": "0.9", "freq": "weekly"},
