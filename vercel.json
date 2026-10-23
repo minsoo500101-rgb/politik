@@ -71,6 +71,15 @@
       ]
     },
     {
+      "source": "/data/(eye|risk-indicators|economy|yoon-cases|articles)\\.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, s-maxage=3600, stale-while-revalidate=600"
+        }
+      ]
+    },
+    {
       "source": "/(.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp))",
       "headers": [
         {
